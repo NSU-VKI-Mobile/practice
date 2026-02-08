@@ -8,6 +8,7 @@ compose-bom = "2023.10.01"
 androidx-test = "1.5.0"
 compose = "1.5.4"
 junit = "4.13.2"
+navigation-compose = "2.9.7"
 
 [libraries]
 
@@ -30,6 +31,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
