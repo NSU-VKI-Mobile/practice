@@ -5,11 +5,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import ci.nsu.moble.main.ui.theme.PracticeTheme
@@ -29,7 +34,7 @@ class Lab1 : ComponentActivity() {
 @Composable
 fun ColorsApp()
 {
-    var pickedcolor = Color.White
+    var pickedcolor by remember { mutableStateOf(Color.White) }
     Surface(
         color = pickedcolor,
         modifier = Modifier.fillMaxSize()) {
@@ -37,7 +42,7 @@ fun ColorsApp()
             onClick = {
                 pickedcolor = Color.Cyan
             },
-            modifier = Modifier.wrapContentWidth()
+            modifier = Modifier.wrapContentSize()
         ) {
             Text("Change")
         }
