@@ -10,7 +10,7 @@
         android:theme="@style/Theme.Draft">
         <activity
             android:name=".MamapomogiComposechetotam"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_mamapomogi_composechetotam"
             android:theme="@style/Theme.Draft" />
         <activity
