@@ -1,12 +1,18 @@
 package ci.nsu.moble.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -27,18 +33,20 @@ import ci.nsu.moble.main.ui.theme.PracticeTheme
 import ci.nsu.moble.main.ui.theme.Red
 import ci.nsu.moble.main.ui.theme.Yellow
 import androidx.compose.runtime.*
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 private val colorsMap = mapOf(
-    "Red" to Red,
-    "Green" to Green,
-    "Blue" to Blue,
-    "Yellow" to Yellow,
-    "Cyan" to Cyan,
-    "Magenta" to Magenta,
+    "red" to Red,
+    "green" to Green,
+    "blue" to Blue,
+    "yellow" to Yellow,
+    "cyan" to Cyan,
+    "magenta" to Magenta,
 )
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,60 +54,69 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PracticeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                    Greeting()
             }
         }
     }
 }
 
-fun StringInColor(str: String): Color
-{
-    val color = colorsMap.get(str)
-    if (color == null)
-    {
-        println("Нет такого цвета")
-        return Red
-    }
-    else
-        return color
-}
-
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting() {
 
     var inputColor by remember { mutableStateOf("Red") }
-    var buttonColor by remember { mutableStateOf(StringInColor(inputColor)) }
-    Column(modifier = Modifier.padding(16.dp)) {
+    var buttonColor by remember { mutableStateOf(colorsMap[inputColor.lowercase()]) }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+    ) {
         OutlinedTextField(
             value = inputColor,
             onValueChange = { newText -> inputColor = newText },
             label = { Text("Введите текст") }
         )
         Button(
-            onClick = { buttonColor = StringInColor(inputColor) },
+            onClick = {
+                val foundColor = colorsMap[inputColor.lowercase()]
+                if (foundColor != null) {
+                    buttonColor = foundColor
+                } else {
+                    Log.d("ColorFinder", "Пользовательский цвет не найден")
+                }
+            },
             colors = ButtonDefaults.buttonColors(
-                containerColor = buttonColor
+                containerColor = buttonColor!!
             )
         ) {
             Text("Применить цвет")
         }
-        colorsMap.forEach { key,value ->
-            Text(
-                text = key
-            )
+        LazyColumn {
+            items(colorsMap.toList()) { (colorName, color) ->
+                ColorPaletteItem(colorName, color)
+            }
         }
     }
 }
+    @Composable
+    fun ColorPaletteItem(colorName: String, color: Color) {
+        Box(
+            modifier = Modifier
+                .requiredWidth(200.dp)
+                .background(color, shape = RoundedCornerShape(8.dp))
+                .padding(16.dp),
+        ) {
+            Text(text = colorName)
+        }
+    }
+
+
+
+
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     PracticeTheme {
-        Greeting("Android")
+        Greeting()
     }
 }
