@@ -15,3 +15,11 @@ val Red1 = Color(255, 0, 0)
 val Blue1 = Color(0, 0, 255)
 
 val Green1 = Color(0, 255, 0)
+
+val Yellow1 = Color(255, 255, 0)
+
+val Black1 = Color(0, 0, 0)
+val White1 = Color(255, 255, 255)
+val LightBlue1 = Color(0, 255, 255)
+val Purple1 = Color(255, 0, 255)
+val Orange1 = Color(255, 128, 0)
