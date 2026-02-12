@@ -41,7 +41,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-// TODO:  here is to open the second activity
 @Composable
 fun MainScreenActivity(modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
@@ -59,7 +58,6 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         )
         Button(
             onClick = {
-                // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
                 val intent = Intent(context, SecondActivity::class.java).apply {
                     putExtra("textData",  text)
 

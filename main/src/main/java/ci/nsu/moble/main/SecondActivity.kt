@@ -38,7 +38,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
-// TODO: crate sealed class with 3 routes
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     object ScreenOne : Screen("screen_one")
@@ -60,20 +59,18 @@ class SecondActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecondActivityScreen() {
-    // todo: create nav controller
     val navController = rememberNavController()
     var selectedItem by remember { mutableStateOf(0) }
     val context = LocalContext.current
     var receivedText by remember { mutableStateOf("") }
     if (context is Activity) {
-        receivedText = context.intent.getStringExtra("text_data") ?: "No text received"
+        receivedText = context.intent.getStringExtra("textData") ?: "No text received"
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         TopAppBar(
             title = { Text(receivedText) }, navigationIcon = {
                 IconButton(onClick = {
-                    // TODO: create intent and start MainActivity
                     if (context is Activity) {
                         val intent = Intent(context, MainActivity::class.java)
                         context.startActivity(intent)
@@ -98,7 +95,6 @@ fun SecondActivityScreen() {
                 selected = selectedItem == 0,
 
                 onClick = {
-                    // TODO: navigate to home screen by navController
                     navController.navigate(Screen.Home.route) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
@@ -111,7 +107,6 @@ fun SecondActivityScreen() {
                 selected = selectedItem == 1,
 
                 onClick = {
-                    // TODO: navigate to screen one
                     navController.navigate(Screen.ScreenOne.route) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
@@ -123,7 +118,6 @@ fun SecondActivityScreen() {
                 label = { Text("Screen Two") },
                 selected = selectedItem == 2,
                 onClick = {
-                    // TODO: navigate to screen two
                     navController.navigate(Screen.ScreenTwo.route) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
