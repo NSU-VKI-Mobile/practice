@@ -6,7 +6,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
@@ -30,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -132,6 +135,7 @@ fun SecondActivityScreen() {
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
+            modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Home.route) { HomeScreen(receivedText) }
             composable(Screen.ScreenOne.route) { ScreenOne() }
@@ -145,20 +149,29 @@ fun HomeScreen(message: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(16.dp)
     ) {
         Text(
             text = "Home Screen",
-            style = MaterialTheme.typography.headlineMedium
         )
-        Spacer(modifier = Modifier.padding(8.dp))
         Text(
             text = "Received: $message",
-            style = MaterialTheme.typography.bodyLarge
         )
     }
+}
+
+@Composable
+fun ScreenOne() {
+        Text(
+            text = "Screen One",
+        )
+}
+
+@Composable
+fun ScreenTwo() {
+    Text(
+        text = "Screen Two",
+    )
 }
 
 @Preview(showBackground = true)
