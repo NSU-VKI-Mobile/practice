@@ -11,6 +11,7 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 
+//можно и в MainActivity впихнуть, но какбудто раз тут цвета то наверное тут правильней??????
 // Список доступных цветов по названию.
 val MainColors = mapOf(
     "red" to Color(0xFFFF0000),
