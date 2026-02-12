@@ -10,7 +10,7 @@
         android:theme="@style/Theme.Draft">
         <activity
             android:name=".ui.theme.Task2"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/title_activity_task2"
             android:theme="@style/Theme.Draft">
             <intent-filter>

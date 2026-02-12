@@ -1,4 +1,4 @@
-package ci.nsu.moble.main.ui.theme
+package ci.nsu.moble.main.ui.theme.ui.theme
 
 import android.app.Activity
 import android.os.Build
