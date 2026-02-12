@@ -9,6 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import ci.nsu.moble.main.ui.theme.PracticeTheme
 
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.getValue
@@ -16,11 +21,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import ci.nsu.moble.main.ui.theme.PracticeTheme
+import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,15 +75,28 @@ fun ColorInputScreen(modifier: Modifier = Modifier) {
     //set(value) { state.value = value }
     //понятней не стлао
 
-    TextField(
-        value = colorName, //введённое значение в виде объекта String
-        onValueChange = { newText -> colorName = newText }, //функция обработки ввода текста (вызывается каждый раз, когда пользователь что-то вводит в текстовое поле.)
-        //так... newText - имя, которое мы дали параметру, когда пользователь что-то вводит в TextField, это значение передается сюда
-        //лямбдочка присваивает значение параметра newText переменной colorName
-        modifier = modifier.fillMaxWidth().padding(16.dp), //чёто с отступами связанное
-        label = { Text(text = "Введите название цвета") } //TODO это почему так...
-    )
-    //получается...пользователь вводит текст > вызывается onValueChange > обновляется colorName > Compose перерисовывает TextField с новым значением
+    Column( //контейнер, располагает элементы вертикально
+        modifier = modifier.fillMaxWidth().padding(16.dp) //чёто с отступами связанное
+    ) {
+        TextField(
+            value = colorName, //введённое значение в виде объекта String
+            onValueChange = { newText -> colorName = newText }, //функция обработки ввода текста (вызывается каждый раз, когда пользователь что-то вводит в текстовое поле.)
+            //так... newText - имя, которое мы дали параметру, когда пользователь что-то вводит в TextField, это значение передается сюда
+            //лямбдочка присваивает значение параметра newText переменной colorName
+            label = { Text(text = "Введите название цвета") }, //TODO это почему так...
+            modifier = Modifier.fillMaxWidth()
+        )
+        //получается...пользователь вводит текст > вызывается onValueChange > обновляется colorName > Compose перерисовывает TextField с новым значением
+
+        Spacer(modifier = Modifier.height(16.dp)) //невидимый пустой элемент, занимающий определённое место
+
+        Button( //скруглённая по умолчанию(ох уж эти умные гугловсоские)
+            onClick = { /* пупупу */ },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Применить цвет")
+        }
+    }
 }
 
 @Preview(showBackground = true)
