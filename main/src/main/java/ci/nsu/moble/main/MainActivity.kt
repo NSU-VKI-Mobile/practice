@@ -26,6 +26,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 
+import android.util.Log
+import androidx.compose.ui.graphics.Color
+import ci.nsu.moble.main.ui.theme.MainColors
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,7 +95,19 @@ fun ColorInputScreen(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(16.dp)) //невидимый пустой элемент, занимающий определённое место
 
         Button( //скруглённая по умолчанию(ох уж эти умные гугловсоские)
-            onClick = { /* пупупу */ },
+            onClick = { //ну типо прям внутри можно писать чё оно делает, а можно в отдельную функцию вынести и здесь просто её вызвать
+                val colorKey = colorName.lowercase() //приводим к нижнему регистру
+                val selectedColor = MainColors[colorKey]
+
+                if (selectedColor != null) {
+                    // Цвет найден - применяем фон
+                    Log.d("Поиск цвета", "Найден цвет: $colorKey")
+
+                } else {
+                    // Цвет не найден
+                    Log.d("Поиск цвета", "Цвет не найден: $colorKey")
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Применить цвет")
