@@ -29,9 +29,13 @@ import androidx.compose.foundation.layout.height
 
 import android.util.Log
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 import ci.nsu.moble.main.ui.theme.MainColors
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,6 +122,21 @@ fun ColorInputScreen(modifier: Modifier = Modifier) {
             colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
         ) {
             Text("Применить цвет")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Column {
+            for ((colorName, colorValue) in MainColors)
+            {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Box(
+                    modifier = Modifier.fillMaxWidth().height(40.dp).clip(RoundedCornerShape(8.dp)).background(colorValue).padding(8.dp)
+                ) {
+                    Text(text = colorName, color = Color.White)
+                }
+            }
         }
     }
 }
