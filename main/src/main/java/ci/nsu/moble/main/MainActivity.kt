@@ -22,11 +22,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 
 import android.util.Log
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 import ci.nsu.moble.main.ui.theme.MainColors
 
@@ -79,6 +82,9 @@ fun ColorInputScreen(modifier: Modifier = Modifier) {
     //set(value) { state.value = value }
     //понятней не стлао
 
+    val primaryColor = MaterialTheme.colorScheme.primary //почему-то если поставить это без промежуточной переменной то он ругается
+    var buttonColor by remember { mutableStateOf(primaryColor) }
+
     Column( //контейнер, располагает элементы вертикально
         modifier = modifier.fillMaxWidth().padding(16.dp) //чёто с отступами связанное
     ) {
@@ -101,14 +107,15 @@ fun ColorInputScreen(modifier: Modifier = Modifier) {
 
                 if (selectedColor != null) {
                     // Цвет найден - применяем фон
+                    buttonColor = selectedColor
                     Log.d("Поиск цвета", "Найден цвет: $colorKey")
-
                 } else {
                     // Цвет не найден
                     Log.d("Поиск цвета", "Цвет не найден: $colorKey")
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
         ) {
             Text("Применить цвет")
         }
