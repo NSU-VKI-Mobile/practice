@@ -47,7 +47,9 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TextField(
@@ -66,7 +68,7 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {
-            Text("Open SecondActivity")
+            Text("Открыть второе окно")
         }
     }
 }

@@ -146,10 +146,10 @@ fun HomeScreen(message: String) {
             .padding(16.dp)
     ) {
         Text(
-            text = "Home Screen",
+            text = "Home screen",
         )
         Text(
-            text = "Received: $message",
+            text = "Сообщение: $message",
         )
     }
 }
@@ -157,14 +157,14 @@ fun HomeScreen(message: String) {
 @Composable
 fun ScreenOne() {
         Text(
-            text = "Screen One",
+            text = "Screen one",
         )
 }
 
 @Composable
 fun ScreenTwo() {
     Text(
-        text = "Screen Two",
+        text = "Screen two",
     )
 }
 
