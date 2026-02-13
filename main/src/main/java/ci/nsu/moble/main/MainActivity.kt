@@ -70,7 +70,7 @@ fun Greeting(modifier: Modifier = Modifier) {
     var inputColor by remember { mutableStateOf("Red") }
     var buttonColor by remember { mutableStateOf(colorsMap[inputColor.lowercase()]) }
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
     ) {
