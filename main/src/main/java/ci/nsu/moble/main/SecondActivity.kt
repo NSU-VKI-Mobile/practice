@@ -140,32 +140,17 @@ fun SecondActivityScreen() {
 
 @Composable
 fun HomeScreen(message: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Home screen",
-        )
-        Text(
-            text = "Сообщение: $message",
-        )
-    }
+    Text("Home screen")
 }
 
 @Composable
 fun ScreenOne() {
-        Text(
-            text = "Screen one",
-        )
+    Text("Screen one")
 }
 
 @Composable
 fun ScreenTwo() {
-    Text(
-        text = "Screen two",
-    )
+    Text("Screen two")
 }
 
 @Preview(showBackground = true)
