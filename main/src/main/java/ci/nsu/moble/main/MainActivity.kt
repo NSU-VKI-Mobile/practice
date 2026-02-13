@@ -97,20 +97,17 @@ fun Greeting() {
         }
     }
 }
-    @Composable
-    fun ColorPaletteItem(colorName: String, color: Color) {
-        Box(
-            modifier = Modifier
-                .requiredWidth(200.dp)
-                .background(color, shape = RoundedCornerShape(8.dp))
-                .padding(16.dp),
+@Composable
+fun ColorPaletteItem(colorName: String, color: Color) {
+    Box(
+        modifier = Modifier
+            .requiredWidth(200.dp)
+            .background(color, shape = RoundedCornerShape(8.dp))
+            .padding(16.dp),
         ) {
             Text(text = colorName)
         }
-    }
-
-
-
+}
 
 
 @Preview(showBackground = true)
