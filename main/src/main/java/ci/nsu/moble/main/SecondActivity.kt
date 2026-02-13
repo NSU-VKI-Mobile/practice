@@ -64,7 +64,7 @@ fun SecondActivityScreen() {
     val context = LocalContext.current
     var receivedText by remember { mutableStateOf("") }
     if (context is Activity) {
-        receivedText = context.intent.getStringExtra("textData") ?: "Текста неn"
+        receivedText = context.intent.getStringExtra("textData") ?: "Текста нет"
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
@@ -131,7 +131,7 @@ fun SecondActivityScreen() {
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Home.route) { HomeScreen(receivedText) }
+            composable(Screen.Home.route) { HomeScreen() }
             composable(Screen.ScreenOne.route) { ScreenOne() }
             composable(Screen.ScreenTwo.route) { ScreenTwo() }
         }
@@ -139,7 +139,7 @@ fun SecondActivityScreen() {
 }
 
 @Composable
-fun HomeScreen(message: String) {
+fun HomeScreen() {
     Text("Home screen")
 }
 
