@@ -64,7 +64,7 @@ fun SecondActivityScreen() {
     val context = LocalContext.current
     var receivedText by remember { mutableStateOf("") }
     if (context is Activity) {
-        receivedText = context.intent.getStringExtra("textData") ?: "No text received"
+        receivedText = context.intent.getStringExtra("textData") ?: "Текста неn"
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
