@@ -54,14 +54,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PracticeTheme {
-                    Greeting()
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Greeting(
+                        modifier = Modifier.padding(innerPadding)
+                    )
             }
         }
     }
 }
 
 @Composable
-fun Greeting() {
+fun Greeting(modifier: Modifier) {
 
     var inputColor by remember { mutableStateOf("Red") }
     var buttonColor by remember { mutableStateOf(colorsMap[inputColor.lowercase()]) }
