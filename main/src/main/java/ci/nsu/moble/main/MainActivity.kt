@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(modifier: Modifier) {
+fun Greeting(modifier: Modifier = Modifier) {
 
     var inputColor by remember { mutableStateOf("Red") }
     var buttonColor by remember { mutableStateOf(colorsMap[inputColor.lowercase()]) }
