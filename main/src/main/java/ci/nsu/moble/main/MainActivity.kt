@@ -90,7 +90,7 @@ fun Greeting() {
         ) {
             Text("Применить цвет")
         }
-        LazyColumn {
+        LazyColumn{
             items(colorsMap.toList()) { (colorName, color) ->
                 ColorPaletteItem(colorName, color)
             }
