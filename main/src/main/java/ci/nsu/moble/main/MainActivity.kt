@@ -52,7 +52,7 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
     ) {
         TextField(
             value = text,
-            onValueChange = { text = it },
+            onValueChange = {newText -> text = newText },
             label = { Text("Введи текст") },
             modifier = Modifier.padding(16.dp)
         )
@@ -60,7 +60,6 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
             onClick = {
                 val intent = Intent(context, SecondActivity::class.java).apply {
                     putExtra("textData",  text)
-
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 }
                 context.startActivity(intent)
