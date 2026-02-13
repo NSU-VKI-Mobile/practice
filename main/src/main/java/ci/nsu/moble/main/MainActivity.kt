@@ -58,6 +58,7 @@ class MainActivity : ComponentActivity() {
                     Greeting(
                         modifier = Modifier.padding(innerPadding)
                     )
+                }
             }
         }
     }
