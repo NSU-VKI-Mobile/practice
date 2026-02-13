@@ -103,7 +103,7 @@ fun SecondActivityScreen() {
                 })
             NavigationBarItem(
                 icon = { Icon(imageVector = Icons.Filled.List, contentDescription = "Screen One") },
-                label = { Text("Screen One") },
+                label = { Text("Screen one") },
                 selected = selectedItem == 1,
 
                 onClick = {
@@ -115,7 +115,7 @@ fun SecondActivityScreen() {
                 })
             NavigationBarItem(
                 icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Screen Two") },
-                label = { Text("Screen Two") },
+                label = { Text("Screen two") },
                 selected = selectedItem == 2,
                 onClick = {
                     navController.navigate(Screen.ScreenTwo.route) {
