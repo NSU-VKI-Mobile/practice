@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "practice"
-include(":main")
+rootProject.name = "ButtonLaba001"
+include(":app")
+ 
