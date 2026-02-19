@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity" >
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="350px"
+        android:layout_height="70px"
+        android:layout_marginLeft="35px"
+        android:layout_marginBottom="70px"
+        android:layout_gravity="bottom|left"
+        android:text="Button" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:freezesText="false"
+        android:gravity="center"
+        android:text="HELLO WORLD!"
+        android:textIsSelectable="false"
+        android:textSize="34sp" />
+</FrameLayout>
