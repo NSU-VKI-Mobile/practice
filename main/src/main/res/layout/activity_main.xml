@@ -8,9 +8,11 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="match_parent"
-        android:layout_height="158dp"
-        android:layout_gravity="center"
+        android:layout_width="350px"
+        android:layout_height="70px"
+        android:layout_marginLeft="35px"
+        android:layout_marginBottom="70px"
+        android:layout_gravity="bottom|left"
         android:text="Button" />
 
     <TextView
