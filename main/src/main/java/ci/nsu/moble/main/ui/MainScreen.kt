@@ -66,7 +66,7 @@ fun MainScreen() {
                 .height(56.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (searchPerformed) buttonBackgroundColor else Color.Green
+                containerColor = if (searchPerformed) buttonBackgroundColor else Color.Gray
             )
         ) {
             Text(

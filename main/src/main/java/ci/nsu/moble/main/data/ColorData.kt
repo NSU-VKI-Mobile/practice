@@ -3,7 +3,6 @@ package ci.nsu.moble.main.data
 import androidx.compose.ui.graphics.Color
 
 object ColorData {
-    // Структура хранения цветов
     val colors = mapOf(
         "red" to Color(0xFFFF0000),
         "orange" to Color(0xFFFFA500),
@@ -14,7 +13,6 @@ object ColorData {
         "violet" to Color(0xFFEE82EE)
     )
 
-    // Для отображения в списке палитры
     val colorList = listOf(
         "red" to Color(0xFFFF0000),
         "orange" to Color(0xFFFFA500),
