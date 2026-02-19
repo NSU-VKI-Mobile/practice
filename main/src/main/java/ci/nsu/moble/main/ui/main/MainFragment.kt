@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.util.Log
 
 import ci.nsu.moble.main.R
 
@@ -43,9 +44,30 @@ class MainFragment : Fragment() {
             if (text == "red")
                 buttonCheck.setBackgroundColor(Color.RED)
             else if (text == "orange")
-                buttonCheck.setBackgroundColor(Color.parseColor("ffa500"))
+                buttonCheck.setBackgroundColor(Color.parseColor("#FFA500"))
+            else if (text == "yellow")
+                buttonCheck.setBackgroundColor(Color.YELLOW)
             else if (text == "green")
                 buttonCheck.setBackgroundColor(Color.GREEN)
+            else if (text == "blue")
+                buttonCheck.setBackgroundColor(Color.BLUE)
+            else if (text == "indigo")
+                buttonCheck.setBackgroundColor(Color.parseColor("#4B0082"))
+            else if (text == "violet")
+                buttonCheck.setBackgroundColor(Color.parseColor("#8000FF"))
+            else
+                Log.d("MainFragment", "Неизвестный цвет: $text")
+//            val color = when (text) {
+//                "red" -> Color.RED
+//                "orange" -> Color.parseColor("#FFA500")
+//                "yellow" -> Color.YELLOW
+//                "green" -> Color.GREEN
+//                "blue" -> Color.BLUE
+//                "indigo" -> Color.parseColor("#4B0082")
+//                "violet" -> Color.parseColor("#8000FF")
+//                else -> Color.parseColor("#CACCD2")
+//            }
+//            buttonCheck.setBackgroundColor(color)
         }
 
         return view
