@@ -1,5 +1,6 @@
 package ci.nsu.moble.main
 
+import android.R
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.TextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -26,13 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color as c
 import androidx.compose.ui.unit.sp
-
 @Stable
-val Orange = c(color = 0xFF910A)
+val Orange = c(color = 0xFFFA8C0F)
 @Stable
-val Indigo = c(color = 0x4B0082)
+val Indigo = c(color = 0xFF4B0082)
 @Stable
-val Violet = c(color = 0x800080)
+val Violet = c(color = 0xFF910AFF)
 
 private val collormaps = mapOf(
     "Red" to c.Red,
@@ -59,6 +60,7 @@ class MainActivity2 : ComponentActivity() {
 @Composable
 fun Main() {
     var text by remember { mutableStateOf("") }
+    var buttoncolor by remember { mutableStateOf(value = c.Gray) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,7 +76,8 @@ fun Main() {
         )
         Spacer(modifier = Modifier.height(8.dp))
         Button(
-            onClick = { text = text },
+            onClick = { buttoncolor= (if (text in collormaps) collormaps[text] else c.Gray)!! },
+            colors = ButtonDefaults.buttonColors(containerColor = buttoncolor),
             modifier = Modifier
                 .height(height = 48.dp)
                 .fillMaxWidth()){
