@@ -10,8 +10,19 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.util.Log
+import android.widget.LinearLayout
 
 import ci.nsu.moble.main.R
+
+private val colorsMap = mapOf(
+    "red" to Color.RED,
+    "orange" to Color.parseColor("#FFA500"),
+    "yellow" to Color.YELLOW,
+    "green" to Color.GREEN,
+    "blue" to Color.BLUE,
+    "indigo" to Color.parseColor("#4B0082"),
+    "violet" to Color.parseColor("#8000FF")
+)
 
 class MainFragment : Fragment() {
 
@@ -38,25 +49,32 @@ class MainFragment : Fragment() {
 //      задал переменные editTextInput и buttonCheck
         val editTextInput = view.findViewById<EditText>(R.id.editText)
         val buttonCheck = view.findViewById<Button>(R.id.button)
+        val pallete = view.findViewById<LinearLayout>(R.id.palleteContainer)
+        pallete.removeAllViews()
 
         buttonCheck.setOnClickListener {
             val text = editTextInput.text.toString().lowercase()
-            if (text == "red")
-                buttonCheck.setBackgroundColor(Color.RED)
-            else if (text == "orange")
-                buttonCheck.setBackgroundColor(Color.parseColor("#FFA500"))
-            else if (text == "yellow")
-                buttonCheck.setBackgroundColor(Color.YELLOW)
-            else if (text == "green")
-                buttonCheck.setBackgroundColor(Color.GREEN)
-            else if (text == "blue")
-                buttonCheck.setBackgroundColor(Color.BLUE)
-            else if (text == "indigo")
-                buttonCheck.setBackgroundColor(Color.parseColor("#4B0082"))
-            else if (text == "violet")
-                buttonCheck.setBackgroundColor(Color.parseColor("#8000FF"))
+            val color = colorsMap[text]
+            if (color != null)
+                buttonCheck.setBackgroundColor(color)
             else
                 Log.d("MainFragment", "Неизвестный цвет: $text")
+//            if (text == "red")
+//                buttonCheck.setBackgroundColor(Color.RED)
+//            else if (text == "orange")
+//                buttonCheck.setBackgroundColor(Color.parseColor("#FFA500"))
+//            else if (text == "yellow")
+//                buttonCheck.setBackgroundColor(Color.YELLOW)
+//            else if (text == "green")
+//                buttonCheck.setBackgroundColor(Color.GREEN)
+//            else if (text == "blue")
+//                buttonCheck.setBackgroundColor(Color.BLUE)
+//            else if (text == "indigo")
+//                buttonCheck.setBackgroundColor(Color.parseColor("#4B0082"))
+//            else if (text == "violet")
+//                buttonCheck.setBackgroundColor(Color.parseColor("#8000FF"))
+//            else
+//                Log.d("MainFragment", "Неизвестный цвет: $text")
 //            val color = when (text) {
 //                "red" -> Color.RED
 //                "orange" -> Color.parseColor("#FFA500")
@@ -68,6 +86,18 @@ class MainFragment : Fragment() {
 //                else -> Color.parseColor("#CACCD2")
 //            }
 //            buttonCheck.setBackgroundColor(color)
+        }
+
+        colorsMap.forEach { (colorName, color) ->
+            val colorButton = Button(requireContext())
+            colorButton.text = colorName
+            colorButton.setBackgroundColor(color)
+            colorButton.setTextColor(Color.WHITE)
+            colorButton.setOnClickListener {
+                editTextInput.setText(colorName)
+            }
+
+            pallete.addView(colorButton)
         }
 
         return view
