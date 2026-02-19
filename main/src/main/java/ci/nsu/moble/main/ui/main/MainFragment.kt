@@ -90,11 +90,13 @@ class MainFragment : Fragment() {
 
         colorsMap.forEach { (colorName, color) ->
             val colorButton = Button(requireContext())
-            colorButton.text = colorName
+            val colorNameUp = colorName.replaceFirstChar { it.uppercase() }
+            colorButton.text = colorNameUp
+            colorButton.isAllCaps = false
             colorButton.setBackgroundColor(color)
             colorButton.setTextColor(Color.WHITE)
             colorButton.setOnClickListener {
-                editTextInput.setText(colorName)
+                editTextInput.setText(colorNameUp)
             }
 
             pallete.addView(colorButton)
