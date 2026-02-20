@@ -31,7 +31,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
+import androidx.compose.foundation.layout.padding
+import androidx.annotation.StringRes
+import android.content.Intent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
 // TODO: crate sealed class with 3 routes
+enum class Screen(@StringRes val title: Int) {
+    Home(R.string.Home_screen),
+    First(R.string.first_screen),
+    Second(R.string.second_screen)
+}
 
 class SecondActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,11 +70,16 @@ fun SecondActivityScreen() {
         receivedText = context.intent.getStringExtra("text_data") ?: "No text received"
     }
 
+    val navController = rememberNavController()
+
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         TopAppBar(
             title = { Text(receivedText) }, navigationIcon = {
                 IconButton(onClick = {
                     // TODO: create intent and start MainActivity
+                    val intent = Intent(context, MainActivity::class.java)
+                    context.startActivity(intent)
+
                     if (context is Activity) {
                         context.finish()
                     }
@@ -85,6 +104,10 @@ fun SecondActivityScreen() {
                 onClick = {
                     // TODO: navigate to home screen by navController
                     selectedItem = 0
+                    navController.navigate(Screen.Home.name) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
                 })
             NavigationBarItem(
                 icon = { Icon(imageVector = Icons.Filled.List, contentDescription = "Screen One") },
@@ -94,6 +117,10 @@ fun SecondActivityScreen() {
                 onClick = {
                     // TODO: navigate to screen one
                     selectedItem = 1
+                    navController.navigate(Screen.First.name) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
                 })
             NavigationBarItem(
                 icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Screen Two") },
@@ -102,10 +129,35 @@ fun SecondActivityScreen() {
                 onClick = {
                     // TODO: navigate to screen two
                     selectedItem = 2
+                    navController.navigate(Screen.Second.name) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
                 })
         }
     }) { innerPadding ->
         // TODO: create a nav graph with 3 screens
+
+        NavHost(navController = navController,
+            startDestination = Screen.Home.name,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(Screen.Home.name) {
+                Box(Modifier.fillMaxSize()){
+                    Text("Home Screen", modifier = Modifier.align(Alignment.Center))
+                }
+            }
+            composable(Screen.First.name) {
+                Box(Modifier.fillMaxSize()){
+                    Text("First Screen", modifier = Modifier.align(Alignment.Center))
+                }
+            }
+            composable(Screen.Second.name) {
+                Box(Modifier.fillMaxSize()){
+                    Text("Second Screen", modifier = Modifier.align(Alignment.Center))
+                }
+            }
+        }
         // NavHost() {}
         // composable(Screen.Home.route) { HomeScreen() }
     }

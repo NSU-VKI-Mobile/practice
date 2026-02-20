@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">main</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="first_screen">First screen</string>
+    <string name="second_screen">Second screen</string>
+    <string name="Home_screen">Home screen</string>
 </resources>
