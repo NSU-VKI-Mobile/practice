@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                CounterScreen(
+                ShoppingScreen(
                     modifier = Modifier.padding(innerPadding)
                 )
             }
