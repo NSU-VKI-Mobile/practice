@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -33,12 +34,43 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
-
-    implementation("com.android.support:appcompat-v7:28.0.0")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("com.android.support.test:runner:1.0.2")
-    androidTestImplementation("com.android.support.test.espresso:espresso-core:3.0.2")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }
+
+//dependencies {
+//    implementation 'androidx.core:core-ktx:1.12.0'
+//    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
+//    implementation 'androidx.activity:activity-compose:1.8.2'
+//    implementation platform('androidx.compose:compose-bom:2024.04.01')
+//    implementation 'androidx.compose.ui:ui'
+//    implementation 'androidx.compose.ui:ui-graphics'
+//    implementation 'androidx.compose.ui:ui-tooling-preview'
+//    implementation 'androidx.compose.material3:material3'
+//    implementation 'androidx.navigation:navigation-compose:2.7.7'
+//
+//    // Для иконок (если используете Material Icons)
+//    implementation 'androidx.compose.material:material-icons-extended:1.6.1'
+//}
