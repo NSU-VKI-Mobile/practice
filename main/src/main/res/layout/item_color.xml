@@ -1,0 +1,17 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/colorCard"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="12dp">
+
+    <TextView
+        android:id="@+id/colorName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+</androidx.cardview.widget.CardView>

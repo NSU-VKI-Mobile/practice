@@ -14,7 +14,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"  // ИСПРАВЛЕНО
     }
 
     buildTypes {
@@ -36,9 +36,19 @@ android {
 }
 
 dependencies {
+    // УДАЛИТЕ эту строку - это старая support библиотека:
+    // implementation("com.android.support:appcompat-v7:28.0.0")
 
-    implementation("com.android.support:appcompat-v7:28.0.0")
+    // ОСТАВЬТЕ эти - они из AndroidX:
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.material)  // material.google.com - это тоже AndroidX
+    implementation(libs.androidx.fragment.ktx)
+
+    // Для тестов тоже нужно заменить support на androidx:ы
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("com.android.support.test:runner:1.0.2")
-    androidTestImplementation("com.android.support.test.espresso:espresso-core:3.0.2")
+    androidTestImplementation("androidx.test:runner:1.5.2")        // Вместо 1.0.2
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")  // Вместо 3.0.2
 }
