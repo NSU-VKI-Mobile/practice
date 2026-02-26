@@ -30,7 +30,7 @@ fun SimpleColorApp() {
 
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = backgroundColor   // ← ВАЖНО! Меняем цвет Surface
+            color = backgroundColor
         ) {
 
             Column(
@@ -42,7 +42,7 @@ fun SimpleColorApp() {
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it },
-                    label = { Text("Введите red или green") },
+                    label = { Text("Введите цвет") },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -53,6 +53,8 @@ fun SimpleColorApp() {
                         backgroundColor = when (text.trim().lowercase()) {
                             "red" -> Color.Red
                             "green" -> Color.Green
+                            "black" -> Color.Black
+                            "magenta" -> Color.Magenta
                             else -> Color.White
                         }
                     },
