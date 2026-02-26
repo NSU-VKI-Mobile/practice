@@ -21,7 +21,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             PracticeTheme {
                 Scaffold( modifier = Modifier.fillMaxSize() ) { innerPadding ->
-                    ShoppingScren()
+                    ShoppingScren(
+                        modifier = Modifier.padding(innerPadding)
+                    )
                 }
             }
         }
