@@ -8,6 +8,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Draft">
+<!--        <activity-->
+<!--            android:name=".MainActivity2"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".MainActivity"
             android:exported="true"
