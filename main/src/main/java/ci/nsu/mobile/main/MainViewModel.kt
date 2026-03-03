@@ -1,4 +1,8 @@
 package ci.nsu.mobile.main
 
-class MainViewModel {
+
+import androidx.lifecycle.ViewModel
+
+class MainViewModel : ViewModel() {
+    // Пока пустой — можно добавлять логику позже
 }

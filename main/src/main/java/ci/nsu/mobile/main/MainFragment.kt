@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import ci.nsu.mobile.main.R
+
 class MainFragment : Fragment() {
 
     override fun onCreateView(
@@ -13,10 +13,7 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // подключаем разметку фрагмента
         return inflater.inflate(R.layout.fragment_main, container, false)
-    }
-
-    companion object {
-        fun newInstance() = MainFragment()
     }
 }
