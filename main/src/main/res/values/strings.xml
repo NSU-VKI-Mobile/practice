@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="enter_color">Введите название цвета</string>
+    <string name="apply_color">Применить цвет</string>
+    <string name="colors_palette">Палитра цветов</string>
 </resources>
