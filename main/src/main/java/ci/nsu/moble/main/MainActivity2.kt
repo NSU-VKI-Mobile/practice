@@ -9,10 +9,14 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,8 +48,9 @@ class MainActivity2 : ComponentActivity() {
 fun ColorChanger(name: String, blank: String) {
     // 1. Создаём состояние (запоминается между перерисовками)
     var isRed by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf("")}
 
-    Column (
+        Column (
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 2. Читаем значение — Compose подписывается на изменения
@@ -60,9 +65,16 @@ fun ColorChanger(name: String, blank: String) {
         )
         ) {  // ← Триггер перерисовки
             Text(
-                text = if (isRed) name else blank,
+                text = if (isRed) text else blank,
                 color = if (isRed) Color.Blue else Color.Black
                 )
         }
+        TextField(
+            value = text,
+            onValueChange = {
+                text = it
+            },
+            label = { Text("Введите текст") }
+        )
     }
 }
