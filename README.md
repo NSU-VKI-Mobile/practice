@@ -3,3 +3,4 @@
 Если цвет не найден, то кнопка остаётся неизменна и пишем в логкат сообщение о том, что пользовательский цвет "название цвета" не найден, но если цвет найден, то применить к фону кнопки. *Дополнительно вывести лист с палитрой цветов.
 <img width="475" height="964" alt="image" src="https://github.com/user-attachments/assets/70f84b0c-d398-4873-88e3-e2c38bf4f587" />
 <img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/896c026a-a466-4dc3-9505-d4f40718d66a" />
+ 
