@@ -11,13 +11,13 @@
         android:theme="@style/Theme.Practice"
         tools:targetApi="31">
 
-        <!-- ==================== COMPOSE ACTIVITY ==================== -->
+
         <activity
             android:name=".MainActivity2"
             android:exported="false" />
 
 
-        <!-- ==================== FRAGMENT ACTIVITY  ==================== -->
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
