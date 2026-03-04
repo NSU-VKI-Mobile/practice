@@ -3,46 +3,105 @@ package ci.nsu.moble.main
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import ci.nsu.moble.main.ui.theme.PracticeTheme
-
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 class MainActivity2 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            PracticeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            SimpleColorScreen()
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun SimpleColorScreen() {
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PracticeTheme {
-        Greeting("Android")
+    val myColors = mapOf(
+        "Red" to Color.Red,
+        "Orange" to Color(0xFFFF9800),
+        "Green" to Color.Green,
+        "Blue" to Color.Blue,
+        "Yellow" to Color.Yellow,
+        "Violet" to Color(0xFF9C27B0)
+    )
+
+    var inputText by remember { mutableStateOf("Green") }
+    var btnColor by remember { mutableStateOf(Color.Green) }
+
+
+    var errorMessage by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        TextField(
+            value = inputText,
+            onValueChange = { inputText = it },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                val colorKey = myColors.keys.find { it.equals(inputText.trim(), ignoreCase = true) }
+
+                if (colorKey != null) {
+
+                    btnColor = myColors[colorKey]!!
+                    errorMessage = "" // Очищаем сообщение об ошибке, так как всё хорошо
+                } else {
+
+                    errorMessage = "Цвет \"$inputText\" не найден в палитре!"
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = btnColor)
+        ) {
+            Text("Применить цвет")
+        }
+
+
+        if (errorMessage.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = errorMessage,
+                color = Color.Red // Сделаем текст красным, чтобы привлекал внимание
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+
+        myColors.forEach { (name, color) ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color)
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = name,
+
+                    color = if (color == Color.Yellow || color == Color.Cyan) Color.Black else Color.White
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        }
     }
 }
