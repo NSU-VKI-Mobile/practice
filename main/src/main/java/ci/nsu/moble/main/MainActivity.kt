@@ -54,7 +54,6 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Исправлено: убран fillMaxSize, добавлена фиксированная ширина
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
