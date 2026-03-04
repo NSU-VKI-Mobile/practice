@@ -1,6 +1,5 @@
 package ci.nsu.moble.main
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
@@ -33,9 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PracticeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreenActivity(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    MainScreen(Modifier.padding(innerPadding))
                 }
             }
         }
@@ -43,7 +40,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreenActivity(modifier: Modifier = Modifier) {
+fun MainScreen(modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
     val context = LocalContext.current
 
@@ -57,29 +54,19 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
-            label = { Text("Введите текст для передачи") },
-            modifier = Modifier.fillMaxWidth()  // Изменено с fillMaxSize на fillMaxWidth
+            label = { Text("Введите текст") },
+            modifier = Modifier.fillMaxWidth()
         )
 
-        // Кнопка для открытия SecondActivity с передачей данных
         Button(
             onClick = {
-                val intent = Intent(context, SecondActivity::class.java).apply {
-                    putExtra("text_data", text)
-                }
+                val intent = Intent(context, SecondActivity::class.java)
+                intent.putExtra("key_text", text)
                 context.startActivity(intent)
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {
-            Text("Open SecondActivity")
+            Text("Открыть второй экран")
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PracticeTheme {
-        MainScreenActivity()
     }
 }
