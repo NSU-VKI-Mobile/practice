@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +22,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ci.nsu.moble.main.ui.theme.PracticeTheme
+import android.content.Intent
+import androidx.compose.material3.TextField
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,9 +51,17 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // TODO:  нужно добавить  TextField
+        TextField(
+            value = text,
+            onValueChange = {text = it},
+            label = {Text("Enter text")}
+        )
         Button(
             onClick = {
+                val intent = Intent(context, SecondActivity::class.java)
+                intent.putExtra("text_data", text)
                 // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
+                context.startActivity(intent)
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {
