@@ -54,12 +54,14 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
     ) {
         TextField(
             value = text,
-            onValueChange = newText -> text
+            onValueChange = {newText -> text=newText}
         )
         Button(
             onClick = {
                 val intent = Intent(context, SecondActivity::class.java)
+                intent.putExtra("text_data", text)
                 context.startActivity(intent)
+
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {
