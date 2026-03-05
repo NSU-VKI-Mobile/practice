@@ -36,6 +36,15 @@ fun SimpleColorApp() {
 
     var buttonColor by remember { mutableStateOf(Color.Gray) }
 
+
+    val colorMap = mapOf(
+        "red" to Color.Red,
+        "green" to Color.Green,
+        "blue" to Color.Blue,
+        "black" to Color.Black,
+        "magenta" to Color.Magenta
+    )
+
     PracticeTheme {
 
         Surface(
@@ -61,36 +70,30 @@ fun SimpleColorApp() {
                 Button(
                     onClick = {
 
+
                         backgroundColor = Color(
                             Random.nextFloat(),
                             Random.nextFloat(),
                             Random.nextFloat()
                         )
 
-                        buttonColor = when (text.lowercase()) {
 
-                            "red" -> Color.Red
-                            "green" -> Color.Green
-                            "blue" -> Color.Blue
-                            "black" -> Color.Black
-                            "magenta" -> Color.Magenta
+                        val color = colorMap[text.lowercase()]
 
-                            else -> Color.Gray
-                        }
 
-                        // Проверка числа
-                        val number = text.toIntOrNull()
-
-                        if (number != null) {
-                            Log.d("APP_LOG", "Цвет $number не найден")
-                        } else {
+                        if (color != null) {
                             Log.d("APP_LOG", "User typed: $text")
+                            buttonColor = color
+                        } else {
+                            Log.d("APP_LOG", "Цвет $text не найден")
+                            buttonColor = Color.Gray
+
                         }
 
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     modifier = Modifier.fillMaxWidth()
-                ){
+                ) {
 
                     Text("Нажми меня")
                 }
