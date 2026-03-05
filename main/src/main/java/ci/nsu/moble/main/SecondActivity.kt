@@ -1,5 +1,4 @@
 package ci.nsu.moble.main
-
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -30,12 +29,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
-// TODO: crate sealed class with 3 routes
-
+enum class Screen(val route: String) {
+    Home("home"),
+    ScreenOne("screen_one"),
+    ScreenTwo("screen_two")
+}
 class SecondActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +94,7 @@ fun SecondActivityScreen() {
 
                 onClick = {
                     // TODO: navigate to home screen by navController
+                    navController.navigate(Screen.Home.route)
                     selectedItem = 0
                 })
             NavigationBarItem(
@@ -97,6 +104,7 @@ fun SecondActivityScreen() {
 
                 onClick = {
                     // TODO: navigate to screen one
+                    navController.navigate(Screen.ScreenOne.route)
                     selectedItem = 1
                 })
             NavigationBarItem(
@@ -105,32 +113,48 @@ fun SecondActivityScreen() {
                 selected = selectedItem == 2,
                 onClick = {
                     // TODO: navigate to screen two
+                    navController.navigate(Screen.ScreenTwo.route)
+
                     selectedItem = 2
                 })
         }
     }) { innerPadding ->
         // TODO: create a nav graph with 3 screens
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home.route
+        ) {
 
-         NavHost(navController = navController) {}
-        // composable(Screen.Home.route) { HomeScreen() }
+            composable(Screen.Home.route) {
+                HomeScreen(navController)
+            }
+
+            composable(Screen.ScreenOne.route) {
+                ScreenOne(navController)
+            }
+
+            composable(Screen.ScreenTwo.route) {
+                ScreenTwo(navController)
+            }
+        }
     }
 }
 @Composable
 fun HomeScreen(navController: NavController){
     Column {
-        Text("Домашний экран")
+        Text("Aasd", fontSize = 100.sp)
     }
 }
 @Composable
 fun ScreenOne(navController: NavController){
     Column {
-        Text("Первый экран")
+        Text("Первый экран", fontSize = 100.sp)
     }
 }
 @Composable
 fun ScreenTwo(navController: NavController){
     Column {
-        Text("Второй экран")
+        Text("Второй экран", fontSize = 100.sp)
     }
 }
 
