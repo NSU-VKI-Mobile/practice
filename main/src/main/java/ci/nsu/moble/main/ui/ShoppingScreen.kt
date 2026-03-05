@@ -29,7 +29,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ci.nsu.moble.main.model.ShoppingItem
 import ci.nsu.moble.main.viewmodel.ShoppingViewModel
 
-
 @Composable
 fun ShoppingScren(
     modifier: Modifier = Modifier,
