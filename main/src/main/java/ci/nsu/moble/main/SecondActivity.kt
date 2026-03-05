@@ -1,44 +1,71 @@
 package ci.nsu.moble.main
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
 class SecondActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+//        val message = intent.getStringExtra("EXTRA_MESSAGE") ?: "Нет сообщения"
+
         setContent {
             PracticeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting2(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                SecondScreen()
             }
         }
     }
 }
 
+@Composable
+fun SecondScreen(){
+    Scaffold(modifier = Modifier.fillMaxSize(),
+        topBar = {
+            MakeTopBar("Мой экран")
+        }) {
+            innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "message",
+                style = MaterialTheme.typography.headlineMedium
+            )
+        }
+    }
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting2(name: String, modifier: Modifier = Modifier) {
+fun MakeTopBar(text: String) {
+    val context = LocalContext.current
     TopAppBar(
-        title = {Text("Мой экран")},
+        title = {Text(text)},
 
         navigationIcon = {
             IconButton(onClick = {
@@ -46,21 +73,13 @@ fun Greeting2(name: String, modifier: Modifier = Modifier) {
                     flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 }
                 context.startActivity(intent)
-                activity.finish()
+                (context as? Activity)?.finish()
             }) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back"
                 )
             }
         }
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview2() {
-    PracticeTheme {
-        Greeting2("Android")
-    }
 }
