@@ -61,13 +61,11 @@ fun SimpleColorApp() {
                 Button(
                     onClick = {
 
-
                         backgroundColor = Color(
                             Random.nextFloat(),
                             Random.nextFloat(),
                             Random.nextFloat()
                         )
-
 
                         buttonColor = when (text.lowercase()) {
 
@@ -80,12 +78,19 @@ fun SimpleColorApp() {
                             else -> Color.Gray
                         }
 
-                        Log.d("APP_LOG", "User typed: $text")
+                        // Проверка числа
+                        val number = text.toIntOrNull()
+
+                        if (number != null) {
+                            Log.d("APP_LOG", "Цвет $number не найден")
+                        } else {
+                            Log.d("APP_LOG", "User typed: $text")
+                        }
 
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     modifier = Modifier.fillMaxWidth()
-                ) {
+                ){
 
                     Text("Нажми меня")
                 }
