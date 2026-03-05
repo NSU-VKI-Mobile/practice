@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -29,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
 // TODO: crate sealed class with 3 routes
@@ -49,6 +52,7 @@ class SecondActivity : ComponentActivity() {
 @Composable
 fun SecondActivityScreen() {
     // todo: create nav controller
+    val navController = rememberNavController()
     var selectedItem by remember { mutableStateOf(0) }
     val context = LocalContext.current
     var receivedText by remember { mutableStateOf("") }
@@ -106,8 +110,27 @@ fun SecondActivityScreen() {
         }
     }) { innerPadding ->
         // TODO: create a nav graph with 3 screens
-        // NavHost() {}
+
+         NavHost(navController = navController) {}
         // composable(Screen.Home.route) { HomeScreen() }
+    }
+}
+@Composable
+fun HomeScreen(navController: NavController){
+    Column {
+        Text("Домашний экран")
+    }
+}
+@Composable
+fun ScreenOne(navController: NavController){
+    Column {
+        Text("Первый экран")
+    }
+}
+@Composable
+fun ScreenTwo(navController: NavController){
+    Column {
+        Text("Второй экран")
     }
 }
 
