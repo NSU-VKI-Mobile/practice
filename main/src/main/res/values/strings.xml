@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">main</string>
+    <string name="app_name">VKIPractice</string>
+    <string name="title_label_fragment">Hello Fragment!</string>
+
+    <string name="app_name_compose">VKIPractice</string>
+    <string name="title_label_compose">Hello Compose!</string>
 </resources>
