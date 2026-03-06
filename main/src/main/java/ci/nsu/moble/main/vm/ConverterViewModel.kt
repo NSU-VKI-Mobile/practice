@@ -40,7 +40,7 @@ class TemperatureViewModel : ViewModel() {
             val fahrenheit = newValue
             val celsius = if (fahrenheit.isNotBlank()) {
                 val c = fahrenheit.toDoubleOrNull()
-                if (c != null) String.format("%.2f", c - 32 * 5/9)
+                if (c != null) String.format("%.2f", (c - 32) * 5/9)
                 else ""
             } else ""
 

@@ -23,15 +23,18 @@ fun ConverterScreen(
     Column(modifier = modifier) {
         TextField(
             value = uiState.celsius,
+            label = { Text("Цельсии") },
             onValueChange = { newText ->
                 viewModel.onCelsiusChanged(newText)
             }
         )
         TextField(
             value = uiState.fahrenheit,
+            label = { Text("Фаренгейты") },
             onValueChange = { newText ->
                 viewModel.onFahrenheitChanged(newText)
             }
+
         )
     }
 }
