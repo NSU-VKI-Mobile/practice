@@ -24,6 +24,7 @@ fun ConverterScreen(
         TextField(
             value = uiState.celsius,
             label = { Text("Цельсии") },
+            isError = !uiState.isCelsiusValid,
             onValueChange = { newText ->
                 viewModel.onCelsiusChanged(newText)
             }
@@ -31,6 +32,7 @@ fun ConverterScreen(
         TextField(
             value = uiState.fahrenheit,
             label = { Text("Фаренгейты") },
+            isError = !uiState.isFahrenheitValid,
             onValueChange = { newText ->
                 viewModel.onFahrenheitChanged(newText)
             }
