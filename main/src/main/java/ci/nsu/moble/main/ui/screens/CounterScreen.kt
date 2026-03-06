@@ -2,6 +2,7 @@ package ci.nsu.moble.main.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +33,15 @@ fun CounterScreen(
         Button(onClick = { viewModel.reset() }) {
             Text("Сброс")
         }
+        LazyColumn {
+            items(uiState.history) { item ->
+                TextHistory(item)
+            }
+        }
     }
-    LazyColumn {
-    }
+}
+
+@Composable
+fun TextHistory(text: String){
+    Text(text)
 }
