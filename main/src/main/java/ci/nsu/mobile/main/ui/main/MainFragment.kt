@@ -1,24 +1,24 @@
 package ci.nsu.mobile.main.ui.main
 
-import androidx.fragment.app.viewModels
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.*
 import android.widget.*
-import android.graphics.Color
+import androidx.fragment.app.Fragment
 import ci.nsu.mobile.main.R
 
 class MainFragment : Fragment() {
 
+    private lateinit var editText: EditText
+    private lateinit var button: Button
+    private lateinit var listView: ListView
+
+    private val colors = listOf("Red", "Green", "Blue", "Yellow")
+
     companion object {
         fun newInstance() = MainFragment()
     }
-
-    private val viewModel: MainViewModel by viewModels()
-
-    private lateinit var editText: EditText
-    private lateinit var button: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,20 +30,31 @@ class MainFragment : Fragment() {
 
         editText = view.findViewById(R.id.editText)
         button = view.findViewById(R.id.button)
+        listView = view.findViewById(R.id.colorList)
+
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_list_item_1,
+            colors
+        )
+
+        listView.adapter = adapter
 
         button.setOnClickListener {
 
             val text = editText.text.toString()
 
-            Log.d("TASK2", "Button pressed: $text")
+            Log.d("TASK2", "Button pressed. Text = $text")
 
             when (text.lowercase()) {
                 "red" -> button.setBackgroundColor(Color.RED)
                 "green" -> button.setBackgroundColor(Color.GREEN)
                 "blue" -> button.setBackgroundColor(Color.BLUE)
+                "yellow" -> button.setBackgroundColor(Color.YELLOW)
                 else -> button.setBackgroundColor(Color.GRAY)
             }
 
+            Log.d("TASK2", "Color changed")
         }
 
         return view
