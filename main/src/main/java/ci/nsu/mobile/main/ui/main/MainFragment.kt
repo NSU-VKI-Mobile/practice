@@ -2,10 +2,11 @@ package ci.nsu.mobile.main.ui.main
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.*
-import android.widget.Button
-import android.widget.EditText
+import android.widget.*
+import android.graphics.Color
 import ci.nsu.mobile.main.R
 
 class MainFragment : Fragment() {
@@ -33,6 +34,15 @@ class MainFragment : Fragment() {
         button.setOnClickListener {
 
             val text = editText.text.toString()
+
+            Log.d("TASK2", "Button pressed: $text")
+
+            when (text.lowercase()) {
+                "red" -> button.setBackgroundColor(Color.RED)
+                "green" -> button.setBackgroundColor(Color.GREEN)
+                "blue" -> button.setBackgroundColor(Color.BLUE)
+                else -> button.setBackgroundColor(Color.GRAY)
+            }
 
         }
 
