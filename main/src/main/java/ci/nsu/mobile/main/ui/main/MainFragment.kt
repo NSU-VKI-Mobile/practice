@@ -25,7 +25,6 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         val view = inflater.inflate(R.layout.fragment_main, container, false)
 
         editText = view.findViewById(R.id.editText)
@@ -37,26 +36,34 @@ class MainFragment : Fragment() {
             android.R.layout.simple_list_item_1,
             colors
         )
-
         listView.adapter = adapter
 
         button.setOnClickListener {
-
             val text = editText.text.toString()
-
             Log.d("TASK2", "Button pressed. Text = $text")
 
             when (text.lowercase()) {
-                "red" -> button.setBackgroundColor(Color.RED)
-                "green" -> button.setBackgroundColor(Color.GREEN)
-                "blue" -> button.setBackgroundColor(Color.BLUE)
-                "yellow" -> button.setBackgroundColor(Color.YELLOW)
-                else -> button.setBackgroundColor(Color.GRAY)
+                "red" -> {
+                    button.setBackgroundColor(Color.RED)
+                    Log.d("TASK2", "Color changed to red")
+                }
+                "green" -> {
+                    button.setBackgroundColor(Color.GREEN)
+                    Log.d("TASK2", "Color changed to green")
+                }
+                "blue" -> {
+                    button.setBackgroundColor(Color.BLUE)
+                    Log.d("TASK2", "Color changed to blue")
+                }
+                "yellow" -> {
+                    button.setBackgroundColor(Color.YELLOW)
+                    Log.d("TASK2", "Color changed to yellow")
+                }
+                else -> Log.d("TASK2", "Color not found")
             }
-
-            Log.d("TASK2", "Color changed")
         }
 
         return view
     }
+
 }
