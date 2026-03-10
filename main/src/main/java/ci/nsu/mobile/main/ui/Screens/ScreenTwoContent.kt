@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.main.ui.Screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,19 +12,19 @@ import androidx.compose.ui.unit.dp
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 @Composable
-fun HomeScreen() {
+fun ScreenTwo() {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("SecondActivity - Home Screen")
+        Text("Screen Two Content")
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+fun ScreenTwoPreview() {
     PracticeTheme {
-        HomeScreen()
+        ScreenTwo()
     }
 }

@@ -9,9 +9,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,9 +34,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ci.nsu.mobile.main.ui.screens.HomeScreen
-import ci.nsu.mobile.main.ui.screens.ScreenOne
-import ci.nsu.mobile.main.ui.screens.ScreenTwo
+
+import ci.nsu.mobile.main.ui.Screens.HomeScreen
+import ci.nsu.mobile.main.ui.Screens.ScreenOne
+import ci.nsu.mobile.main.ui.Screens.ScreenTwo
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 class SecondActivity : ComponentActivity() {
@@ -74,7 +75,7 @@ fun SecondActivityScreen() {
                         context.startActivity(intent)
                     }) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
                             tint = Color.White
                         )
@@ -101,7 +102,7 @@ fun SecondActivityScreen() {
                 )
 
                 NavigationBarItem(
-                    icon = { Icon(imageVector = Icons.Filled.List, contentDescription = "Screen One") },
+                    icon = { Icon(imageVector = Icons.AutoMirrored.Filled.List, contentDescription = "Screen One") },
                     label = { Text("Screen One") },
                     selected = selectedItem == 1,
                     onClick = {
