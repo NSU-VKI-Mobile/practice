@@ -14,7 +14,13 @@ class MainFragment : Fragment() {
     private lateinit var button: Button
     private lateinit var listView: ListView
 
-    private val colors = listOf("Red", "Green", "Blue", "Yellow")
+
+    private val colorMap = mapOf(
+        "Red" to Color.RED,
+        "Green" to Color.GREEN,
+        "Blue" to Color.BLUE,
+        "Yellow" to Color.YELLOW
+    )
 
     companion object {
         fun newInstance() = MainFragment()
@@ -31,39 +37,27 @@ class MainFragment : Fragment() {
         button = view.findViewById(R.id.button)
         listView = view.findViewById(R.id.colorList)
 
+
         val adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_list_item_1,
-            colors
+            colorMap.keys.toList()
         )
         listView.adapter = adapter
 
         button.setOnClickListener {
-            val text = editText.text.toString()
+            val text = editText.text.toString().lowercase()
             Log.d("TASK2", "Button pressed. Text = $text")
 
-            when (text.lowercase()) {
-                "red" -> {
-                    button.setBackgroundColor(Color.RED)
-                    Log.d("TASK2", "Color changed to red")
-                }
-                "green" -> {
-                    button.setBackgroundColor(Color.GREEN)
-                    Log.d("TASK2", "Color changed to green")
-                }
-                "blue" -> {
-                    button.setBackgroundColor(Color.BLUE)
-                    Log.d("TASK2", "Color changed to blue")
-                }
-                "yellow" -> {
-                    button.setBackgroundColor(Color.YELLOW)
-                    Log.d("TASK2", "Color changed to yellow")
-                }
-                else -> Log.d("TASK2", "Color not found")
+            val color = colorMap[text]
+            if (color != null) {
+                button.setBackgroundColor(color)
+                Log.d("TASK2", "Color changed to $text")
+            } else {
+                Log.d("TASK2", "Color not found")
             }
         }
 
         return view
     }
-
 }
