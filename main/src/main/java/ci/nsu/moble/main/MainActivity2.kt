@@ -1,6 +1,6 @@
 package ci.nsu.moble.main
-
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -25,19 +25,21 @@ class MainActivity2 : ComponentActivity() {
 fun SimpleColorScreen() {
 
     val myColors = mapOf(
-        "Red" to Color.Red,
+        "red" to Color.Red,
         "Orange" to Color(0xFFFF9800),
         "Green" to Color.Green,
         "Blue" to Color.Blue,
         "Yellow" to Color.Yellow,
-        "Violet" to Color(0xFF9C27B0)
+        "Violet" to Color(0xFF9C27B0),
+        "Cyan" to Color.Cyan
     )
 
-    var inputText by remember { mutableStateOf("Green") }
+    var inputText by remember { mutableStateOf("") }
     var btnColor by remember { mutableStateOf(Color.Green) }
 
 
     var errorMessage by remember { mutableStateOf("") }
+
 
     Column(
         modifier = Modifier
@@ -65,6 +67,7 @@ fun SimpleColorScreen() {
                 } else {
 
                     errorMessage = "Цвет \"$inputText\" не найден в палитре!"
+                    Log.d("colorssss",errorMessage)
                 }
             },
             modifier = Modifier
@@ -76,13 +79,7 @@ fun SimpleColorScreen() {
         }
 
 
-        if (errorMessage.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = errorMessage,
-                color = Color.Red // Сделаем текст красным, чтобы привлекал внимание
-            )
-        }
+
 
         Spacer(modifier = Modifier.height(24.dp))
 
