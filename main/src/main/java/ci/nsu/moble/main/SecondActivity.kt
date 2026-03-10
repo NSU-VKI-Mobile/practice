@@ -30,18 +30,19 @@ class SecondActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-//        val message = intent.getStringExtra("EXTRA_MESSAGE") ?: "Нет сообщения"
+        val message = intent.getStringExtra("EXTRA_MESSAGE") ?: "Нет сообщения"
 
         setContent {
             PracticeTheme {
-                SecondScreen()
+                SecondScreen(message)
             }
         }
     }
 }
 
 @Composable
-fun SecondScreen(){
+fun SecondScreen(message: String,
+                 modifier: Modifier = Modifier){
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
             MakeTopBar("Мой экран")
@@ -54,7 +55,7 @@ fun SecondScreen(){
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "message",
+                text = message,
                 style = MaterialTheme.typography.headlineMedium
             )
         }
