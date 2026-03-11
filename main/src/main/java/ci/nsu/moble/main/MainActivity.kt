@@ -47,10 +47,23 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         // TODO:  нужно добавить  TextField
+        androidx.compose.material3.TextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text("Enter message to send") }
+        )
+
         Button(
             onClick = {
-                // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
+
+                // TODO:  нужно добавить кнопку, которая по клику открывает второе активити через интент
+                val intent = android.content.Intent(context, SecondActivity::class.java).apply {
+                    putExtra("text_data", text)
+                }
+                context.startActivity(intent)
+
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {
