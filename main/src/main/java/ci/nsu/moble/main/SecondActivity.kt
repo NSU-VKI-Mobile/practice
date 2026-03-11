@@ -28,19 +28,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 import androidx.navigation.compose.composable
+import ci.nsu.moble.main.ui.Screens.HomeScreen
+import ci.nsu.moble.main.ui.Screens.ScreenOneContent
+import ci.nsu.moble.main.ui.Screens.ScreenTwoContent
 
 // TODO: crate sealed class with 3 routes
-sealed class Screen(val route: String){
-    object Home : Screen("home")
-    object ScreenOne : Screen("screen_one")
-    object ScreenTwo : Screen("screen_two")
+sealed class Screen(val route: String, val title: String, val icon: ImageVector){
+    object Home : Screen("home", title = "Home", icon = Icons.Filled.Home)
+    object ScreenOne : Screen("screen_one", title = "Screen One", icon = Icons.Filled.List)
+    object ScreenTwo : Screen("screen_two", "Screen Two", icon = Icons.Filled.Settings)
 }
+
+val screens = listOf(
+    Screen.Home,
+    Screen.ScreenOne,
+    Screen.ScreenTwo
+)
 
 class SecondActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,35 +97,23 @@ fun SecondActivityScreen() {
         )
     }, bottomBar = {
         NavigationBar {
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Home") },
-                label = { Text("Home") },
-                selected = selectedItem == 0,
+            screens.forEachIndexed { index, screen ->
+                NavigationBarItem(
 
-                onClick = {
-                    // TODO: navigate to home screen by navController
-                    selectedItem = 0
-                    navController.navigate(Screen.Home.route)
-                })
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.List, contentDescription = "Screen One") },
-                label = { Text("Screen One") },
-                selected = selectedItem == 1,
-
-                onClick = {
-                    // TODO: navigate to screen one
-                    selectedItem = 1
-                    navController.navigate(Screen.ScreenOne.route)
-                })
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Screen Two") },
-                label = { Text("Screen Two") },
-                selected = selectedItem == 2,
-                onClick = {
-                    // TODO: navigate to screen two
-                    selectedItem = 2
-                    navController.navigate(Screen.ScreenTwo.route)
-                })
+                    icon = {
+                        Icon(
+                            imageVector = screen.icon,
+                            cotentDescription = screen.title
+                        )
+                    },
+                    label = {Text(screen.title)},
+                    selected = selectedItem == index,
+                    onClick = {
+                        selectedItem = index
+                        navController.navigate(screen.route)
+                    }
+                )
+            }
         }
     }) { innerPadding ->
         // TODO: create a nav graph with 3 screens
@@ -127,22 +125,8 @@ fun SecondActivityScreen() {
             modifier = Modifier.padding(innerPadding)
         ){
             composable(Screen.Home.route){ HomeScreen() }
-            composable(Screen.ScreenOne.route){ ScreenOne() }
-            composable(Screen.ScreenTwo.route){ ScreenTwo() }
+            composable(Screen.ScreenOne.route){ ScreenOneContent() }
+            composable(Screen.ScreenTwo.route){ ScreenTwoContent() }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreen() {
-    Text("Home Screen")
-}
-@Composable
-fun ScreenOne() {
-    Text("Screen One")
-}
-@Composable
-fun ScreenTwo() {
-    Text("Screen Two")
 }
