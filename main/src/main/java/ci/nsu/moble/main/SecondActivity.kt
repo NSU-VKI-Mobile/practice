@@ -1,4 +1,5 @@
 package ci.nsu.moble.main
+
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MovableContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,19 +31,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.moble.main.ui.Screens.*
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
-enum class Screen(val route: String) {
-    Home("home"),
-    ScreenOne("screen_one"),
-    ScreenTwo("screen_two")
+sealed class Screen(val route: String, val content: @Composable () -> Unit) {
+    data object Home : Screen("home", content = {HomeScreen()})
+    data object ScreenOne : Screen(route="screenOne", content = {ScreenOneContent()})
+    data object ScreenTwo : Screen(route = "screenTwo", content = {ScreenTwoContent()})
 }
+
 class SecondActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,7 +91,12 @@ fun SecondActivityScreen() {
     }, bottomBar = {
         NavigationBar {
             NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Home") },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.Home,
+                        contentDescription = "Home"
+                    )
+                },
                 label = { Text("Home") },
                 selected = selectedItem == 0,
 
@@ -107,54 +115,35 @@ fun SecondActivityScreen() {
                     navController.navigate(Screen.ScreenOne.route)
                     selectedItem = 1
                 })
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Screen Two") },
-                label = { Text("Screen Two") },
-                selected = selectedItem == 2,
-                onClick = {
-                    // TODO: navigate to screen two
-                    navController.navigate(Screen.ScreenTwo.route)
+            NavigationBarItem(icon = {
+                Icon(
+                    imageVector = Icons.Filled.Settings, contentDescription = "Screen Two"
+                )
+            }, label = { Text("Screen Two") }, selected = selectedItem == 2, onClick = {
+                // TODO: navigate to screen two
+                navController.navigate(Screen.ScreenTwo.route)
 
-                    selectedItem = 2
-                })
+                selectedItem = 2
+            })
         }
     }) { innerPadding ->
         // TODO: create a nav graph with 3 screens
         NavHost(
-            navController = navController,
-            startDestination = Screen.Home.route
+            navController = navController, startDestination = Screen.Home.route
         ) {
 
             composable(Screen.Home.route) {
-                HomeScreen(navController)
+                HomeScreen()
             }
 
             composable(Screen.ScreenOne.route) {
-                ScreenOne(navController)
+                ScreenOneContent()
             }
 
             composable(Screen.ScreenTwo.route) {
-                ScreenTwo(navController)
+                ScreenTwoContent()
             }
         }
-    }
-}
-@Composable
-fun HomeScreen(navController: NavController){
-    Column {
-        Text("Aasd", fontSize = 100.sp)
-    }
-}
-@Composable
-fun ScreenOne(navController: NavController){
-    Column {
-        Text("Первый экран", fontSize = 100.sp)
-    }
-}
-@Composable
-fun ScreenTwo(navController: NavController){
-    Column {
-        Text("Второй экран", fontSize = 100.sp)
     }
 }
 
