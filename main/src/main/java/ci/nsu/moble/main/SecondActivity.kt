@@ -38,6 +38,7 @@ import androidx.navigation.compose.composable
 import ci.nsu.moble.main.ui.Screens.HomeScreen
 import ci.nsu.moble.main.ui.Screens.ScreenOneContent
 import ci.nsu.moble.main.ui.Screens.ScreenTwoContent
+import androidx.compose.material.icons.filled.*
 
 // TODO: crate sealed class with 3 routes
 sealed class Screen(val route: String, val title: String, val icon: ImageVector){
@@ -103,7 +104,7 @@ fun SecondActivityScreen() {
                     icon = {
                         Icon(
                             imageVector = screen.icon,
-                            cotentDescription = screen.title
+                            contentDescription = screen.title
                         )
                     },
                     label = {Text(screen.title)},
