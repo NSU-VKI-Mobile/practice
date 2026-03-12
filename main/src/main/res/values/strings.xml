@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">main</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_second">SecondActivity</string>
+    <string name="app_name">Practice</string>
+    <string name="title_activity_second">Второе окно</string>
+    <string name="Home_screen">Главный экран</string>
+    <string name="first_screen">Первый экран</string>
+    <string name="second_screen">Второй экран</string>
 </resources>

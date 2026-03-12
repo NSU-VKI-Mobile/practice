@@ -1,6 +1,5 @@
 package ci.nsu.moble.main
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +21,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ci.nsu.moble.main.ui.theme.PracticeTheme
+import android.content.Intent
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.TextField
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,31 +40,29 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
+// TODO:  here is to open the second activity
 @Composable
 fun MainScreenActivity(modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
     val context = LocalContext.current
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // ДОБАВЛЕНО: TextField для ввода данных
+        // TODO:  нужно добавить  TextField
         TextField(
             value = text,
-            onValueChange = { text = it },
-            label = { Text("Введите данные для передачи") },
-            modifier = Modifier.padding(top = 32.dp)
+            onValueChange = {newText: String -> text = newText},
+            label = {Text("текст для передачи")},
+            modifier = Modifier.wrapContentSize()
         )
 
         Button(
             onClick = {
-                val intent = Intent(context, SecondActivity::class.java).apply {
-                    putExtra("text_data", text)
-                }
+                // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
+                val intent = Intent(context, SecondActivity::class.java)
+                intent.putExtra("text_data", text)
                 context.startActivity(intent)
             },
             modifier = Modifier.padding(top = 16.dp)
