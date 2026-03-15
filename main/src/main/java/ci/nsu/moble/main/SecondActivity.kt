@@ -72,74 +72,78 @@ fun SecondActivityScreen() {
         BottomNavScreen.ScreenOne,
         BottomNavScreen.ScreenTwo
     )
-
     val context = LocalContext.current
     var receivedText by remember { mutableStateOf("") }
     if (context is Activity) {
         receivedText = context.intent.getStringExtra("text_data") ?: "No text received"
     }
 
-    Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-        TopAppBar(
-            title = { Text(receivedText) },
-            navigationIcon = {
-                IconButton(onClick = {
-                    // TODO: create intent and start MainActivity
-                    if (context is Activity) {
-                        val intent = Intent(context, MainActivity::class.java)
-                        context.startActivity(intent)
-                        context.finish()
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Blue, titleContentColor = Color.White
-            )
-        )
-    }, bottomBar = {
-        NavigationBar {
-            items.forEach { screen ->
-                val selected = currentRoute == screen.route || (currentRoute == null && screen is BottomNavScreen.Home)
-                NavigationBarItem(
-                    icon = {
-                        when (screen) {
-                            BottomNavScreen.Home -> Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home"
-                            )
-                            BottomNavScreen.ScreenOne -> Icon(
-                                imageVector = Icons.Filled.List,
-                                contentDescription = "Screen One"
-                            )
-                            BottomNavScreen.ScreenTwo -> Icon(
-                                imageVector = Icons.Filled.Settings,
-                                contentDescription = "Screen Two"
-                            )
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text(receivedText) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        // TODO: create intent and start MainActivity
+                        if (context is Activity) {
+                            val intent = Intent(context, MainActivity::class.java)
+                            context.startActivity(intent)
+                            context.finish()
                         }
-                    },
-                    label = { Text(screen.label) },
-                    selected = selected,
-                    onClick = {
-                        if (currentRoute != screen.route) {
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Blue,
+                    titleContentColor = Color.White
+                )
+            )
+        },
+        bottomBar = {
+            NavigationBar {
+                items.forEach { screen ->
+                    val selected = currentRoute == screen.route || (currentRoute == null && screen is BottomNavScreen.Home)
+                    NavigationBarItem(
+                        icon = {
+                            when (screen) {
+                                BottomNavScreen.Home -> Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home"
+                                )
+                                BottomNavScreen.ScreenOne -> Icon(
+                                    imageVector = Icons.Filled.List,
+                                    contentDescription = "Screen One"
+                                )
+                                BottomNavScreen.ScreenTwo -> Icon(
+                                    imageVector = Icons.Filled.Settings,
+                                    contentDescription = "Screen Two"
+                                )
+                            }
+                        },
+                        label = { Text(screen.label) },
+                        selected = selected,
+                        onClick = {
+                            if (currentRoute != screen.route) {
+                                navController.navigate(screen.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
-    }) { innerPadding ->
-        // TODO: create a nav graph with 3 screens
+    ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = BottomNavScreen.Home.route,
