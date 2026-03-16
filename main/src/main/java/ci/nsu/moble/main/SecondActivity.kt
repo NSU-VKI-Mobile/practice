@@ -95,7 +95,6 @@ fun SecondActivityScreen() {
                 icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Home") },
                 label = { Text("Home") },
                 selected = selectedItem == 0,
-
                 onClick = {
                     // TODO: navigate to home screen by navController
                     selectedItem = 0
