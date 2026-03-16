@@ -99,6 +99,11 @@ fun SecondActivityScreen() {
                 onClick = {
                     // TODO: navigate to home screen by navController
                     selectedItem = 0
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(navController.graph.startDestinationId) {saveState = true}
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 })
             NavigationBarItem(
                 icon = { Icon(imageVector = Icons.Filled.List, contentDescription = "Screen One") },
@@ -108,6 +113,11 @@ fun SecondActivityScreen() {
                 onClick = {
                     // TODO: navigate to screen one
                     selectedItem = 1
+                    navController.navigate(Screen.One.route) {
+                        popUpTo(navController.graph.startDestinationId) {saveState = true}
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 })
             NavigationBarItem(
                 icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Screen Two") },
@@ -116,15 +126,46 @@ fun SecondActivityScreen() {
                 onClick = {
                     // TODO: navigate to screen two
                     selectedItem = 2
+                    navController.navigate(Screen.Two.route) {
+                        popUpTo(navController.graph.startDestinationId) {saveState = true}
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 })
         }
     }) { innerPadding ->
         // TODO: create a nav graph with 3 screens
-        // NavHost() {}
-        // composable(Screen.Home.route) { HomeScreen() }
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(Screen.Home.route) { Home() }
+            composable(Screen.One.route) { One() }
+            composable(Screen.Two.route) { Two() }
+        }
     }
 }
 
+@Composable
+fun Home() {
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val name = activity?.intent?.getStringExtra("TEXT") ?: "Нет данных"
+    Text(name)
+
+}
+@Composable
+fun One() {
+    Text("One")
+
+}
+@Composable
+fun Two() {
+
+    Text("Two")
+
+}
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
