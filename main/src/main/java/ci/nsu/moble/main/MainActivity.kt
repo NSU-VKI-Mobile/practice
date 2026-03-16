@@ -54,6 +54,9 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         Button(
             onClick = {
                 // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
+                val intent = Intent(context, SecondActivity::class.java)
+                    intent.putExtra("TEXT", text.value)
+                context.startActivity(intent)
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {
