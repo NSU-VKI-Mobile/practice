@@ -60,7 +60,8 @@ class SecondActivity : ComponentActivity() {
 @Composable
 fun SecondActivityScreen() {
     // todo: create nav controller
-    var selectedItem by remember { mutableStateOf(0) }
+    val navController = rememberNavController()
+    var selectedItem by remember { mutableIntStateOf(0) }
     val context = LocalContext.current
     var receivedText by remember { mutableStateOf("") }
     if (context is Activity) {
