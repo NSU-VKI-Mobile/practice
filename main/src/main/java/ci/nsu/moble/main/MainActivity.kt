@@ -1,5 +1,6 @@
 package ci.nsu.moble.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
 // TODO:  here is to open the second activity
 @Composable
 fun MainScreenActivity(modifier: Modifier = Modifier) {
-    var text by remember { mutableStateOf("") }
+    var text = remember { mutableStateOf("") }
     val context = LocalContext.current
 
     Column(
@@ -48,7 +50,7 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // TODO:  нужно добавить  TextField
-        Text(text="qwerty")
+        TextField(text.value, onValueChange = {newText -> text.value = newText})
         Button(
             onClick = {
                 // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
