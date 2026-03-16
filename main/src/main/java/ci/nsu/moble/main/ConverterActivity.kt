@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -22,6 +23,7 @@ import ci.nsu.mobile.main.navigation.ConverterRoutes
 import ci.nsu.mobile.main.ui.screens.CelsiusToFahrenheitScreen
 import ci.nsu.mobile.main.ui.screens.FahrenheitToCelsiusScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
+import ci.nsu.mobile.main.viewmodel.TemperatureViewModel
 
 class ConverterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +41,12 @@ class ConverterActivity : ComponentActivity() {
 @Composable
 fun ConverterScreen() {
     val navController = rememberNavController()
+
+
+    val viewModel: TemperatureViewModel = viewModel()
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
-    // Определяем текущий экран
     val currentScreen = when (currentRoute) {
         ConverterRoutes.CelsiusToFahrenheit.route -> ConverterRoutes.CelsiusToFahrenheit
         ConverterRoutes.FahrenheitToCelsius.route -> ConverterRoutes.FahrenheitToCelsius
@@ -109,10 +113,12 @@ fun ConverterScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(ConverterRoutes.CelsiusToFahrenheit.route) {
-                CelsiusToFahrenheitScreen()
+
+                CelsiusToFahrenheitScreen(viewModel = viewModel)
             }
             composable(ConverterRoutes.FahrenheitToCelsius.route) {
-                FahrenheitToCelsiusScreen()
+
+                FahrenheitToCelsiusScreen(viewModel = viewModel)
             }
         }
     }

@@ -13,7 +13,7 @@ import ci.nsu.mobile.main.viewmodel.TemperatureViewModel
 
 @Composable
 fun FahrenheitToCelsiusScreen(
-    viewModel: TemperatureViewModel = viewModel()
+    viewModel: TemperatureViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -44,10 +44,10 @@ fun FahrenheitToCelsiusScreen(
             onValueChange = { viewModel.onFahrenheitChanged(it) },
             label = { Text("Введите °F") },
             placeholder = { Text("Например: 77") },
-            isError = uiState.fahrenheitError != null,
+            isError = !uiState.isFahrenheitValid && uiState.fahrenheit.isNotBlank(),
             supportingText = {
-                if (uiState.fahrenheitError != null) {
-                    Text(uiState.fahrenheitError!!)
+                if (!uiState.isFahrenheitValid && uiState.fahrenheit.isNotBlank()) {
+                    Text("Введите число")
                 }
             },
             modifier = Modifier.fillMaxWidth(),
