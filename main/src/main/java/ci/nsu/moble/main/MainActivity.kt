@@ -48,6 +48,7 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // TODO:  нужно добавить  TextField
+        Text(text="qwerty")
         Button(
             onClick = {
                 // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
