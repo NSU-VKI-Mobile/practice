@@ -73,6 +73,8 @@ fun SecondActivityScreen() {
             title = { Text(receivedText) }, navigationIcon = {
                 IconButton(onClick = {
                     // TODO: create intent and start MainActivity
+                    val intent = Intent(context, MainActivity::class.java)
+                    context.startActivity(intent)
                     if (context is Activity) {
                         context.finish()
                     }
