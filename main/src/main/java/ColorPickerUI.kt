@@ -1,3 +1,4 @@
+import android.widget.NumberPicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,30 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 
+val colorCollection = mapOf(
+    Color.Red to Color(0xFFFFEBEE),
+    Color.Green to Color(0x8098FB98),
+    Color.Blue to Color(0x806495ED)
+)
+
+
+
+@Composable
+fun OpSlider(value: Int,
+             onValueChange: (Float) -> Unit,
+             color : Color) {
+    Slider(
+        value = value.toFloat(),
+        valueRange = 0f..255f,
+        onValueChange = onValueChange,
+        colors = SliderDefaults.colors(
+            thumbColor = color,
+            inactiveTickColor = colorCollection.getOrDefault(color, Color.Gray),
+            activeTrackColor = color
+        )
+    )
+}
+
 @Composable
 fun MyScreen(
     viewModel: ColorPickerViewModel = viewModel()
@@ -30,38 +55,11 @@ fun MyScreen(
     Column(modifier = Modifier.fillMaxSize().padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
-        Slider(
-            value = uiState.red.toFloat(),
-            valueRange = 0f..255f,
-            onValueChange = { viewModel.onRedChanged(it)},
-            colors = SliderDefaults.colors(
-                thumbColor = Color.Red,
-                inactiveTrackColor = Color(0xFFFFEBEE),
-                activeTrackColor = Color.Red
-            )
-        )
+        OpSlider(uiState.red, {viewModel.onRedChanged(it)}, Color.Red)
         Text(text = "${uiState.red}")
-        Slider(
-            value = uiState.green.toFloat(),
-            valueRange = 0f..255f,
-            onValueChange = {viewModel.onGreenChanged(it)},
-            colors = SliderDefaults.colors(
-                thumbColor = Color.Green,
-                inactiveTrackColor = Color(0x8098FB98),
-                activeTrackColor = Color.Green
-            )
-        )
+        OpSlider(uiState.green, {viewModel.onGreenChanged(it)}, Color.Green)
         Text(text = "${uiState.green}")
-        Slider(
-            value = uiState.blue.toFloat(),
-            valueRange = 0f..255f,
-            onValueChange = {viewModel.onBlueChanged(it)},
-            colors = SliderDefaults.colors(
-                thumbColor = Color.Blue,
-                inactiveTrackColor = Color(0x806495ED),
-                activeTrackColor = Color.Blue
-            )
-        )
+        OpSlider(uiState.blue, {viewModel.onBlueChanged(it)}, Color.Blue)
         Text(text = "${uiState.blue}")
         Box(
             modifier = Modifier.fillMaxWidth().height(50.dp).background(uiState.pickedColor)
