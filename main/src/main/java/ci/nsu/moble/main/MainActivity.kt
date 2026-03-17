@@ -21,6 +21,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ci.nsu.moble.main.ui.theme.PracticeTheme
+import android.content.Intent
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.TextField
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,17 +49,34 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(all = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // TODO:  нужно добавить  TextField
+        Text("Введите текст для передачи на второй экран")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text("Текст") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         Button(
             onClick = {
-                // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
-            },
-            modifier = Modifier.padding(top = 16.dp)
+                if (text.isNotBlank()) {
+                    val intent = Intent(context, SecondActivity::class.java)
+                    intent.putExtra("text_data", text)
+                    context.startActivity(intent)
+                }
+            }
         ) {
-            Text("Open SecondActivity")
+            Text("Открыть SecondActivity")
         }
     }
 }
