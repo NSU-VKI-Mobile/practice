@@ -21,6 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ci.nsu.moble.main.ui.theme.PracticeTheme
+import android.content.Intent
+import androidx.compose.material3.TextField
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,10 +49,19 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        TextField(
+            value = text,
+            label = { Text("") },
+            onValueChange = { text = it }
+        )
         // TODO:  нужно добавить  TextField
         Button(
             onClick = {
                 // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
+                val intent = Intent(context, SecondActivity::class.java).apply { putExtra("just_message", text) }
+                context.startActivity(intent)
+
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {
