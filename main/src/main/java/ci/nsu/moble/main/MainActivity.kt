@@ -1,47 +1,38 @@
 package ci.nsu.moble.main
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import ci.nsu.moble.main.ui.theme.PracticeTheme
 
-class MainActivity : ComponentActivity() {
+
+
+
+import android.graphics.Color
+import android.os.Bundle
+import android.view.View
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var selectedColorText: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            PracticeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
+        setContentView(R.layout.activity_main)
+
+        selectedColorText = findViewById(R.id.selectedColorText)
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    fun onColorClick(view: View) {
+        val colorName = (view as TextView).text.toString()
+        selectedColorText.text = colorName
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PracticeTheme {
-        Greeting("Android")
+        when (colorName) {
+            "Red" -> selectedColorText.setTextColor(Color.RED)
+            "Orange" -> selectedColorText.setTextColor(Color.rgb(255, 165, 0))
+            "Yellow" -> selectedColorText.setTextColor(Color.YELLOW)
+            "Green" -> selectedColorText.setTextColor(Color.GREEN)
+            "Blue" -> selectedColorText.setTextColor(Color.BLUE)
+            "Indigo" -> selectedColorText.setTextColor(Color.rgb(75, 0, 130))
+            "Violet" -> selectedColorText.setTextColor(Color.rgb(238, 130, 238))
+        }
     }
 }

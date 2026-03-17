@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#FFFFFF"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="main"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="мен"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medium Phone API 36.0"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:id="@+id/selectedColorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Green"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#4CAF50"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Применить цвет?"
+        android:textSize="16sp"
+        android:textColor="#999999"
+        android:layout_marginBottom="32dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0"
+        android:layout_marginBottom="8dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/colorRed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Red"
+            android:textSize="18sp"
+            android:textColor="#000000"
+            android:paddingVertical="12dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="onColorClick"/>
+
+        <TextView
+            android:id="@+id/colorOrange"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Orange"
+            android:textSize="18sp"
+            android:textColor="#000000"
+            android:paddingVertical="12dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="onColorClick"/>
+
+        <TextView
+            android:id="@+id/colorYellow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Yellow"
+            android:textSize="18sp"
+            android:textColor="#000000"
+            android:paddingVertical="12dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="onColorClick"/>
+
+        <TextView
+            android:id="@+id/colorGreen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Green"
+            android:textSize="18sp"
+            android:textColor="#000000"
+            android:paddingVertical="12dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="onColorClick"/>
+
+        <TextView
+            android:id="@+id/colorBlue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Blue"
+            android:textSize="18sp"
+            android:textColor="#000000"
+            android:paddingVertical="12dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="onColorClick"/>
+
+        <TextView
+            android:id="@+id/colorIndigo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Indigo"
+            android:textSize="18sp"
+            android:textColor="#000000"
+            android:paddingVertical="12dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="onColorClick"/>
+
+        <TextView
+            android:id="@+id/colorViolet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Violet"
+            android:textSize="18sp"
+            android:textColor="#000000"
+            android:paddingVertical="12dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="onColorClick"/>
+    </LinearLayout>
+
+</LinearLayout>
