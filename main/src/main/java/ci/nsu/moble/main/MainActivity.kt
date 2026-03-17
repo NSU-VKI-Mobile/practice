@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 // TODO:  here is to open the second activity
 @Composable
 fun MainScreenActivity(modifier: Modifier = Modifier) {
