@@ -9,11 +9,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Draft">
         <activity
+            android:name=".MainActivity3"
+            android:exported="false"
+            android:label="@string/title_activity_main3"
+            android:theme="@style/Theme.Draft" />
+        <activity
             android:name=".MainActivity2"
             android:exported="true"
             android:label="@string/title_activity_main2"
             android:theme="@style/Theme.Draft">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,8 +26,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false"
-            />
+            android:exported="false" />
     </application>
 
 </manifest>
