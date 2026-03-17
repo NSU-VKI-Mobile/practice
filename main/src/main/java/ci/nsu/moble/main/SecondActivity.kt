@@ -5,7 +5,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
@@ -25,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -51,9 +54,12 @@ fun SecondActivityScreen() {
     // todo: create nav controller
     var selectedItem by remember { mutableStateOf(0) }
     val context = LocalContext.current
-    var receivedText by remember { mutableStateOf("") }
-    if (context is Activity) {
-        receivedText = context.intent.getStringExtra("text_data") ?: "No text received"
+//    var receivedText by remember { mutableStateOf("") }
+//    if (context is Activity) {
+//        receivedText = context.intent.getStringExtra("text_data") ?: "No text received"
+//    }
+    val receivedText = remember {
+        (context as? Activity)?.intent?.getStringExtra("text_data") ?: "No text received"
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
@@ -106,6 +112,16 @@ fun SecondActivityScreen() {
         }
     }) { innerPadding ->
         // TODO: create a nav graph with 3 screens
+        Box(
+            modifier = Modifier.padding(innerPadding).fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            when (selectedItem) {
+                0 -> Text("Home Screen\n\nПереданный текст: $receivedText")
+                1 -> Text("Screen One\n\nПереданный текст: $receivedText")
+                2 -> Text("Screen Two\n\nПереданный текст: $receivedText")
+            }
+        }
         // NavHost() {}
         // composable(Screen.Home.route) { HomeScreen() }
     }
