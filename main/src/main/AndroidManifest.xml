@@ -9,9 +9,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Draft">
         <activity
-            android:name=".MainActivity"
+            android:name=".MainActivity2"
             android:exported="true"
-            android:label="@string/title_activity_main"
+            android:label="@string/title_activity_main2"
             android:theme="@style/Theme.Draft">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
