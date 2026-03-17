@@ -2,4 +2,8 @@
     <string name="app_name">main</string>
     <string name="title_activity_main2">MainActivity2</string>
     <string name="title_activity_main3">MainActivity3</string>
+    <string name="choose_entree">Выберите основное блюдо</string>
+    <string name="choose_side_dish">Выберите гарнир</string>
+    <string name="choose_accompaniment">Выберите дополнение</string>
+    <string name="order_checkout">Оформление заказа</string>
 </resources>
