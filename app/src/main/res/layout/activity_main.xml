@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="24dp">
+
+    <!-- Поле ввода с подсказкой Green -->
+    <EditText
+        android:id="@+id/etColorInput"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:hint="Green"
+        android:textSize="16sp"
+        android:padding="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="@android:drawable/editbox_background"/>
+
+    <!-- Кнопка "Применить цвет" -->
+    <Button
+        android:id="@+id/btnApplyColor"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="Применить цвет"
+        android:textSize="16sp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_marginBottom="30dp"/>
+
+    <!-- Заголовок для палитры -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Red"
+        android:textSize="16sp"
+        android:textColor="#FF0000"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Orange"
+        android:textSize="16sp"
+        android:textColor="#FFA500"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Yellow"
+        android:textSize="16sp"
+        android:textColor="#FFFF00"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Green"
+        android:textSize="16sp"
+        android:textColor="#00FF00"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Blue"
+        android:textSize="16sp"
+        android:textColor="#0000FF"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Indigo"
+        android:textSize="16sp"
+        android:textColor="#4B0082"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Violet"
+        android:textSize="16sp"
+        android:textColor="#EE82EE"/>
+
+</LinearLayout>

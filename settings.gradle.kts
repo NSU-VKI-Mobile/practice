@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "practice"
-include(":main")
+rootProject.name = "ColorSearchApp"
+include(":app")
