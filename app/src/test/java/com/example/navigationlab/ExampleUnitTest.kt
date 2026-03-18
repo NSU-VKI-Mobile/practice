@@ -1,4 +1,4 @@
-package ci.nsu.moble.main
+package com.example.navigationlab
 
 import org.junit.Test
 

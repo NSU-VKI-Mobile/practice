@@ -1,7 +1,7 @@
-package ci.nsu.moble.main
+package com.example.navigationlab
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.ext.junit.runners.AndroidJUnit4
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("ci.nsu.moble.main", appContext.packageName)
+        assertEquals("com.example.navigationlab", appContext.packageName)
     }
 }
