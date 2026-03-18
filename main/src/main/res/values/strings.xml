@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="title_activity_task2">Task2Activity</string>
 </resources>
