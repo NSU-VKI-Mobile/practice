@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,10 +48,20 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        TextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text("Введите текст") },
+            modifier = Modifier.padding(top = 16.dp)
+        )
         // TODO:  нужно добавить  TextField
         Button(
             onClick = {
                 // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
+                val intent = android.content.Intent(context, SecondActivity::class.java).apply {
+                    putExtra("text_data", text)
+                }
+                context.startActivity(intent)
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {
