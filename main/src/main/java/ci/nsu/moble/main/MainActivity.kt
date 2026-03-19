@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-// TODO:  here is to open the second activity
+
 @Composable
 fun MainScreenActivity(modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
@@ -47,10 +48,18 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // TODO:  нужно добавить  TextField
+        androidx.compose.material3.OutlinedTextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text("Введите сообщение") },
+            modifier = Modifier.fillMaxWidth()
+        )
         Button(
             onClick = {
-                // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
+                val intent = android.content.Intent(context, SecondActivity::class.java).apply {
+                    putExtra("text_data", text)
+                }
+                context.startActivity(intent)
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {
