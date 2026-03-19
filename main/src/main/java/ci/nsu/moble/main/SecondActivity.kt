@@ -1,5 +1,8 @@
 package ci.nsu.moble.main
 
+import ci.nsu.moble.main.ui.Screens.HomeScreen
+import ci.nsu.moble.main.ui.Screens.ScreenOneContent
+import ci.nsu.moble.main.ui.Screens.ScreenTwoContent
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -177,98 +180,21 @@ fun SecondActivityScreen() {
     ) { innerPadding ->
 
         NavHost(
-
             navController = navController,
-
             startDestination = Screen.Home.route,
-
             modifier = Modifier.padding(innerPadding)
-
         ) {
-
             composable(Screen.Home.route) {
-
-                HomeScreen()
-
+                HomeScreen()  // ← ИСПОЛЬЗУЕМ ИМПОРТИРОВАННУЮ ФУНКЦИЮ
             }
 
             composable(Screen.ScreenOne.route) {
-
-                ScreenOne()
-
+                ScreenOneContent()  // ← ИСПОЛЬЗУЕМ ИМПОРТИРОВАННУЮ ФУНКЦИЮ
             }
 
             composable(Screen.ScreenTwo.route) {
-
-                ScreenTwo()
-
+                ScreenTwoContent()  // ← ИСПОЛЬЗУЕМ ИМПОРТИРОВАННУЮ ФУНКЦИЮ
             }
-
         }
-
     }
-
-}
-
-@Composable
-fun HomeScreen() {
-
-    Box(
-
-        modifier = Modifier.fillMaxSize(),
-
-        contentAlignment = androidx.compose.ui.Alignment.Center
-
-    ) {
-
-        Text("Home Screen")
-
     }
-
-}
-
-@Composable
-fun ScreenOne() {
-
-    Box(
-
-        modifier = Modifier.fillMaxSize(),
-
-        contentAlignment = androidx.compose.ui.Alignment.Center
-
-    ) {
-
-        Text("Screen One")
-
-    }
-
-}
-
-@Composable
-fun ScreenTwo() {
-
-    Box(
-
-        modifier = Modifier.fillMaxSize(),
-
-        contentAlignment = androidx.compose.ui.Alignment.Center
-
-    ) {
-
-        Text("Screen Two")
-
-    }
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SecondPreview() {
-
-    PracticeTheme {
-
-        SecondActivityScreen()
-
-    }
-
-}
