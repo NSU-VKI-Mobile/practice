@@ -1,5 +1,0 @@
-<resources>
-    <string name="app_name">main</string>
-    <string name="greeting_text">Hello from Fragment!</string>
-    <string name="button_label">Click me</string>
-</resources>
