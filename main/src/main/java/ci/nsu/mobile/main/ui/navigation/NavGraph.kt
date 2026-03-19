@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.main.ui.calculation.CalculationScreen
 import ci.nsu.mobile.main.ui.main.MainScreen
 import ci.nsu.mobile.main.ui.main.MainViewModel
 
@@ -14,30 +15,45 @@ fun AppNavGraph() {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Main.route
+        startDestination = ScreenList.Main.route
     ) {
-        composable(Screen.Main.route) {
+        composable(ScreenList.Main.route) {
             val viewModel: MainViewModel = viewModel()
             MainScreen(
                 viewModel = viewModel,
                 onNavigateToCalculation = {
-                    navController.navigate(Screen.Calculation.route)
+                    navController.navigate(ScreenList.Calculation.route) {
+                        launchSingleTop = true
+                    }
                 },
                 onNavigateToHistory = {
-                    navController.navigate(Screen.History.route)
+                    navController.navigate(ScreenList.History.route){
+                        launchSingleTop = true
+                    }
+                }
+            )
+
+
+        }
+
+        composable(ScreenList.Calculation.route) {
+            CalculationScreen(
+                onNavigateBack = {
+                    navController.navigateUp()
+                },
+                onNavigateToAdditional = {
+                    navController.navigate(ScreenList.Additional.route) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
 
-        composable(Screen.Calculation.route) {
-            // Здесь будет CalculationScreen
-        }
-
-        composable(Screen.Additional.route) {
+        composable(ScreenList.Additional.route) {
             // Здесь будет AdditionalScreen
         }
 
-        composable(Screen.History.route) {
+        composable(ScreenList.History.route) {
             // Здесь будет HistoryScreen
         }
     }

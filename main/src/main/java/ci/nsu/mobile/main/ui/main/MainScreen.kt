@@ -32,7 +32,7 @@ fun MainScreen(
         Button(onClick = { /*TODO: навигация к истории*/ }) {
             Text("История вкладов")
         }
-        Button(onClick = { /*TODO: навигация к вкладам*/ }) {
+        Button(onClick = onNavigateToCalculation) {
             Text("Рассчитать вклад")
         }
         Button(onClick = {
