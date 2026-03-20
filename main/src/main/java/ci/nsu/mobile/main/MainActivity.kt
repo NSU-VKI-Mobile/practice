@@ -86,7 +86,7 @@ fun MainScreen() {
                 HomeScreen(innerPadding)
             }
             composable(State.Second.route) {
-                SecondScreen("privet")
+                SecondScreen("page2")
             }
         }
     }

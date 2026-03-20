@@ -30,7 +30,6 @@ class SecondActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         val message = intent.getStringExtra("EXTRA_MESSAGE") ?: "Нет сообщения"
-
         setContent {
                 SecondScreen(message)
         }
