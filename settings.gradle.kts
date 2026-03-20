@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "practice"
-include(":main")
+rootProject.name = "2307a2-sheydaev-tusk3"
+include(":app")
+ 

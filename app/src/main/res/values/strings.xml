@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lunch Tray</string>
+    <string name="choose_entree">Выберите основное блюдо</string>
+    <string name="choose_side_dish">Выберите гарнир</string>
+    <string name="choose_accompaniment">Выберите дополнение</string>
+    <string name="order_checkout">Оформление заказа</string>
+    <string name="back_button">Назад</string>
+    <string name="start_order">Начать заказ</string>
+    <string name="cancel">Отмена</string>
+    <string name="next">Далее</string>
+    <string name="submit_order">Отправить заказ</string>
+    <string name="home">Главная</string>
+    <string name="menu">Меню</string>
+    <string name="cart">Корзина</string>
+    <string name="profile">Профиль</string>
+    <string name="welcome_message">Добро пожаловать в Lunch Tray!</string>
+    <string name="received_data">Полученные данные: %s</string>
+    <string name="return_to_main">Вернуться в MainActivity</string>
+    <string name="go_to_second">Перейти в SecondActivity (Intent)</string>
+</resources>
