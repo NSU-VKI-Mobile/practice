@@ -1,4 +1,4 @@
-package com.example.navigationlab
+package com.example.mynavigationapp
 
 import org.junit.Test
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item
+        android:id="@id/homeFragment"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="Главная" />
+
+    <item
+        android:id="@id/profileFragment"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Профиль" />
+
+    <item
+        android:id="@id/settingsFragment"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="Настройки" />
+
+</menu>
