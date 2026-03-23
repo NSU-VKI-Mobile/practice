@@ -1,4 +1,4 @@
-package ci.nsu.moble.main
+package ci.nsu.mobile.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

@@ -1,4 +1,4 @@
-package ci.nsu.moble.main
+package ci.nsu.mobile.main
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -11,6 +11,6 @@ class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("ci.nsu.moble.main", appContext.packageName)
+        assertEquals("ci.nsu.mobile.main", appContext.packageName)
     }
 }

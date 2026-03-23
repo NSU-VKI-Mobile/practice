@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "ci.nsu.moble.main"
-    compileSdk = 35
+    namespace = "ci.nsu.mobile.main"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "ci.nsu.moble.main"
+        applicationId = "ci.nsu.mobile.main"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
