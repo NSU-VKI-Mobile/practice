@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Счётчик</string>
+    <string name="counter_title">Счётчик</string>
+    <string name="counter_value">Текущее значение: %1$d</string>
+    <string name="btn_plus">+</string>
+    <string name="btn_minus">−</string>
+    <string name="btn_reset">Сброс</string>
+    <string name="history_title">История (последние 5 действий)</string>
+</resources>
