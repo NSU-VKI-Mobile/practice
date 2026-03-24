@@ -2,7 +2,6 @@
 
 package ci.nsu.mobile.main
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,6 +21,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PracticeTheme {
+                val context = LocalContext.current
                 Scaffold(modifier = Modifier.fillMaxSize(), topBar =
                     {
                         TopAppBar(
@@ -62,9 +63,8 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally, // центрируем по горизонтали
                         verticalArrangement = Arrangement.Center) {
                         Button(onClick = {
-
-                            val intent = Intent(this, MainInputActivity::class.java)
-                            startActivity(intent)
+                            val intent = Intent(context, MainInputActivity::class.java)
+                            context.startActivity(intent)
                         }, modifier = Modifier.padding(innerPadding)) { Text("Рассчитать") }
                         Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("История рассчётов") }
                         Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("Закрыть приложение") }

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,9 +34,9 @@ class MainInputActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize(), topBar =
                     {
                         TopAppBar(
-                            title = { Text("Расчёт вкладов") },          // Заголовок (Composable)
-                            navigationIcon = {                       // Иконка слева (например, меню или назад)
-                                IconButton(onClick = { /* обработчик */ }) {
+                            title = { Text("Расчёт вкладов") },
+                            navigationIcon = {
+                                IconButton(onClick = { finish() }) {
                                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
                                 }
                             },
@@ -63,9 +62,9 @@ class MainInputActivity : ComponentActivity() {
                         .padding(innerPadding),
                         horizontalAlignment = Alignment.CenterHorizontally, // центрируем по горизонтали
                         verticalArrangement = Arrangement.Center) {
-                        Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("Рассчитать") }
-                        Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("История рассчётов") }
-                        Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("Закрыть приложение") }
+//                        Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("Рассчитать") }
+//                        Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("История рассчётов") }
+//                        Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("Закрыть приложение") }
                     }
                 }
             }
