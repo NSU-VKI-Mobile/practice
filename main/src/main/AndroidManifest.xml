@@ -9,6 +9,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Draft">
         <activity
+            android:name=".SecondInputActivity"
+            android:exported="false"
+            android:label="@string/title_activity_second_input"
+            android:theme="@style/Theme.Draft" />
+        <activity
             android:name=".MainInputActivity"
             android:exported="false"
             android:label="@string/title_activity_main_input"
