@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ci.nsu.mobile.main
+package ci.nsu.mobile.main.Views
 
 import android.content.Intent
 import android.os.Bundle
@@ -22,10 +22,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import ci.nsu.mobile.main.ViewModels.DepositViewModel
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val viewModel : DepositViewModel = viewModel()
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {

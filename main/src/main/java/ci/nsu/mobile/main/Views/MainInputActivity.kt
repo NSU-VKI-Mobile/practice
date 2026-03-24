@@ -1,7 +1,8 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ci.nsu.mobile.main
+package ci.nsu.mobile.main.Views
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,24 +14,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.text.isDigitsOnly
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
-class SecondInputActivity : ComponentActivity() {
+class MainInputActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             PracticeTheme {
+                val context = LocalContext.current
                 Scaffold(modifier = Modifier.fillMaxSize(), topBar =
                     {
                         TopAppBar(
@@ -63,10 +74,31 @@ class SecondInputActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally, // центрируем по горизонтали
                         verticalArrangement = Arrangement.Center) {
 
-                    }
-                }
+                        EditTextComposable("Стартовый взнос")
+                        EditTextComposable("Срок вклада в месяцах")
 
+                        Button(onClick = {
+                            val intent = Intent(context, SecondInputActivity::class.java)
+                            context.startActivity(intent)
+                        }) { Text("Далее") }
+                    }
                 }
             }
         }
+
+
+    }
+    @Composable
+    fun EditTextComposable(labelText: String){
+        var text by remember { mutableStateOf("")}
+
+        OutlinedTextField(
+            value = text,
+            onValueChange = { newText ->
+                if (newText.isDigitsOnly())
+                    text = newText
+            },
+            label = { Text(labelText) }
+        )
+    }
     }

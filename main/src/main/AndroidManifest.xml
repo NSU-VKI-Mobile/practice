@@ -9,17 +9,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Draft">
         <activity
-            android:name=".SecondInputActivity"
+            android:name=".Views.SecondInputActivity"
             android:exported="false"
             android:label="@string/title_activity_second_input"
             android:theme="@style/Theme.Draft" />
         <activity
-            android:name=".MainInputActivity"
+            android:name=".Views.MainInputActivity"
             android:exported="false"
             android:label="@string/title_activity_main_input"
             android:theme="@style/Theme.Draft" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Views.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.Draft">
