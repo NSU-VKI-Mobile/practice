@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="counter_title">Счёт: %d</string>
+    <string name="button_decrement">-</string>
+    <string name="button_reset">Сброс</string>
+    <string name="button_increment">+</string>
+    <string name="history_title">История действий:</string>
 </resources>
