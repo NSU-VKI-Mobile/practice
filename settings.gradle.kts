@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "practice"
-include(":main")
+rootProject.name = "Task_2"
+include(":app")
+ 
