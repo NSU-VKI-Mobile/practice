@@ -6,10 +6,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-data class MyUiState(
-    val a: String
-)
-
 data class ShoppingItem(
     val id: Int,
     val name: String,
@@ -59,6 +55,8 @@ class ShoppingViewModel : ViewModel() {
     }
 
     fun deleteItem(itemId: Int) {
-        // TODO: реализовать
+        _uiState.update { currentState ->
+            currentState.copy(items = currentState.items.filter { item -> item.id != itemId })
+        }
     }
 }
