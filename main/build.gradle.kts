@@ -41,7 +41,7 @@ android {
 
 dependencies {
 
-    implementation("com.android.support:appcompat-v7:28.0.0")
+    implementation(libs.appcompat.v7)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -56,4 +56,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Для работы с ViewModel в Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+    // Для связи UI с жизненным циклом (collectAsStateWithLifecycle)
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.0")
 }
