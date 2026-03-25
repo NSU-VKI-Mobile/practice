@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.moble.main.ui.theme.PracticeTheme
+import androidx.compose.ui.graphics.Color as c
 
 class MainActivity : ComponentActivity() {
     private val viewModel: ShoppingViewModel by viewModels()
@@ -80,7 +81,11 @@ fun MyScreen(
                 },
             modifier = Modifier
                 .height(height = 48.dp)
-                .fillMaxWidth()){
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF006400)
+            )
+            ){
             Text(text = "Добавить")
         }
         Spacer(modifier = Modifier.height(32.dp))
@@ -89,12 +94,13 @@ fun MyScreen(
                 item ->
                 Surface (
                     shape = RoundedCornerShape(16.dp),
-                    color = Gray
+                    color = Color(0xFFDCDCDC),
+                    modifier = Modifier.padding(4.dp)
                 ){
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(12.dp),
+                            .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ){
@@ -112,7 +118,10 @@ fun MyScreen(
                                 modifier = Modifier
                                     .height(height = 36.dp)
                                     .width(128.dp)
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF8B0000)
+                                )
                             ) {
                                 Text(text = "Удалить")
                             }
