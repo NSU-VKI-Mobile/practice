@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.screen
+package ci.nsu.mobile.main.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
