@@ -13,14 +13,30 @@ class TemperatureViewModel : ViewModel() {
     fun onCelsiusChanged(newCelsius: String) {
         _uiState.update { currentState ->
             val nextState = currentState.copy(celsius = newCelsius)
-            nextState.copy(fahrenheit = if (nextState.isCelsiusValid) nextState.convertedToFahrenheit else "")
+
+            val cDegree = nextState.celsiusDouble
+
+            if (cDegree != null) {
+                val fResult = cDegree * 9 / 5 + 32
+                nextState.copy(fahrenheit = "%.2f".format(fResult))
+            } else {
+                nextState.copy(fahrenheit = "")
+            }
         }
     }
 
-    fun onFahrenheitChanged(newFahrenheit: String) {
+    fun onFahrenheitChanged(newValue: String) {
         _uiState.update { currentState ->
-            val nextState = currentState.copy(fahrenheit = newFahrenheit)
-            nextState.copy(celsius = if (nextState.isFahrenheitValid) nextState.convertedToCelsius else "")
+            val nextState = currentState.copy(fahrenheit = newValue)
+
+            val fDegree = nextState.fahrenheitDouble
+
+            if (fDegree != null) {
+                val cResult = (fDegree - 32) * 5 / 9
+                nextState.copy(celsius = "%.2f".format(cResult))
+            } else {
+                nextState.copy(celsius = "")
+            }
         }
     }
 }
