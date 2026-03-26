@@ -39,4 +39,8 @@ class TemperatureViewModel : ViewModel() {
             }
         }
     }
+
+    fun toggleDirection() {
+        _uiState.update { it.copy(isCelsiusEntry = !it.isCelsiusEntry) }
+    }
 }

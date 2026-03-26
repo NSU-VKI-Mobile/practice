@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -52,24 +53,41 @@ fun TemperatureScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        OutlinedTextField(
-            value = uiState.celsius,
-            onValueChange = { viewModel.onCelsiusChanged(it) },
-            label = { Text("Градусы Цельсия") },
-            isError = !uiState.isCelsiusValid,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+        val fields = listOf(
+            @Composable {
+                OutlinedTextField(
+                    value = uiState.celsius,
+                    onValueChange = { viewModel.onCelsiusChanged(it) },
+                    label = { Text("Градусы Цельсия") },
+                    isError = !uiState.isCelsiusValid,
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    readOnly = !uiState.isCelsiusEntry
+                )
+            },
+            @Composable {
+                OutlinedTextField(
+                    value = uiState.fahrenheit,
+                    onValueChange = { viewModel.onFahrenheitChanged(it) },
+                    label = { Text("Градусы Фаренгейта") },
+                    isError = !uiState.isFahrenheitValid,
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    readOnly = uiState.isCelsiusEntry
+                )
+            }
         )
+
+        if (uiState.isCelsiusEntry) fields[0]() else fields[1]()
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = uiState.fahrenheit,
-            onValueChange = { viewModel.onFahrenheitChanged(it) },
-            label = { Text("Градусы Фаренгейта") },
-            isError = !uiState.isFahrenheitValid,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
+        Button(onClick = { viewModel.toggleDirection() }) {
+            Text("Поменять местами")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (uiState.isCelsiusEntry) fields[1]() else fields[0]()
     }
 }
