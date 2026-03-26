@@ -57,7 +57,8 @@ fun TemperatureScreen(
             onValueChange = { viewModel.onCelsiusChanged(it) },
             label = { Text("Градусы Цельсия") },
             isError = !uiState.isCelsiusValid,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -67,7 +68,8 @@ fun TemperatureScreen(
             onValueChange = { viewModel.onFahrenheitChanged(it) },
             label = { Text("Градусы Фаренгейта") },
             isError = !uiState.isFahrenheitValid,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
         )
     }
 }

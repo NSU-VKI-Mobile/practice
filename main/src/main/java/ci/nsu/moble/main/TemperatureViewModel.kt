@@ -10,37 +10,17 @@ class TemperatureViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(TemperatureUiState())
     val uiState: StateFlow<TemperatureUiState> = _uiState.asStateFlow()
 
-    fun onCelsiusChanged(newValue: String) {
+    fun onCelsiusChanged(newCelsius: String) {
         _uiState.update { currentState ->
-            val celsiusValue = newValue.toDoubleOrNull()
-
-            val fahrenheit = if (celsiusValue != null) {
-                String.format("%.2f", celsiusValue * 9 / 5 + 32)
-            } else {
-                ""
-            }
-
-            currentState.copy(
-                celsius = newValue,
-                fahrenheit = fahrenheit
-            )
+            val nextState = currentState.copy(celsius = newCelsius)
+            nextState.copy(fahrenheit = if (nextState.isCelsiusValid) nextState.convertedToFahrenheit else "")
         }
     }
 
-    fun onFahrenheitChanged(newValue: String) {
+    fun onFahrenheitChanged(newFahrenheit: String) {
         _uiState.update { currentState ->
-            val fahrenheitValue = newValue.toDoubleOrNull()
-
-            val celsius = if (fahrenheitValue != null) {
-                String.format("%.2f", (fahrenheitValue - 32) * 5 / 9)
-            } else {
-                ""
-            }
-
-            currentState.copy(
-                fahrenheit = newValue,
-                celsius = celsius
-            )
+            val nextState = currentState.copy(fahrenheit = newFahrenheit)
+            nextState.copy(celsius = if (nextState.isFahrenheitValid) nextState.convertedToCelsius else "")
         }
     }
 }
