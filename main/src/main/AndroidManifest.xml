@@ -9,15 +9,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Draft">
         <activity
-            android:name="ci.nsu.mobile.main.MainActivity"
+            android:name="ci.nsu.mobile.main.MainActivity2"
             android:exported="true"
-            android:label="@string/title_activity_main3"
+            android:label="@string/title_activity_main2"
             android:theme="@style/Theme.Draft">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="ci.nsu.mobile.main.MainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main3"
+            android:theme="@style/Theme.Draft">
         </activity>
     </application>
 
