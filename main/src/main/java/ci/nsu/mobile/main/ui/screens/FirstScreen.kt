@@ -3,6 +3,7 @@ package ci.nsu.mobile.main.ui.screens
 import android.R.attr.text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,11 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import ci.nsu.mobile.main.Routes
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 
 @Composable
-fun FirstScreenContent() {
+fun FirstScreenContent(navScreen: NavController) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -31,12 +34,22 @@ fun FirstScreenContent() {
         val depositPeriod = remember{mutableStateOf("")}
         TextField(entryFee.value, label = {Text("Стартовый взнос")} ,onValueChange = {newText -> entryFee.value = newText}, modifier = Modifier.padding(10.dp))
         TextField(depositPeriod.value, label = {Text("Срок вклада в месяцах")} ,onValueChange = {newText -> depositPeriod.value = newText}, modifier = Modifier.padding(10.dp))
-    }
-}
-@Preview(showBackground = true)
-@Composable
-fun FirstScreenContentPreview() {
-    PracticeTheme {
-        FirstScreenContent()
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center) {
+            Button({navScreen.navigate(Routes.MainScreen.route)}, modifier =  Modifier.padding(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    containerColor = Color.Black
+                )) {
+                Text("<- В начало")
+            }
+            Button({navScreen.navigate(Routes.SecondScreen.route)}, modifier = Modifier.padding(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    containerColor = Color.Black
+                )) {
+                Text("Далее ->")
+            }
+        }
     }
 }

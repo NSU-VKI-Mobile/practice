@@ -20,6 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.main.ui.screens.FirstScreenContent
+import ci.nsu.mobile.main.ui.screens.MainScreenContent
+import ci.nsu.mobile.main.ui.screens.SecondScreenContent
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,8 +34,28 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PracticeTheme {
-
+                NavControlFun()
             }
         }
+    }
+}
+
+sealed class Routes(val route: String) {
+    object MainScreen : Routes("MainScreen")
+    object FistScreen : Routes("FirstScreen")
+    object SecondScreen : Routes("SecondScreen")
+    object ResultScreen: Routes("ResultScreen")
+    object HistoryScreen: Routes("HistoryScreen")
+}
+
+@Composable
+fun NavControlFun() {
+    val navController = rememberNavController()
+    NavHost(navController, startDestination = Routes.MainScreen.route) {
+        composable(Routes.MainScreen.route) {MainScreenContent(navController)}
+        composable(Routes.FistScreen.route) {FirstScreenContent(navController)}
+        composable(Routes.SecondScreen.route) {SecondScreenContent(navController)}
+        composable(Routes.HistoryScreen.route) {}
+        composable(Routes.ResultScreen.route) {}
     }
 }

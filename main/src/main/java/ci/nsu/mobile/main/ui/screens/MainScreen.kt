@@ -1,5 +1,6 @@
 package ci.nsu.mobile.main.ui.screens
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,44 +13,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import ci.nsu.mobile.main.Routes
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 
 @Composable
-fun MainScreenContent() {
+fun MainScreenContent(navToScreen: NavController) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Button({}, modifier =  Modifier.fillMaxWidth().padding(10.dp),
+        val activity = (LocalContext.current as? Activity)
+        Button({navToScreen.navigate(Routes.FistScreen.route)}, modifier =  Modifier.fillMaxWidth().padding(10.dp),
             colors = ButtonDefaults.buttonColors(
                 contentColor = Color.White,
                 containerColor = Color.Black
             )) {
             Text("Рассчитать")
         }
-        Button({}, modifier = Modifier.fillMaxWidth().padding(10.dp),
+        Button({navToScreen.navigate(Routes.HistoryScreen.route)}, modifier = Modifier.fillMaxWidth().padding(10.dp),
             colors = ButtonDefaults.buttonColors(
                 contentColor = Color.White,
                 containerColor = Color.Black
             )) {
             Text("История расчетов")
         }
-        Button({}, modifier = Modifier.fillMaxWidth().padding(10.dp),
+        Button({activity?.finish()}, modifier = Modifier.fillMaxWidth().padding(10.dp),
             colors = ButtonDefaults.buttonColors(
                 contentColor = Color.White,
                 containerColor = Color.Black
             )) {
             Text("Закрыть приложение")
         }
-    }
-}
-@Preview(showBackground = true)
-@Composable
-fun MainScreenContentPreview() {
-    PracticeTheme {
-        MainScreenContent()
     }
 }
