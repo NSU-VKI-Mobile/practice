@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="383dp"
+        android:layout_height="66dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="100dp"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="383dp"
+        android:layout_height="66dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="200dp"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="383dp"
+        android:layout_height="66dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="270dp"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="383dp"
+        android:layout_height="66dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="340dp"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="383dp"
+        android:layout_height="66dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="410dp"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="383dp"
+        android:layout_height="66dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="410dp"
+        android:text="Button" />
+
+    <EditText
+        android:id="@+id/editTextText"
+        android:layout_width="317dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="30dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Name" />
+</FrameLayout>
