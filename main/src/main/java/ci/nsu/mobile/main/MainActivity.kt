@@ -8,7 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.ui.screens.HomeScreen
+import ci.nsu.mobile.main.ui.screens.DepositInputScreen
+import ci.nsu.mobile.main.ui.screens.ResultScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,7 +22,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PracticeTheme {
-                DepositApp(onExit = this::finish)
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.background
+                ) {
+                    DepositApp(onExit = this::finish)
+                }
             }
         }
     }
@@ -25,18 +35,48 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun DepositApp(onExit: () -> Unit) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = androidx.compose.material3.MaterialTheme.colorScheme.background
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = "home"
     ) {
-        HomeScreen(
-            onCalculateClick = {
-                //TODO  реализовать переход к первому этапу ввода данных
-            },
-            onHistoryClick = {
-                //TODO  реализовать открытие списка сохранённых расчётов
-            },
-            onExitClick = onExit
-        )
+        // Главный экран
+        composable("home") {
+            HomeScreen(
+                onCalculateClick = {
+                    navController.navigate("deposit_input")
+                },
+                onHistoryClick = {
+                    // TODO: Добавить экран истории...
+                },
+                onExitClick = onExit
+            )
+        }
+
+        // Экран ввода параметров
+        composable("deposit_input") {
+            DepositInputScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onNextClick = {
+                    navController.navigate("result")
+                }
+            )
+        }
+
+        // Экран результата
+        composable("result") {
+            ResultScreen(
+                onSaveClick = {
+                    // TODO: Добавить сохранение данных в бд
+                    navController.popBackStack("home", inclusive = false)
+                },
+                onBackToHomeClick = {
+                    navController.popBackStack("home", inclusive = false)
+                }
+            )
+        }
     }
 }
