@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Этап 2: Дополнительные параметры вклада"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <EditText
+            android:id="@+id/editPeriodMonths"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Срок вклада в месяцах"
+            android:inputType="number" />
+
+        <TextView
+            android:id="@+id/textPeriodWarning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#B00020"
+            android:textSize="13sp"
+            android:visibility="gone"
+            android:paddingTop="4dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="12dp" />
+
+        <Spinner
+            android:id="@+id/spinnerInterestRate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="12dp" />
+
+        <EditText
+            android:id="@+id/editMonthlyTopUp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ежемесячное пополнение (необязательно)"
+            android:inputType="numberDecimal" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonBackStage1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Назад" />
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="0dp" />
+
+            <Button
+                android:id="@+id/buttonCalculateResult"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Рассчитать" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
+

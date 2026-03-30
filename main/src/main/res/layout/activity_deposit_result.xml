@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Результат"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView android:id="@+id/textInitialAmount" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/textPeriodMonths" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/textInterestRate" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/textMonthlyTopUp" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/textFinalAmount" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/textInterestEarned" android:layout_width="match_parent" android:layout_height="wrap_content" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Сохранить" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="12dp" />
+
+        <Button
+            android:id="@+id/buttonBackHomeFromResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="В начало" />
+    </LinearLayout>
+</ScrollView>
+

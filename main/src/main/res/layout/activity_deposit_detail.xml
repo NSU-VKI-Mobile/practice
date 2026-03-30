@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Детали расчёта"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView android:id="@+id/textCalculationDate" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/textInitialAmount" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/textPeriodMonths" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/textInterestRate" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/textMonthlyTopUp" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/textFinalAmount" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/textInterestEarned" android:layout_width="match_parent" android:layout_height="wrap_content" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+</ScrollView>
+
