@@ -7,4 +7,9 @@
         <item name="colorAccent">@color/teal_200</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Theme.Draft.NoActionBar" parent="Theme.Draft">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>
