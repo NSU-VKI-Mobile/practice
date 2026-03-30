@@ -1,8 +1,10 @@
+package ci.nsu.mobile.main.data
+
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ci.nsu.mobile.main.ui.DepositCalculation
+import ci.nsu.mobile.main.data.DepositCalculation
 
 @Database(version = 1,
     entities = [
