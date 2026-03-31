@@ -26,7 +26,42 @@ import ci.nsu.mobile.main.data.local.TokenManager
 import ci.nsu.mobile.main.data.model.PersonDto
 import ci.nsu.mobile.main.data.model.RegisterRequest
 import ci.nsu.mobile.main.viewmodel.AuthViewModel
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 
+class PhoneVisualTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        // Ожидаем на вход только цифры (до 10 штук)
+        val digits = text.text
+        var out = "+7"
+        if (digits.isNotEmpty()) out += "(${digits.take(3)}"
+        if (digits.length > 3) out += ")-${digits.substring(3, minOf(6, digits.length))}"
+        if (digits.length > 6) out += "-${digits.substring(6, minOf(8, digits.length))}"
+        if (digits.length > 8) out += "-${digits.substring(8, minOf(10, digits.length))}"
+
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                if (offset == 0) return 2
+                if (offset <= 3) return offset + 3
+                if (offset <= 6) return offset + 5
+                if (offset <= 8) return offset + 6
+                if (offset <= 10) return offset + 7
+                return 17
+            }
+            override fun transformedToOriginal(offset: Int): Int {
+                if (offset <= 2) return 0
+                if (offset <= 6) return offset - 3
+                if (offset <= 11) return offset - 5
+                if (offset <= 14) return offset - 6
+                if (offset <= 17) return offset - 7
+                return 10
+            }
+        }
+        return TransformedText(AnnotatedString(out), offsetMapping)
+    }
+}
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
