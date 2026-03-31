@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Laba4</string>
+    <string name="title_activity_main_composable">MainComposable</string>
+    <string name="title_activity_main_screen">MainScreen</string>
+</resources>
