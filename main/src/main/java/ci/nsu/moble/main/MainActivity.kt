@@ -1,5 +1,6 @@
 package ci.nsu.moble.main
 
+import android.content.Intent // ДОБАВЛЕНО: нужен для перехода через Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField // ДОБАВЛЕНО: поле ввода текста
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,20 +39,38 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 // TODO:  here is to open the second activity
 @Composable
 fun MainScreenActivity(modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
+    // text уже был, теперь он используется в TextField и передается во второе Activity
+
     val context = LocalContext.current
 
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // TODO:  нужно добавить  TextField
+        // ДОБАВЛЕНО: TextField для ввода строки, которую потом передаем во SecondActivity
+        OutlinedTextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text("Введите текст") }
+        )
+
         Button(
             onClick = {
-                // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
+                // ДОБАВЛЕНО: создаем Intent для перехода во SecondActivity
+                val intent = Intent(context, SecondActivity::class.java).apply {
+                    // ДОБАВЛЕНО: передаем введенный текст на второй экран
+                    putExtra("text_data", text)
+                }
+
+                // ДОБАВЛЕНО: запускаем SecondActivity
+                context.startActivity(intent)
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {

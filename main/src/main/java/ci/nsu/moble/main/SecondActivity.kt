@@ -1,11 +1,14 @@
 package ci.nsu.moble.main
 
 import android.app.Activity
+import android.content.Intent // ДОБАВЛЕНО: нужен для возврата в MainActivity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box // ДОБАВЛЕНО: для простых экранов внутри NavHost
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding // ДОБАВЛЕНО: для innerPadding из Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
@@ -21,17 +24,26 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue // ДОБАВЛЕНО: нужно для currentBackStackEntryAsState()
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment // ДОБАВЛЕНО: для центрирования текста на экранах
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavGraph.Companion.findStartDestination // ДОБАВЛЕНО: для корректной навигации bottom menu
+import androidx.navigation.compose.NavHost // ДОБАВЛЕНО: навигационный контейнер
+import androidx.navigation.compose.composable // ДОБАВЛЕНО: описание экранов
+import androidx.navigation.compose.currentBackStackEntryAsState // ДОБАВЛЕНО: чтобы понимать текущий экран
+import androidx.navigation.compose.rememberNavController // ДОБАВЛЕНО: navController
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
-// TODO: crate sealed class with 3 routes
+// ДОБАВЛЕНО: sealed class с тремя маршрутами для экранов нижнего меню
+sealed class Screen(val route: String, val title: String) {
+    data object Home : Screen("home", "Home")
+    data object ScreenOne : Screen("screen_one", "Screen One")
+    data object ScreenTwo : Screen("screen_two", "Screen Two")
+}
 
 class SecondActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,66 +60,137 @@ class SecondActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecondActivityScreen() {
-    // todo: create nav controller
-    var selectedItem by remember { mutableStateOf(0) }
+    // ДОБАВЛЕНО: создаем NavController для переходов между экранами нижнего меню
+    val navController = rememberNavController()
+
     val context = LocalContext.current
-    var receivedText by remember { mutableStateOf("") }
-    if (context is Activity) {
-        receivedText = context.intent.getStringExtra("text_data") ?: "No text received"
+
+    // ИЗМЕНЕНО: вместо mutableStateOf можно сразу получить строку из intent
+    // Так проще, потому что текст просто читается один раз
+    val receivedText = if (context is Activity) {
+        context.intent.getStringExtra("text_data") ?: "No text received"
+    } else {
+        "No text received"
     }
 
-    Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-        TopAppBar(
-            title = { Text(receivedText) }, navigationIcon = {
-                IconButton(onClick = {
-                    // TODO: create intent and start MainActivity
-                    if (context is Activity) {
-                        context.finish()
+    // ДОБАВЛЕНО: список экранов для нижней навигации
+    val screens = listOf(Screen.Home, Screen.ScreenOne, Screen.ScreenTwo)
+
+    // ДОБАВЛЕНО: определяем текущий маршрут, чтобы подсвечивать выбранный пункт меню
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                // Уже было: теперь здесь отображается переданный текст
+                title = { Text(receivedText) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        // ДОБАВЛЕНО: переход обратно в MainActivity из TopBar
+                        val intent = Intent(context, MainActivity::class.java)
+                        context.startActivity(intent)
+
+                        // Было: finish() оставляем, чтобы закрыть текущее Activity
+                        if (context is Activity) {
+                            context.finish()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
                     }
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Blue,
+                    titleContentColor = Color.White
+                )
+            )
+        },
+        bottomBar = {
+            NavigationBar {
+                // ИЗМЕНЕНО: вместо selectedItem используется currentRoute и список screens
+                screens.forEach { screen ->
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                imageVector = when (screen) {
+                                    Screen.Home -> Icons.Filled.Home
+                                    Screen.ScreenOne -> Icons.Filled.List
+                                    Screen.ScreenTwo -> Icons.Filled.Settings
+                                },
+                                contentDescription = screen.title
+                            )
+                        },
+                        label = { Text(screen.title) },
+                        selected = currentRoute == screen.route, // ДОБАВЛЕНО: активный экран определяется через route
+                        onClick = {
+                            // ДОБАВЛЕНО: переход между экранами через navController
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     )
                 }
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Blue, titleContentColor = Color.White
-            )
-        )
-    }, bottomBar = {
-        NavigationBar {
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Home") },
-                label = { Text("Home") },
-                selected = selectedItem == 0,
-
-                onClick = {
-                    // TODO: navigate to home screen by navController
-                    selectedItem = 0
-                })
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.List, contentDescription = "Screen One") },
-                label = { Text("Screen One") },
-                selected = selectedItem == 1,
-
-                onClick = {
-                    // TODO: navigate to screen one
-                    selectedItem = 1
-                })
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Screen Two") },
-                label = { Text("Screen Two") },
-                selected = selectedItem == 2,
-                onClick = {
-                    // TODO: navigate to screen two
-                    selectedItem = 2
-                })
+            }
         }
-    }) { innerPadding ->
-        // TODO: create a nav graph with 3 screens
-        // NavHost() {}
-        // composable(Screen.Home.route) { HomeScreen() }
+    ) { innerPadding ->
+        // ДОБАВЛЕНО: граф навигации с 3 экранами
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(Screen.Home.route) {
+                HomeScreen()
+            }
+            composable(Screen.ScreenOne.route) {
+                ScreenOneContent()
+            }
+            composable(Screen.ScreenTwo.route) {
+                ScreenTwoContent()
+            }
+        }
+    }
+}
+
+// ДОБАВЛЕНО: экран Home
+@Composable
+fun HomeScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("Это Home Screen")
+    }
+}
+
+// ДОБАВЛЕНО: экран Screen One
+@Composable
+fun ScreenOneContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("Это Screen One")
+    }
+}
+
+// ДОБАВЛЕНО: экран Screen Two
+@Composable
+fun ScreenTwoContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("Это Screen Two")
     }
 }
 
