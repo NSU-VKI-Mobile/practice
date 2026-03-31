@@ -89,6 +89,10 @@ fun DepositApp(viewModel: DepositViewModel = viewModel()) {
 
         // --- ЭТАП 1: ОСНОВНЫЕ ПАРАМЕТРЫ ---
         composable("step1") {
+            // Логическая проверка: числа должны быть больше 0
+            val isInitialValid = (uiState.initialAmount.toDoubleOrNull() ?: 0.0) > 0.0
+            val isPeriodValid = (uiState.periodMonths.toIntOrNull() ?: 0) > 0
+
             Column(
                 modifier = Modifier.fillMaxSize().padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -99,19 +103,33 @@ fun DepositApp(viewModel: DepositViewModel = viewModel()) {
 
                 OutlinedTextField(
                     value = uiState.initialAmount,
-                    onValueChange = { viewModel.updateState(uiState.copy(initialAmount = it)) },
-                    label = { Text("Стартовый взнос") },
+                    onValueChange = { newValue ->
+                        // Убираем всё, кроме цифр и точки (защита от минуса и пробелов)
+                        val filtered = newValue.replace(",", ".").replace(Regex("[^0-9.]"), "")
+                        // Защита от двух точек в числе (например, 150.5.5)
+                        if (filtered.count { it == '.' } <= 1) {
+                            viewModel.updateState(uiState.copy(initialAmount = filtered))
+                        }
+                    },
+                    label = { Text("Стартовый взнос (> 0)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    // Подсвечиваем красным, если ввели 0
+                    isError = uiState.initialAmount.isNotEmpty() && !isInitialValid
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     value = uiState.periodMonths,
-                    onValueChange = { viewModel.updateState(uiState.copy(periodMonths = it)) },
-                    label = { Text("Срок вклада (в месяцах)") },
+                    onValueChange = { newValue ->
+                        // Для месяцев оставляем СТРОГО только цифры (даже без точек)
+                        val filtered = newValue.replace(Regex("[^0-9]"), "")
+                        viewModel.updateState(uiState.copy(periodMonths = filtered))
+                    },
+                    label = { Text("Срок вклада (от 1 мес)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = uiState.periodMonths.isNotEmpty() && !isPeriodValid
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -124,7 +142,8 @@ fun DepositApp(viewModel: DepositViewModel = viewModel()) {
                     }
                     Button(
                         onClick = { navController.navigate("step2") },
-                        enabled = uiState.initialAmount.isNotBlank() && uiState.periodMonths.isNotBlank()
+                        // Кнопка активна ТОЛЬКО если оба поля корректны (> 0)
+                        enabled = isInitialValid && isPeriodValid
                     ) {
                         Text("Далее")
                     }
@@ -146,7 +165,6 @@ fun DepositApp(viewModel: DepositViewModel = viewModel()) {
                 Text("Шаг 2: Ставка и пополнения", style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // выпадающий список
                 Box {
                     OutlinedButton(
                         onClick = { expanded = true },
@@ -183,7 +201,13 @@ fun DepositApp(viewModel: DepositViewModel = viewModel()) {
 
                 OutlinedTextField(
                     value = uiState.monthlyTopUp,
-                    onValueChange = { viewModel.updateState(uiState.copy(monthlyTopUp = it)) },
+                    onValueChange = { newValue ->
+                        // Здесь тоже защищаем от минуса
+                        val filtered = newValue.replace(",", ".").replace(Regex("[^0-9.]"), "")
+                        if (filtered.count { it == '.' } <= 1) {
+                            viewModel.updateState(uiState.copy(monthlyTopUp = filtered))
+                        }
+                    },
                     label = { Text("Ежемесячное пополнение (опционально)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
