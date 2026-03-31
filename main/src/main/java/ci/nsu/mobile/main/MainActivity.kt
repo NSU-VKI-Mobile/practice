@@ -89,7 +89,6 @@ fun DepositApp(viewModel: DepositViewModel = viewModel()) {
 
         // --- ЭТАП 1: ОСНОВНЫЕ ПАРАМЕТРЫ ---
         composable("step1") {
-            // Логическая проверка: числа должны быть больше 0
             val isInitialValid = (uiState.initialAmount.toDoubleOrNull() ?: 0.0) > 0.0
             val isPeriodValid = (uiState.periodMonths.toIntOrNull() ?: 0) > 0
 
@@ -104,9 +103,13 @@ fun DepositApp(viewModel: DepositViewModel = viewModel()) {
                 OutlinedTextField(
                     value = uiState.initialAmount,
                     onValueChange = { newValue ->
-                        // Убираем всё, кроме цифр и точки (защита от минуса и пробелов)
-                        val filtered = newValue.replace(",", ".").replace(Regex("[^0-9.]"), "")
-                        // Защита от двух точек в числе (например, 150.5.5)
+                        var filtered = newValue.replace(",", ".").replace(Regex("[^0-9.]"), "")
+
+                        // Защита от ведущего нуля: если строка длиннее 1, начинается с 0, а второй символ НЕ точка (т.е. это "05"), убираем первый ноль
+                        if (filtered.length > 1 && filtered.startsWith("0") && filtered[1] != '.') {
+                            filtered = filtered.substring(1)
+                        }
+
                         if (filtered.count { it == '.' } <= 1) {
                             viewModel.updateState(uiState.copy(initialAmount = filtered))
                         }
@@ -114,7 +117,6 @@ fun DepositApp(viewModel: DepositViewModel = viewModel()) {
                     label = { Text("Стартовый взнос (> 0)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
-                    // Подсвечиваем красным, если ввели 0
                     isError = uiState.initialAmount.isNotEmpty() && !isInitialValid
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -122,8 +124,9 @@ fun DepositApp(viewModel: DepositViewModel = viewModel()) {
                 OutlinedTextField(
                     value = uiState.periodMonths,
                     onValueChange = { newValue ->
-                        // Для месяцев оставляем СТРОГО только цифры (даже без точек)
-                        val filtered = newValue.replace(Regex("[^0-9]"), "")
+                        // Для месяцев: убираем всё кроме цифр, а затем удаляем ВСЕ нули в начале строки.
+                        // Функция trimStart('0') не даст даже просто ввести 0 первым символом.
+                        val filtered = newValue.replace(Regex("[^0-9]"), "").trimStart('0')
                         viewModel.updateState(uiState.copy(periodMonths = filtered))
                     },
                     label = { Text("Срок вклада (от 1 мес)") },
@@ -142,7 +145,6 @@ fun DepositApp(viewModel: DepositViewModel = viewModel()) {
                     }
                     Button(
                         onClick = { navController.navigate("step2") },
-                        // Кнопка активна ТОЛЬКО если оба поля корректны (> 0)
                         enabled = isInitialValid && isPeriodValid
                     ) {
                         Text("Далее")
@@ -202,8 +204,13 @@ fun DepositApp(viewModel: DepositViewModel = viewModel()) {
                 OutlinedTextField(
                     value = uiState.monthlyTopUp,
                     onValueChange = { newValue ->
-                        // Здесь тоже защищаем от минуса
-                        val filtered = newValue.replace(",", ".").replace(Regex("[^0-9.]"), "")
+                        var filtered = newValue.replace(",", ".").replace(Regex("[^0-9.]"), "")
+
+                        // Такая же защита от ведущего нуля, как и в стартовом взносе
+                        if (filtered.length > 1 && filtered.startsWith("0") && filtered[1] != '.') {
+                            filtered = filtered.substring(1)
+                        }
+
                         if (filtered.count { it == '.' } <= 1) {
                             viewModel.updateState(uiState.copy(monthlyTopUp = filtered))
                         }
