@@ -30,6 +30,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import java.util.Locale
 
 class PhoneVisualTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
@@ -162,24 +163,42 @@ fun AuthApp(viewModel: AuthViewModel = viewModel()) {
 
         // ================= ЭКРАН РЕГИСТРАЦИИ =================
         composable("register") {
-            // Подгружаем группы при открытии экрана
             LaunchedEffect(Unit) { viewModel.fetchGroups() }
+            val context = LocalContext.current
 
-            // Локальные состояния для большой формы
             var firstName by remember { mutableStateOf("") }
             var lastName by remember { mutableStateOf("") }
             var middleName by remember { mutableStateOf("") }
             var birthDate by remember { mutableStateOf("") }
-            var gender by remember { mutableStateOf("M") }
+
+            // Состояние для пола
+            var gender by remember { mutableStateOf("") } // Для сервера: "M" или "F"
+            var genderDisplay by remember { mutableStateOf("Выберите пол") }
+            var genderDropdownExpanded by remember { mutableStateOf(false) }
+
             var login by remember { mutableStateOf("") }
             var password by remember { mutableStateOf("") }
             var email by remember { mutableStateOf("") }
-            var phone by remember { mutableStateOf("") }
+            var phone by remember { mutableStateOf("") } // Храним ТОЛЬКО цифры (максимум 10)
 
             var selectedGroupId by remember { mutableStateOf<Int?>(null) }
             var groupDropdownExpanded by remember { mutableStateOf(false) }
 
-            // scrollState позволяет скроллить форму, если она не влезает на экран
+            // Настраиваем классический системный календарь Android
+            val calendar = java.util.Calendar.getInstance()
+            val datePickerDialog = android.app.DatePickerDialog(
+                context,
+                { _, year, month, dayOfMonth ->
+                    // Форматируем с нулями впереди (например 2001-05-09)
+                    val formattedMonth = String.format(Locale.getDefault(), "%02d", month + 1)
+                    val formattedDay = String.format(Locale.getDefault(), "%02d", dayOfMonth)
+                    birthDate = "$year-$formattedMonth-$formattedDay"
+                },
+                calendar.get(java.util.Calendar.YEAR),
+                calendar.get(java.util.Calendar.MONTH),
+                calendar.get(java.util.Calendar.DAY_OF_MONTH)
+            )
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -192,22 +211,80 @@ fun AuthApp(viewModel: AuthViewModel = viewModel()) {
 
                 OutlinedTextField(value = login, onValueChange = { login = it }, label = { Text("Логин") }, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Пароль") }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email), modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = phone, onValueChange = { phone = it }, label = { Text("Телефон") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone), modifier = Modifier.fillMaxWidth())
+
+                // Email с проверкой на "собачку"
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    isError = email.isNotEmpty() && !email.contains("@"),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Телефон с маской
+                OutlinedTextField(
+                    value = phone,
+                    onValueChange = { newValue ->
+                        // Оставляем только цифры и ограничиваем до 10 штук
+                        val digitsOnly = newValue.filter { it.isDigit() }.take(10)
+                        phone = digitsOnly
+                    },
+                    label = { Text("Телефон") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    visualTransformation = PhoneVisualTransformation(), // Применяем нашу магию отрисовки
+                    modifier = Modifier.fillMaxWidth()
+                )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                 OutlinedTextField(value = lastName, onValueChange = { lastName = it }, label = { Text("Фамилия") }, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(value = firstName, onValueChange = { firstName = it }, label = { Text("Имя") }, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(value = middleName, onValueChange = { middleName = it }, label = { Text("Отчество") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = birthDate, onValueChange = { birthDate = it }, label = { Text("Дата рождения (YYYY-MM-DD)") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = gender, onValueChange = { gender = it }, label = { Text("Пол (M/F)") }, modifier = Modifier.fillMaxWidth())
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Стандартный выбор группы
+                // Кнопка вызова Календаря
+                OutlinedButton(
+                    onClick = { datePickerDialog.show() },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.extraSmall // Делаем углы как у TextField
+                ) {
+                    Text(if (birthDate.isEmpty()) "Нажмите, чтобы выбрать дату рождения" else "Дата рождения: $birthDate")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Выпадающий список: Пол
                 Box {
-                    OutlinedButton(onClick = { groupDropdownExpanded = true }, modifier = Modifier.fillMaxWidth()) {
+                    OutlinedButton(
+                        onClick = { genderDropdownExpanded = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.extraSmall
+                    ) {
+                        Text(genderDisplay)
+                    }
+                    DropdownMenu(expanded = genderDropdownExpanded, onDismissRequest = { genderDropdownExpanded = false }) {
+                        DropdownMenuItem(
+                            text = { Text("Мужской") },
+                            onClick = { gender = "M"; genderDisplay = "Мужской"; genderDropdownExpanded = false }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Женский") },
+                            onClick = { gender = "F"; genderDisplay = "Женский"; genderDropdownExpanded = false }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Выпадающий список: Группа
+                Box {
+                    OutlinedButton(
+                        onClick = { groupDropdownExpanded = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.extraSmall
+                    ) {
                         val groupName = uiState.groups.find { it.id == selectedGroupId }?.name ?: "Выберите группу"
                         Text(groupName)
                     }
@@ -231,20 +308,17 @@ fun AuthApp(viewModel: AuthViewModel = viewModel()) {
                 } else {
                     Button(
                         onClick = {
-                            if (selectedGroupId != null) {
-                                val request = RegisterRequest(
-                                    login = login, password = password, email = email, phoneNumber = phone,
-                                    person = PersonDto(firstName, lastName, middleName, birthDate, gender, selectedGroupId!!)
-                                )
-                                // После успешной регистрации возвращаемся на экран входа
-                                viewModel.register(request) { navController.popBackStack() }
-                            } else {
-                                Toast.makeText(context, "Выберите группу!", Toast.LENGTH_SHORT).show()
-                            }
+                            // Формируем телефон для сервера, приклеивая +7, если цифры есть
+                            val finalPhone = if (phone.isNotEmpty()) "+7$phone" else ""
+
+                            val request = RegisterRequest(
+                                login = login, password = password, email = email, phoneNumber = finalPhone,
+                                person = PersonDto(firstName, lastName, middleName, birthDate, gender, selectedGroupId!!)
+                            )
+                            viewModel.register(request) { navController.popBackStack() }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        // Валидация: кнопка активна, только если все важные поля заполнены
-                        enabled = login.isNotBlank() && password.isNotBlank() && firstName.isNotBlank() && selectedGroupId != null
+                        enabled = login.isNotBlank() && password.isNotBlank() && firstName.isNotBlank() && selectedGroupId != null && gender.isNotBlank() && birthDate.isNotBlank()
                     ) { Text("Зарегистрироваться") }
 
                     TextButton(onClick = { navController.popBackStack() }) { Text("Назад ко входу") }
