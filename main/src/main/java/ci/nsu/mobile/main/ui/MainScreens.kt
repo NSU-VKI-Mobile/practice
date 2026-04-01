@@ -235,16 +235,16 @@ fun DepositCalculatorScreen(viewModel: DepositViewModel = koinViewModel()) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(onClick = {
+                        viewModel.reset()
+                        calculatorNavController.popBackStack("step1", false)
+                    }) { Text("Сбросить") }
+
+                    Button(onClick = {
                         viewModel.saveCalculation()
                         // После сохранения скидываем стейт и возвращаемся на первый шаг
                         viewModel.reset()
                         calculatorNavController.popBackStack("step1", false)
                     }) { Text("Сохранить") }
-
-                    Button(onClick = {
-                        viewModel.reset()
-                        calculatorNavController.popBackStack("step1", false)
-                    }) { Text("Сбросить") }
                 }
             }
         }
