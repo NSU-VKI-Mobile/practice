@@ -41,6 +41,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             val result = repository.login(login, pass)
             result.onSuccess {
+                TokenManager.login = login
                 _uiState.update { it.copy(isLoading = false, isAuthenticated = true) }
             }.onFailure { e ->
                 _uiState.update { it.copy(isLoading = false, error = e.message ?: "Ошибка входа") }
@@ -66,6 +67,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             val result = repository.register(request)
             result.onSuccess {
+                TokenManager.login = request.login
                 _uiState.update { it.copy(isLoading = false) }
                 onSuccess()
             }.onFailure { e ->

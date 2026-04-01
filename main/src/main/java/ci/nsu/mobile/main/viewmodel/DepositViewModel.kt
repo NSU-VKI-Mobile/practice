@@ -5,6 +5,7 @@ import ci.nsu.mobile.main.data.local.TokenManager
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.local.DepositEntity
 import ci.nsu.mobile.main.data.repository.DepositRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +21,8 @@ class DepositViewModel(private val repository: DepositRepository) : ViewModel() 
     val uiState: StateFlow<DepositUiState> = _uiState.asStateFlow()
 
     // Берем логин из TokenManager и сразу получаем Flow с нужным списком
-    val history = repository.getDepositsForUser(TokenManager.login ?: "unknown")
+    val history: Flow<List<DepositEntity>>
+        get() = repository.getDepositsForUser(TokenManager.login ?: "unknown")
 
     // Обновление состояния при вводе текста
     fun updateState(newState: DepositUiState) {
