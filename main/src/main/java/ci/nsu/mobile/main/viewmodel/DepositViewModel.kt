@@ -81,10 +81,11 @@ class DepositViewModel(private val repository: DepositRepository) : ViewModel() 
                 )
             )
         }
-
-        // Сброс формы для нового расчета
-        fun reset() {
-            _uiState.value = DepositUiState()
-        }
     }
+
+    // Сброс формы для нового расчета
+    fun reset() {
+        _uiState.value = DepositUiState()
+    }
+
 }
