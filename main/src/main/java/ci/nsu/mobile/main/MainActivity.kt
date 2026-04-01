@@ -334,18 +334,23 @@ fun AuthApp(viewModel: AuthViewModel = viewModel()) {
             LaunchedEffect(Unit) { viewModel.fetchUsers() }
 
             Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Пользователи", style = MaterialTheme.typography.headlineMedium)
-                    Button(onClick = {
+                Text("Пользователи", style = MaterialTheme.typography.headlineMedium)
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Делаем кнопку "Выйти" на всю ширину и заметной
+                Button(
+                    onClick = {
                         viewModel.logout()
                         navController.navigate("login") { popUpTo(0) }
-                    }) { Text("Выйти") }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Выйти из аккаунта")
                 }
 
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider()
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (uiState.isLoading) {
@@ -355,7 +360,8 @@ fun AuthApp(viewModel: AuthViewModel = viewModel()) {
                 } else if (uiState.users.isEmpty()) {
                     Text("Список пользователей пуст")
                 } else {
-                    LazyColumn {
+                    // weight(1f) не даст списку вытолкнуть другие элементы за экран
+                    LazyColumn(modifier = Modifier.weight(1f)) {
                         items(uiState.users) { user ->
                             Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                                 Column(modifier = Modifier.padding(16.dp)) {
