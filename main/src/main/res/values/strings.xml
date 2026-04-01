@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">main</string>
+    <string name="app_name">Расчет вкладов</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_step_first">StepFirstActivity</string>
+    <string name="title_activity_save_list_deposit">SaveListDepositActivity</string>
+    <string name="title_activity_step_second">StepSecondActivity</string>
+    <string name="title_activity_result">ResultActivity</string>
 </resources>
