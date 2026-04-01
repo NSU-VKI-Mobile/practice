@@ -1,5 +1,6 @@
 package ci.nsu.mobile.main.data.remote
 
+import ci.nsu.mobile.main.data.model.AuthResponse
 import ci.nsu.mobile.main.data.model.GroupDto
 import ci.nsu.mobile.main.data.model.LoginRequest
 import ci.nsu.mobile.main.data.model.RegisterRequest
@@ -11,7 +12,7 @@ import retrofit2.http.POST
 
 interface AuthApi {
     @POST("auth/login")
-    suspend fun login(@Body request: LoginRequest): Response<UserDto>
+    suspend fun login(@Body request: LoginRequest): Response<AuthResponse>
 
     @POST("auth/register")
     suspend fun register(@Body request: RegisterRequest): Response<Unit>

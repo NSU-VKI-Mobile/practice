@@ -10,15 +10,15 @@ import ci.nsu.mobile.main.data.local.TokenManager
 class AuthRepository {
     private val api = ApiClient.authApi
 
-    suspend fun login(login: String, password: String): Result<UserDto> {
+    suspend fun login(login: String, password: String): Result<Unit> {
         return try {
             val response = api.login(LoginRequest(login, password))
             if (response.isSuccessful) {
-                val user = response.body()
-                if (user != null) {
-                    // Если сервер возвращает токен, сохраняем его!
-                    user.token?.let { TokenManager.token = it }
-                    Result.success(user)
+                val authResponse = response.body()
+                if (authResponse != null) {
+                    // Сохраняем токен из AuthResponse
+                    TokenManager.token = authResponse.token
+                    Result.success(Unit)
                 } else {
                     Result.failure(Exception("Пустой ответ от сервера"))
                 }
@@ -26,7 +26,7 @@ class AuthRepository {
                 Result.failure(Exception("Ошибка входа: ${response.code()}"))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception("Ошибка сети или парсинга: ${e.message}"))
         }
     }
 

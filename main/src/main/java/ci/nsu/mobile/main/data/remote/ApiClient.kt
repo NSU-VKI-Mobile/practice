@@ -8,7 +8,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 
 object ApiClient {
-    private const val BASE_URL = "http://192.168.200.160:8080/api/"
+    private const val BASE_URL = "http://10.0.2.2:8080/"
 
     // Настраиваем парсер JSON (игнорируем неизвестные поля, чтобы приложение не падало, если сервер пришлет лишнее)
     private val json = Json { ignoreUnknownKeys = true }
