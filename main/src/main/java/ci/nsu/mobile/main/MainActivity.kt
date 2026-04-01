@@ -197,7 +197,10 @@ fun AuthApp(viewModel: AuthViewModel = viewModel()) {
                 calendar.get(java.util.Calendar.YEAR),
                 calendar.get(java.util.Calendar.MONTH),
                 calendar.get(java.util.Calendar.DAY_OF_MONTH)
-            )
+            ).apply {
+                // Запрещаем выбирать даты из будущего!
+                datePicker.maxDate = System.currentTimeMillis()
+            }
 
             Column(
                 modifier = Modifier
