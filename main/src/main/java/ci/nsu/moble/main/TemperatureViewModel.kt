@@ -14,7 +14,7 @@ class TemperatureViewModel : ViewModel() {
         _uiState.update { currentState ->
             val nextState = currentState.copy(celsius = newCelsius)
 
-            val cDegree = nextState.celsiusDouble
+            val cDegree = nextState.celsius.toDoubleOrNull()
 
             if (cDegree != null) {
                 val fResult = cDegree * 9 / 5 + 32
@@ -29,7 +29,7 @@ class TemperatureViewModel : ViewModel() {
         _uiState.update { currentState ->
             val nextState = currentState.copy(fahrenheit = newValue)
 
-            val fDegree = nextState.fahrenheitDouble
+            val fDegree = nextState.fahrenheit.toDoubleOrNull()
 
             if (fDegree != null) {
                 val cResult = (fDegree - 32) * 5 / 9
