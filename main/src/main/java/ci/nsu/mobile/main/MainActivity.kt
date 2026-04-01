@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -15,6 +16,7 @@ import ci.nsu.mobile.main.ui.screens.HomeScreen
 import ci.nsu.mobile.main.ui.screens.DepositInputScreen
 import ci.nsu.mobile.main.ui.screens.ResultScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
+import ci.nsu.mobile.main.viewmodel.DepositViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +38,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DepositApp(onExit: () -> Unit) {
     val navController = rememberNavController()
+    val viewModel: DepositViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -60,7 +63,8 @@ fun DepositApp(onExit: () -> Unit) {
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onNextClick = {
+                onNextClick = { amount, months ->
+                    viewModel.saveFirstScreenData(amount, months)
                     navController.navigate("result")
                 }
             )

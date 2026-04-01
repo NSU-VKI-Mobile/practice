@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun DepositInputScreen(
     onBackClick: () -> Unit,
-    onNextClick: () -> Unit
+    onNextClick: (String, String) -> Unit
 ) {
     var initialAmount = remember { mutableStateOf("") }
     var periodMonths = remember { mutableStateOf("") }
@@ -76,8 +76,9 @@ fun DepositInputScreen(
 
         Button(
             onClick = {
-                // TODO: передать данные на следующий экран
-                onNextClick()
+                if (isValid) {
+                    onNextClick(initialAmount.value, periodMonths.value)
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
