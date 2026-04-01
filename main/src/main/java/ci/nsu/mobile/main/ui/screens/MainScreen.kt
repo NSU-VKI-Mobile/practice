@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ci.nsu.mobile.main.Routes
+import ci.nsu.mobile.main.navigation.Routes
 
 
 @Composable
@@ -27,6 +27,7 @@ fun MainScreenContent(navToScreen: NavController) {
         verticalArrangement = Arrangement.Center
     ) {
         val activity = LocalActivity.current
+        Text("main screen")
         Button({navToScreen.navigate(Routes.FistScreen.route)}, modifier =  Modifier.fillMaxWidth().padding(10.dp),
             colors = ButtonDefaults.buttonColors(
                 contentColor = Color.White,

@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ci.nsu.mobile.main.Routes
+import ci.nsu.mobile.main.navigation.Routes
 
 
 @Composable
@@ -29,6 +29,7 @@ fun FirstScreenContent(navScreen: NavController) {
     ) {
         val entryFee = remember{mutableStateOf("")}
         val depositPeriod = remember{mutableStateOf("")}
+        Text("first screen")
         TextField(entryFee.value, label = {Text("Стартовый взнос")} ,onValueChange = {newText -> entryFee.value = newText}, modifier = Modifier.padding(10.dp))
         TextField(depositPeriod.value, label = {Text("Срок вклада в месяцах")} ,onValueChange = {newText -> depositPeriod.value = newText}, modifier = Modifier.padding(10.dp))
         Row(modifier = Modifier.fillMaxWidth(),

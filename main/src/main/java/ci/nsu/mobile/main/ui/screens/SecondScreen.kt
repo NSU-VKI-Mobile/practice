@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ci.nsu.mobile.main.Routes
+import ci.nsu.mobile.main.navigation.Routes
 
 
 @Composable
@@ -33,6 +33,7 @@ fun SecondScreenContent(navScreens: NavController) {
     ) {
         var expanded by remember { mutableStateOf(true) }
         val interestRate = remember{mutableStateOf(0)}
+        Text("second screen")
         DropdownMenu(expanded = expanded,
             onDismissRequest = {expanded = false},
             offset = DpOffset(x = 20.dp, y = 50.dp)) {

@@ -16,4 +16,14 @@ class DepositRepository(val depositDao: DepositDao) {
     fun GetById(id: Long): Flow<DepositCalculation> {
         return depositDao.GetById(id)
     }
+    companion object {
+        @Volatile
+        private var INSTANCE: DepositRepository? = null
+
+        fun getInstance(dao: DepositDao): DepositRepository {
+            return INSTANCE ?: synchronized(this) {
+                DepositRepository(dao).also { INSTANCE = it }
+            }
+        }
+    }
 }

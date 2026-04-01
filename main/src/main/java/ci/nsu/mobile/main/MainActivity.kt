@@ -8,29 +8,29 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.main.data.database.AppDatabase
+import ci.nsu.mobile.main.data.repository.DepositRepository
+import ci.nsu.mobile.main.navigation.Routes
 import ci.nsu.mobile.main.ui.screens.FirstScreenContent
+import ci.nsu.mobile.main.ui.screens.HistoryScreenContent
 import ci.nsu.mobile.main.ui.screens.MainScreenContent
+import ci.nsu.mobile.main.ui.screens.ResultScreenContent
 import ci.nsu.mobile.main.ui.screens.SecondScreenContent
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 class MainActivity : ComponentActivity() {
+    private lateinit var repos: DepositRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val database = AppDatabase.getDatabase(this)
+        repos = DepositRepository.getInstance(database.depositDao())
         setContent {
             PracticeTheme {
                 NavControlFun()
             }
         }
     }
-}
-
-sealed class Routes(val route: String) {
-    object MainScreen : Routes("MainScreen")
-    object FistScreen : Routes("FirstScreen")
-    object SecondScreen : Routes("SecondScreen")
-    object ResultScreen: Routes("ResultScreen")
-    object HistoryScreen: Routes("HistoryScreen")
 }
 
 @Composable
@@ -40,7 +40,7 @@ fun NavControlFun() {
         composable(Routes.MainScreen.route) {MainScreenContent(navController)}
         composable(Routes.FistScreen.route) {FirstScreenContent(navController)}
         composable(Routes.SecondScreen.route) {SecondScreenContent(navController)}
-        composable(Routes.HistoryScreen.route) {}
-        composable(Routes.ResultScreen.route) {}
+        composable(Routes.HistoryScreen.route) { HistoryScreenContent((navController)) }
+        composable(Routes.ResultScreen.route) { ResultScreenContent(navController) }
     }
 }
