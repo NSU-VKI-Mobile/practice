@@ -6,11 +6,17 @@ import kotlinx.coroutines.flow.Flow
 
 class DepositRepository(private val depositDao: DepositDao) {
 
-    // Получаем всю историю
-    val allDeposits: Flow<List<DepositEntity>> = depositDao.getAllDeposits()
+    // Теперь получаем историю не всю подряд, а только для конкретного логина
+    fun getDepositsForUser(login: String): Flow<List<DepositEntity>> {
+        return depositDao.getDepositsForUser(login)
+    }
 
     // Сохраняем новый расчет
     suspend fun saveCalculation(deposit: DepositEntity) {
         depositDao.insert(deposit)
+    }
+
+    suspend fun delete(deposit: DepositEntity) {
+        depositDao.delete(deposit)
     }
 }

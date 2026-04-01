@@ -19,8 +19,8 @@ class DepositViewModel(private val repository: DepositRepository) : ViewModel() 
     private val _uiState = MutableStateFlow(DepositUiState())
     val uiState: StateFlow<DepositUiState> = _uiState.asStateFlow()
 
-    // Публикуем историю из БД напрямую для UI
-    val history = repository.allDeposits
+    // Берем логин из TokenManager и сразу получаем Flow с нужным списком
+    val history = repository.getDepositsForUser(TokenManager.login ?: "unknown")
 
     // Обновление состояния при вводе текста
     fun updateState(newState: DepositUiState) {
