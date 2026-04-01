@@ -1,6 +1,7 @@
 package ci.nsu.mobile.main.ui.screens
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +26,7 @@ fun MainScreenContent(navToScreen: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        val activity = (LocalContext.current as? Activity)
+        val activity = LocalActivity.current
         Button({navToScreen.navigate(Routes.FistScreen.route)}, modifier =  Modifier.fillMaxWidth().padding(10.dp),
             colors = ButtonDefaults.buttonColors(
                 contentColor = Color.White,
