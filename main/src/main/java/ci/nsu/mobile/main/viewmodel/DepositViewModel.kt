@@ -1,9 +1,8 @@
 package ci.nsu.mobile.main.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import ci.nsu.mobile.main.data.local.TokenManager
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.local.AppDatabase
 import ci.nsu.mobile.main.data.local.DepositEntity
 import ci.nsu.mobile.main.data.repository.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,15 +11,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class DepositViewModel(application: Application) : AndroidViewModel(application) {
+class DepositViewModel(private val repository: DepositRepository) : ViewModel() {
 
-    private val repository: DepositRepository
-
-    init {
-        // Инициализируем базу данных и репозиторий при создании ViewModel
-        val dao = AppDatabase.getDatabase(application).depositDao()
-        repository = DepositRepository(dao)
-    }
+    // полностью удалили блок init { ... },
+    // потому что Koin уже передал готовый к работе repository
 
     private val _uiState = MutableStateFlow(DepositUiState())
     val uiState: StateFlow<DepositUiState> = _uiState.asStateFlow()
@@ -73,10 +67,11 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
     // Сохранение в базу данных
     fun saveCalculation() {
         val state = _uiState.value
-        // Запускаем корутину, так как запись в БД нельзя делать в главном потоке
         viewModelScope.launch {
             repository.saveCalculation(
                 DepositEntity(
+                    // Берем логин из TokenManager (если null, то "unknown")
+                    userLogin = TokenManager.login ?: "unknown",
                     initialAmount = state.initialAmount.toDoubleOrNull() ?: 0.0,
                     periodMonths = state.periodMonths.toIntOrNull() ?: 0,
                     interestRate = state.interestRate.toDoubleOrNull() ?: 0.0,
@@ -86,10 +81,10 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
                 )
             )
         }
-    }
 
-    // Сброс формы для нового расчета
-    fun reset() {
-        _uiState.value = DepositUiState()
+        // Сброс формы для нового расчета
+        fun reset() {
+            _uiState.value = DepositUiState()
+        }
     }
 }
