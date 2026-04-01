@@ -22,8 +22,7 @@ data class AuthUiState(
     val groups: List<GroupDto> = emptyList()
 )
 
-class AuthViewModel : ViewModel() {
-    private val repository = AuthRepository()
+class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
