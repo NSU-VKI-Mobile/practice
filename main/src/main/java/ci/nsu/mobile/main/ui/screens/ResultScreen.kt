@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun ResultScreen(
+    initialAmount: String,
+    periodMonths: String,
     onSaveClick: () -> Unit,
     onBackToHomeClick: () -> Unit
 ) {

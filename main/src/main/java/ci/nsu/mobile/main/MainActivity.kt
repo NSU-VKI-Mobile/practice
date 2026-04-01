@@ -73,6 +73,8 @@ fun DepositApp(onExit: () -> Unit) {
         // Экран результата
         composable("result") {
             ResultScreen(
+                initialAmount = viewModel.getInitialAmount(),
+                periodMonths = viewModel.getPeriodMonths(),
                 onSaveClick = {
                     // TODO: Добавить сохранение данных в бд
                     navController.popBackStack("home", inclusive = false)
