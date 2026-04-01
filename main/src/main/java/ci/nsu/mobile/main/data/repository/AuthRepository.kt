@@ -23,7 +23,7 @@ class AuthRepository {
                     Result.failure(Exception("Пустой ответ от сервера"))
                 }
             } else {
-                Result.failure(Exception("Ошибка входа: ${response.code()}"))
+                Result.failure(Exception("Неправильный логин или пароль."))
             }
         } catch (e: Exception) {
             Result.failure(Exception("Ошибка сети или парсинга: ${e.message}"))
