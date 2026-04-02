@@ -107,7 +107,7 @@ fun DepositApp(onExit: () -> Unit) {
                 finalAmount = viewModel.getFinalAmount(),
                 interestEarned = viewModel.getInterestEarned(),
                 onSaveClick = {
-                    // TODO: Добавить сохранение данных в бд
+                    viewModel.saveCalculation()
                     navController.popBackStack("home", inclusive = false)
                 },
                 onBackToHomeClick = {
