@@ -29,6 +29,14 @@ fun AdditionalParamsScreen(
     var selectedRate = remember { mutableStateOf<Double?>(null) }
     var expanded = remember { mutableStateOf(false) }
 
+    val period = periodMonths.toIntOrNull()
+    val availableRates = when {
+        period == null -> emptyList()
+        period < 6 -> listOf(15.0)
+        period < 12 -> listOf(10.0)
+        else -> listOf(5.0)
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
