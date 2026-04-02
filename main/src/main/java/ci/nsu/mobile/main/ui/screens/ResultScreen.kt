@@ -20,6 +20,8 @@ fun ResultScreen(
     periodMonths: String,
     interestRate: Double?,
     monthlyTopUp: String,
+    finalAmount: Double,
+    interestEarned: Double,
     onSaveClick: () -> Unit,
     onBackToHomeClick: () -> Unit
 ) {
