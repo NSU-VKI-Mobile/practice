@@ -37,6 +37,8 @@ fun AdditionalParamsScreen(
         else -> listOf(5.0)
     }
 
+    val canCalculate = selectedRate.value != null
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -51,9 +53,11 @@ fun AdditionalParamsScreen(
 
         Text(
             text = "Срок вклада: $periodMonths месяцев",
-            fontSize = 18.sp,
+            fontSize = 16.sp,
             modifier = Modifier.padding(8.dp)
         )
+
+        Spacer(modifier = Modifier.height(32.dp))
 
         Text(
             text = "Выбор ставки: [будет позже]",
@@ -84,7 +88,8 @@ fun AdditionalParamsScreen(
             onClick = onCalculateClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 16.dp),
+            enabled = canCalculate
         ) {
             Text("Рассчитать")
         }
