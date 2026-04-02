@@ -1,10 +1,13 @@
 package ci.nsu.mobile.main.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import ci.nsu.mobile.main.data.database.DepositCalculation
 import ci.nsu.mobile.main.data.repositories.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class DepositViewModel(
     private val repository: DepositRepository
@@ -35,7 +38,7 @@ class DepositViewModel(
     private val _interestEarned = MutableStateFlow(0.0)
     val interestEarned: StateFlow<Double> = _interestEarned.asStateFlow()
 
-    
+
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
 
@@ -78,4 +81,35 @@ class DepositViewModel(
     fun getMonthlyTopUp(): String = _monthlyTopUp.value
     fun getFinalAmount(): Double = _finalAmount.value
     fun getInterestEarned(): Double = _interestEarned.value
+
+
+    fun saveCalculation() {
+        viewModelScope.launch {
+            _isSaving.value = true
+            _saveError.value = null
+
+            try {
+                val initial = _initialAmount.value.toDoubleOrNull() ?: 0.0
+                val months = _periodMonths.value.toIntOrNull() ?: 0
+                val rate = _interestRate.value ?: 0.0
+                val topUp = _monthlyTopUp.value.toDoubleOrNull()
+
+                val calculation = DepositCalculation(
+                    initialAmount = initial,
+                    periodMonths = months,
+                    interestRate = rate,
+                    monthlyTopUp = topUp,
+                    finalAmount = _finalAmount.value,
+                    interestEarned = _interestEarned.value,
+                    calculationDate = System.currentTimeMillis()
+                )
+
+                repository.saveCalculation(calculation)
+            } catch (e: Exception) {
+                _saveError.value = "Ошибка сохранения: ${e.message}"
+            } finally {
+                _isSaving.value = false
+            }
+        }
+    }
 }
