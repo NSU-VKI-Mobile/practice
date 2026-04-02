@@ -21,6 +21,13 @@ class DepositViewModel : ViewModel() {
     val monthlyTopUp: StateFlow<String> = _monthlyTopUp.asStateFlow()
 
 
+    private val _finalAmount = MutableStateFlow(0.0)
+    val finalAmount: StateFlow<Double> = _finalAmount.asStateFlow()
+
+    private val _interestEarned = MutableStateFlow(0.0)
+    val interestEarned: StateFlow<Double> = _interestEarned.asStateFlow()
+
+
     fun saveFirstScreenData(amount: String, months: String) {
         _initialAmount.value = amount
         _periodMonths.value = months
@@ -29,10 +36,35 @@ class DepositViewModel : ViewModel() {
     fun saveSecondScreenData(rate: Double, topUp: String) {
         _interestRate.value = rate
         _monthlyTopUp.value = topUp
+        calculateResult()
+    }
+
+    private fun calculateResult() {
+        val initial = _initialAmount.value.toDoubleOrNull() ?: return
+        val months = _periodMonths.value.toIntOrNull() ?: return
+        val rate = _interestRate.value ?: return
+        val topUp = _monthlyTopUp.value.toDoubleOrNull() ?: 0.0
+
+        val monthlyRate = rate / 100 / 12
+        var finalAmount = initial
+        var totalInterest = 0.0
+
+        for (month in 1..months) {
+            val interest = finalAmount * monthlyRate
+            finalAmount += interest
+            totalInterest += interest
+
+            finalAmount += topUp
+        }
+
+        _finalAmount.value = finalAmount
+        _interestEarned.value = totalInterest
     }
 
     fun getInitialAmount(): String = _initialAmount.value
     fun getPeriodMonths(): String = _periodMonths.value
     fun getInterestRate(): Double? = _interestRate.value
     fun getMonthlyTopUp(): String = _monthlyTopUp.value
+    fun getFinalAmount(): Double = _finalAmount.value
+    fun getInterestEarned(): Double = _interestEarned.value
 }
