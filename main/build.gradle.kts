@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-parcelize")
     alias(libs.plugins.kotlin.compose)
 }
 
@@ -50,6 +51,16 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    // Decompose
+    implementation("com.arkivanov.decompose:decompose:3.0.0")
+    implementation("com.arkivanov.decompose:extensions-compose:3.0.0")
+
+    // Essenty (жизненный цикл для Decompose)
+    implementation("com.arkivanov.essenty:lifecycle:2.0.0")
+
+    // Kotlin Serialization (для навигации)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
