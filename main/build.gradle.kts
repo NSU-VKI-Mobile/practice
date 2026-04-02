@@ -41,13 +41,14 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
 
+
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler) // KSP для генерации кода Room
 
     // Navigation & MVVM
-    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
