@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.ui.screens.HomeScreen
 import ci.nsu.mobile.main.ui.screens.DepositInputScreen
+import ci.nsu.mobile.main.ui.screens.AdditionalParamsScreen
 import ci.nsu.mobile.main.ui.screens.ResultScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 import ci.nsu.mobile.main.viewmodel.DepositViewModel
@@ -65,6 +66,20 @@ fun DepositApp(onExit: () -> Unit) {
                 },
                 onNextClick = { amount, months ->
                     viewModel.saveFirstScreenData(amount, months)
+                    navController.navigate("additional_params")
+                }
+            )
+        }
+
+        // Экран для дополнительных параметров
+        composable("additional_params") {
+            AdditionalParamsScreen(
+                periodMonths = viewModel.getPeriodMonths(),
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onCalculateClick = {
+                    // TODO: Пока просто переходим на экран результата. | Позже здесь будет расчёт
                     navController.navigate("result")
                 }
             )
