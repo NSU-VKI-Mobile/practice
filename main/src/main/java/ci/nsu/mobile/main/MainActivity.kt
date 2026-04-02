@@ -92,6 +92,8 @@ fun DepositApp(onExit: () -> Unit) {
                 periodMonths = viewModel.getPeriodMonths(),
                 interestRate = viewModel.getInterestRate(),
                 monthlyTopUp = viewModel.getMonthlyTopUp(),
+                finalAmount = viewModel.getFinalAmount(),
+                interestEarned = viewModel.getInterestEarned(),
                 onSaveClick = {
                     // TODO: Добавить сохранение данных в бд
                     navController.popBackStack("home", inclusive = false)
