@@ -18,7 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdditionalParamsScreen(
     periodMonths: String,
@@ -59,16 +62,39 @@ fun AdditionalParamsScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Text(
-            text = "Выбор ставки: [будет позже]",
-            fontSize = 18.sp,
-            modifier = Modifier.padding(8.dp)
-        )
+        ExposedDropdownMenuBox(
+            expanded = expanded.value,
+            onExpandedChange = { expanded.value = it }
+        ) {
+            //пупупу
+        }
 
-        Text(
-            text = "Ежемесячное пополнение: [будет позже]",
-            fontSize = 18.sp,
-            modifier = Modifier.padding(8.dp)
+        if (period == null) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Укажите корректный срок на предыдущем экране",
+                color = androidx.compose.ui.graphics.Color.Red,
+                fontSize = 14.sp
+            )
+        } else if (availableRates.isEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Нет доступных ставок для указанного срока",
+                color = androidx.compose.ui.graphics.Color.Red,
+                fontSize = 14.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = monthlyTopUp.value,
+            onValueChange = { monthlyTopUp.value = it },
+            label = { Text("Ежемесячное пополнение (руб) (необязательно)") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(32.dp))
