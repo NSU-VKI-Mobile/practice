@@ -22,9 +22,22 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
-            // Одна ViewModel на всё приложение (Scoped to Activity)
-            val viewModel: DepositViewModel = viewModel()
+            PracticeTheme {
+                val navController = rememberNavController()
+                val viewModel: DepositViewModel = viewModel()
+
+                NavHost(
+                    navController = navController,
+                    startDestination = "main" // Начинаем с главного экрана
+                ) {
+                    // Описываем маршруты (экраны создадим в следующем шаге)
+                    composable("main") { /* Тут будет MainScreen(navController) */ }
+                    composable("step1") { /* Тут будет Step1Screen(navController, viewModel) */ }
+                    composable("step2") { /* Тут будет Step2Screen(navController, viewModel) */ }
+                    composable("result") { /* Тут будет ResultScreen(navController, viewModel) */ }
+                    composable("history") { /* Тут будет HistoryScreen(navController, viewModel) */ }
+                }
+            }
         }
     }
 }
