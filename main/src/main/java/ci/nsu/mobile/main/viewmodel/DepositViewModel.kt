@@ -112,4 +112,14 @@ class DepositViewModel(
             }
         }
     }
+
+    fun resetCalculation() {
+        _initialAmount.value = ""
+        _periodMonths.value = ""
+        _interestRate.value = null
+        _monthlyTopUp.value = ""
+        _finalAmount.value = 0.0
+        _interestEarned.value = 0.0
+        _saveError.value = null
+    }
 }
