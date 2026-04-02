@@ -64,29 +64,65 @@ class DepositViewModel(
         }
     }
 
+    // В классе DepositViewModel, замените метод goToSecondStep и добавьте новые методы
+
     fun goToSecondStep() {
         val state = _firstStepState.value
         val amount = state.initialAmount.toDoubleOrNull() ?: 0.0
         val months = state.periodMonths.toIntOrNull() ?: 0
 
+        // Создаём список доступных ставок с соответствующими сроками
+        // Каждая ставка соответствует определённому диапазону сроков
+        val availableRates = mutableListOf<Pair<Double, Int>>()
 
-        val availableRates = when {
-            months < 6 -> listOf(15.0)
-            months < 12 -> listOf(10.0)
-            else -> listOf(5.0)
+        if (months > 0) {
+            // Добавляем все возможные варианты
+            availableRates.add(15.0 to 5)   // 15% для срока 5 месяцев
+            availableRates.add(10.0 to 9)   // 10% для срока 9 месяцев
+            availableRates.add(5.0 to 12)   // 5% для срока 12 месяцев
+        }
+
+        // Находим ставку, соответствующую введённому сроку
+        val defaultRate = when {
+            months < 6 -> 15.0
+            months < 12 -> 10.0
+            else -> 5.0
+        }
+
+        val defaultPeriod = when {
+            months < 6 -> 5
+            months < 12 -> 9
+            else -> 12
         }
 
         _secondStepState.update {
             SecondStepState(
                 initialAmount = amount,
                 periodMonths = months,
-                interestRate = availableRates.first(),
+                interestRate = defaultRate,
                 availableRates = availableRates,
-                selectedRate = availableRates.first()
+                selectedRate = defaultRate,
+                selectedPeriodMonths = defaultPeriod
             )
         }
     }
 
+    fun selectRate(rate: Double) {
+        // Находим срок, соответствующий выбранной ставке
+        val period = when (rate) {
+            15.0 -> 5   // 15% → 5 месяцев
+            10.0 -> 9   // 10% → 9 месяцев
+            5.0 -> 12   // 5% → 12 месяцев
+            else -> _secondStepState.value.selectedPeriodMonths
+        }
+
+        _secondStepState.update { current ->
+            current.copy(
+                selectedRate = rate,
+                selectedPeriodMonths = period
+            )
+        }
+    }
 
     fun updateMonthlyTopUp(value: String) {
         _secondStepState.update { current ->
@@ -105,27 +141,23 @@ class DepositViewModel(
         }
     }
 
-    fun selectRate(rate: Double) {
-        _secondStepState.update { it.copy(selectedRate = rate) }
-    }
-
     fun calculateResult() {
         val state = _secondStepState.value
         val monthlyTopUp = state.monthlyTopUp.toDoubleOrNull()
 
-
+        // Используем выбранный срок (соответствующий ставке)
+        val months = state.selectedPeriodMonths
         val monthlyRate = state.selectedRate / 100 / 12
-        val months = state.periodMonths
 
         val finalAmount = if (monthlyTopUp != null && monthlyTopUp > 0) {
-
+            // Формула с ежемесячным пополнением
             var total = state.initialAmount
             repeat(months) {
                 total = total * (1 + monthlyRate) + monthlyTopUp
             }
             total
         } else {
-
+            // Простой сложный процент без пополнения
             state.initialAmount * Math.pow(1 + monthlyRate, months.toDouble())
         }
 
@@ -135,7 +167,7 @@ class DepositViewModel(
         _resultState.update {
             ResultState(
                 initialAmount = state.initialAmount,
-                periodMonths = state.periodMonths,
+                periodMonths = months,  // Используем выбранный срок
                 interestRate = state.selectedRate,
                 monthlyTopUp = monthlyTopUp,
                 finalAmount = finalAmount,

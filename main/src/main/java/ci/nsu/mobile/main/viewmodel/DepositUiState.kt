@@ -13,8 +13,9 @@ data class SecondStepState(
     val periodMonths: Int = 0,
     val interestRate: Double = 0.0,
     val monthlyTopUp: String = "",
-    val availableRates: List<Double> = emptyList(),
+    val availableRates: List<Pair<Double, Int>> = emptyList(),  
     val selectedRate: Double = 0.0,
+    val selectedPeriodMonths: Int = 0,
     val monthlyTopUpError: String? = null,
     val isCalculateEnabled: Boolean = true
 )

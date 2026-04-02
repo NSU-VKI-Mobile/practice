@@ -81,6 +81,7 @@ class MainActivity : ComponentActivity() {
                         // Второй этап
                         composable(DepositRoutes.SecondStep.route) {
                             SecondStepScreen(
+                                viewModel = viewModel,
                                 onBack = {
                                     navController.popBackStack()
                                 },
