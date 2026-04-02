@@ -85,7 +85,11 @@ fun AdditionalParamsScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = onCalculateClick,
+            onClick = {
+                if (canCalculate) {
+                    onCalculateClick(selectedRate.value!!, monthlyTopUp.value)
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),

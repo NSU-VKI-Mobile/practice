@@ -78,8 +78,8 @@ fun DepositApp(onExit: () -> Unit) {
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onCalculateClick = {
-                    // TODO: Пока просто переходим на экран результата. | Позже здесь будет расчёт
+                onCalculateClick = { rate, topUp ->
+                    viewModel.saveSecondScreenData(rate, topUp)
                     navController.navigate("result")
                 }
             )
