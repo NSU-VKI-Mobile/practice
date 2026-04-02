@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.sp
 fun ResultScreen(
     initialAmount: String,
     periodMonths: String,
+    interestRate: Double?,
+    monthlyTopUp: String,
     onSaveClick: () -> Unit,
     onBackToHomeClick: () -> Unit
 ) {
