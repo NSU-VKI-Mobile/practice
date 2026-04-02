@@ -39,66 +39,71 @@ class MainInputActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             PracticeTheme {
                 val context = LocalContext.current
-                Scaffold(modifier = Modifier.fillMaxSize(), topBar =
-                    {
-                        TopAppBar(
-                            title = { Text("Расчёт вкладов") },
-                            navigationIcon = {
-                                IconButton(onClick = { finish() }) {
-                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
-                                }
-                            },
-//                            actions = {                               // Список действий справа
-//                                IconButton(onClick = { /* поиск */ }) {
-//                                    Icon(Icons.Default.Search, contentDescription = "Поиск")
-//                                }
-//                                IconButton(onClick = { /* настройки */ }) {
-//                                    Icon(Icons.Default.MoreVert, contentDescription = "Ещё")
-//                                }
-//                            },
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primary, // фон
-                                titleContentColor = MaterialTheme.colorScheme.onPrimary, // цвет заголовка
-                                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                                actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }) { innerPadding ->
-                    Column(modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                        horizontalAlignment = Alignment.CenterHorizontally, // центрируем по горизонтали
-                        verticalArrangement = Arrangement.Center) {
-
-                        EditTextComposable("Стартовый взнос")
-                        EditTextComposable("Срок вклада в месяцах")
-
-                        Button(onClick = {
-                            val intent = Intent(context, SecondInputActivity::class.java)
-                            context.startActivity(intent)
-                        }) { Text("Далее") }
-                    }
-                }
+                MainInputActivityScreen()
             }
         }
 
 
     }
     @Composable
-    fun EditTextComposable(labelText: String){
-        var text by remember { mutableStateOf("")}
-
+    fun EditTextComposable(
+        labelText: String,
+        value: String,
+        onValueChange: (String) -> Unit
+    ){
         OutlinedTextField(
-            value = text,
-            onValueChange = { newText ->
-                if (newText.isDigitsOnly())
-                    text = newText
-            },
+            value = value,
+            onValueChange = onValueChange,
             label = { Text(labelText) }
         )
     }
+
+    @Composable
+    fun MainInputActivityScreen(){
+
+        var startAmount by remember { mutableStateOf("") }
+        var termMonths by remember { mutableStateOf("") }
+
+        Scaffold(modifier = Modifier.fillMaxSize(), topBar =
+            {
+                TopAppBar(
+                    title = { Text("Расчёт вкладов") },
+                    navigationIcon = {
+                        IconButton(onClick = { finish() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary, // фон
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary, // цвет заголовка
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }) { innerPadding ->
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally, // центрируем по горизонтали
+                verticalArrangement = Arrangement.Center) {
+
+                EditTextComposable("Стартовый взнос", ) { }
+                EditTextComposable("Срок вклада в месяцах")
+
+                Button(onClick = {
+                    val intent = Intent(context, SecondInputActivity::class.java).apply {
+                        putExtra("START_AMOUNT", )
+                        putExtra("TERM", )
+                    }
+                    context.startActivity(intent)
+                }) { Text("Далее") }
+            }
+        }
+    }
+
     }

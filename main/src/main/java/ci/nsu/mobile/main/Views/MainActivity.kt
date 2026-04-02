@@ -19,61 +19,51 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import ci.nsu.mobile.main.ViewModels.DepositViewModel
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val viewModel : DepositViewModel = viewModel()
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             PracticeTheme {
-                val context = LocalContext.current
-                Scaffold(modifier = Modifier.fillMaxSize(), topBar =
-                    {
-                        TopAppBar(
-                            title = { Text("Расчёт вкладов") },          // Заголовок (Composable)
-//                            navigationIcon = {                       // Иконка слева (например, меню или назад)
-//                                IconButton(onClick = { /* обработчик */ }) {
-//                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
-//                                }
-//                            },
-//                            actions = {                               // Список действий справа
-//                                IconButton(onClick = { /* поиск */ }) {
-//                                    Icon(Icons.Default.Search, contentDescription = "Поиск")
-//                                }
-//                                IconButton(onClick = { /* настройки */ }) {
-//                                    Icon(Icons.Default.MoreVert, contentDescription = "Ещё")
-//                                }
-//                            },
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primary, // фон
-                                titleContentColor = MaterialTheme.colorScheme.onPrimary, // цвет заголовка
-                                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                                actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }) { innerPadding ->
-                    Column(modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                        horizontalAlignment = Alignment.CenterHorizontally, // центрируем по горизонтали
-                        verticalArrangement = Arrangement.Center) {
-                        Button(onClick = {
-                            val intent = Intent(context, MainInputActivity::class.java)
-                            context.startActivity(intent)
-                        }, modifier = Modifier.padding(innerPadding)) { Text("Рассчитать") }
-                        Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("История рассчётов") }
-                        Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("Закрыть приложение") }
-                    }
-                }
+                MainActivityScreen()
+            }
+        }
+    }
+
+    @Composable
+    fun MainActivityScreen() {
+//        val viewModel : DepositViewModel = viewModel()
+        val context = LocalContext.current
+        Scaffold(modifier = Modifier.fillMaxSize(), topBar =
+            {
+                TopAppBar(
+                    title = { Text("Расчёт вкладов") },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary, // фон
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary, // цвет заголовка
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }) { innerPadding ->
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally, // центрируем по горизонтали
+                verticalArrangement = Arrangement.Center) {
+                Button(onClick = {
+                    val intent = Intent(context, MainInputActivity::class.java)
+                    context.startActivity(intent)
+                }, modifier = Modifier.padding(innerPadding)) { Text("Рассчитать") }
+                Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("История рассчётов") }
+                Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("Закрыть приложение") }
             }
         }
     }
