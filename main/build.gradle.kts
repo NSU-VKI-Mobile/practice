@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.symbol.processing)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -34,6 +35,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
@@ -46,11 +50,16 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
 
     // Room (База данных - без изменений)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    debugImplementation(libs.androidx.ui.test.manifest)
     ksp(libs.androidx.room.compiler)
 
     // Navigation & MVVM для COMPOSE (это важно!)
