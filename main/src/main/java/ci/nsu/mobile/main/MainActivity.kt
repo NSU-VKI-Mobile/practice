@@ -61,9 +61,11 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
+
                         // Первый этап
                         composable(DepositRoutes.FirstStep.route) {
                             FirstStepScreen(
+                                viewModel = viewModel,
                                 onBackToMain = {
                                     navController.popBackStack(
                                         DepositRoutes.Main.route,
