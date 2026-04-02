@@ -1,11 +1,14 @@
 package ci.nsu.mobile.main.viewmodel
 
 import androidx.lifecycle.ViewModel
+import ci.nsu.mobile.main.data.repositories.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class DepositViewModel : ViewModel() {
+class DepositViewModel(
+    private val repository: DepositRepository
+) : ViewModel() {
 
     private val _initialAmount = MutableStateFlow("")
     val initialAmount: StateFlow<String> = _initialAmount.asStateFlow()
