@@ -16,6 +16,11 @@ class DepositViewModel(
     private val _periodMonths = MutableStateFlow("")
     val periodMonths: StateFlow<String> = _periodMonths.asStateFlow()
 
+    fun saveFirstScreenData(amount: String, months: String) {
+        _initialAmount.value = amount
+        _periodMonths.value = months
+    }
+
 
     private val _interestRate = MutableStateFlow<Double?>(null)
     val interestRate: StateFlow<Double?> = _interestRate.asStateFlow()
@@ -30,11 +35,12 @@ class DepositViewModel(
     private val _interestEarned = MutableStateFlow(0.0)
     val interestEarned: StateFlow<Double> = _interestEarned.asStateFlow()
 
+    
+    private val _isSaving = MutableStateFlow(false)
+    val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
 
-    fun saveFirstScreenData(amount: String, months: String) {
-        _initialAmount.value = amount
-        _periodMonths.value = months
-    }
+    private val _saveError = MutableStateFlow<String?>(null)
+    val saveError: StateFlow<String?> = _saveError.asStateFlow()
 
     fun saveSecondScreenData(rate: Double, topUp: String) {
         _interestRate.value = rate
@@ -63,6 +69,8 @@ class DepositViewModel(
         _finalAmount.value = finalAmount
         _interestEarned.value = totalInterest
     }
+
+
 
     fun getInitialAmount(): String = _initialAmount.value
     fun getPeriodMonths(): String = _periodMonths.value
