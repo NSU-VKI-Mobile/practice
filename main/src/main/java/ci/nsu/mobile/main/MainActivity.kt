@@ -9,6 +9,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -44,7 +46,12 @@ fun DepositApp(onExit: () -> Unit) {
 
     val database = AppDatabase.getDatabase(androidx.compose.ui.platform.LocalContext.current.applicationContext)
     val repository = DepositRepository(database)
-    val viewModel: DepositViewModel = viewModel()
+
+    val viewModel: DepositViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { DepositViewModel(repository) }
+        }
+    )
 
     NavHost(
         navController = navController,
