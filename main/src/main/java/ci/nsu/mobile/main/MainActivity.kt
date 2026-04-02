@@ -114,6 +114,7 @@ class MainActivity : ComponentActivity() {
                         // История
                         composable(DepositRoutes.History.route) {
                             HistoryScreen(
+                                viewModel = viewModel,
                                 onItemClick = { id ->
                                     navController.navigate(DepositRoutes.HistoryDetail.passId(id))
                                 },
@@ -126,13 +127,14 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        // Детали истории
+                    // Детали истории
                         composable(
                             route = DepositRoutes.HistoryDetail.route,
                             arguments = DepositRoutes.HistoryDetail.arguments
                         ) { backStackEntry ->
                             val id = backStackEntry.arguments?.getLong(DepositRoutes.HistoryDetail.ID_ARG) ?: 0L
                             HistoryDetailScreen(
+                                viewModel = viewModel,
                                 calculationId = id,
                                 onBack = {
                                     navController.popBackStack()
