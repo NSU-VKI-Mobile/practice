@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ci.nsu.mobile.main">
 
     <application
         android:allowBackup="true"
@@ -8,16 +9,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Draft">
-        <activity
-            android:name=".ConverterActivity"
-            android:exported="false"
-            android:label="@string/title_activity_converter"
-            android:theme="@style/Theme.Draft" />
+
+
         <activity
             android:name=".MainActivity"
-            android:exported="false"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.Draft" />
+            android:exported="true"
+            android:label="Расчёт вкладов">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
