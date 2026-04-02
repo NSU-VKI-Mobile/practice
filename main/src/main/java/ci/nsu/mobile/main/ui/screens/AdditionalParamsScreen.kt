@@ -77,6 +77,21 @@ fun AdditionalParamsScreen(
                     .padding(horizontal = 16.dp)
                     .menuAnchor()
             )
+
+            ExposedDropdownMenu(
+                expanded = expanded.value,
+                onDismissRequest = { expanded.value = false }
+            ) {
+                availableRates.forEach { rate ->
+                    DropdownMenuItem(
+                        text = { Text("$rate%") },
+                        onClick = {
+                            selectedRate.value = rate
+                            expanded.value = false
+                        }
+                    )
+                }
+            }
         }
 
         if (period == null) {
