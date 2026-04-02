@@ -1,5 +1,6 @@
 package ci.nsu.mobile.main
 
+import android.R
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -39,6 +40,7 @@ val colorMap = mapOf(
     "cyan" to Color.Cyan,
     "lime" to Color(0xFFCDDC39)
 )
+val darkTextColors = setOf(Color.Green,Color.Yellow,Color.Blue)
 
 @Composable
 fun ColorPickerScreen() {
@@ -47,7 +49,9 @@ fun ColorPickerScreen() {
     var selected by remember { mutableStateOf("Green") }
 
     Column(
-        Modifier.fillMaxSize().padding(16.dp),
+        Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -69,7 +73,9 @@ fun ColorPickerScreen() {
                     } ?: Log.d("ColorPicker", "Цвет \"$name\" не найден")
                 }
             },
-            modifier = Modifier.fillMaxWidth().height(56.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
             colors = ButtonDefaults.buttonColors(containerColor = buttonBg),
         ) {
             Text(
@@ -94,14 +100,15 @@ fun ColorPickerScreen() {
                 ) {
                     Text(
                         name,
-                        color = if (color == Color.Yellow || color == Color(0xFFCDDC39)) Color.Black else Color.White,
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                        color = if(color in darkTextColors) Color.Black else Color.White )
+
+                  }
+
                 }
             }
         }
     }
-}
+
 
 @Preview(showBackground = true)
 @Composable
