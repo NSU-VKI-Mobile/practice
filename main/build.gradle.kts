@@ -37,22 +37,28 @@ android {
 }
 
 dependencies {
-    // Исправленные и добавленные зависимости
-    implementation(libs.androidx.appcompat)
+    // Ядро (обязательно)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat) // Оставляем для совместимости тем
 
+    // Jetpack Compose (основные библиотеки UI)
+    implementation(libs.androidx.material3) // Сами кнопки, тексты и цвета
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
 
-    // Room
+    // Room (База данных - без изменений)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler) // KSP для генерации кода Room
+    ksp(libs.androidx.room.compiler)
 
-    // Navigation & MVVM
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
+    // Navigation & MVVM для COMPOSE (это важно!)
+    implementation(libs.androidx.navigation.compose)           // Навигация между функциями
+    implementation(libs.androidx.lifecycle.viewmodel.compose) // Чтобы работала viewModel() в Compose
+    implementation(libs.androidx.lifecycle.runtime.ktx)
 
+    // Тесты (стандарт)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
