@@ -88,6 +88,32 @@ fun MyScreen(
             ){
             Text(text = "Добавить")
         }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = {viewModel.deleteItem(); println(uiState.items)
+            },
+            modifier = Modifier
+                .height(height = 48.dp)
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF8B0000)
+            )
+        ){
+            Text(text = "Удалить")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = {viewModel.toggleAllItems(); println(uiState.items)
+            },
+            modifier = Modifier
+                .height(height = 48.dp)
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF707070)
+            )
+        ){
+            Text(text = "Выбрать все")
+        }
         Spacer(modifier = Modifier.height(32.dp))
         LazyColumn {
             items(uiState.items, key = {item -> item.id}){
@@ -110,21 +136,7 @@ fun MyScreen(
                             Text(
                                 text = item.name,
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Button(
-                                onClick = {
-                                    viewModel.deleteItem(item.id)
-                                },
-                                modifier = Modifier
-                                    .height(height = 36.dp)
-                                    .width(128.dp)
-                                    .fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF8B0000)
-                                )
-                            ) {
-                                Text(text = "Удалить")
-                            }
+
                         }
                         Checkbox(
                             checked = item.isBought,
