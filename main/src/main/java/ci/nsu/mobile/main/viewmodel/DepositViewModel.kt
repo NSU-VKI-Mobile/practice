@@ -74,15 +74,6 @@ class DepositViewModel(
     }
 
 
-
-    fun getInitialAmount(): String = _initialAmount.value
-    fun getPeriodMonths(): String = _periodMonths.value
-    fun getInterestRate(): Double? = _interestRate.value
-    fun getMonthlyTopUp(): String = _monthlyTopUp.value
-    fun getFinalAmount(): Double = _finalAmount.value
-    fun getInterestEarned(): Double = _interestEarned.value
-
-
     fun saveCalculation() {
         viewModelScope.launch {
             _isSaving.value = true
@@ -122,4 +113,11 @@ class DepositViewModel(
         _interestEarned.value = 0.0
         _saveError.value = null
     }
+
+    fun getInitialAmount(): String = _initialAmount.value
+    fun getPeriodMonths(): String = _periodMonths.value
+    fun getInterestRate(): Double? = _interestRate.value
+    fun getMonthlyTopUp(): String = _monthlyTopUp.value
+    fun getFinalAmount(): Double = _finalAmount.value
+    fun getInterestEarned(): Double = _interestEarned.value
 }

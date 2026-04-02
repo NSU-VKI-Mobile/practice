@@ -12,6 +12,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.main.data.database.AppDatabase
+import ci.nsu.mobile.main.data.repositories.DepositRepository
 import ci.nsu.mobile.main.ui.screens.HomeScreen
 import ci.nsu.mobile.main.ui.screens.DepositInputScreen
 import ci.nsu.mobile.main.ui.screens.AdditionalParamsScreen
@@ -39,6 +41,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DepositApp(onExit: () -> Unit) {
     val navController = rememberNavController()
+
+    val database = AppDatabase.getDatabase(androidx.compose.ui.platform.LocalContext.current.applicationContext)
+    val repository = DepositRepository(database)
     val viewModel: DepositViewModel = viewModel()
 
     NavHost(
