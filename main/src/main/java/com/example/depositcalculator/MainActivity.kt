@@ -32,14 +32,15 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 }
-
             }
         }
     }
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    onCloseApp: () -> Unit
+) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -80,7 +81,6 @@ fun MainScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
-
             ) {
                 Text("Закрыть приложение", fontSize = 18.sp)
             }
