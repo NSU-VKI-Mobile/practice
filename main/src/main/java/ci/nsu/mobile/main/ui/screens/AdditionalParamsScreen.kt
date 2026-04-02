@@ -66,7 +66,17 @@ fun AdditionalParamsScreen(
             expanded = expanded.value,
             onExpandedChange = { expanded.value = it }
         ) {
-            //пупупу
+            OutlinedTextField(
+                value = selectedRate.value?.let { "$it%" } ?: "",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Выберите процентную ставку") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded.value) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .menuAnchor()
+            )
         }
 
         if (period == null) {
