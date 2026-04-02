@@ -143,33 +143,40 @@ class DepositViewModel(
 
     fun calculateResult() {
         val state = _secondStepState.value
-        val monthlyTopUp = state.monthlyTopUp.toDoubleOrNull()
+        val monthlyTopUpValue = state.monthlyTopUp.toDoubleOrNull()
 
-        // Используем выбранный срок (соответствующий ставке)
         val months = state.selectedPeriodMonths
         val monthlyRate = state.selectedRate / 100 / 12
 
-        val finalAmount = if (monthlyTopUp != null && monthlyTopUp > 0) {
-            // Формула с ежемесячным пополнением
+        val finalAmount = if (monthlyTopUpValue != null && monthlyTopUpValue > 0) {
             var total = state.initialAmount
             repeat(months) {
-                total = total * (1 + monthlyRate) + monthlyTopUp
+                total = total * (1 + monthlyRate) + monthlyTopUpValue
             }
             total
         } else {
-            // Простой сложный процент без пополнения
             state.initialAmount * Math.pow(1 + monthlyRate, months.toDouble())
         }
 
-        val totalTopUp = (monthlyTopUp ?: 0.0) * months
+        val totalTopUp = (monthlyTopUpValue ?: 0.0) * months
         val interestEarned = finalAmount - state.initialAmount - totalTopUp
+
+        // ОТЛАДКА:
+        println("=== РАСЧЁТ ===")
+        println("Начальная сумма: ${state.initialAmount}")
+        println("Срок (мес): $months")
+        println("Ставка: ${state.selectedRate}%")
+        println("Месячная ставка: $monthlyRate")
+        println("Пополнение: $monthlyTopUpValue")
+        println("Итоговая сумма: $finalAmount")
+        println("Начисленные проценты: $interestEarned")
 
         _resultState.update {
             ResultState(
                 initialAmount = state.initialAmount,
-                periodMonths = months,  // Используем выбранный срок
+                periodMonths = months,
                 interestRate = state.selectedRate,
-                monthlyTopUp = monthlyTopUp,
+                monthlyTopUp = monthlyTopUpValue,
                 finalAmount = finalAmount,
                 interestEarned = interestEarned,
                 showResult = true
@@ -177,15 +184,17 @@ class DepositViewModel(
         }
     }
 
-
     fun saveCalculation() {
         val result = _resultState.value
         if (result.showResult) {
+
+            val monthlyTopUpValue = result.monthlyTopUp
+
             val calculation = DepositCalculation(
                 initialAmount = result.initialAmount,
                 periodMonths = result.periodMonths,
                 interestRate = result.interestRate,
-                monthlyTopUp = result.monthlyTopUp,
+                monthlyTopUp = monthlyTopUpValue,
                 finalAmount = result.finalAmount,
                 interestEarned = result.interestEarned
             )

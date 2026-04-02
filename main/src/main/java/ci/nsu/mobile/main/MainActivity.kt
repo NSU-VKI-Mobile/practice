@@ -94,7 +94,9 @@ class MainActivity : ComponentActivity() {
                         // Результат
                         composable(DepositRoutes.Result.route) {
                             ResultScreen(
+                                viewModel = viewModel,
                                 onSave = {
+                                    viewModel.saveCalculation()
                                     navController.popBackStack(
                                         DepositRoutes.Main.route,
                                         inclusive = false
