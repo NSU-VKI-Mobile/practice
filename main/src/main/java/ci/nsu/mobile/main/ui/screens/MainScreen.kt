@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,32 +23,35 @@ import ci.nsu.mobile.main.navigation.Routes
 
 @Composable
 fun MainScreenContent(navToScreen: NavController) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        val activity = LocalActivity.current
-        Text("main screen")
-        Button({navToScreen.navigate(Routes.FistScreen.route)}, modifier =  Modifier.fillMaxWidth().padding(10.dp),
-            colors = ButtonDefaults.buttonColors(
-                contentColor = Color.White,
-                containerColor = Color.Black
-            )) {
-            Text("Рассчитать")
-        }
-        Button({navToScreen.navigate(Routes.HistoryScreen.route)}, modifier = Modifier.fillMaxWidth().padding(10.dp),
-            colors = ButtonDefaults.buttonColors(
-                contentColor = Color.White,
-                containerColor = Color.Black
-            )) {
-            Text("История расчетов")
-        }
-        Button({activity?.finish()}, modifier = Modifier.fillMaxWidth().padding(10.dp),
-            colors = ButtonDefaults.buttonColors(
-                contentColor = Color.White,
-                containerColor = Color.Black
-            )) {
-            Text("Закрыть приложение")
+    Scaffold() { innerPadding ->
+        Column(modifier = Modifier.fillMaxSize().padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            val activity = LocalActivity.current
+            Text("main screen")
+            Button({navToScreen.navigate(Routes.FistScreen.route)}, modifier =  Modifier.fillMaxWidth().padding(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    containerColor = Color.Black
+                )) {
+                Text("Рассчитать")
+            }
+            Button({navToScreen.navigate(Routes.HistoryScreen.route)}, modifier = Modifier.fillMaxWidth().padding(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    containerColor = Color.Black
+                )) {
+                Text("История расчетов")
+            }
+            Button({activity?.finish()}, modifier = Modifier.fillMaxWidth().padding(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    containerColor = Color.Black
+                )) {
+                Text("Закрыть приложение")
+            }
         }
     }
+
 }

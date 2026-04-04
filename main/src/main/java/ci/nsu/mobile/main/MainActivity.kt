@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -16,31 +17,33 @@ import ci.nsu.mobile.main.ui.screens.HistoryScreenContent
 import ci.nsu.mobile.main.ui.screens.MainScreenContent
 import ci.nsu.mobile.main.ui.screens.ResultScreenContent
 import ci.nsu.mobile.main.ui.screens.SecondScreenContent
-import ci.nsu.mobile.main.ui.theme.PracticeTheme
+import ci.nsu.mobile.main.ui.theme.AppTheme
+import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
 
 class MainActivity : ComponentActivity() {
-    private lateinit var repos: DepositRepository
+    private lateinit var repository: DepositRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val database = AppDatabase.getDatabase(this)
-        repos = DepositRepository.getInstance(database.depositDao())
+        repository = DepositRepository.getInstance(database.depositDao())
         setContent {
-            PracticeTheme {
-                NavControlFun()
+            AppTheme {
+                NavControlFun(repository)
             }
         }
     }
 }
 
 @Composable
-fun NavControlFun() {
+fun NavControlFun(repository: DepositRepository) {
     val navController = rememberNavController()
+    val viewModel = remember { DepositCalculationViewModel(repository) }
     NavHost(navController, startDestination = Routes.MainScreen.route) {
         composable(Routes.MainScreen.route) {MainScreenContent(navController)}
-        composable(Routes.FistScreen.route) {FirstScreenContent(navController)}
-        composable(Routes.SecondScreen.route) {SecondScreenContent(navController)}
-        composable(Routes.HistoryScreen.route) { HistoryScreenContent((navController)) }
-        composable(Routes.ResultScreen.route) { ResultScreenContent(navController) }
+        composable(Routes.FistScreen.route) {FirstScreenContent(navController, viewModel)}
+        composable(Routes.SecondScreen.route) {SecondScreenContent(navController, viewModel)}
+        composable(Routes.HistoryScreen.route) { HistoryScreenContent(navController, viewModel) }
+        composable(Routes.ResultScreen.route) { ResultScreenContent(navController, viewModel) }
     }
 }

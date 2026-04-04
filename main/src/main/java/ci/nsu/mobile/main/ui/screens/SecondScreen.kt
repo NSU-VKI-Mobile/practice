@@ -6,11 +6,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,55 +25,60 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import ci.nsu.mobile.main.navigation.Routes
+import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
 
 
 @Composable
-fun SecondScreenContent(navScreens: NavController) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        var expanded by remember { mutableStateOf(true) }
-        val interestRate = remember{mutableStateOf(0)}
-        Text("second screen")
-        DropdownMenu(expanded = expanded,
-            onDismissRequest = {expanded = false},
-            offset = DpOffset(x = 20.dp, y = 50.dp)) {
-            DropdownMenuItem(
-                onClick = {interestRate.value = 15},
-                text = { Text("15%") }
-            )
-            DropdownMenuItem(
-                onClick = {interestRate.value = 10},
-                text = { Text("10%") }
-            )
-            DropdownMenuItem(
-                onClick = {interestRate.value = 5},
-                text = { Text("5%") }
-            )
-        }
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center) {
-            Button(
-                {navScreens.navigate(Routes.FistScreen.route)}, modifier = Modifier.padding(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White,
-                    containerColor = Color.Black
-                )
+fun SecondScreenContent(navScreens: NavController,
+                        viewModel: DepositCalculationViewModel) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val checkState = remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(true) }
+    val interestRate = remember{mutableStateOf(0)}
+
+        Scaffold() {innerPadding ->
+            Column(modifier = Modifier.fillMaxSize().padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Text("Назад")
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    AssistChip(onClick = {}, label = {Text("15%")})
+                    AssistChip(onClick = {}, label = {Text("10%")})
+                    AssistChip(onClick = {}, label = {Text("5%")})
+                }
+                Row(Modifier.fillMaxWidth()) {
+                    Checkbox(checked = checkState.value, onCheckedChange = {checkState.value = it})
+                    Text("Ежемесячное пополнение")
+                }
+                if (checkState.value) {
+                    TextField(uiState.monthlyTopUp.toString(), label = {Text("Ежемесячное пополнение")},
+                        onValueChange = {})
+                }
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center) {
+                    Button(
+                        {navScreens.navigate(Routes.FistScreen.route)}, modifier = Modifier.padding(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.White,
+                            containerColor = Color.Black
+                        )
+                    ) {
+                        Text("Назад")
+                    }
+                    Button(
+                        {navScreens.navigate(Routes.ResultScreen.route)}, modifier = Modifier.padding(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.White,
+                            containerColor = Color.Black
+                        )
+                    ) {
+                        Text("Рассчитать")
+                    }
+                }
             }
-            Button(
-                {navScreens.navigate(Routes.ResultScreen.route)}, modifier = Modifier.padding(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White,
-                    containerColor = Color.Black
-                )
-            ) {
-                Text("Рассчитать")
-            }
-        }
+
     }
 }
