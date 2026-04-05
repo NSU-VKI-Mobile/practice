@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val database = AppDatabase.getDatabase(this)
-        repository = DepositRepository.getInstance(database.depositDao())
+        repository = DepositRepository(database.depositDao())
         setContent {
             AppTheme {
                 NavControlFun(repository)
@@ -35,6 +35,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+//@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavControlFun(repository: DepositRepository) {
     val navController = rememberNavController()

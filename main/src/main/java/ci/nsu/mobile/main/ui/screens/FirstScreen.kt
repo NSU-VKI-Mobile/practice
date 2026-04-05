@@ -31,12 +31,12 @@ fun FirstScreenContent(navScreen: NavController, viewModel: DepositCalculationVi
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    var errorMessage = ""
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }) {
         innerPadding -> Column(modifier = Modifier.fillMaxSize().padding(innerPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
-        Text("first screen")
         TextField(uiState.initialAmount, label = {Text("Стартовый взнос")},
             onValueChange = {
                 viewModel.initialAmountUpdate(it)}, modifier = Modifier.padding(10.dp))
@@ -51,12 +51,13 @@ fun FirstScreenContent(navScreen: NavController, viewModel: DepositCalculationVi
                 Text("<- В начало")
             }
             Button({
-                if (viewModel.validationFirstScreen()) {
+                errorMessage = viewModel.validationFirstScreen()
+                if (errorMessage == "") {
                     navScreen.navigate(Routes.SecondScreen.route)
                 }
                 else {
                     scope.launch {
-                        snackbarHostState.showSnackbar("error")
+                        snackbarHostState.showSnackbar(errorMessage)
                     }
                 }
             }, modifier = Modifier.padding(10.dp)) {
