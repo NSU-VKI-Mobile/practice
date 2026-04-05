@@ -24,7 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun CalculationScreen(
     viewModel: CalculationViewModel = CalculationViewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToAdditional: () -> Unit
+    onNavigateToAdditional: (amount: String, period: String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -67,7 +67,12 @@ fun CalculationScreen(
             )
 
             Button(
-                onClick = onNavigateToAdditional,
+                onClick = {
+                    onNavigateToAdditional(
+                        uiState.depositAmount,
+                        uiState.depositTerm
+                    )
+                },
                 enabled = uiState.canProceed,
             ) {
                 Text(
