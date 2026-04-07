@@ -1,4 +1,4 @@
-package ci.nsu.moble.main.ui.theme
+package ci.nsu.mobile.main.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
