@@ -2,6 +2,7 @@
 
 package ci.nsu.mobile.main.Views
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -35,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,10 +47,16 @@ class SecondInputActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Получаем переданные значения из Intent
+        val startAmount = intent.getDoubleExtra("START_AMOUNT", 0.0)
+        val termMonths = intent.getIntExtra("TERM", 0)
+
         setContent {
             PracticeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize(), topBar =
-                    {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = {
                         TopAppBar(
                             title = { Text("Расчёт вкладов") },
                             navigationIcon = {
@@ -56,47 +65,51 @@ class SecondInputActivity : ComponentActivity() {
                                 }
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primary, // фон
-                                titleContentColor = MaterialTheme.colorScheme.onPrimary, // цвет заголовка
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                titleContentColor = MaterialTheme.colorScheme.onPrimary,
                                 navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                                 actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             modifier = Modifier.fillMaxWidth()
                         )
-                    }) { innerPadding ->
-                    RateSelectionScreen(innerPadding)
-                }
-
+                    }
+                ) { innerPadding ->
+                    RateSelectionScreen(
+                        innerPadding = innerPadding,
+                        defaultTerm = termMonths
+                    )
                 }
             }
         }
+    }
+
     @Composable
-    fun RateSelectionScreen(innerPadding: PaddingValues){
-        // Состояние срока (в виде строки, чтобы обрабатывать ввод)
-        var termInput by remember { mutableStateOf("") }
-        // Выбранная ставка
+    fun RateSelectionScreen(innerPadding: PaddingValues, defaultTerm: Int) {
+        var termInput by remember { mutableStateOf(if (defaultTerm > 0) defaultTerm.toString() else "") }
         var selectedRate by remember { mutableStateOf<Double?>(null) }
-        // Сообщение об ошибке
         var errorMessage by remember { mutableStateOf<String?>(null) }
-        // Развёрнут ли выпадающий список
         var expanded by remember { mutableStateOf(false) }
 
-        // Вспомогательная функция для парсинга срока
-        fun parseTerm(): Int? = termInput.toIntOrNull()
+        val currencies = listOf("Рубли (RUB)", "Доллары (USD)", "Евро (EUR)")
+        var selectedCurrency by remember { mutableStateOf(currencies[0]) }
+        var currencyExpanded by remember { mutableStateOf(false) }
 
-        // Логика определения доступных ставок в зависимости от срока
-        val availableRates = remember(termInput) {
-            val term = parseTerm()
-            when {
-                term == null -> emptyList()       // срок не число
-                term < 6 -> listOf(15.0)          // ставка 15%
-                term in 6..11 -> listOf(10.0)     // ставка 10%
-                term >= 12 -> listOf(5.0)         // ставка 5%
-                else -> emptyList()
-            }
+        val context = LocalContext.current
+
+        // Все возможные ставки
+        val allRates = listOf(15.0, 10.0, 5.0)
+
+        // Функция, возвращающая "типовой" срок для выбранной ставки
+        fun getTermForRate(rate: Double): Int = when (rate) {
+            15.0 -> 5   // для 15% срок < 6 месяцев
+            10.0 -> 10  // для 10% срок от 6 до 11 месяцев
+            5.0  -> 12  // для 5% срок >= 12 месяцев
+            else -> 0
         }
 
-        // Проверка на наличие срока и валидность
+        fun parseTerm(): Int? = termInput.toIntOrNull()
+
+        // При ручном изменении срока выбираем подходящую ставку
         LaunchedEffect(termInput) {
             val term = parseTerm()
             errorMessage = when {
@@ -104,89 +117,121 @@ class SecondInputActivity : ComponentActivity() {
                 term == null -> "Введите корректное число"
                 else -> null
             }
-            // Если срок некорректный или нет доступных ставок, сбрасываем выбранную ставку
-            if ((errorMessage != null) || availableRates.isEmpty()) {
-                selectedRate = null
-            } else {
-                // Автоматически выбираем первую доступную ставку, если ранее не было выбрано
-                if (selectedRate !in availableRates) {
-                    selectedRate = availableRates.firstOrNull()
+            if (errorMessage == null && term != null) {
+                val recommendedRate = when {
+                    term < 6 -> 15.0
+                    term in 6..11 -> 10.0
+                    term >= 12 -> 5.0
+                    else -> null
                 }
+                selectedRate = recommendedRate
+            } else {
+                selectedRate = null
             }
         }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
-        )
-        {
-            // Поле ввода срока
-        OutlinedTextField(
-            value = termInput,
-            onValueChange = { termInput = it },
-            label = { Text("Срок (месяцы)") },
-            isError = errorMessage != null,
-            supportingText = {
-                if (errorMessage != null) {
-                    Text(errorMessage!!, color = MaterialTheme.colorScheme.error)
-                }
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Выпадающий список выбора ставки
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = it },
-            modifier = Modifier.fillMaxWidth()
         ) {
+            // Поле ввода срока
             OutlinedTextField(
-                value = selectedRate?.let { "$it%" } ?: "",
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Процентная ставка") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor()
+                value = termInput,
+                onValueChange = { termInput = it },
+                label = { Text("Срок (месяцы)") },
+                isError = errorMessage != null,
+                supportingText = {
+                    if (errorMessage != null) {
+                        Text(errorMessage!!, color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
             )
-            ExposedDropdownMenu(
+
+            // Выпадающий список выбора ставки (всегда показывает все ставки)
+            ExposedDropdownMenuBox(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onExpandedChange = { expanded = it },
+                modifier = Modifier.fillMaxWidth()
             ) {
-                if (errorMessage != null || availableRates.isEmpty()) {
-                    DropdownMenuItem(
-                        text = { Text("Недоступно", color = MaterialTheme.colorScheme.error) },
-                        onClick = { /* ничего не делаем */ },
-                        enabled = false
-                    )
-                } else {
-                    availableRates.forEach { rate ->
+                OutlinedTextField(
+                    value = selectedRate?.let { "$it%" } ?: "",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Процентная ставка") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    // Всегда показываем все три ставки
+                    allRates.forEach { rate ->
                         DropdownMenuItem(
                             text = { Text("$rate%") },
                             onClick = {
                                 selectedRate = rate
+                                // При выборе ставки меняем срок на соответствующий
+                                termInput = getTermForRate(rate).toString()
                                 expanded = false
                             }
                         )
                     }
                 }
             }
-        }
 
-        // Отображение выбранной ставки (для наглядности)
-        if (selectedRate != null && errorMessage == null) {
-            Text(
-                text = "Выбрана ставка: ${selectedRate}%",
-                fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
+            // Выпадающий список для выбора валюты
+            ExposedDropdownMenuBox(
+                expanded = currencyExpanded,
+                onExpandedChange = { currencyExpanded = it },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = selectedCurrency,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Валюта") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = currencyExpanded,
+                    onDismissRequest = { currencyExpanded = false }
+                ) {
+                    currencies.forEach { currency ->
+                        DropdownMenuItem(
+                            text = { Text(currency) },
+                            onClick = {
+                                selectedCurrency = currency
+                                currencyExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            if (selectedRate != null && errorMessage == null) {
+                Text(
+                    text = "Выбрана ставка: ${selectedRate}%",
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Button(onClick = {
+                val intent = Intent(context, ResultActivity::class.java)
+                context.startActivity(intent)
+            }) { Text("Рассчитать") }
         }
     }
 }
-

@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.text.isDigitsOnly
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
+import kotlin.jvm.java
 
 class MainInputActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +43,6 @@ class MainInputActivity : ComponentActivity() {
 
         setContent {
             PracticeTheme {
-                val context = LocalContext.current
                 MainInputActivityScreen()
             }
         }
@@ -64,7 +64,7 @@ class MainInputActivity : ComponentActivity() {
 
     @Composable
     fun MainInputActivityScreen(){
-
+        val context = LocalContext.current
         var startAmount by remember { mutableStateOf("") }
         var termMonths by remember { mutableStateOf("") }
 
@@ -92,13 +92,23 @@ class MainInputActivity : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally, // центрируем по горизонтали
                 verticalArrangement = Arrangement.Center) {
 
-                EditTextComposable("Стартовый взнос", ) { }
-                EditTextComposable("Срок вклада в месяцах")
+                EditTextComposable(
+                    "Стартовый взнос",
+                    startAmount,
+                    { if (it.isDigitsOnly()) startAmount = it}
+                )
+                EditTextComposable(
+                    "Срок вклада в месяцах",
+                    termMonths,
+                    { if (it.isDigitsOnly()) termMonths = it}
+                )
 
                 Button(onClick = {
+                    val startAmountValue = startAmount.toDoubleOrNull() ?: 0.0
+                    val termMonthsValue = termMonths.toIntOrNull() ?: 0
                     val intent = Intent(context, SecondInputActivity::class.java).apply {
-                        putExtra("START_AMOUNT", )
-                        putExtra("TERM", )
+                        putExtra("START_AMOUNT", startAmountValue)
+                        putExtra("TERM", termMonthsValue)
                     }
                     context.startActivity(intent)
                 }) { Text("Далее") }
