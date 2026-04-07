@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+//    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0" // Добавьте эту строку
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -37,8 +39,56 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.appcompat)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-}
+////    implementation(libs.androidx.appcompat)
+//    implementation(libs.androidx.constraintlayout)
+//    implementation(libs.androidx.lifecycle.livedata.ktx)
+//    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+////    implementation(libs.material)
+//    implementation(libs.androidx.fragment.ktx)
+//    implementation(libs.androidx.material3)
+//    implementation(libs.androidx.activity.compose)
+//    implementation(libs.androidx.lifecycle.runtime.ktx)
+//    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+//    testImplementation(libs.junit)
+//    androidTestImplementation(libs.androidx.junit)
+//    androidTestImplementation(libs.androidx.espresso.core)
+
+//    //    implementation("com.android.support:appcompat-v7:28.0.0")
+//    implementation(libs.androidx.lifecycle.runtime.ktx)
+//    implementation(libs.androidx.activity.compose)
+//    implementation(platform(libs.androidx.compose.bom))
+//    implementation(libs.androidx.ui)
+//    implementation(libs.androidx.ui.graphics)
+//    implementation(libs.androidx.ui.tooling.preview)
+//    implementation(libs.androidx.material3)
+//    testImplementation("junit:junit:4.13.2")
+//    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+////    androidTestImplementation("com.android.support.test:runner:1.0.2")
+////    androidTestImplementation("com.android.support.test.espresso:espresso-core:3.0.2")
+//    androidTestImplementation(platform(libs.androidx.compose.bom))
+//    androidTestImplementation(libs.androidx.ui.test.junit4)
+//    debugImplementation(libs.androidx.ui.tooling)
+//    debugImplementation(libs.androidx.ui.test.manifest)
+
+
+    val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
+    implementation(composeBom)
+
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.activity:activity-compose:1.8.2")
+
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation(composeBom)
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")}
