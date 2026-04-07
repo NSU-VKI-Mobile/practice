@@ -26,10 +26,24 @@ class CounterViewModel : ViewModel() {
     }
 
     fun decrement() {
-        // TODO: реализовать аналогично increment()
+        _uiState.update { currentState ->
+            val newCount = currentState.count - 1
+            val newHistory = listOf("-1 (итого: $newCount)") + currentState.history.take(4)
+            currentState.copy(
+                count = newCount,
+                history = newHistory
+            )
+        }
     }
 
     fun reset() {
-        // TODO: реализовать
+        _uiState.update { currentState ->
+            val newCount = 0
+            val newHistory = listOf("Сброс (итого: $newCount)") + currentState.history.take(4)
+            currentState.copy(
+                count = newCount,
+                history = newHistory
+            )
+        }
     }
 }

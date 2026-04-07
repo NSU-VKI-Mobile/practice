@@ -19,8 +19,11 @@ class MainFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        viewModel.someData.observe(this) { data ->
 
-        // TODO: Use the ViewModel
+        }
+
     }
 
     override fun onCreateView(
