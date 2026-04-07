@@ -1,8 +1,10 @@
 package ci.nsu.mobile.main.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.DepositCalculation
+import ci.nsu.mobile.main.data.InterestRates
 import ci.nsu.mobile.main.repository.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,18 +16,14 @@ class DepositViewModel(
     private val repository: DepositRepository
 ) : ViewModel() {
 
-
     private val _firstStepState = MutableStateFlow(FirstStepState())
     val firstStepState: StateFlow<FirstStepState> = _firstStepState.asStateFlow()
-
 
     private val _secondStepState = MutableStateFlow(SecondStepState())
     val secondStepState: StateFlow<SecondStepState> = _secondStepState.asStateFlow()
 
-
     private val _resultState = MutableStateFlow(ResultState())
     val resultState: StateFlow<ResultState> = _resultState.asStateFlow()
-
 
     private val _calculations = MutableStateFlow<List<DepositCalculation>>(emptyList())
     val calculations: StateFlow<List<DepositCalculation>> = _calculations.asStateFlow()
@@ -64,36 +62,15 @@ class DepositViewModel(
         }
     }
 
-    // В классе DepositViewModel, замените метод goToSecondStep и добавьте новые методы
-
     fun goToSecondStep() {
         val state = _firstStepState.value
         val amount = state.initialAmount.toDoubleOrNull() ?: 0.0
         val months = state.periodMonths.toIntOrNull() ?: 0
 
-        // Создаём список доступных ставок с соответствующими сроками
-        // Каждая ставка соответствует определённому диапазону сроков
-        val availableRates = mutableListOf<Pair<Double, Int>>()
 
-        if (months > 0) {
-            // Добавляем все возможные варианты
-            availableRates.add(15.0 to 5)   // 15% для срока 5 месяцев
-            availableRates.add(10.0 to 9)   // 10% для срока 9 месяцев
-            availableRates.add(5.0 to 12)   // 5% для срока 12 месяцев
-        }
-
-        // Находим ставку, соответствующую введённому сроку
-        val defaultRate = when {
-            months < 6 -> 15.0
-            months < 12 -> 10.0
-            else -> 5.0
-        }
-
-        val defaultPeriod = when {
-            months < 6 -> 5
-            months < 12 -> 9
-            else -> 12
-        }
+        val availableRates = InterestRates.getAvailableRates()
+        val defaultRate = InterestRates.getDefaultRate(months)
+        val defaultPeriod = InterestRates.getDefaultPeriod(months)
 
         _secondStepState.update {
             SecondStepState(
@@ -108,13 +85,7 @@ class DepositViewModel(
     }
 
     fun selectRate(rate: Double) {
-        // Находим срок, соответствующий выбранной ставке
-        val period = when (rate) {
-            15.0 -> 5   // 15% → 5 месяцев
-            10.0 -> 9   // 10% → 9 месяцев
-            5.0 -> 12   // 5% → 12 месяцев
-            else -> _secondStepState.value.selectedPeriodMonths
-        }
+        val period = InterestRates.getPeriodForRate(rate)
 
         _secondStepState.update { current ->
             current.copy(
@@ -161,15 +132,14 @@ class DepositViewModel(
         val totalTopUp = (monthlyTopUpValue ?: 0.0) * months
         val interestEarned = finalAmount - state.initialAmount - totalTopUp
 
-        // ОТЛАДКА:
-        println("=== РАСЧЁТ ===")
-        println("Начальная сумма: ${state.initialAmount}")
-        println("Срок (мес): $months")
-        println("Ставка: ${state.selectedRate}%")
-        println("Месячная ставка: $monthlyRate")
-        println("Пополнение: $monthlyTopUpValue")
-        println("Итоговая сумма: $finalAmount")
-        println("Начисленные проценты: $interestEarned")
+        Log.d("DepositCalculation", "=== РАСЧЁТ ===")
+        Log.d("DepositCalculation", "Начальная сумма: ${state.initialAmount}")
+        Log.d("DepositCalculation", "Срок (мес): $months")
+        Log.d("DepositCalculation", "Ставка: ${state.selectedRate}%")
+        Log.d("DepositCalculation", "Месячная ставка: $monthlyRate")
+        Log.d("DepositCalculation", "Пополнение: $monthlyTopUpValue")
+        Log.d("DepositCalculation", "Итоговая сумма: $finalAmount")
+        Log.d("DepositCalculation", "Начисленные проценты: $interestEarned")
 
         _resultState.update {
             ResultState(
@@ -187,7 +157,6 @@ class DepositViewModel(
     fun saveCalculation() {
         val result = _resultState.value
         if (result.showResult) {
-
             val monthlyTopUpValue = result.monthlyTopUp
 
             val calculation = DepositCalculation(
@@ -205,7 +174,6 @@ class DepositViewModel(
         }
     }
 
-
     fun loadCalculations() {
         viewModelScope.launch {
             repository.getAllCalculations().collect { list ->
@@ -214,7 +182,6 @@ class DepositViewModel(
         }
     }
 
-    // Сброс для нового расчёта
     fun reset() {
         _firstStepState.value = FirstStepState()
         _secondStepState.value = SecondStepState()
