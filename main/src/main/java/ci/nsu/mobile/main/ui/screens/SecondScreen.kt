@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
@@ -27,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -34,18 +36,25 @@ import ci.nsu.mobile.main.navigation.Routes
 import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
 import kotlinx.coroutines.launch
 
-
-//@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SecondScreenContent(navScreens: NavController,
-                        viewModel: DepositCalculationViewModel) {
+fun SecondScreenContent(
+    navScreens: NavController,
+    viewModel: DepositCalculationViewModel
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val checkState = remember { mutableStateOf(false) }
+    var checkState by remember { mutableStateOf(false) }
     var selectedRate by remember { mutableStateOf(0) }
-    val interestRates = listOf(15, 10, 5)
-    var errorMessage = ""
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    // Получаем доступные ставки в зависимости от срока
+    val availableRates = when {
+        uiState.periodMonths.toIntOrNull() == null -> emptyList()
+        uiState.periodMonths.toInt() < 6 -> listOf(15)
+        uiState.periodMonths.toInt() < 12 -> listOf(10)
+        else -> listOf(5)
+    }
+
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -54,73 +63,95 @@ fun SecondScreenContent(navScreens: NavController,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(innerPadding),
-                horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Доступная процентная ставка:")
-                interestRates.forEach { rate ->
-                    FilterChip(
-                        onClick = {
-                            selectedRate = rate
-                            viewModel.interestRateUpdate(rate.toString())
-                        },
-                        label = { Text("${rate.toInt()}%") },
-                        selected = selectedRate == rate,
-                        leadingIcon = if (selectedRate == rate) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Filled.Done,
-                                    contentDescription = "Done icon",
-                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                                )
+            if (uiState.periodMonths.isEmpty() || uiState.periodMonths.toIntOrNull() == null) {
+                Text(
+                    text = "⚠️ Сначала укажите срок вклада на предыдущем экране",
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(innerPadding),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Доступная процентная ставка:")
+                    availableRates.forEach { rate ->
+                        FilterChip(
+                            onClick = {
+                                selectedRate = rate
+                                viewModel.interestRateUpdate(rate.toString())
+                            },
+                            label = { Text("${rate}%") },
+                            selected = selectedRate == rate,
+                            leadingIcon = if (selectedRate == rate) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "Done icon",
+                                        modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                    )
+                                }
+                            } else {
+                                null
                             }
-                        } else {
-                            null
-                        }
+                        )
+                    }
+                }
+
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Checkbox(checked = checkState, onCheckedChange = { checkState = it })
+                    Text("Ежемесячное пополнение")
+                }
+
+                if (checkState) {
+                    TextField(
+                        value = uiState.monthlyTopUp ?: "",
+                        label = { Text("Ежемесячное пополнение (₽)") },
+                        onValueChange = { viewModel.monthlyTopUpUpdate(it) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.padding(8.dp)
                     )
                 }
-            }
-            Row(Modifier.fillMaxWidth()) {
-                Checkbox(checked = checkState.value, onCheckedChange = { checkState.value = it })
-                Text("Ежемесячное пополнение")
-            }
-            if (checkState.value) {
-                TextField(
-                    uiState.monthlyTopUp.toString(), label = { Text("Ежемесячное пополнение") },
-                    onValueChange = { viewModel.monthlyTopUpUpdate(it) })
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Button(
-                    { navScreens.navigate(Routes.FistScreen.route) },
-                    modifier = Modifier.padding(10.dp)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Text("Назад")
-                }
-                Button(
-                    {
-                        errorMessage = viewModel.validationSecondScreen(checkState.value)
-                        val currentTimeMillis = System.currentTimeMillis()
-                        if (errorMessage == "") {
-                            viewModel.calculateFinalAmount(uiState.initialAmount.toDouble(),
-                                uiState.interestRate.toInt(),
-                                uiState.periodMonths.toInt(),
-                                uiState.monthlyTopUp?.toDoubleOrNull())
-                            viewModel.calculateDate(currentTimeMillis)
-                            navScreens.navigate(Routes.ResultScreen.route)
-                        }
-                        else {
-                            scope.launch {
-                                snackbarHostState.showSnackbar(errorMessage)
+                    Button(
+                        onClick = { navScreens.navigate(Routes.FirstScreen.route) },
+                        modifier = Modifier.padding(10.dp)
+                    ) {
+                        Text("Назад")
+                    }
+
+                    Button(
+                        onClick = {
+                            val errorMessage = viewModel.validationSecondScreen(checkState)
+                            if (errorMessage == "") {
+                                val currentTimeMillis = System.currentTimeMillis()
+                                scope.launch {
+                                    val (finalAmount, interestEarned) = viewModel.calculateFinalAmount(
+                                        uiState.initialAmount.toDouble(),
+                                        uiState.interestRate.toInt(),
+                                        uiState.periodMonths.toInt(),
+                                        uiState.monthlyTopUp?.toDoubleOrNull()
+                                    )
+                                    viewModel.updateCalculationResult(finalAmount, interestEarned, currentTimeMillis)
+                                    viewModel.saveEntity()
+                                    snackbarHostState.showSnackbar("Расчёт сохранён!")
+                                    navScreens.navigate(Routes.ResultScreen.route)
+                                }
+                            } else {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(errorMessage)
+                                }
                             }
-                        }
-                    },
-                    modifier = Modifier.padding(10.dp)
-                ) {
-                    Text("Рассчитать")
+                        },
+                        modifier = Modifier.padding(10.dp)
+                    ) {
+                        Text("Рассчитать")
+                    }
                 }
             }
         }

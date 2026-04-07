@@ -8,7 +8,8 @@ import androidx.room.RoomDatabase
 @Database(version = 1,
     entities = [
         DepositCalculationEntity::class
-    ])
+    ],
+exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun depositDao(): DepositDao
     companion object {

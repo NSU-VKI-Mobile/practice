@@ -20,12 +20,13 @@ import androidx.navigation.NavController
 import ci.nsu.mobile.main.navigation.Routes
 import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
 import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ResultScreenContent(navScreens: NavController,
                         viewModel: DepositCalculationViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     val formattedDate: String? = sdf.format(Date(uiState.calculationDate))
 
     Scaffold() { innerPadding ->

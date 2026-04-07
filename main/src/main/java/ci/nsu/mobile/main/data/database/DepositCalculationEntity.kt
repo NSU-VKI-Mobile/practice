@@ -11,7 +11,7 @@ data class DepositCalculationEntity(
     /** срок вклада **/
     val periodMonths: Int,
     /** процентная ставка **/
-    val interestRate: Double,
+    val interestRate: Int,
     /** ежемесячное пополнение **/
     val monthlyTopUp: Double?,
     /** итоговая сумма **/

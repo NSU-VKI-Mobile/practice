@@ -35,14 +35,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavControlFun(repository: DepositRepository) {
     val navController = rememberNavController()
     val viewModel = remember { DepositCalculationViewModel(repository) }
     NavHost(navController, startDestination = Routes.MainScreen.route) {
         composable(Routes.MainScreen.route) {MainScreenContent(navController)}
-        composable(Routes.FistScreen.route) {FirstScreenContent(navController, viewModel)}
+        composable(Routes.FirstScreen.route) {FirstScreenContent(navController, viewModel)}
         composable(Routes.SecondScreen.route) {SecondScreenContent(navController, viewModel)}
         composable(Routes.HistoryScreen.route) { HistoryScreenContent(navController, viewModel) }
         composable(Routes.ResultScreen.route) { ResultScreenContent(navController, viewModel) }

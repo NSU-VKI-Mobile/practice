@@ -25,7 +25,7 @@ fun MainScreenContent(navToScreen: NavController) {
             verticalArrangement = Arrangement.Center
         ) {
             val activity = LocalActivity.current
-            Button({navToScreen.navigate(Routes.FistScreen.route)}, modifier =  Modifier.fillMaxWidth().padding(10.dp)) {
+            Button({navToScreen.navigate(Routes.FirstScreen.route)}, modifier =  Modifier.fillMaxWidth().padding(10.dp)) {
                 Text("Рассчитать")
             }
             Button({navToScreen.navigate(Routes.HistoryScreen.route)}, modifier = Modifier.fillMaxWidth().padding(10.dp)) {
