@@ -1,4 +1,4 @@
-package ci.nsu.ui.main
+package ci.nsu.mobile.main
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

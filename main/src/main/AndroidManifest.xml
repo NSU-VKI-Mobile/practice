@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Draft">
         <activity
-            android:name="ci.nsu.MainActivity"
+            android:name="ci.nsu.mobile.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
