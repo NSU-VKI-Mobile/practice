@@ -93,7 +93,7 @@ fun HomeScreen() {
         Spacer(Modifier.height(16.dp))
         Button(onClick = {
             val intent = Intent(context, SecondActivity::class.java).apply {
-                putExtra("data_key", "Привет из MainActivity!")
+                putExtra("data_key", "Привет из MainActivity")
             }
             context.startActivity(intent)
         }) {

@@ -40,8 +40,8 @@ class SecondActivity : ComponentActivity() {
                             title = { Text("Second Activity") },
                             navigationIcon = {
                                 IconButton(onClick = {
-                                    val intent = Intent(context, MainActivity::class.java)
-                                    context.startActivity(intent)
+
+                                    finish()
                                 }) {
                                     Icon(Icons.Filled.ArrowBack, contentDescription = "Назад")
                                 }
