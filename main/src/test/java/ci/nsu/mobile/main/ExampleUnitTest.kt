@@ -1,4 +1,4 @@
-package ci.nsu.moble.main
+package ci.nsu.mobile.main
 
 import org.junit.Test
 

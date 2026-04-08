@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "ci.nsu.moble.main"
+    namespace = "ci.nsu.mobile.main"
     compileSdk = 36
 
     defaultConfig {
@@ -54,6 +54,8 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation(libs.androidx.navigation.compose)
+    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation("androidx.compose.material:material-icons-core:1.7.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.runner)
