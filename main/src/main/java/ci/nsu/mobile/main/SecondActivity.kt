@@ -1,5 +1,6 @@
 package ci.nsu.mobile.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 
 class SecondActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -28,12 +33,16 @@ class SecondActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
+                val context = LocalContext.current
                 Scaffold(
                     topBar = {
                         TopAppBar(
                             title = { Text("Second Activity") },
                             navigationIcon = {
-                                IconButton(onClick = { finish() }) {
+                                IconButton(onClick = {
+                                    val intent = Intent(context, MainActivity::class.java)
+                                    context.startActivity(intent)
+                                }) {
                                     Icon(Icons.Filled.ArrowBack, contentDescription = "Назад")
                                 }
                             }
@@ -47,8 +56,20 @@ class SecondActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Second Activity")
-                        Text("Получено: $data")
+                        Text(
+                            text = "Second Activity",
+                            style = TextStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 24.sp
+                            )
+                        )
+                        Text(
+                            text = "Получено: $data",
+                            style = TextStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 18.sp
+                            )
+                        )
                     }
                 }
             }
