@@ -22,6 +22,8 @@ import ci.nsu.mobile.main.ui.screens.AdditionalParamsScreen
 import ci.nsu.mobile.main.ui.screens.ResultScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 import ci.nsu.mobile.main.viewmodel.DepositViewModel
+import ci.nsu.mobile.main.ui.screens.HistoryScreen
+import ci.nsu.mobile.main.viewmodel.HistoryViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +55,12 @@ fun DepositApp(onExit: () -> Unit) {
         }
     )
 
+    val historyViewModel: HistoryViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { HistoryViewModel(repository) }
+        }
+    )
+
     NavHost(
         navController = navController,
         startDestination = "home"
@@ -64,7 +72,7 @@ fun DepositApp(onExit: () -> Unit) {
                     navController.navigate("deposit_input")
                 },
                 onHistoryClick = {
-                    // TODO: Добавить экран истории...
+                    navController.navigate("history")
                 },
                 onExitClick = onExit
             )
@@ -115,5 +123,11 @@ fun DepositApp(onExit: () -> Unit) {
                 }
             )
         }
+
+        // Экран истории (простой, без данных)
+        composable("history") {
+            HistoryScreen()
+        }
+
     }
 }
