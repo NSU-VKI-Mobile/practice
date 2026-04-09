@@ -17,7 +17,7 @@ abstract class AppDatabase : RoomDatabase(){
         private var INSTANCE: AppDatabase? = null
 
         fun getDatabase(context: Context): AppDatabase {
-            retrurn INSTANCE ?: synchronized (this){
+            return INSTANCE ?: synchronized(this){
                 Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,

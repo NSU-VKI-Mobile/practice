@@ -16,4 +16,18 @@ data class DepositEntity(
     val finalAmount: Double,
     val interestEarned: Double,
     val calculationDate: Long
-)
+) {
+    companion object {
+        fun fromDomain(deposit: com.example.depositcalculator.Deposit): DepositEntity {
+            return DepositEntity(
+                initialAmount = deposit.initialAmount,
+                periodMonths = deposit.periodMonths,
+                interestRate = deposit.interestRate,
+                monthlyTopUp = deposit.monthlyTopUp,
+                finalAmount = deposit.finalAmount,
+                interestEarned = deposit.interestEarned,
+                calculationDate = System.currentTimeMillis()
+            )
+        }
+    }
+}
