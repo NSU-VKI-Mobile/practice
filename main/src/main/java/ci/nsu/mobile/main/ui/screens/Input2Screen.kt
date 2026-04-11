@@ -5,22 +5,27 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import ci.nsu.mobile.main.vm.DepositsViewModel
 
 @Composable
 fun Input2Screen(
     onBackClick: () -> Unit,
-    onCalcClick: () -> Unit
+    onCalcClick: () -> Unit,
+    viewModel: DepositsViewModel = viewModel()
 ) {
-    var spacer = "";
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Column() {
         OutlinedTextField(
-            value =  spacer,
-            onValueChange = { newText -> spacer = newText },
-            label = { Text("Введите текст") }
+            value =  uiState.interestRate.toString(),
+            onValueChange = { newText -> viewModel.SetInterestRate(newText) },
+            label = { Text("Введите процент вклада") }
         )
         OutlinedTextField(
-            value = spacer,
-            onValueChange = { newText -> spacer = newText },
+            value = uiState.monthlyTopUp.toString(),
+            onValueChange = { newText -> viewModel.SetMonthlyTopUp(newText) },
             label = { Text("Введите сумму ежемесячного пополнения (необязательное)") }
         )
 

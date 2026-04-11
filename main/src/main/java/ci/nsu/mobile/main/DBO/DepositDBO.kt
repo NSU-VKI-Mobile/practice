@@ -1,11 +1,11 @@
 package ci.nsu.mobile.main.DBO
 
 import androidx.lifecycle.LiveData
-import androidx.room3.Dao
-import androidx.room3.Entity
-import androidx.room3.Insert
-import androidx.room3.PrimaryKey
-import androidx.room3.Query
+import androidx.room.Dao
+import androidx.room.Entity
+import androidx.room.Insert
+import androidx.room.PrimaryKey
+import androidx.room.Query
 
 @Entity(tableName = "deposits")
 data class Deposit(

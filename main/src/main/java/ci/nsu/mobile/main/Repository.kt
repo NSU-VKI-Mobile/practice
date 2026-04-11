@@ -11,9 +11,9 @@ import kotlinx.coroutines.launch
 class DepositRepository(private val depositDao: DepositDao) {
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-    val userList: LiveData<List<Deposit>>? = depositDao.getDeposits()
+    val depositList: LiveData<List<Deposit>> = depositDao.getDeposits()
 
-    fun getDeposits(deposit: Deposit) {
+    fun AddDeposit(deposit: Deposit) {
         coroutineScope.launch(Dispatchers.IO) {
             depositDao.addDeposit(deposit)
         }

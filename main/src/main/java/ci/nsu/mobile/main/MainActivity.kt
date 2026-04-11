@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -22,6 +23,7 @@ import ci.nsu.mobile.main.ui.screens.Input1Screen
 import ci.nsu.mobile.main.ui.screens.Input2Screen
 import ci.nsu.mobile.main.ui.screens.MainScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
+import ci.nsu.mobile.main.vm.DepositsViewModel
 
 sealed class Screen(val route: String) {
     object Main : Screen("main")
@@ -49,11 +51,12 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(name: String, modifier: Modifier = Modifier,viewModel: DepositsViewModel = viewModel()) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
     NavHost(
+        modifier = modifier,
         navController = navController,
         startDestination = Screen.Main.route
     ) {
@@ -68,21 +71,23 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         composable(Screen.Input1.route) {
             Input1Screen(
                 onBackClick = { navController.popBackStack(Screen.Main.route, inclusive = false) },
-                onNextClick = {navController.navigate(Screen.Input2.route) }
+                onNextClick = {navController.navigate(Screen.Input2.route) },
+                viewModel = viewModel
             )
         }
 
         composable(Screen.Input2.route) {
             Input2Screen(
                 onBackClick = { navController.popBackStack() },
-                onCalcClick = { navController.navigate(Screen.Calc.route) }
+                onCalcClick = { navController.navigate(Screen.Calc.route) },
+                viewModel = viewModel
             )
         }
 
         composable(Screen.Calc.route) {
             CalcScreen(
-                onSaveClick = { /* сохранение в Room */ },
-                onMainClick = { navController.popBackStack(Screen.Main.route, inclusive = false) }
+                onMainClick = { navController.popBackStack(Screen.Main.route, inclusive = false) },
+                viewModel = viewModel
             )
         }
 

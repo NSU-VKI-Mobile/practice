@@ -2,14 +2,14 @@ package ci.nsu.mobile.main
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.room3.Database
-import androidx.room3.Room
-import androidx.room3.RoomDatabase
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import ci.nsu.mobile.main.DBO.Deposit
 import ci.nsu.mobile.main.DBO.DepositDao
 
-@SuppressLint("RestrictedApi")
-@Database(entities = [(Deposit::class)], version = 1)
+
+@Database(entities = [(Deposit::class)], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun depositDao(): DepositDao
 
@@ -19,11 +19,13 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(
+                val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "deposits_db"
-                ).build().also { INSTANCE = it }
+                    "database_name"
+                ).build()
+                INSTANCE = instance
+                instance
             }
         }
     }

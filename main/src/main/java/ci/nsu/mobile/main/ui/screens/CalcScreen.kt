@@ -5,22 +5,27 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import ci.nsu.mobile.main.vm.DepositsViewModel
 
 @Composable
 fun CalcScreen(
-    onSaveClick: () -> Unit,
-    onMainClick: () -> Unit
+    onMainClick: () -> Unit,
+    viewModel: DepositsViewModel = viewModel()
 ) {
-    var spacer = "";
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    viewModel.CalcFinalAmountAndEarned()
     Column() {
-        Text("Стартовый взнос: ")
-        Text("Срок вклада: ")
-        Text("Процентная ставка: ")
-        Text("Ежемесячное пополнение: ")
-        Text("Итоговая сумма: ")
-        Text("Начисленные проценты: ")
+        Text("Стартовый взнос: " + uiState.initialAmount)
+        Text("Срок вклада: " + uiState.periodMonths)
+        Text("Процентная ставка: " + uiState.interestRate)
+        Text("Ежемесячное пополнение: " + uiState.monthlyTopUp)
+        Text("Итоговая сумма: " + uiState.finalAmount)
+        Text("Начисленные проценты: " + uiState.interestEarned)
 
-        Button(onClick = onSaveClick) {
+        Button(onClick = {viewModel.SaveDeposit()}) {
             Text("Сохранить")
         }
         Button(onClick = onMainClick) {
