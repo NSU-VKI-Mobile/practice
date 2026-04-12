@@ -11,14 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ci.nsu.mobile.main.db.Deposit
-
-
+import ci.nsu.mobile.main.vm.DepositsViewModel
 
 @Composable
-fun SingleShowDepositScreen(
+fun SingleShowDepositDialogScreen(
     onDismiss: () -> Unit,
-    thisDeposit: Deposit
+    thisDeposit: Deposit,
+    viewModel: DepositsViewModel = viewModel()
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -35,7 +36,7 @@ fun SingleShowDepositScreen(
                 Text("Ежемесячный взнос: " + thisDeposit.monthlyTopUp)
                 Text("Итоговая сумма: " + thisDeposit.finalAmount)
                 Text("Начисленные проценты: " + thisDeposit.interestEarned)
-                Text("Дата: " + thisDeposit.calculationDate)
+                Text("Дата: " + viewModel.formatTime(thisDeposit.calculationDate))
                 Button(onClick = onDismiss) {
                     Text("Назад")
                 }

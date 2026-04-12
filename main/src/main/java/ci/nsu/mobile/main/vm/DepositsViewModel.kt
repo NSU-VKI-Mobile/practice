@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.Double
 import kotlin.math.pow
 
@@ -33,6 +36,7 @@ data class DepositsUiState(
 }
 
 class DepositsViewModel(application: Application) : AndroidViewModel(application){
+    private val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
     val depositDb = AppDatabase.getDatabase(application)
     val depositDbo = depositDb.depositDao()
     val repository: DepositRepository = DepositRepository(depositDbo)
@@ -134,5 +138,9 @@ class DepositsViewModel(application: Application) : AndroidViewModel(application
                 )
             } else currentState.copy()
         }
+    }
+
+    fun formatTime(timestamp: Long): String{
+        return sdf.format(Date(timestamp))
     }
 }

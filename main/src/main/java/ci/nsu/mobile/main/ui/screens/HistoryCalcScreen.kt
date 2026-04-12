@@ -52,7 +52,7 @@ fun HistoryCalcScreen(
                             }
                             .padding(16.dp)
                     ) {
-                        Text("Дата: " + item.calculationDate)
+                        Text("Дата: " + viewModel.formatTime(item.calculationDate))
                         Text("Стартовый взнос: " + item.initialAmount.toString())
                         Text("Итоговая сумма: " + item.finalAmount.toString())
                     }
@@ -70,9 +70,10 @@ fun HistoryCalcScreen(
         }
     }
     selectedDeposit?.let { obj ->
-        SingleShowDepositScreen(
+        SingleShowDepositDialogScreen(
             onDismiss = { selectedDeposit = null },
-            thisDeposit = obj
+            thisDeposit = obj,
+            viewModel = viewModel
         )
     }
 }
