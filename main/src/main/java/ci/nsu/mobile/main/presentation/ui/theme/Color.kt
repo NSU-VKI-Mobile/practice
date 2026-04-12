@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.theme
+package ci.nsu.mobile.main.presentation.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF5A5891)

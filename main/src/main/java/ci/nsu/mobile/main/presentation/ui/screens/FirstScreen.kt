@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.main.presentation.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,19 +22,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import ci.nsu.mobile.main.navigation.Routes
-import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
+import ci.nsu.mobile.main.navigation.Screen
+import ci.nsu.mobile.main.presentation.ui.viewmodel.DepositCalculationViewModel
 import kotlinx.coroutines.launch
 
-
+/* todo всплывающие уведы без потока */
 @Composable
-fun FirstScreenContent(navScreen: NavController, viewModel: DepositCalculationViewModel = viewModel()) {
+fun FirstScreenContent(navToScreen: (String) -> Unit, viewModel: DepositCalculationViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    var errorMessage = ""
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }) {
         innerPadding -> Column(modifier = Modifier.fillMaxSize().padding(innerPadding),
@@ -51,18 +48,17 @@ fun FirstScreenContent(navScreen: NavController, viewModel: DepositCalculationVi
             horizontalArrangement = Arrangement.Center) {
             Button({
                     viewModel.cleanAll()
-                    navScreen.navigate(Routes.MainScreen.route)
+                    navToScreen(Screen.MainScreen.route)
                    }, modifier =  Modifier.padding(10.dp)) {
                 Text("<- В начало")
             }
             Button({
-                errorMessage = viewModel.validationFirstScreen()
-                if (errorMessage == "") {
-                    navScreen.navigate(Routes.SecondScreen.route)
-                }
-                else {
-                    scope.launch {
-                        snackbarHostState.showSnackbar(errorMessage)
+                when(viewModel.validationFirstScreen()){
+                    true -> navToScreen(Screen.SecondScreen.route)
+                    false -> {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(viewModel.errorMessage.value)
+                        }
                     }
                 }
             }, modifier = Modifier.padding(10.dp)) {

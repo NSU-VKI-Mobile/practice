@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.main.presentation.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,32 +22,26 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import ci.nsu.mobile.main.navigation.Routes
-import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
+import ci.nsu.mobile.main.navigation.Screen
+import ci.nsu.mobile.main.presentation.ui.viewmodel.DepositCalculationViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun SecondScreenContent(
-    navScreens: NavController,
+    navToScreen: (String) -> Unit,
     viewModel: DepositCalculationViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var checkState by remember { mutableStateOf(false) }
-    var selectedRate by remember { mutableStateOf(0) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // Получаем доступные ставки в зависимости от срока
     val availableRates = when {
         uiState.periodMonths.toIntOrNull() == null -> emptyList()
         uiState.periodMonths.toInt() < 6 -> listOf(15)
@@ -65,7 +59,7 @@ fun SecondScreenContent(
         ) {
             if (uiState.periodMonths.isEmpty() || uiState.periodMonths.toIntOrNull() == null) {
                 Text(
-                    text = "⚠️ Сначала укажите срок вклада на предыдущем экране",
+                    text = "Сначала укажите срок вклада на предыдущем экране",
                     modifier = Modifier.padding(16.dp)
                 )
             } else {
@@ -79,12 +73,12 @@ fun SecondScreenContent(
                     availableRates.forEach { rate ->
                         FilterChip(
                             onClick = {
-                                selectedRate = rate
+                                viewModel.updateSelectedRate(rate)
                                 viewModel.interestRateUpdate(rate.toString())
                             },
                             label = { Text("${rate}%") },
-                            selected = selectedRate == rate,
-                            leadingIcon = if (selectedRate == rate) {
+                            selected = uiState.selectedInterestRate == rate,
+                            leadingIcon = if (uiState.selectedInterestRate == rate) {
                                 {
                                     Icon(
                                         imageVector = Icons.Filled.Done,
@@ -100,11 +94,11 @@ fun SecondScreenContent(
                 }
 
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    Checkbox(checked = checkState, onCheckedChange = { checkState = it })
+                    Checkbox(checked = uiState.monthlyTopUpCheck, onCheckedChange = { viewModel.updateHasMonthlyTopUp(it) })
                     Text("Ежемесячное пополнение")
                 }
 
-                if (checkState) {
+                if (uiState.monthlyTopUpCheck) {
                     TextField(
                         value = uiState.monthlyTopUp ?: "",
                         label = { Text("Ежемесячное пополнение (₽)") },
@@ -119,7 +113,7 @@ fun SecondScreenContent(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Button(
-                        onClick = { navScreens.navigate(Routes.FirstScreen.route) },
+                        onClick = { navToScreen(Screen.FirstScreen.route) },
                         modifier = Modifier.padding(10.dp)
                     ) {
                         Text("Назад")
@@ -127,10 +121,9 @@ fun SecondScreenContent(
 
                     Button(
                         onClick = {
-                            val errorMessage = viewModel.validationSecondScreen(checkState)
-                            if (errorMessage == "") {
-                                val currentTimeMillis = System.currentTimeMillis()
-                                scope.launch {
+                            when(viewModel.validationSecondScreen(uiState.monthlyTopUpCheck)){
+                                true -> {
+                                    val currentTimeMillis = System.currentTimeMillis()
                                     val (finalAmount, interestEarned) = viewModel.calculateFinalAmount(
                                         uiState.initialAmount.toDouble(),
                                         uiState.interestRate.toInt(),
@@ -138,13 +131,12 @@ fun SecondScreenContent(
                                         uiState.monthlyTopUp?.toDoubleOrNull()
                                     )
                                     viewModel.updateCalculationResult(finalAmount, interestEarned, currentTimeMillis)
-                                    viewModel.saveEntity()
-                                    snackbarHostState.showSnackbar("Расчёт сохранён!")
-                                    navScreens.navigate(Routes.ResultScreen.route)
+                                    navToScreen(Screen.ResultScreen.route)
                                 }
-                            } else {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(errorMessage)
+                                false -> {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(viewModel.errorMessage.value)
+                                    }
                                 }
                             }
                         },

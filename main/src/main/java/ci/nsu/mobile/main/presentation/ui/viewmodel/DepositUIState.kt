@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.data.model
+package ci.nsu.mobile.main.presentation.ui.viewmodel
 
 data class DepositUIState (
     /** стартовый взнос **/
@@ -14,5 +14,8 @@ data class DepositUIState (
     /** начисленные проценты **/
     val interestEarned: Double = 0.0,
     /** дата и время рассчета **/
-    val calculationDate: Long = 0
+    val calculationDate: Long = 0,
+    /** **/
+    val monthlyTopUpCheck: Boolean = false,
+    val selectedInterestRate: Int = 0
 )

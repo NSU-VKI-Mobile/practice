@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.main.presentation.ui.screens
 
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
@@ -13,25 +13,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import ci.nsu.mobile.main.navigation.Routes
+import ci.nsu.mobile.main.navigation.Screen
 
 
 @Composable
-fun MainScreenContent(navToScreen: NavController) {
+fun MainScreenContent(navToScreen: (String) -> Unit) {
     Scaffold() { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             val activity = LocalActivity.current
-            Button({navToScreen.navigate(Routes.FirstScreen.route)}, modifier =  Modifier.fillMaxWidth().padding(10.dp)) {
+            Button({navToScreen(Screen.FirstScreen.route)}, modifier =  Modifier.fillMaxWidth().padding(10.dp)) {
                 Text("Рассчитать")
             }
-            Button({navToScreen.navigate(Routes.HistoryScreen.route)}, modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+            Button({navToScreen(Screen.HistoryScreen.route)}, modifier = Modifier.fillMaxWidth().padding(10.dp)) {
                 Text("История расчетов")
             }
-            Button({activity?.finish()}, modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+            Button({
+                        activity?.finish()
+
+                   }, modifier = Modifier.fillMaxWidth().padding(10.dp)) {
                 Text("Закрыть приложение")
             }
         }

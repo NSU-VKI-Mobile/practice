@@ -1,7 +1,7 @@
-package ci.nsu.mobile.main.data.repository
+package ci.nsu.mobile.main.domain
 
-import ci.nsu.mobile.main.data.database.DepositCalculationEntity
-import ci.nsu.mobile.main.data.database.DepositDao
+import ci.nsu.mobile.main.data.DepositCalculationEntity
+import ci.nsu.mobile.main.data.DepositDao
 import kotlinx.coroutines.flow.Flow
 
 class DepositRepository(val depositDao: DepositDao) {
@@ -9,11 +9,11 @@ class DepositRepository(val depositDao: DepositDao) {
         depositDao.InsertDeposit(depositCalculation)
     }
 
-    fun GetAll(): Flow<List<DepositCalculationEntity>> {
+    fun getAll(): Flow<List<DepositCalculationEntity>> {
         return depositDao.GetAll()
     }
 
-    fun GetById(id: Long): Flow<DepositCalculationEntity> {
+    fun getById(id: Long): Flow<DepositCalculationEntity> {
         return depositDao.GetById(id)
     }
 }

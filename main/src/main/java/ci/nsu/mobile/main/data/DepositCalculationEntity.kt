@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.data.database
+package ci.nsu.mobile.main.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
