@@ -1,12 +1,9 @@
-package ci.nsu.mobile.main
+package ci.nsu.mobile.main.db
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ci.nsu.mobile.main.DBO.Deposit
-import ci.nsu.mobile.main.DBO.DepositDao
 
 
 @Database(entities = [(Deposit::class)], version = 1, exportSchema = false)

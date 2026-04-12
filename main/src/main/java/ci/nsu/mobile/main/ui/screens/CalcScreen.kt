@@ -16,7 +16,7 @@ fun CalcScreen(
     viewModel: DepositsViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    viewModel.CalcFinalAmountAndEarned()
+    viewModel.calcFinalAmountAndEarned()
     Column() {
         Text("Стартовый взнос: " + uiState.initialAmount)
         Text("Срок вклада: " + uiState.periodMonths)
@@ -25,7 +25,7 @@ fun CalcScreen(
         Text("Итоговая сумма: " + uiState.finalAmount)
         Text("Начисленные проценты: " + uiState.interestEarned)
 
-        Button(onClick = {viewModel.SaveDeposit()}) {
+        Button(onClick = {viewModel.saveDeposit()}, enabled = uiState.isAllCorrect) {
             Text("Сохранить")
         }
         Button(onClick = onMainClick) {

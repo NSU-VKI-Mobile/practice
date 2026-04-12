@@ -19,21 +19,22 @@ fun Input1Screen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Column() {
         OutlinedTextField(
-            value =  uiState.initialAmount.toString(),
-            onValueChange = { newText -> viewModel.SetInitialAmount(newText) },
-            label = { Text("Введите стартовый взнос") }
+            value =  uiState.initialAmount,
+            onValueChange = { newText -> viewModel.setInitialAmount(newText) },
+            label = { Text("Введите стартовый взнос") },
+            isError = !uiState.isInitialAmountValid
         )
         OutlinedTextField(
-            value = uiState.periodMonths.toString(),
-            onValueChange = { newText -> viewModel.SetPeriodMonths(newText) },
-            label = { Text("Введите срок вклада в месяцах") }
+            value = uiState.periodMonths,
+            onValueChange = { newText -> viewModel.setPeriodMonths(newText) },
+            label = { Text("Введите срок вклада в месяцах") },
+            isError = !uiState.isPeriodMonthsValid
         )
-
-        Button(onClick = onBackClick) {
-            Text("В начало")
-        }
         Button(onClick = onNextClick) {
             Text("Далее")
+        }
+        Button(onClick = onBackClick) {
+            Text("В начало")
         }
     }
 }

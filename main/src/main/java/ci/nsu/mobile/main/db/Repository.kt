@@ -1,8 +1,6 @@
-package ci.nsu.mobile.main
+package ci.nsu.mobile.main.db
 
 import androidx.lifecycle.LiveData
-import ci.nsu.mobile.main.DBO.Deposit
-import ci.nsu.mobile.main.DBO.DepositDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,7 +11,7 @@ class DepositRepository(private val depositDao: DepositDao) {
 
     val depositList: LiveData<List<Deposit>> = depositDao.getDeposits()
 
-    fun AddDeposit(deposit: Deposit) {
+    fun addDeposit(deposit: Deposit) {
         coroutineScope.launch(Dispatchers.IO) {
             depositDao.addDeposit(deposit)
         }
