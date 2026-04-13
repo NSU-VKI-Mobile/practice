@@ -7,14 +7,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -99,7 +102,15 @@ fun SecondScreenContent(
                         label = { Text("Ежемесячное пополнение (₽)") },
                         onValueChange = { viewModel.monthlyTopUpUpdate(it) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier.padding(8.dp),
+                        placeholder = {Text("1000.0")},
+                        trailingIcon = {
+                            if (!uiState.monthlyTopUp.isNullOrEmpty()) {
+                                IconButton(onClick = {viewModel.monthlyTopUpUpdate("")}) {
+                                    Icon(imageVector = Icons.Default.Clear, contentDescription = "Очистить")
+                                }
+                            }
+                        }
                     )
                 }
 
@@ -109,7 +120,7 @@ fun SecondScreenContent(
                 ) {
                     Button(
                         onClick = { navToScreen(Screen.FirstScreen.route) },
-                        modifier = Modifier.padding(10.dp)
+                        modifier = Modifier.padding(10.dp).width(150.dp)
                     ) {
                         Text("Назад")
                     }
@@ -135,7 +146,7 @@ fun SecondScreenContent(
                                 }
                             }
                         },
-                        modifier = Modifier.padding(10.dp)
+                        modifier = Modifier.padding(10.dp).width(150.dp)
                     ) {
                         Text("Рассчитать")
                     }

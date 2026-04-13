@@ -3,10 +3,10 @@ package ci.nsu.mobile.main.presentation.ui.screens
 import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
@@ -42,49 +42,55 @@ fun ResultScreenContent(navToScreen: (String) -> Unit,
             .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
-            Card() {
-                Text("Стартовый взнос: ${uiState.initialAmount}",
+            Card(modifier = Modifier.padding(20.dp)) {
+                Text("Стартовый взнос: ${uiState.initialAmount}₽",
                     Modifier.padding(20.dp))
                 Spacer(Modifier.padding(5.dp))
-                Text("Срок вклада: ${uiState.periodMonths}",
+                Text("Срок вклада (в месяцах): ${uiState.periodMonths}",
                     Modifier.padding(20.dp, 0.dp))
                 Spacer(Modifier.padding(5.dp))
                 Text("Процентная ставка: ${uiState.interestRate}%",
                     Modifier.padding(20.dp,  0.dp))
                 Spacer(Modifier.padding(5.dp))
-                Text("Ежемесячное пополнение: ${uiState.monthlyTopUp}",
+                val mot = uiState.monthlyTopUp
+                if (mot == null) {
+                    Text("Ежемесячное пополнение: 0₽", Modifier.padding(20.dp,  0.dp))
+                }
+                else {
+                    Text("Ежемесячное пополнение: ${mot}₽", Modifier.padding(20.dp,  0.dp))
+                }
+                Spacer(Modifier.padding(5.dp))
+                Text("Итоговая сумма: ${String.format("%.2f", uiState.finalAmount)}₽",
                     Modifier.padding(20.dp,  0.dp))
                 Spacer(Modifier.padding(5.dp))
-                Text("Итоговая сумма: ${String.format("%.2f", uiState.finalAmount)}",
-                    Modifier.padding(20.dp,  0.dp))
-                Spacer(Modifier.padding(5.dp))
-                Text("Начисленные проценты: ${String.format("%.2f", uiState.interestEarned)}",
+                Text("Начисленные проценты: ${String.format("%.2f", uiState.interestEarned)}₽",
                     Modifier.padding(20.dp,  0.dp))
                 Spacer(Modifier.padding(5.dp))
                 Text("Дата и время рассчета: ${formattedDate}",
                     Modifier.padding(20.dp))
             }
-            Row() {
-                Button({
-                    viewModel.cleanAll()
-                    navToScreen(Screen.MainScreen.route)
-                }, modifier =  Modifier.padding(20.dp)) {
-                    Text("<- На главный экран")
-                }
-                Button({
-                    scope.launch {
-                        val result = viewModel.saveEntity()
+            Button({
+                scope.launch {
+                    val result = viewModel.saveEntity()
 
-                        if (result) {
-                            snackbarHostState.showSnackbar("Расчёт сохранён!")
-                        } else {
-                            snackbarHostState.showSnackbar(viewModel.errorMessage.value)
-                        }
+                    if (result) {
+                        snackbarHostState.showSnackbar("Расчёт сохранён!")
+                    } else {
+                        snackbarHostState.showSnackbar(viewModel.errorMessage.value)
                     }
-                }, modifier =  Modifier.padding(20.dp)) {
-                    Text("Сохранить")
                 }
+            }, modifier =  Modifier.padding(20.dp).width(150.dp)) {
+                Text("Сохранить")
             }
+
+            Button({
+                viewModel.cleanAll()
+                navToScreen(Screen.MainScreen.route)
+            }, modifier =  Modifier.padding(horizontal = 20.dp).width(200.dp)) {
+                Text("<- На главный экран")
+            }
+
+
         }
     }
 }

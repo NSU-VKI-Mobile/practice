@@ -94,27 +94,19 @@ class DepositCalculationViewModel(val repos: DepositRepository): ViewModel() {
     }
     fun validationSecondScreen(isChecked: Boolean): Boolean {
         val state = _uiState.value
-        if (isChecked) {
-            if (state.interestRate.isEmpty()) {
-                _errorMessage.value = "Выберете процентную ставку"
-                return false
-            }
-            if (state.interestRate.toIntOrNull() == null) {
-                _errorMessage.value = "Выберете процентную ставку"
-                return false
-            }
-            if (state.monthlyTopUp?.toDoubleOrNull() == null) {
-                _errorMessage.value = "Укажите сумму ежемесячного пополнения"
-                return false
-            }
+        if (state.interestRate.isEmpty() || state.interestRate.toIntOrNull() == null) {
+            _errorMessage.value = "Выберите процентную ставку"
+            return false
         }
-        else {
-            if (state.interestRate.isEmpty()) {
-                _errorMessage.value = "Выберете процентную ставку"
+
+        if (isChecked) {
+            val topUpValue = state.monthlyTopUp?.toDoubleOrNull()
+            if (topUpValue == null) {
+                _errorMessage.value = "Укажите корректную сумму пополнения"
                 return false
             }
-            if (state.interestRate.toIntOrNull() == null) {
-                _errorMessage.value = "Выберете процентную ставку"
+            if (topUpValue <= 0.0) {
+                _errorMessage.value = "Сумма пополнения должна быть больше 0"
                 return false
             }
         }
