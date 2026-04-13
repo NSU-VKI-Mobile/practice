@@ -8,12 +8,28 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Пользователи"
+        android:text="Вход"
         android:textSize="22sp"
         android:textStyle="bold" />
 
+    <EditText
+        android:id="@+id/editLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Логин"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Пароль"
+        android:inputType="textPassword" />
+
     <TextView
-        android:id="@+id/textUsersError"
+        android:id="@+id/textLoginError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -21,30 +37,23 @@
         android:visibility="gone" />
 
     <ProgressBar
-        android:id="@+id/progressUsers"
+        android:id="@+id/progressLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:visibility="gone" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerUsers"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="12dp"
-        android:layout_weight="1" />
-
     <Button
-        android:id="@+id/buttonRefreshUsers"
+        android:id="@+id/buttonLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Обновить список" />
+        android:layout_marginTop="12dp"
+        android:text="Войти" />
 
     <Button
-        android:id="@+id/buttonLogout"
+        android:id="@+id/buttonToRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Выйти" />
+        android:text="Нет аккаунта? Зарегистрироваться" />
 </LinearLayout>
-
