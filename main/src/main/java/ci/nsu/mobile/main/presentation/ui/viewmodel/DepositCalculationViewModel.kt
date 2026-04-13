@@ -15,6 +15,9 @@ class DepositCalculationViewModel(val repos: DepositRepository): ViewModel() {
     val uiState: StateFlow<DepositUIState> = _uiState.asStateFlow()
     private val _historyState = MutableStateFlow<List<DepositCalculationEntity>>(emptyList())
     val historyState: StateFlow<List<DepositCalculationEntity>> = _historyState.asStateFlow()
+
+    private val _selectedState = MutableStateFlow<DepositCalculationEntity?>(null)
+    val selectedState: StateFlow<DepositCalculationEntity?> = _selectedState.asStateFlow()
     private val _errorMessage = MutableStateFlow("")
     val errorMessage = _errorMessage.asStateFlow()
 
@@ -31,6 +34,9 @@ class DepositCalculationViewModel(val repos: DepositRepository): ViewModel() {
         _uiState.update { DepositUIState() }
     }
 
+    fun selectedDepositUpdate(deposit: DepositCalculationEntity) {
+        _selectedState.value = deposit
+    }
     fun initialAmountUpdate(newValue: String) {
         _uiState.update { it.copy(initialAmount = newValue) }
     }
@@ -130,8 +136,7 @@ class DepositCalculationViewModel(val repos: DepositRepository): ViewModel() {
         val totalInterest = finalAmount - totalDeposited
         return Pair(finalAmount, totalInterest)
     }
-    fun saveEntity() {
-        /* TODO сделать проверку на существование такого объекта */
+    suspend fun saveEntity(): Boolean {
         val state = _uiState.value
         val entity = DepositCalculationEntity(
             initialAmount = state.initialAmount.toDouble(),
@@ -142,9 +147,13 @@ class DepositCalculationViewModel(val repos: DepositRepository): ViewModel() {
             interestEarned = state.interestEarned,
             calculationDate = state.calculationDate
         )
-        viewModelScope.launch {
+        val exist = repos.findDuplication(entity)
+        if (exist == null) {
             repos.insertDeposit(entity)
+             return true
+        } else {
+            _errorMessage.value = "Расчет уже сохранен!"
+            return false
         }
     }
-
 }

@@ -26,7 +26,6 @@ import ci.nsu.mobile.main.navigation.Screen
 import ci.nsu.mobile.main.presentation.ui.viewmodel.DepositCalculationViewModel
 import kotlinx.coroutines.launch
 
-/* todo всплывающие уведы без потока */
 @Composable
 fun FirstScreenContent(navToScreen: (String) -> Unit, viewModel: DepositCalculationViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -43,7 +42,8 @@ fun FirstScreenContent(navToScreen: (String) -> Unit, viewModel: DepositCalculat
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
         TextField(uiState.periodMonths, label = {Text("Срок вклада в месяцах")},
             onValueChange = {viewModel.periodMonthUpdate(it)}, modifier = Modifier.padding(10.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        )
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center) {
             Button({
@@ -59,6 +59,7 @@ fun FirstScreenContent(navToScreen: (String) -> Unit, viewModel: DepositCalculat
                         scope.launch {
                             snackbarHostState.showSnackbar(viewModel.errorMessage.value)
                         }
+
                     }
                 }
             }, modifier = Modifier.padding(10.dp)) {

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,12 +31,12 @@ import java.util.Locale
 fun ResultScreenContent(navToScreen: (String) -> Unit,
                         viewModel: DepositCalculationViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     val formattedDate: String? = sdf.format(Date(uiState.calculationDate))
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    Scaffold() { innerPadding ->
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding),
@@ -71,9 +72,14 @@ fun ResultScreenContent(navToScreen: (String) -> Unit,
                     Text("<- На главный экран")
                 }
                 Button({
-                    viewModel.saveEntity()
                     scope.launch {
-                        snackbarHostState.showSnackbar("Расчёт сохранён!")
+                        val result = viewModel.saveEntity()
+
+                        if (result) {
+                            snackbarHostState.showSnackbar("Расчёт сохранён!")
+                        } else {
+                            snackbarHostState.showSnackbar(viewModel.errorMessage.value)
+                        }
                     }
                 }, modifier =  Modifier.padding(20.dp)) {
                     Text("Сохранить")

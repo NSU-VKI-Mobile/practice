@@ -16,4 +16,8 @@ class DepositRepository(val depositDao: DepositDao) {
     fun getById(id: Long): Flow<DepositCalculationEntity> {
         return depositDao.GetById(id)
     }
+
+    suspend fun findDuplication(entity: DepositCalculationEntity) : DepositCalculationEntity? {
+        return depositDao.findDuplication(entity.initialAmount, entity.periodMonths, entity.interestRate, entity.monthlyTopUp)
+    }
 }

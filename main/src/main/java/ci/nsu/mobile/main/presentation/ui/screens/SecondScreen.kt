@@ -57,12 +57,7 @@ fun SecondScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (uiState.periodMonths.isEmpty() || uiState.periodMonths.toIntOrNull() == null) {
-                Text(
-                    text = "Сначала укажите срок вклада на предыдущем экране",
-                    modifier = Modifier.padding(16.dp)
-                )
-            } else {
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -147,5 +142,4 @@ fun SecondScreenContent(
                 }
             }
         }
-    }
 }
