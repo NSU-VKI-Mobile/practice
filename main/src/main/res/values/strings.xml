@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_deposit_calculation">DepositCalculationActivity</string>
+    <string name="title_activity_deposit_step2">DepositStep2Activity</string>
+    <string name="title_activity_result">ResultActivity</string>
+    <string name="title_activity_history">HistoryActivity</string>
 </resources>
