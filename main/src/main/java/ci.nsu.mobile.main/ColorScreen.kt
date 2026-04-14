@@ -53,8 +53,6 @@ fun ColorScreen() {
 
                 if (found != null) {
                     buttonColor = found.value
-                } else {
-                    Log.d("ColorSearch", "123 цвет не найден: ${inputText.trim()}")
                 }
             },
             colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
