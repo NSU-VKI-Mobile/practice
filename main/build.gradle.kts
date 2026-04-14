@@ -1,9 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp") version "2.0.21-1.0.28"
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.serialization)
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -32,25 +30,21 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.appcompat)
+    implementation(project(":domain"))
+    implementation(project(":auth"))
+    implementation(project(":calculations"))
 
-    val compose_version = "1.6.3"
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation("androidx.compose.ui:ui:$compose_version")
-    implementation("androidx.compose.material3:material3:1.2.1")
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
     implementation("androidx.navigation:navigation-compose:2.7.7")
-
-    val room_version = "2.6.1"
-    implementation("androidx.room:room-runtime:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
-    ksp("androidx.room:room-compiler:$room_version")
-
-    implementation(libs.retrofit)
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
-
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 }

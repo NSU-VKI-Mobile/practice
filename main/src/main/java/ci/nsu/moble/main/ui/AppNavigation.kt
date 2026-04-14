@@ -14,6 +14,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
+import ci.nsu.mobile.auth.ui.AuthViewModel
+import ci.nsu.mobile.auth.ui.LoginScreen
+import ci.nsu.mobile.auth.ui.RegisterScreen
+import ci.nsu.mobile.auth.ui.UsersScreen
+import ci.nsu.mobile.calculations.ui.DepositViewModel
+import ci.nsu.mobile.calculations.ui.HistoryScreen
+import ci.nsu.mobile.calculations.ui.ResultScreen
+import ci.nsu.mobile.calculations.ui.StepOneScreen
+import ci.nsu.mobile.calculations.ui.StepTwoScreen
 import ci.nsu.mobile.main.di.ServiceLocator
 
 @Composable
