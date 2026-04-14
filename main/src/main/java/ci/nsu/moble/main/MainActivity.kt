@@ -50,6 +50,13 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Добавлен TextField
+        TextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text("Введите текст для передачи") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Button(
             onClick = {
