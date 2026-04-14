@@ -26,13 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.data.DepositCalculationEntity
 import ci.nsu.mobile.main.navigation.Screen
-import ci.nsu.mobile.main.presentation.ui.viewmodel.DepositCalculationViewModel
+import ci.nsu.mobile.main.viewmodel.HistoryDepositsViewModel
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun HistoryScreenContent(navToScreen: (String) -> Unit,
-                         viewModel: DepositCalculationViewModel) {
+                         viewModel: HistoryDepositsViewModel) {
     val historyState by viewModel.historyState.collectAsStateWithLifecycle()
     val selectedState by viewModel.selectedState.collectAsStateWithLifecycle()
 

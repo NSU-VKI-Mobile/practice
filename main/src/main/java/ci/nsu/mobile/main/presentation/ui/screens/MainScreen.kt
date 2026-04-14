@@ -33,16 +33,16 @@ fun MainScreenContent(navToScreen: (String) -> Unit) {
         ) {
             val activity = LocalActivity.current
             Button({navToScreen(Screen.FirstScreen.route)},
-                modifier =  Modifier.fillMaxWidth().padding(10.dp).width(350.dp)) {
+                modifier =  Modifier.fillMaxWidth().padding(10.dp).width(250.dp)) {
                 Text("Рассчитать")
             }
             Button({navToScreen(Screen.HistoryScreen.route)},
-                modifier = Modifier.fillMaxWidth().padding(10.dp).width(350.dp)) {
+                modifier = Modifier.fillMaxWidth().padding(10.dp).width(250.dp)) {
                 Text("История расчетов")
             }
             Button({
                         activity?.finish()
-                   }, modifier = Modifier.fillMaxWidth().padding(10.dp).width(350.dp)) {
+                   }, modifier = Modifier.fillMaxWidth().padding(10.dp).width(250.dp)) {
                 Text("Закрыть приложение")
             }
         }

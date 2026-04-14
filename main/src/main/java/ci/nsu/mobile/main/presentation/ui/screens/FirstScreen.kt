@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -14,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -28,7 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.navigation.Screen
-import ci.nsu.mobile.main.presentation.ui.viewmodel.DepositCalculationViewModel
+import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -37,10 +39,15 @@ fun FirstScreenContent(navToScreen: (String) -> Unit, viewModel: DepositCalculat
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }) {
-        innerPadding -> Column(modifier = Modifier.fillMaxSize().padding(innerPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
+        snackbarHost = { SnackbarHost(snackbarHostState)
+        { data->
+            Snackbar(modifier = Modifier.padding(bottom = 700.dp),
+                snackbarData = data,
+                shape = RoundedCornerShape(20.dp))
+        }}) {innerPadding ->
+        Column(modifier = Modifier.fillMaxSize().padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center) {
         TextField(uiState.initialAmount, label = {Text("Стартовый взнос (₽)")},
             onValueChange = {
                 viewModel.initialAmountUpdate(it)}, modifier = Modifier.padding(10.dp),
@@ -74,14 +81,14 @@ fun FirstScreenContent(navToScreen: (String) -> Unit, viewModel: DepositCalculat
                 Text("<- В начало")
             }
             Button({
-                when(viewModel.validationFirstScreen()){
-                    true -> navToScreen(Screen.SecondScreen.route)
-                    false -> {
-                        scope.launch {
-                            snackbarHostState.showSnackbar(viewModel.errorMessage.value)
-                        }
-
+                if (viewModel.validationFirstScreen()) {
+                    navToScreen(Screen.SecondScreen.route)
+                }
+                else {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(viewModel.errorMessage.value)
                     }
+
                 }
             }, modifier = Modifier.padding(10.dp).width(150.dp)) {
                 Text("Далее ->")

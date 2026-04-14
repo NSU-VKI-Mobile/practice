@@ -9,7 +9,8 @@ import ci.nsu.mobile.main.presentation.ui.screens.HistoryScreenContent
 import ci.nsu.mobile.main.presentation.ui.screens.MainScreenContent
 import ci.nsu.mobile.main.presentation.ui.screens.ResultScreenContent
 import ci.nsu.mobile.main.presentation.ui.screens.SecondScreenContent
-import ci.nsu.mobile.main.presentation.ui.viewmodel.DepositCalculationViewModel
+import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
+import ci.nsu.mobile.main.viewmodel.HistoryDepositsViewModel
 
 sealed class Screen(val route: String) {
     object MainScreen : Screen("MainScreen")
@@ -21,7 +22,8 @@ sealed class Screen(val route: String) {
 
 @Composable
 fun NavControlFun(navController: NavHostController,
-                  depositCalculationViewModel: DepositCalculationViewModel) {
+                  depositCalculationViewModel: DepositCalculationViewModel,
+                  historyDepositsViewModel: HistoryDepositsViewModel) {
     NavHost(navController, startDestination = Screen.MainScreen.route) {
         composable(Screen.MainScreen.route) {
             MainScreenContent { navigateTo -> navController.navigate(navigateTo) }
@@ -33,7 +35,7 @@ fun NavControlFun(navController: NavHostController,
             SecondScreenContent({navigateTo -> navController.navigate(navigateTo)}, depositCalculationViewModel)
         }
         composable(Screen.HistoryScreen.route) {
-            HistoryScreenContent({navigateTo -> navController.navigate(navigateTo)}, depositCalculationViewModel)
+            HistoryScreenContent({navigateTo -> navController.navigate(navigateTo)}, historyDepositsViewModel)
         }
         composable(Screen.ResultScreen.route) {
             ResultScreenContent({navigateTo -> navController.navigate(navigateTo)}, depositCalculationViewModel)

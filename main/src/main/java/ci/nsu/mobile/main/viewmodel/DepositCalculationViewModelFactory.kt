@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.presentation.ui.viewmodel
+package ci.nsu.mobile.main.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -11,6 +11,10 @@ class DepositCalculationViewModelFactory(
         if (modelClass.isAssignableFrom(DepositCalculationViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return DepositCalculationViewModel(repository) as T
+        }
+        if (modelClass.isAssignableFrom(HistoryDepositsViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return HistoryDepositsViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

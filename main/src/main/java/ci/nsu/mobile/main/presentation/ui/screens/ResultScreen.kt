@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -22,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.navigation.Screen
-import ci.nsu.mobile.main.presentation.ui.viewmodel.DepositCalculationViewModel
+import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
 import kotlinx.coroutines.launch
 import java.util.Date
 import java.util.Locale
@@ -36,7 +38,12 @@ fun ResultScreenContent(navToScreen: (String) -> Unit,
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState)
+    { data->
+        Snackbar(modifier = Modifier.padding(bottom = 700.dp),
+            snackbarData = data,
+            shape = RoundedCornerShape(20.dp))
+    }}) { innerPadding ->
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding),

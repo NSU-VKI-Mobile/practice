@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.presentation
+package ci.nsu.mobile.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,23 +10,29 @@ import ci.nsu.mobile.main.data.AppDatabase
 import ci.nsu.mobile.main.domain.DepositRepository
 import ci.nsu.mobile.main.navigation.NavControlFun
 import ci.nsu.mobile.main.presentation.ui.theme.AppTheme
-import ci.nsu.mobile.main.presentation.ui.viewmodel.DepositCalculationViewModel
-import ci.nsu.mobile.main.presentation.ui.viewmodel.DepositCalculationViewModelFactory
+import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
+import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModelFactory
+import ci.nsu.mobile.main.viewmodel.HistoryDepositsViewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var repository: DepositRepository
     private lateinit var viewModelFactory: DepositCalculationViewModelFactory
+    private lateinit var historyViewModelFactory: DepositCalculationViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val database = AppDatabase.getDatabase(this)
+        val database = AppDatabase.Companion.getDatabase(this)
         repository = DepositRepository(database.depositDao())
         viewModelFactory = DepositCalculationViewModelFactory(repository)
+        historyViewModelFactory = DepositCalculationViewModelFactory(repository)
+
         setContent {
             AppTheme {
                 val viewModel: DepositCalculationViewModel = viewModel(factory = viewModelFactory)
-                NavControlFun(navController = rememberNavController(),viewModel)
+                val historyViewModel: HistoryDepositsViewModel =
+                    viewModel(factory = historyViewModelFactory)
+                NavControlFun(navController = rememberNavController(), viewModel, historyViewModel)
             }
         }
     }

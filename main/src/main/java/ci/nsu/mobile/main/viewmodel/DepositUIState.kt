@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.presentation.ui.viewmodel
+package ci.nsu.mobile.main.viewmodel
 
 data class DepositUIState (
     /** стартовый взнос **/
