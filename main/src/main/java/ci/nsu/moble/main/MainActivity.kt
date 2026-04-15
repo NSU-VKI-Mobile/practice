@@ -51,9 +51,10 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-//        TextField(
-//            value = text
-//        )
+        TextField(
+            value = text,
+            onValueChange = {text = it}
+        )
 
         Button(
             onClick = {
