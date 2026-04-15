@@ -88,45 +88,52 @@ fun AdditionalScreen(
                 val availableRates = uiState.ratesWithAvailability.filter { it.isAvailable }
 
                 if (availableRates.isNotEmpty()) {
-                    Text(
-                        text = "Выберите процентную ставку:",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = it }
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.selectedRate?.let {
+                                "${it.rate}% годовых - ${it.description}"
+                            } ?: "",
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Выберите процентную ставку") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            colors = ExposedDropdownMenuDefaults.textFieldColors()
+                        )
 
-                    availableRates.forEach { rateItem ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                viewModel.selectRate(rateItem.rule)
-                                expanded = false
-                            },
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (uiState.selectedRate == rateItem.rule)
-                                    MaterialTheme.colorScheme.secondaryContainer
-                                else
-                                    MaterialTheme.colorScheme.surfaceVariant
-                            )
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                Column {
-                                    Text(
-                                        text = "${rateItem.rule.rate}% годовых",
-                                        style = MaterialTheme.typography.titleLarge
-                                    )
-                                    Text(
-                                        text = rateItem.rule.description,
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                }
-
-                                if (uiState.selectedRate == rateItem.rule) {
-                                    Text("✓", style = MaterialTheme.typography.titleLarge)
-                                }
+                            availableRates.forEach { rateItem ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Column {
+                                            Text(
+                                                text = "${rateItem.rule.rate}% годовых",
+                                                style = MaterialTheme.typography.bodyLarge
+                                            )
+                                            Text(
+                                                text = rateItem.rule.description,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    },
+                                    onClick = {
+                                        viewModel.selectRate(rateItem.rule)
+                                        expanded = false
+                                    },
+                                    trailingIcon = {
+                                        if (uiState.selectedRate == rateItem.rule) {
+                                            Text("✓", style = MaterialTheme.typography.bodyLarge)
+                                        }
+                                    }
+                                )
                             }
                         }
                     }
@@ -150,6 +157,7 @@ fun AdditionalScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("⚠️ Некорректный срок вклада")
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text("Укажите корректный срок в месяцах (целое положительное число)")
                     }
                 }
@@ -161,6 +169,7 @@ fun AdditionalScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("⚠️ Срок не указан")
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text("Укажите срок вклада, чтобы увидеть доступные ставки")
                     }
                 }
