@@ -2,7 +2,7 @@ package ci.nsu.mobile.main
 
 import androidx.room.TypeConverter
 import java.util.Date
-
+//Конвертирует Date в Long и обратно для сохранения в БД
 class Converters {
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {

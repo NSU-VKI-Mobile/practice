@@ -5,13 +5,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import android.content.Context
-
+//одна бд на все приложение патттерн одиночка
 @Database(
-    entities = [Calculation::class],
+    entities = [Calculation::class],//какие табл будут в БД
     version = 1,
     exportSchema = false
 )
-@TypeConverters(Converters::class)
+@TypeConverters(Converters::class)//используем конвертер
 abstract class AppDatabase : RoomDatabase() {
     abstract fun calculationDao(): CalculationDao
 

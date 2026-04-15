@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,14 +42,19 @@ fun CalculationStep2Screen(
     startAmount: Double,
     termMonths: Int
 ) {
-    // Убираем фабрику - используем viewModel() без параметров
     val viewModel: CalculationViewModel = viewModel()
 
-    var monthlyDeposit by remember { mutableStateOf("") }
+    // Наблюдаем за полем пополнения и его ошибками
+    val monthlyDeposit by viewModel.monthlyDepositInput.collectAsState()
+    val monthlyDepositError by viewModel.monthlyDepositError.collectAsState()
+
     var expanded by remember { mutableStateOf(false) }
 
     val availableRates = viewModel.getAvailableRates(termMonths)
     var selectedRate by remember { mutableStateOf(availableRates.find { it.isAvailable }?.rate ?: 0.0) }
+
+    // Находим доступную ставку для отображения подсказки
+    val availableRate = availableRates.find { it.isAvailable }
 
     Scaffold(
         topBar = {
@@ -82,6 +86,7 @@ fun CalculationStep2Screen(
                 color = MaterialTheme.colorScheme.primary
             )
 
+            // Карточка с информацией о вкладе
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -94,11 +99,23 @@ fun CalculationStep2Screen(
                 ) {
                     Text("Стартовый взнос: ${String.format("%.2f", startAmount)} ₽")
                     Text("Срок вклада: $termMonths месяцев")
+
+                    // Подсказка о доступной ставке
+                    if (availableRate != null) {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                        Text(
+                            text = "✓ Доступная ставка: ${availableRate.description}",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
 
-            Text("Выберите процентную ставку:")
+            Text("Выберите процентную ставку:", modifier = Modifier.fillMaxWidth())
 
+            // Выпадающий список ставок
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = it }
@@ -109,7 +126,8 @@ fun CalculationStep2Screen(
                     readOnly = true,
                     label = { Text("Процентная ставка") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                    modifier = Modifier.fillMaxWidth().menuAnchor(),
+                    enabled = availableRates.any { it.isAvailable }
                 )
 
                 DropdownMenu(
@@ -124,9 +142,12 @@ fun CalculationStep2Screen(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text(rate.description)
+                                    Text(
+                                        rate.description,
+                                        color = if (rate.isAvailable) Color.Unspecified else Color.Gray
+                                    )
                                     if (rate.isAvailable) {
-                                        Icon(Icons.Default.Check, contentDescription = null)
+                                        Icon(Icons.Default.Check, contentDescription = "Доступно")
                                     }
                                 }
                             },
@@ -142,17 +163,35 @@ fun CalculationStep2Screen(
                 }
             }
 
+            // Поле "Ежемесячное пополнение" с валидацией
             OutlinedTextField(
                 value = monthlyDeposit,
-                onValueChange = { monthlyDeposit = it },
+                onValueChange = { viewModel.updateMonthlyDeposit(it) },
                 label = { Text("Ежемесячное пополнение (необязательно)") },
-                placeholder = { Text("Введите сумму") },
+                placeholder = { Text("Введите сумму (например: 5000)") },
+                isError = monthlyDepositError != null,
+                supportingText = {
+                    if (monthlyDepositError != null) {
+                        Text(
+                            text = monthlyDepositError!!,
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 12.sp
+                        )
+                    } else {
+                        Text("Оставьте пустым, если пополнения не будет")
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = if (monthlyDepositError != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                    errorBorderColor = MaterialTheme.colorScheme.error
+                )
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
+            // Кнопки управления
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -166,7 +205,7 @@ fun CalculationStep2Screen(
 
                 Button(
                     onClick = {
-                        val monthlyAmount = monthlyDeposit.toDoubleOrNull() ?: 0.0
+                        val monthlyAmount = viewModel.getValidatedMonthlyDeposit()
                         val intent = Intent(activity, ResultActivity::class.java).apply {
                             putExtra("start_amount", startAmount)
                             putExtra("term_months", termMonths)

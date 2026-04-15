@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-
+import android.content.Intent
 class ResultActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,7 +138,15 @@ fun ResultScreen(
                 }
 
                 Button(
-                    onClick = { (context as? ResultActivity)?.finishAffinity() },
+                    onClick = {
+                        // Создаём Intent для перехода на MainActivity
+                        val intent = Intent(context, MainActivity::class.java)
+                        // Очищаем стек Activity, чтобы нельзя было вернуться назад к ResultActivity
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+                        context.startActivity(intent)
+                        // Закрываем текущую Activity
+                        (context as? ResultActivity)?.finish()
+                    },
                     modifier = Modifier.weight(1f).height(56.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {

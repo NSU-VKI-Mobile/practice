@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 class DepositCalculationActivity : ComponentActivity() {
@@ -29,12 +28,13 @@ class DepositCalculationActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalculationStep1Screen(activity: DepositCalculationActivity) {
-    // Убираем фабрику - используем viewModel() без параметров
     val viewModel: CalculationViewModel = viewModel()
 
-    var startAmount by remember { mutableStateOf("") }
-    var termMonths by remember { mutableStateOf("") }
-    var showError by remember { mutableStateOf(false) }
+    // Наблюдаем за значениями полей и ошибками из ViewModel
+    val startAmount by viewModel.startAmountInput.collectAsState()
+    val termMonths by viewModel.termMonthsInput.collectAsState()
+    val startAmountError by viewModel.startAmountError.collectAsState()
+    val termMonthsError by viewModel.termMonthsError.collectAsState()
 
     Scaffold(
         topBar = {
@@ -66,40 +66,56 @@ fun CalculationStep1Screen(activity: DepositCalculationActivity) {
                 color = MaterialTheme.colorScheme.primary
             )
 
+            // Поле "Стартовый взнос" с полной валидацией
             OutlinedTextField(
                 value = startAmount,
-                onValueChange = {
-                    startAmount = it
-                    showError = false
-                },
+                onValueChange = { viewModel.updateStartAmount(it) },
                 label = { Text("Стартовый взнос *") },
                 placeholder = { Text("Введите сумму (например: 100000)") },
-                isError = showError && startAmount.isEmpty(),
+                isError = startAmountError != null,
                 supportingText = {
-                    if (showError && startAmount.isEmpty()) {
-                        Text("Обязательное поле", color = MaterialTheme.colorScheme.error)
+                    if (startAmountError != null) {
+                        Text(
+                            text = startAmountError!!,
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 12.sp
+                        )
+                    } else {
+                        Text("Только цифры и точка (например: 10000.50)")
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = if (startAmountError != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                    errorBorderColor = MaterialTheme.colorScheme.error
+                )
             )
 
+            // Поле "Срок вклада" с полной валидацией
             OutlinedTextField(
                 value = termMonths,
-                onValueChange = {
-                    termMonths = it
-                    showError = false
-                },
+                onValueChange = { viewModel.updateTermMonths(it) },
                 label = { Text("Срок вклада (месяцы) *") },
                 placeholder = { Text("Введите количество месяцев (например: 12)") },
-                isError = showError && termMonths.isEmpty(),
+                isError = termMonthsError != null,
                 supportingText = {
-                    if (showError && termMonths.isEmpty()) {
-                        Text("Обязательное поле", color = MaterialTheme.colorScheme.error)
+                    if (termMonthsError != null) {
+                        Text(
+                            text = termMonthsError!!,
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 12.sp
+                        )
+                    } else {
+                        Text("Только целое число (от 1 до 600)")
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = if (termMonthsError != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                    errorBorderColor = MaterialTheme.colorScheme.error
+                )
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -117,17 +133,16 @@ fun CalculationStep1Screen(activity: DepositCalculationActivity) {
 
                 Button(
                     onClick = {
-                        val amount = startAmount.toDoubleOrNull()
-                        val months = termMonths.toIntOrNull()
+                        // Проверяем валидацию через ViewModel
+                        if (viewModel.validateStep1()) {
+                            val amount = viewModel.getValidatedStartAmount()!!
+                            val months = viewModel.getValidatedTermMonths()!!
 
-                        if (amount != null && amount > 0 && months != null && months > 0) {
                             val intent = Intent(activity, DepositStep2Activity::class.java).apply {
                                 putExtra("start_amount", amount)
                                 putExtra("term_months", months)
                             }
                             activity.startActivity(intent)
-                        } else {
-                            showError = true
                         }
                     },
                     modifier = Modifier.weight(1f).height(56.dp),

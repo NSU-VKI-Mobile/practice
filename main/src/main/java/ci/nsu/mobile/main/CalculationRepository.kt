@@ -1,7 +1,7 @@
 package ci.nsu.mobile.main
 
 import kotlinx.coroutines.flow.Flow
-
+//инкапсулирует логику работы с данными и промежуточный слой между ViewModel и БД
 class CalculationRepository(
     private val calculationDao: CalculationDao
 ) {
