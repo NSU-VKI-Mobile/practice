@@ -29,7 +29,7 @@ fun MainScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Button(onClick = { /*TODO: навигация к истории*/ }) {
+        Button(onClick = onNavigateToHistory) {
             Text("История вкладов")
         }
         Button(onClick = onNavigateToCalculation) {

@@ -1,6 +1,7 @@
 package ci.nsu.mobile.main.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -12,11 +13,12 @@ import ci.nsu.mobile.main.ui.calculation.CalculationScreen
 import ci.nsu.mobile.main.ui.main.MainScreen
 import ci.nsu.mobile.main.ui.main.MainViewModel
 import ci.nsu.mobile.main.ui.result.ResultScreen
+import ci.nsu.mobile.main.ui.history.HistoryScreen
 
 @Composable
 fun AppNavGraph() {
     val navController = rememberNavController()
-
+    val context = LocalContext.current
     NavHost(
         navController = navController,
         startDestination = ScreenList.Main.route
@@ -97,13 +99,10 @@ fun AppNavGraph() {
 
             ResultScreen(
                 amount = amount,
+                context = context,
                 term = term,
                 rate = rate,
                 monthlyAddition = monthlyAddition,
-                onSave = {
-                    // TODO: сохранение в базу данных
-                    navController.popBackStack(ScreenList.Main.route, inclusive = false)
-                },
                 onNavigateToMain = {
                     navController.popBackStack(ScreenList.Main.route, inclusive = false)
                 }
@@ -111,7 +110,14 @@ fun AppNavGraph() {
         }
 
         composable(ScreenList.History.route) {
-            //TODO Здесь будет HistoryScreen
+            val context = LocalContext.current
+
+            HistoryScreen(
+                context = context,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

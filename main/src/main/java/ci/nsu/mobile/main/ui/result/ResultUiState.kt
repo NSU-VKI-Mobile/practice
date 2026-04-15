@@ -7,5 +7,8 @@ data class ResultUiState(
     val monthlyAddition: Double = 0.0,
     val finalAmount: Double = 0.0,
     val earnedInterest: Double = 0.0,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isSaved: Boolean = false,
+    val isSaving: Boolean = false,
+    val errorMessage: String? = null
 )

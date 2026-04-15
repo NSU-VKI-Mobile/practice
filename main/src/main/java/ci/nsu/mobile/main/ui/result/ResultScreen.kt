@@ -15,12 +15,12 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultScreen(
+    context: android.content.Context,
     amount: Double,
     term: Int,
     rate: Double,
     monthlyAddition: Double,
-    viewModel: ResultViewModel = ResultViewModel(),
-    onSave: () -> Unit,
+    viewModel: ResultViewModel = ResultViewModel(context),
     onNavigateToMain: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -130,8 +130,8 @@ fun ResultScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Button(
-                    onClick = onSave,
-                    modifier = Modifier.weight(1f)
+                    onClick = { viewModel.saveCalculationToDatabase() },
+                    enabled = !uiState.isSaved
                 ) {
                     Text("Сохранить")
                 }
