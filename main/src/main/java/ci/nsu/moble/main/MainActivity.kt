@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -32,34 +31,35 @@ class MainActivity : ComponentActivity() {
         setContent {
             PracticeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreenActivity(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    MainScreenActivity(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
     }
 }
-// TODO:  here is to open the second activity
+
 @Composable
 fun MainScreenActivity(modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
     val context = LocalContext.current
 
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
-            label = { Text("Enter text to pass") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text("Введите текст") },
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         Button(
             onClick = {
-                val intent = Intent(context, SecondActivity::class.java)
-                intent.putExtra("text_data", text)
+                val intent = Intent(context, SecondActivity::class.java).apply {
+                    putExtra("text_data", text)
+                }
                 context.startActivity(intent)
             },
             modifier = Modifier.padding(top = 16.dp)
@@ -72,7 +72,5 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    PracticeTheme {
-        MainScreenActivity()
-    }
+    PracticeTheme { MainScreenActivity() }
 }
