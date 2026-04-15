@@ -142,7 +142,7 @@ fun ResultScreen(
                         // Создаём Intent для перехода на MainActivity
                         val intent = Intent(context, MainActivity::class.java)
                         // Очищаем стек Activity, чтобы нельзя было вернуться назад к ResultActivity
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                         context.startActivity(intent)
                         // Закрываем текущую Activity
                         (context as? ResultActivity)?.finish()
