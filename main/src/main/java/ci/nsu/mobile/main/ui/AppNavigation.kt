@@ -1,5 +1,7 @@
 package ci.nsu.mobile.main.ui
 
+import android.Manifest
+import android.os.Build
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -7,35 +9,60 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
-import ci.nsu.mobile.auth.ui.AuthViewModel
-import ci.nsu.mobile.auth.ui.LoginScreen
-import ci.nsu.mobile.auth.ui.RegisterScreen
-import ci.nsu.mobile.auth.ui.UsersScreen
-import ci.nsu.mobile.calculations.ui.DepositViewModel
-import ci.nsu.mobile.calculations.ui.HistoryScreen
-import ci.nsu.mobile.calculations.ui.ResultScreen
-import ci.nsu.mobile.calculations.ui.StepOneScreen
-import ci.nsu.mobile.calculations.ui.StepTwoScreen
+import ci.nsu.mobile.auth.ui.*
+import ci.nsu.mobile.auth.utils.QRManager
+import ci.nsu.mobile.calculations.ui.*
 import ci.nsu.mobile.main.di.ServiceLocator
+import ci.nsu.mobile.main.utils.FeedbackHelper
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
 @Composable
 fun AppNavigation() {
+    val context = LocalContext.current
     val navController = rememberNavController()
     val factory = ViewModelFactory(ServiceLocator.authRepository, ServiceLocator.depositRepository)
     val authViewModel: AuthViewModel = viewModel(factory = factory)
+    val feedbackHelper = remember { FeedbackHelper(context) }
 
     val startDest = if (authViewModel.isUserLoggedIn) "main_flow" else "login"
 
     NavHost(navController = navController, startDestination = startDest) {
         composable("login") { LoginScreen(navController, authViewModel) }
         composable("register") { RegisterScreen(navController, authViewModel) }
+        composable("qr_scanner") {
+            QRScannerScreen(
+                onCodeScanned = { code ->
+                    val data = QRManager.parseQRContent(code)
+                    if (data != null) {
+                        feedbackHelper.playFeedback(true)
+                        feedbackHelper.showNotification("Авторизация готова", "Данные загружены. Выполняем вход...")
+                        authViewModel.login(data.first, data.second)
+                        navController.popBackStack()
+                    } else {
+                        feedbackHelper.playFeedback(false)
+                        feedbackHelper.showNotification("Ошибка сканирования", "Неверный формат QR кода")
+                        navController.popBackStack()
+                    }
+                },
+                onTimeout = {
+                    feedbackHelper.playFeedback(false)
+                    feedbackHelper.showNotification("Время вышло", "Сканирование прервано")
+                    navController.popBackStack()
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
         composable("main_flow") {
             MainContainerScreen(rootNavController = navController, factory = factory)
         }
