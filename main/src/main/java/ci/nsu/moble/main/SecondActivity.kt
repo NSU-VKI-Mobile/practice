@@ -31,7 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
-// TODO: crate sealed class with 3 routes
+
+
 
 class SecondActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
