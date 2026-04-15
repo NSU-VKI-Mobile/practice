@@ -15,6 +15,18 @@ object RateRules {
             description = "10% - для среднесрочных вкладов (6-11 месяцев)"
         ),
         RateRule(
+            rate = 12.0,
+            minMonths = 6,
+            maxMonths = 11,
+            description = "дополнительное правило для проверки вывода"
+        ),
+        RateRule(
+            rate = 11.0,
+            minMonths = 6,
+            maxMonths = 11,
+            description = "дополнительное правило для проверки вывода"
+        ),
+        RateRule(
             rate = 5.0,
             minMonths = 12,
             maxMonths = Int.MAX_VALUE,

@@ -8,5 +8,11 @@ sealed class ScreenList(val route: String) {
             return "additional/$amount/$term"
         }
     }
+
+    object Result : ScreenList("result/{amount}/{term}/{rate}/{monthlyAddition}") {
+        fun passArguments(amount: Double, term: Int, rate: Double, monthlyAddition: Double): String {
+            return "result/$amount/$term/$rate/$monthlyAddition"
+        }
+    }
     object History : ScreenList("history")
 }

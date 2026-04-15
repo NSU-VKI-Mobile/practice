@@ -11,6 +11,7 @@ import ci.nsu.mobile.main.ui.additional.AdditionalScreen
 import ci.nsu.mobile.main.ui.calculation.CalculationScreen
 import ci.nsu.mobile.main.ui.main.MainScreen
 import ci.nsu.mobile.main.ui.main.MainViewModel
+import ci.nsu.mobile.main.ui.result.ResultScreen
 
 @Composable
 fun AppNavGraph() {
@@ -71,15 +72,46 @@ fun AppNavGraph() {
                     navController.popBackStack()
                 },
                 onCalculate = { amount, term, rate, monthlyAddition ->
-                    // TODO: переход на экран с результатом
-                    // navController.navigate("result/$amount/$term/$rate/$monthlyAddition")
-                    navController.popBackStack() // временно просто возвращаемся
+                    navController.navigate(
+                        ScreenList.Result.passArguments(amount, term, rate, monthlyAddition)
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = ScreenList.Result.route,
+            arguments = listOf(
+                navArgument("amount") { type = NavType.StringType },
+                navArgument("term") { type = NavType.StringType },
+                navArgument("rate") { type = NavType.StringType },
+                navArgument("monthlyAddition") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val amount = backStackEntry.arguments?.getString("amount")?.toDoubleOrNull() ?: 0.0
+            val term = backStackEntry.arguments?.getString("term")?.toIntOrNull() ?: 0
+            val rate = backStackEntry.arguments?.getString("rate")?.toDoubleOrNull() ?: 0.0
+            val monthlyAddition = backStackEntry.arguments?.getString("monthlyAddition")?.toDoubleOrNull() ?: 0.0
+
+            ResultScreen(
+                amount = amount,
+                term = term,
+                rate = rate,
+                monthlyAddition = monthlyAddition,
+                onSave = {
+                    // TODO: сохранение в базу данных
+                    navController.popBackStack(ScreenList.Main.route, inclusive = false)
+                },
+                onNavigateToMain = {
+                    navController.popBackStack(ScreenList.Main.route, inclusive = false)
                 }
             )
         }
 
         composable(ScreenList.History.route) {
-            // Здесь будет HistoryScreen
+            //TODO Здесь будет HistoryScreen
         }
     }
 }
