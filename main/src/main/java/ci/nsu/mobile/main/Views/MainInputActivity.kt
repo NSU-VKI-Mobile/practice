@@ -2,6 +2,7 @@
 
 package ci.nsu.mobile.main.Views
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -35,85 +36,119 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.text.isDigitsOnly
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 import kotlin.jvm.java
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.ActivityResultCallback
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 
 class MainInputActivity : ComponentActivity() {
+    // Состояния, которые будут видны в Compose и доступны для обновления из колбэка
+    private var startAmountState by mutableStateOf("")
+    private var termMonthsState by mutableStateOf("")
+
+    // Регистрируем обработчик результата
+    private val getResultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            val updatedTerm = data?.getIntExtra("UPDATED_TERM", 0) ?: 0
+            if (updatedTerm > 0) {
+                termMonthsState = updatedTerm.toString()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContent {
             PracticeTheme {
-                MainInputActivityScreen()
-            }
-        }
-
-
-    }
-    @Composable
-    fun EditTextComposable(
-        labelText: String,
-        value: String,
-        onValueChange: (String) -> Unit
-    ){
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            label = { Text(labelText) }
-        )
-    }
-
-    @Composable
-    fun MainInputActivityScreen(){
-        val context = LocalContext.current
-        var startAmount by remember { mutableStateOf("") }
-        var termMonths by remember { mutableStateOf("") }
-
-        Scaffold(modifier = Modifier.fillMaxSize(), topBar =
-            {
-                TopAppBar(
-                    title = { Text("Расчёт вкладов") },
-                    navigationIcon = {
-                        IconButton(onClick = { finish() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary, // фон
-                        titleContentColor = MaterialTheme.colorScheme.onPrimary, // цвет заголовка
-                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }) { innerPadding ->
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-                horizontalAlignment = Alignment.CenterHorizontally, // центрируем по горизонтали
-                verticalArrangement = Arrangement.Center) {
-
-                EditTextComposable(
-                    "Стартовый взнос",
-                    startAmount,
-                    { if (it.isDigitsOnly()) startAmount = it}
-                )
-                EditTextComposable(
-                    "Срок вклада в месяцах",
-                    termMonths,
-                    { if (it.isDigitsOnly()) termMonths = it}
-                )
-
-                Button(onClick = {
-                    val startAmountValue = startAmount.toDoubleOrNull() ?: 0.0
-                    val termMonthsValue = termMonths.toIntOrNull() ?: 0
-                    val intent = Intent(context, SecondInputActivity::class.java).apply {
-                        putExtra("START_AMOUNT", startAmountValue)
-                        putExtra("TERM", termMonthsValue)
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        TopAppBar(
+                            title = { Text("Расчёт вкладов") },
+                            navigationIcon = {
+                                IconButton(onClick = { finish() }) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Назад"
+                                    )
+                                }
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                                actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
-                    context.startActivity(intent)
-                }) { Text("Далее") }
+                ) { innerPadding ->
+                    MainInputActivityScreen(
+                        startAmount = startAmountState,
+                        onStartAmountChange = { startAmountState = it },
+                        termMonths = termMonthsState,
+                        onTermMonthsChange = { termMonthsState = it },
+                        onNextClick = {
+                            val startAmountValue = startAmountState.toDoubleOrNull() ?: 0.0
+                            val termMonthsValue = termMonthsState.toIntOrNull() ?: 0
+                            val intent = Intent(this, SecondInputActivity::class.java).apply {
+                                putExtra("START_AMOUNT", startAmountValue)
+                                putExtra("TERM", termMonthsValue)
+                            }
+                            getResultLauncher.launch(intent)
+                        },
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
             }
         }
     }
 
+    @Composable
+    fun MainInputActivityScreen(
+        startAmount: String,
+        onStartAmountChange: (String) -> Unit,
+        termMonths: String,
+        onTermMonthsChange: (String) -> Unit,
+        onNextClick: () -> Unit,
+        modifier: Modifier = Modifier
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedTextField(
+                value = startAmount,
+                onValueChange = onStartAmountChange,
+                label = { Text("Стартовый взнос") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = termMonths,
+                onValueChange = onTermMonthsChange,
+                label = { Text("Срок вклада (месяцы)") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = onNextClick) {
+                Text("Далее")
+            }
+        }
     }
+}

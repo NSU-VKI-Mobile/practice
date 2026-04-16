@@ -44,13 +44,21 @@ import androidx.compose.ui.unit.sp
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 class SecondInputActivity : ComponentActivity() {
+
+    // Состояния, поднятые на уровень Activity
+    private var termInputState by mutableStateOf("")
+    private var selectedRateState by mutableStateOf<Double?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Получаем переданные значения из Intent
         val startAmount = intent.getDoubleExtra("START_AMOUNT", 0.0)
-        val termMonths = intent.getIntExtra("TERM", 0)
+        val defaultTerm = intent.getIntExtra("TERM", 0)
+
+        // Инициализируем состояние значением из Intent
+        termInputState = if (defaultTerm > 0) defaultTerm.toString() else ""
+        selectedRateState = null
 
         setContent {
             PracticeTheme {
@@ -60,7 +68,15 @@ class SecondInputActivity : ComponentActivity() {
                         TopAppBar(
                             title = { Text("Расчёт вкладов") },
                             navigationIcon = {
-                                IconButton(onClick = { finish() }) {
+                                IconButton(onClick = {
+                                    // Теперь termInputState и selectedRateState доступны
+                                    val resultIntent = Intent().apply {
+                                        putExtra("UPDATED_TERM", termInputState.toIntOrNull() ?: 0)
+                                        putExtra("UPDATED_RATE", selectedRateState ?: 0.0)
+                                    }
+                                    setResult(RESULT_OK, resultIntent)
+                                    finish()
+                                }) {
                                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
                                 }
                             },
@@ -76,7 +92,10 @@ class SecondInputActivity : ComponentActivity() {
                 ) { innerPadding ->
                     RateSelectionScreen(
                         innerPadding = innerPadding,
-                        defaultTerm = termMonths
+                        termInput = termInputState,
+                        onTermInputChange = { termInputState = it },
+                        selectedRate = selectedRateState,
+                        onSelectedRateChange = { selectedRateState = it }
                     )
                 }
             }
@@ -84,32 +103,27 @@ class SecondInputActivity : ComponentActivity() {
     }
 
     @Composable
-    fun RateSelectionScreen(innerPadding: PaddingValues, defaultTerm: Int) {
-        var termInput by remember { mutableStateOf(if (defaultTerm > 0) defaultTerm.toString() else "") }
-        var selectedRate by remember { mutableStateOf<Double?>(null) }
+    fun RateSelectionScreen(
+        innerPadding: PaddingValues,
+        termInput: String,
+        onTermInputChange: (String) -> Unit,
+        selectedRate: Double?,
+        onSelectedRateChange: (Double?) -> Unit
+    ) {
         var errorMessage by remember { mutableStateOf<String?>(null) }
         var expanded by remember { mutableStateOf(false) }
 
-        val currencies = listOf("Рубли (RUB)", "Доллары (USD)", "Евро (EUR)")
-        var selectedCurrency by remember { mutableStateOf(currencies[0]) }
-        var currencyExpanded by remember { mutableStateOf(false) }
-
-        val context = LocalContext.current
-
-        // Все возможные ставки
         val allRates = listOf(15.0, 10.0, 5.0)
-
-        // Функция, возвращающая "типовой" срок для выбранной ставки
-        fun getTermForRate(rate: Double): Int = when (rate) {
-            15.0 -> 5   // для 15% срок < 6 месяцев
-            10.0 -> 10  // для 10% срок от 6 до 11 месяцев
-            5.0  -> 12  // для 5% срок >= 12 месяцев
-            else -> 0
-        }
 
         fun parseTerm(): Int? = termInput.toIntOrNull()
 
-        // При ручном изменении срока выбираем подходящую ставку
+        fun getTermForRate(rate: Double): Int = when (rate) {
+            15.0 -> 5
+            10.0 -> 10
+            5.0 -> 12
+            else -> 0
+        }
+
         LaunchedEffect(termInput) {
             val term = parseTerm()
             errorMessage = when {
@@ -124,9 +138,11 @@ class SecondInputActivity : ComponentActivity() {
                     term >= 12 -> 5.0
                     else -> null
                 }
-                selectedRate = recommendedRate
+                if (selectedRate != recommendedRate) {
+                    onSelectedRateChange(recommendedRate)
+                }
             } else {
-                selectedRate = null
+                onSelectedRateChange(null)
             }
         }
 
@@ -138,10 +154,9 @@ class SecondInputActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
         ) {
-            // Поле ввода срока
             OutlinedTextField(
                 value = termInput,
-                onValueChange = { termInput = it },
+                onValueChange = onTermInputChange,
                 label = { Text("Срок (месяцы)") },
                 isError = errorMessage != null,
                 supportingText = {
@@ -153,7 +168,6 @@ class SecondInputActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Выпадающий список выбора ставки (всегда показывает все ставки)
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = it },
@@ -165,55 +179,19 @@ class SecondInputActivity : ComponentActivity() {
                     readOnly = true,
                     label = { Text("Процентная ставка") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor()
+                    modifier = Modifier.fillMaxWidth().menuAnchor()
                 )
                 ExposedDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    // Всегда показываем все три ставки
                     allRates.forEach { rate ->
                         DropdownMenuItem(
                             text = { Text("$rate%") },
                             onClick = {
-                                selectedRate = rate
-                                // При выборе ставки меняем срок на соответствующий
-                                termInput = getTermForRate(rate).toString()
+                                onSelectedRateChange(rate)
+                                onTermInputChange(getTermForRate(rate).toString())
                                 expanded = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            // Выпадающий список для выбора валюты
-            ExposedDropdownMenuBox(
-                expanded = currencyExpanded,
-                onExpandedChange = { currencyExpanded = it },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = selectedCurrency,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Валюта") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor()
-                )
-                ExposedDropdownMenu(
-                    expanded = currencyExpanded,
-                    onDismissRequest = { currencyExpanded = false }
-                ) {
-                    currencies.forEach { currency ->
-                        DropdownMenuItem(
-                            text = { Text(currency) },
-                            onClick = {
-                                selectedCurrency = currency
-                                currencyExpanded = false
                             }
                         )
                     }
@@ -227,11 +205,6 @@ class SecondInputActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-
-            Button(onClick = {
-                val intent = Intent(context, ResultActivity::class.java)
-                context.startActivity(intent)
-            }) { Text("Рассчитать") }
         }
     }
 }

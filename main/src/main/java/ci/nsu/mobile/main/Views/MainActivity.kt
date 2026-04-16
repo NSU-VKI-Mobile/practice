@@ -2,6 +2,7 @@
 
 package ci.nsu.mobile.main.Views
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -38,7 +39,6 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun MainActivityScreen() {
-//        val viewModel : DepositViewModel = viewModel()
         val context = LocalContext.current
         Scaffold(modifier = Modifier.fillMaxSize(), topBar =
             {
