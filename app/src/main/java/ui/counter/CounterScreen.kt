@@ -24,7 +24,7 @@ fun CounterScreen(
 
         // Текущий счетчик
         Text(
-            text = "Счетчик: ${uiState.count}",
+            = "Счетчик: ${uiState.count}",
             style = MaterialTheme.typography.headlineMedium
         )
 
