@@ -14,19 +14,21 @@ import com.example.depositcalculator.DepositCalculator
 import com.example.depositcalculator.DepositEntity
 
 @Composable
-fun AppNavHost() {
+fun AppNavHost(onCloseApp: () -> Unit) {
     val navController = rememberNavController()
     val viewModel: DepositeViewModel = viewModel()
+    val history by viewModel.history.collectAsState()
 
     var tempAmount by remember { mutableStateOf(0.0) }
     var tempMonths by remember { mutableStateOf(0) }
+    var currentDeposit by remember { mutableStateOf<Deposit?>(null) }
 
     NavHost(navController = navController, startDestination = "main") {
         composable("main") {
             MainScreen(
                 onNavigateToStep1 = { navController.navigate("step1")},
-                onNavigateToHidtory = {navController.navigate("history")},
-                onCloseApp = { /* finish в MainActivity */}
+                onNavigateToHistory = {navController.navigate("history")},
+                onCloseApp = onCloseApp
             )
 
         }
@@ -48,31 +50,30 @@ fun AppNavHost() {
                 onCalculate = { rate, topUp ->
                     val deposit = DepositCalculator.calculate(tempAmount, tempMonths, rate, topUp)
                     viewModel.saveDeposit((DepositEntity.fromDomain(deposit)))
-                    navController.navigate("result") {
-                        popUpTo("step1") { inclusive = true}
-                    }
+                    navController.navigate("result")
                 }
             )
         }
 
         composable("result") {
-            val lastDeposit = viewModel.history.value.lastOrNull()
-            if (lastDeposit != null) {
+            currentDeposit?.let { deposit ->
                 ResultScreen(
-                    deposit = DepositCalculator.calculate(
-                        lastDeposit.initialAmount,
-                        lastDeposit.periodMonths,
-                        lastDeposit.interestRate,
-                        lastDeposit.monthlyTopUp
-                    ),
-                    onBackToMain = { navController.navigate("main") { popUpTo("main") {inclusive = true} } },
-                    onSave = {}
+                    deposit = deposit,
+                    onBackToMain = {
+                        navController.navigate("main") { popUpTo("main") { inclusive = true } }
+                    },
+                    onSave = {
+                        viewModel.saveDeposit(DepositEntity.fromDomain(deposit))
+                    }
                 )
             }
         }
 
         composable("history") {
-            HistoryScreen(onBack = { navController.popBackStack() })
+            HistoryScreen(
+                history = history,
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }
