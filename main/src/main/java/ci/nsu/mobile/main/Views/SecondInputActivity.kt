@@ -48,6 +48,7 @@ class SecondInputActivity : ComponentActivity() {
     // Состояния, поднятые на уровень Activity
     private var termInputState by mutableStateOf("")
     private var selectedRateState by mutableStateOf<Double?>(null)
+    private var selectedCurrencyState by mutableStateOf("Рубли (RUB)")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +96,9 @@ class SecondInputActivity : ComponentActivity() {
                         termInput = termInputState,
                         onTermInputChange = { termInputState = it },
                         selectedRate = selectedRateState,
-                        onSelectedRateChange = { selectedRateState = it }
+                        onSelectedRateChange = { selectedRateState = it },
+                        selectedCurrency = selectedCurrencyState,              // передаём
+                        onCurrencyChange = { selectedCurrencyState = it }     // передаём колбэк
                     )
                 }
             }
@@ -108,12 +111,16 @@ class SecondInputActivity : ComponentActivity() {
         termInput: String,
         onTermInputChange: (String) -> Unit,
         selectedRate: Double?,
-        onSelectedRateChange: (Double?) -> Unit
+        onSelectedRateChange: (Double?) -> Unit,
+        selectedCurrency: String,                // текущая валюта
+        onCurrencyChange: (String) -> Unit       // колбэк изменения валюты
     ) {
         var errorMessage by remember { mutableStateOf<String?>(null) }
         var expanded by remember { mutableStateOf(false) }
+        var currencyExpanded by remember { mutableStateOf(false) }  // состояние для выпадающего списка валют
 
         val allRates = listOf(15.0, 10.0, 5.0)
+        val currencies = listOf("Рубли (RUB)", "Доллары (USD)", "Евро (EUR)")
 
         fun parseTerm(): Int? = termInput.toIntOrNull()
 
@@ -154,6 +161,7 @@ class SecondInputActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
         ) {
+            // Поле ввода срока
             OutlinedTextField(
                 value = termInput,
                 onValueChange = onTermInputChange,
@@ -168,6 +176,7 @@ class SecondInputActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Выпадающий список процентной ставки
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = it },
@@ -198,6 +207,37 @@ class SecondInputActivity : ComponentActivity() {
                 }
             }
 
+            // Выпадающий список валют
+            ExposedDropdownMenuBox(
+                expanded = currencyExpanded,
+                onExpandedChange = { currencyExpanded = it },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = selectedCurrency,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Валюта") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = currencyExpanded,
+                    onDismissRequest = { currencyExpanded = false }
+                ) {
+                    currencies.forEach { currency ->
+                        DropdownMenuItem(
+                            text = { Text(currency) },
+                            onClick = {
+                                onCurrencyChange(currency)
+                                currencyExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Отображение выбранной ставки (опционально)
             if (selectedRate != null && errorMessage == null) {
                 Text(
                     text = "Выбрана ставка: ${selectedRate}%",
