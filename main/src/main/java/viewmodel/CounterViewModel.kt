@@ -38,4 +38,9 @@ class CounterViewModel : ViewModel() {
             current.copy(count = 0, history = newHistory)
         }
     }
+    fun ResetHistory() {
+        _uiState.update { current ->
+            current.copy(history = emptyList())
+        }
+    }
 }

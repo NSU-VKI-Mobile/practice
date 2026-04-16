@@ -23,6 +23,7 @@ fun CounterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.statusBars)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -47,6 +48,9 @@ fun CounterScreen(
             }
             Button(onClick = { viewModel.increment() }) {
                 Text("+")
+            }
+            Button(onClick = { viewModel.ResetHistory() }) {
+                Text("-История")
             }
         }
 
