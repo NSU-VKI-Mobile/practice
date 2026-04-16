@@ -7,15 +7,15 @@ class DepositRepository(private val database: AppDatabase) {
 
     private val dao = database.depositDao()
 
-    fun getAllCalculations(): List<DepositCalculation> {
+    suspend fun getAllCalculations(): List<DepositCalculation> {
         return dao.getAllCalculations()
     }
 
-    fun saveCalculation(calculation: DepositCalculation): Long {
+    suspend fun saveCalculation(calculation: DepositCalculation): Long {
         return dao.insert(calculation)
     }
 
-    fun getCalculationById(id: Long): DepositCalculation? {
+    suspend fun getCalculationById(id: Long): DepositCalculation? {
         return dao.getCalculationById(id)
     }
 }
