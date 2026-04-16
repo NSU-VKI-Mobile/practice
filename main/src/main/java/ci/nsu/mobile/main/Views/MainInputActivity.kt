@@ -43,23 +43,28 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.lifecycle.ViewModelProvider
+import ci.nsu.mobile.main.ViewModels.MainInputViewModel
 
 class MainInputActivity : ComponentActivity() {
     // Состояния, которые будут видны в Compose и доступны для обновления из колбэка
     private var startAmountState by mutableStateOf("")
     private var termMonthsState by mutableStateOf("")
 
+    private lateinit var viewModel: MainInputViewModel
+
     // Регистрируем обработчик результата
     private val getResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            val data = result.data
-            val updatedTerm = data?.getIntExtra("UPDATED_TERM", 0) ?: 0
+            val updatedTerm = result.data?.getIntExtra("UPDATED_TERM", 0) ?: 0
             if (updatedTerm > 0) {
-                termMonthsState = updatedTerm.toString()
+                viewModel.updateTermMonths(updatedTerm.toString())
             }
         }
     }
@@ -67,6 +72,12 @@ class MainInputActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Инициализируем ViewModel (фабрика с SavedStateHandle)
+        viewModel = ViewModelProvider(
+            this,
+            SavedStateViewModelFactory(application, this)
+        )[MainInputViewModel::class.java]
 
         setContent {
             PracticeTheme {
@@ -77,10 +88,7 @@ class MainInputActivity : ComponentActivity() {
                             title = { Text("Расчёт вкладов") },
                             navigationIcon = {
                                 IconButton(onClick = { finish() }) {
-                                    Icon(
-                                        Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = "Назад"
-                                    )
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
                                 }
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
@@ -93,14 +101,18 @@ class MainInputActivity : ComponentActivity() {
                         )
                     }
                 ) { innerPadding ->
+                    // Наблюдаем за состояниями из ViewModel
+                    val startAmount by viewModel.startAmount.collectAsState()
+                    val termMonths by viewModel.termMonths.collectAsState()
+
                     MainInputActivityScreen(
-                        startAmount = startAmountState,
-                        onStartAmountChange = { startAmountState = it },
-                        termMonths = termMonthsState,
-                        onTermMonthsChange = { termMonthsState = it },
+                        startAmount = startAmount,
+                        onStartAmountChange = { viewModel.updateStartAmount(it) },
+                        termMonths = termMonths,
+                        onTermMonthsChange = { viewModel.updateTermMonths(it) },
                         onNextClick = {
-                            val startAmountValue = startAmountState.toDoubleOrNull() ?: 0.0
-                            val termMonthsValue = termMonthsState.toIntOrNull() ?: 0
+                            val startAmountValue = viewModel.getStartAmountValue()
+                            val termMonthsValue = viewModel.getTermMonthsValue()
                             val intent = Intent(this, SecondInputActivity::class.java).apply {
                                 putExtra("START_AMOUNT", startAmountValue)
                                 putExtra("TERM", termMonthsValue)
@@ -124,9 +136,7 @@ class MainInputActivity : ComponentActivity() {
         modifier: Modifier = Modifier
     ) {
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
