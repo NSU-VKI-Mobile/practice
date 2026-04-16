@@ -8,11 +8,11 @@ import androidx.room.Query
 interface DepositDao {
 
     @Insert
-    fun insert(calculation: DepositCalculation): Long
+    suspend fun insert(calculation: DepositCalculation): Long
 
     @Query("SELECT * FROM deposit_calculations ORDER BY calculationDate DESC")
-    fun getAllCalculations(): List<DepositCalculation>
+    suspend fun getAllCalculations(): List<DepositCalculation>
 
     @Query("SELECT * FROM deposit_calculations WHERE id = :id")
-    fun getCalculationById(id: Long): DepositCalculation?
+    suspend fun getCalculationById(id: Long): DepositCalculation?
 }
