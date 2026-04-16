@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="main" type="id"/>
+    <item name="step1" type="id"/>
+    <item name="step2" type="id"/>
+    <item name="result" type="id"/>
+    <item name="history" type="id"/>
+</resources>
