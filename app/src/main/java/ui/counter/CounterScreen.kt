@@ -38,7 +38,7 @@ fun CounterScreen(
                 Text("+")
             }
 
-            utton(onClick = { viewModel.decrement() }) {
+            Button(onClick = { viewModel.decrement() }) {
                 Text("-")
             }
 
