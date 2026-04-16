@@ -8,7 +8,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun CounterScreen(
@@ -22,7 +21,6 @@ fun CounterScreen(
             .padding(16.dp)
     ) {
 
-        // Текущий счетчик
         Text(
             text = "Счетчик: ${uiState.count}",
             style = MaterialTheme.typography.headlineMedium
@@ -30,7 +28,6 @@ fun CounterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Кнопи
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -49,7 +46,6 @@ fun CounterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // История
         Text(
             text = "История:",
             style = MaterialTheme.typography.titleMedium
