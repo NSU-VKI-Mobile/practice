@@ -19,11 +19,14 @@ import ci.nsu.mobile.main.data.repositories.DepositRepository
 import ci.nsu.mobile.main.ui.screens.HomeScreen
 import ci.nsu.mobile.main.ui.screens.DepositInputScreen
 import ci.nsu.mobile.main.ui.screens.AdditionalParamsScreen
+import ci.nsu.mobile.main.ui.screens.HistoryDetailScreen
 import ci.nsu.mobile.main.ui.screens.ResultScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 import ci.nsu.mobile.main.viewmodel.DepositViewModel
 import ci.nsu.mobile.main.ui.screens.HistoryScreen
 import ci.nsu.mobile.main.viewmodel.HistoryViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +63,11 @@ fun DepositApp(onExit: () -> Unit) {
             initializer { HistoryViewModel(repository) }
         }
     )
+
+    val calculations by historyViewModel.calculations.collectAsState()
+    val selectedCalculation by historyViewModel.selectedCalculation.collectAsState()
+    val isLoading by historyViewModel.isLoading.collectAsState()
+    val error by historyViewModel.error.collectAsState()
 
     NavHost(
         navController = navController,
@@ -124,10 +132,26 @@ fun DepositApp(onExit: () -> Unit) {
             )
         }
 
-        // Экран истории (простой, без данных)
+        // Экран истории
         composable("history") {
-            HistoryScreen()
+            HistoryScreen(
+                calculations = calculations,
+                isLoading = isLoading,
+                error = error,
+                onItemClick = { id ->
+                    historyViewModel.selectCalculation(id)
+                    navController.navigate("history_detail")
+                },
+                onLoad = {
+                    historyViewModel.loadCalculations()
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
+
+
 
     }
 }
