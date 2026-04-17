@@ -16,8 +16,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ci.nsu.mobile.auth.data.PersonDto
-import ci.nsu.mobile.auth.data.RegisterRequest
+import ci.nsu.mobile.auth.data.dto.PersonDto
+import ci.nsu.mobile.auth.data.dto.RegisterRequest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

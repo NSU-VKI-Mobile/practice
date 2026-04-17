@@ -1,9 +1,9 @@
 package ci.nsu.mobile.main.di
 
 import android.content.Context
-import ci.nsu.mobile.auth.data.AuthRepository
-import ci.nsu.mobile.calculations.data.DepositDatabase
-import ci.nsu.mobile.calculations.data.DepositRepository
+import ci.nsu.mobile.auth.data.repository.AuthRepository
+import ci.nsu.mobile.calculations.data.local.DepositDatabase
+import ci.nsu.mobile.calculations.data.repository.DepositRepository
 
 object ServiceLocator {
     val authRepository: AuthRepository by lazy { AuthRepository() }

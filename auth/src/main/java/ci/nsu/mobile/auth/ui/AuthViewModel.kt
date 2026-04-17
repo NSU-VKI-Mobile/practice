@@ -4,6 +4,10 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.auth.data.*
+import ci.nsu.mobile.auth.data.dto.GroupDto
+import ci.nsu.mobile.auth.data.dto.RegisterRequest
+import ci.nsu.mobile.auth.data.dto.UserDto
+import ci.nsu.mobile.auth.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
 class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
