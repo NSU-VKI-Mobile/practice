@@ -35,14 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import ci.nsu.mobile.auth.data.PersonDto
-import ci.nsu.mobile.auth.data.RegisterRequest
-import ci.nsu.mobile.auth.utils.QRManager
-import com.google.zxing.BinaryBitmap
-import com.google.zxing.MultiFormatReader
-import com.google.zxing.PlanarYUVLuminanceSource
-import com.google.zxing.common.HybridBinarizer
-import kotlinx.coroutines.delay
+import ci.nsu.mobile.auth.data.dto.PersonDto
+import ci.nsu.mobile.auth.data.dto.RegisterRequest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

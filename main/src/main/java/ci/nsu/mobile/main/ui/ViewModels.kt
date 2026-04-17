@@ -2,10 +2,10 @@ package ci.nsu.mobile.main.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ci.nsu.mobile.auth.data.AuthRepository
+import ci.nsu.mobile.auth.data.repository.AuthRepository
 import ci.nsu.mobile.auth.data.TokenManager
 import ci.nsu.mobile.auth.ui.AuthViewModel
-import ci.nsu.mobile.calculations.data.DepositRepository
+import ci.nsu.mobile.calculations.data.repository.DepositRepository
 import ci.nsu.mobile.calculations.ui.DepositViewModel
 
 class ViewModelFactory(

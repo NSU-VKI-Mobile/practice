@@ -4,8 +4,8 @@ import android.Manifest
 import android.os.Build
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -131,7 +131,7 @@ fun MainContainerScreen(rootNavController: NavController, factory: ViewModelFact
 fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         Triple("users", "Пользователи", Icons.Default.Person),
-        Triple("history", "Мои расчёты", Icons.Default.List),
+        Triple("history", "Мои расчёты", Icons.AutoMirrored.Filled.List),
         Triple("new_deposit", "Новый расчёт", Icons.Default.Add)
     )
 
