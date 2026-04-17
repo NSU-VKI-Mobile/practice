@@ -16,8 +16,8 @@ import ci.nsu.moble.main.ui.theme.PracticeTheme
 
 @Composable
 fun ShoppingScreen(
-    viewModel: ShoppingViewModel = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ShoppingViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
