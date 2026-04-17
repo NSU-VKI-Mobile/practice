@@ -37,6 +37,16 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
 
+    val cameraxVersion = "1.3.1"
+    implementation("androidx.camera:camera-core:$cameraxVersion")
+    implementation("androidx.camera:camera-camera2:$cameraxVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("androidx.camera:camera-view:$cameraxVersion")
+
+    implementation("com.google.zxing:core:3.5.3")
+
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

@@ -18,6 +18,9 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     var usersList by mutableStateOf<List<UserDto>>(emptyList())
     var groupsList by mutableStateOf<List<GroupDto>>(emptyList())
 
+    var sessionLogin by mutableStateOf("")
+    var sessionPassword by mutableStateOf("")
+
     fun loadGroups() {
         viewModelScope.launch {
             repository.getGroups().onSuccess { groupsList = it }
@@ -35,6 +38,8 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             repository.login(login, pass).onSuccess { response ->
                 TokenManager.token = response.token
+                sessionLogin = login
+                sessionPassword = pass
                 repository.getUsers().onSuccess { users ->
                     val myProfile = users.find { it.login == login }
                     TokenManager.userId = myProfile?.userId ?: -1
@@ -65,6 +70,8 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
 
     fun logout() {
         TokenManager.clear()
+        sessionLogin = ""
+        sessionPassword = ""
         isUserLoggedIn = false
     }
 }
