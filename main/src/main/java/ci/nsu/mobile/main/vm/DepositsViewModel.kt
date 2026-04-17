@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.db.AppDatabase
-import ci.nsu.mobile.main.db.Deposit
-import ci.nsu.mobile.main.db.DepositRepository
+import ci.nsu.mobile.main.data.dbo.AppDatabase
+import ci.nsu.mobile.main.data.entity.Deposit
+import ci.nsu.mobile.main.data.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,10 +28,10 @@ data class DepositsUiState(
     val interestEarned: Double = 0.0,
     val availableInterestRate: List<Double> = listOf(),
 ){
-    val isInitialAmountValid: Boolean get() = initialAmount.toDoubleOrNull() != null
-    val isPeriodMonthsValid: Boolean get() = periodMonths.toIntOrNull() != null
-    val isInterestRateValid: Boolean get() = interestRate.toDoubleOrNull() != null
-    val isMonthlyTopUpValid: Boolean get() = monthlyTopUp.toDoubleOrNull() != null || monthlyTopUp == ""
+    val isInitialAmountValid: Boolean get() = initialAmount.toDoubleOrNull() != null && initialAmount.toDouble() >= 0
+    val isPeriodMonthsValid: Boolean get() = periodMonths.toIntOrNull() != null && periodMonths.toDouble() >= 0
+    val isInterestRateValid: Boolean get() = interestRate.toDoubleOrNull() != null && interestRate.toDouble() >= 0
+    val isMonthlyTopUpValid: Boolean get() = (monthlyTopUp.toDoubleOrNull() != null && monthlyTopUp.toDouble() >= 0) || monthlyTopUp == ""
     val isAllCorrect: Boolean get() = isInitialAmountValid && isPeriodMonthsValid && isInterestRateValid && isMonthlyTopUpValid
 }
 
@@ -40,6 +40,7 @@ class DepositsViewModel(application: Application) : AndroidViewModel(application
     val depositDb = AppDatabase.getDatabase(application)
     val depositDbo = depositDb.depositDao()
     val repository: DepositRepository = DepositRepository(depositDbo)
+    //++
     val allDepositList: StateFlow<List<Deposit>> = repository.depositList.asFlow()
         .stateIn(
             scope = viewModelScope,

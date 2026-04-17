@@ -92,7 +92,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier,viewModel: DepositsView
 
         composable(Screen.HistoryCalc.route) {
             HistoryCalcScreen(
-                //onBackClick = { navController.popBackStack(Screen.Main.route, inclusive = false)}
                 onBackClick = { navController.popBackStack()}
             )
         }

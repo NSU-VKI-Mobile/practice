@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.db
+package ci.nsu.mobile.main.data.entity
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao

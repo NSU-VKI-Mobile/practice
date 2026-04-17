@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ci.nsu.mobile.main.db.Deposit
+import ci.nsu.mobile.main.data.entity.Deposit
 import ci.nsu.mobile.main.vm.DepositsViewModel
 
 @Composable

@@ -1,6 +1,8 @@
-package ci.nsu.mobile.main.db
+package ci.nsu.mobile.main.data
 
 import androidx.lifecycle.LiveData
+import ci.nsu.mobile.main.data.entity.Deposit
+import ci.nsu.mobile.main.data.entity.DepositDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
