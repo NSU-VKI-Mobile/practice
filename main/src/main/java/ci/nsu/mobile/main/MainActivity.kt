@@ -151,7 +151,15 @@ fun DepositApp(onExit: () -> Unit) {
             )
         }
 
-
+        // Экран деталей
+        composable("history_detail") {
+            HistoryDetailScreen(
+                calculation = selectedCalculation,
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
 
     }
 }

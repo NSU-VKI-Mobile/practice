@@ -23,6 +23,7 @@ import ci.nsu.mobile.main.data.database.DepositCalculation
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.foundation.clickable
 
 @Composable
 fun HistoryScreen(
@@ -94,6 +95,7 @@ fun HistoryItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
+            .clickable { onClick() }  // ← ДОБАВЬ ЭТУ СТРОКУ
     ) {
         Column(
             modifier = Modifier
