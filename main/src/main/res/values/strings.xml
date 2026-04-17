@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="text_login">Логин</string>
+    <string name="text_password">Пароль</string>
+    <string name="text_logIn">Войти</string>
+    <string name="no_account">Нет аккаунта?</string>
+    <string name="text_registry">Зарегистрироваться</string>
+    <string name="text_name">Имя</string>
+    <string name="text_lastName">Фамилия</string>
+    <string name="text_middleName">Отчество</string>
+    <string name="text_birthDay">Дата рождения</string>
+    <string name="text_sex">Пол</string>
+    <string name="text_group">Группа</string>
+    <string name="text_email">Почта</string>
+    <string name="text_phone">Телефон</string>
+    <string name="text_exit">Выход</string>
 </resources>
