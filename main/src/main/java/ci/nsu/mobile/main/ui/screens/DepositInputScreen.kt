@@ -61,7 +61,10 @@ fun DepositInputScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        val isValid = initialAmount.value.isNotEmpty() && periodMonths.value.isNotEmpty()
+        val isValid = initialAmount.value.isNotEmpty() &&
+                periodMonths.value.isNotEmpty() &&
+                initialAmount.value.toDoubleOrNull()?.let { it > 0 } == true &&
+                periodMonths.value.toIntOrNull()?.let { it > 0 } == true
 
         Button(
             onClick = onBackClick,
