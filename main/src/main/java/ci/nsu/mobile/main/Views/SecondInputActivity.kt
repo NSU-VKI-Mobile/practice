@@ -31,6 +31,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,25 +42,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.lifecycle.ViewModelProvider
+import ci.nsu.mobile.main.ViewModels.SecondInputViewModel
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 class SecondInputActivity : ComponentActivity() {
 
-    // Состояния, поднятые на уровень Activity
-    private var termInputState by mutableStateOf("")
-    private var selectedRateState by mutableStateOf<Double?>(null)
-    private var selectedCurrencyState by mutableStateOf("Рубли (RUB)")
+    private lateinit var viewModel: SecondInputViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val startAmount = intent.getDoubleExtra("START_AMOUNT", 0.0)
+        // Получаем параметры из Intent
         val defaultTerm = intent.getIntExtra("TERM", 0)
 
-        // Инициализируем состояние значением из Intent
-        termInputState = if (defaultTerm > 0) defaultTerm.toString() else ""
-        selectedRateState = null
+        // Создаём ViewModel с поддержкой SavedStateHandle
+        viewModel = ViewModelProvider(
+            this,
+            SavedStateViewModelFactory(application, this)
+        )[SecondInputViewModel::class.java]
+
+        // Инициализируем ViewModel начальными данными (только при первом создании)
+        viewModel.initializeFromIntent(defaultTerm)
 
         setContent {
             PracticeTheme {
@@ -70,10 +76,9 @@ class SecondInputActivity : ComponentActivity() {
                             title = { Text("Расчёт вкладов") },
                             navigationIcon = {
                                 IconButton(onClick = {
-                                    // Теперь termInputState и selectedRateState доступны
                                     val resultIntent = Intent().apply {
-                                        putExtra("UPDATED_TERM", termInputState.toIntOrNull() ?: 0)
-                                        putExtra("UPDATED_RATE", selectedRateState ?: 0.0)
+                                        putExtra("UPDATED_TERM", viewModel.getTermInt())
+                                        putExtra("UPDATED_RATE", viewModel.getRateDouble())
                                     }
                                     setResult(RESULT_OK, resultIntent)
                                     finish()
@@ -91,19 +96,25 @@ class SecondInputActivity : ComponentActivity() {
                         )
                     }
                 ) { innerPadding ->
+                    // Подписываемся на состояния из ViewModel
+                    val term by viewModel.term.collectAsState()
+                    val rate by viewModel.rate.collectAsState()
+                    val currency by viewModel.currency.collectAsState()
+
                     RateSelectionScreen(
                         innerPadding = innerPadding,
-                        termInput = termInputState,
-                        onTermInputChange = { termInputState = it },
-                        selectedRate = selectedRateState,
-                        onSelectedRateChange = { selectedRateState = it },
-                        selectedCurrency = selectedCurrencyState,              // передаём
-                        onCurrencyChange = { selectedCurrencyState = it }     // передаём колбэк
+                        termInput = term,
+                        onTermInputChange = { viewModel.updateTerm(it) },
+                        selectedRate = rate,
+                        onSelectedRateChange = { viewModel.updateRate(it) },
+                        selectedCurrency = currency,
+                        onCurrencyChange = { viewModel.updateCurrency(it) }
                     )
                 }
             }
         }
     }
+
 
     @Composable
     fun RateSelectionScreen(

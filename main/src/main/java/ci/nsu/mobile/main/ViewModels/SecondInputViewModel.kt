@@ -1,0 +1,58 @@
+package ci.nsu.mobile.main.ViewModels
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+
+class SecondInputViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+
+    private val KEY_TERM = "term"
+    private val KEY_RATE = "rate"
+    private val KEY_CURRENCY = "currency"
+    private val KEY_INITIALIZED = "initialized"  // флаг, что начальные данные уже загружены
+
+    // Поля состояния
+    private val _term = MutableStateFlow(savedStateHandle.get<String>(KEY_TERM) ?: "")
+    val term: StateFlow<String> = _term.asStateFlow()
+
+    private val _rate = MutableStateFlow(savedStateHandle.get<Double?>(KEY_RATE) ?: null)
+    val rate: StateFlow<Double?> = _rate.asStateFlow()
+
+    private val _currency = MutableStateFlow(savedStateHandle.get<String>(KEY_CURRENCY) ?: "Рубли (RUB)")
+    val currency: StateFlow<String> = _currency.asStateFlow()
+
+    // Метод для первоначальной инициализации из Intent (вызывается один раз из Activity)
+    fun initializeFromIntent(defaultTerm: Int) {
+        // Проверяем, не были ли уже данные инициализированы (например, после поворота)
+        val isInitialized = savedStateHandle.get<Boolean>(KEY_INITIALIZED) ?: false
+        if (!isInitialized && defaultTerm > 0) {
+            _term.update { defaultTerm.toString() }
+            savedStateHandle[KEY_TERM] = defaultTerm.toString()
+            savedStateHandle[KEY_INITIALIZED] = true
+        }
+    }
+
+    fun updateTerm(value: String) {
+        _term.update { value }
+        savedStateHandle[KEY_TERM] = value
+        // При ручном изменении срока сбрасываем ставку (будет подобрана автоматически в UI)
+        // Но лучше дать UI самому обновить ставку через рекомендуемую логику
+    }
+
+    fun updateRate(value: Double?) {
+        _rate.update { value }
+        savedStateHandle[KEY_RATE] = value
+    }
+
+    fun updateCurrency(value: String) {
+        _currency.update { value }
+        savedStateHandle[KEY_CURRENCY] = value
+    }
+
+    // Геттеры для удобства (используются перед отправкой результата)
+    fun getTermInt(): Int = _term.value.toIntOrNull() ?: 0
+    fun getRateDouble(): Double = _rate.value ?: 0.0
+}

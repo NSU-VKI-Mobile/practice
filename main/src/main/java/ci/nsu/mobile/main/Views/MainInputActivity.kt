@@ -51,10 +51,6 @@ import androidx.lifecycle.ViewModelProvider
 import ci.nsu.mobile.main.ViewModels.MainInputViewModel
 
 class MainInputActivity : ComponentActivity() {
-    // Состояния, которые будут видны в Compose и доступны для обновления из колбэка
-    private var startAmountState by mutableStateOf("")
-    private var termMonthsState by mutableStateOf("")
-
     private lateinit var viewModel: MainInputViewModel
 
     // Регистрируем обработчик результата
