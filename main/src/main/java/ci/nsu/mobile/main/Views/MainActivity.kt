@@ -62,7 +62,10 @@ class MainActivity : ComponentActivity() {
                     val intent = Intent(context, MainInputActivity::class.java)
                     context.startActivity(intent)
                 }, modifier = Modifier.padding(innerPadding)) { Text("Рассчитать") }
-                Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("История рассчётов") }
+                Button(onClick = {
+                    val intent = Intent(context, HistoryActivity::class.java)
+                    context.startActivity(intent)
+                }, modifier = Modifier.padding(innerPadding)) { Text("История расчётов") }
                 Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("Закрыть приложение") }
             }
         }

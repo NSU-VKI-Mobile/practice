@@ -23,6 +23,8 @@
             android:exported="false"
             android:label="@string/title_activity_main_input"
             android:theme="@style/Theme.Draft" />
+        <activity android:name=".Views.HistoryActivity" />
+        <activity android:name=".Views.DetailActivity" />
         <activity
             android:name=".Views.MainActivity"
             android:exported="true"
