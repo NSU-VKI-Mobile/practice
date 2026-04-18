@@ -13,6 +13,7 @@ class SecondInputViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     private val KEY_RATE = "rate"
     private val KEY_CURRENCY = "currency"
     private val KEY_INITIALIZED = "initialized"  // флаг, что начальные данные уже загружены
+    private val KEY_START_AMOUNT = "startAmount"
 
     // Поля состояния
     private val _term = MutableStateFlow(savedStateHandle.get<String>(KEY_TERM) ?: "")
@@ -24,13 +25,20 @@ class SecondInputViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     private val _currency = MutableStateFlow(savedStateHandle.get<String>(KEY_CURRENCY) ?: "Рубли (RUB)")
     val currency: StateFlow<String> = _currency.asStateFlow()
 
+    private val _startAmount = MutableStateFlow(savedStateHandle.get<Double>(KEY_START_AMOUNT) ?: 0.0)
+    val startAmount: StateFlow<Double> = _startAmount.asStateFlow()
+
     // Метод для первоначальной инициализации из Intent (вызывается один раз из Activity)
-    fun initializeFromIntent(defaultTerm: Int) {
+    fun initializeFromIntent(startAmount: Double, defaultTerm: Int) {
         // Проверяем, не были ли уже данные инициализированы (например, после поворота)
         val isInitialized = savedStateHandle.get<Boolean>(KEY_INITIALIZED) ?: false
-        if (!isInitialized && defaultTerm > 0) {
-            _term.update { defaultTerm.toString() }
-            savedStateHandle[KEY_TERM] = defaultTerm.toString()
+        if (!isInitialized) {
+            if (startAmount > 0) {
+                updateStartAmount(startAmount)
+            }
+            if (defaultTerm > 0) {
+                updateTerm(defaultTerm.toString())
+            }
             savedStateHandle[KEY_INITIALIZED] = true
         }
     }
@@ -50,6 +58,11 @@ class SecondInputViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     fun updateCurrency(value: String) {
         _currency.update { value }
         savedStateHandle[KEY_CURRENCY] = value
+    }
+
+    fun updateStartAmount(value: Double) {
+        _startAmount.update { value }
+        savedStateHandle[KEY_START_AMOUNT] = value
     }
 
     // Геттеры для удобства (используются перед отправкой результата)

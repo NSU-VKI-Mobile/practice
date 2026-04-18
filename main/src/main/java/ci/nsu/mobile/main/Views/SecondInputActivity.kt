@@ -57,6 +57,7 @@ class SecondInputActivity : ComponentActivity() {
 
         // Получаем параметры из Intent
         val defaultTerm = intent.getIntExtra("TERM", 0)
+        val startAmount = intent.getDoubleExtra("START_AMOUNT", 0.0)
 
         // Создаём ViewModel с поддержкой SavedStateHandle
         viewModel = ViewModelProvider(
@@ -65,7 +66,7 @@ class SecondInputActivity : ComponentActivity() {
         )[SecondInputViewModel::class.java]
 
         // Инициализируем ViewModel начальными данными (только при первом создании)
-        viewModel.initializeFromIntent(defaultTerm)
+        viewModel.initializeFromIntent(startAmount, defaultTerm)
 
         setContent {
             PracticeTheme {
@@ -132,6 +133,8 @@ class SecondInputActivity : ComponentActivity() {
 
         val allRates = listOf(15.0, 10.0, 5.0)
         val currencies = listOf("Рубли (RUB)", "Доллары (USD)", "Евро (EUR)")
+
+        val context = LocalContext.current
 
         fun parseTerm(): Int? = termInput.toIntOrNull()
 
@@ -248,13 +251,28 @@ class SecondInputActivity : ComponentActivity() {
                 }
             }
 
-            // Отображение выбранной ставки (опционально)
+            // Отображение выбранной ставки
             if (selectedRate != null && errorMessage == null) {
                 Text(
                     text = "Выбрана ставка: ${selectedRate}%",
                     fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.primary
                 )
+            }
+
+            Button(
+                onClick = {
+                    val intent = Intent(context, ResultActivity::class.java).apply {
+                        putExtra("START_AMOUNT", viewModel.startAmount.value)
+                        putExtra("TERM", viewModel.getTermInt())
+                        putExtra("RATE", viewModel.getRateDouble())
+                        putExtra("CURRENCY", viewModel.currency.value)
+                    }
+                    context.startActivity(intent)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Рассчитать")
             }
         }
     }
