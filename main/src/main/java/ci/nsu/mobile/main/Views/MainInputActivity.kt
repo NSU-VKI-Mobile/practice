@@ -50,6 +50,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
+import ci.nsu.mobile.main.Components.AnimatedButton
 import ci.nsu.mobile.main.ViewModels.MainInputViewModel
 
 class MainInputActivity : ComponentActivity() {
@@ -136,25 +137,6 @@ class MainInputActivity : ComponentActivity() {
         // Проверяем, что оба поля не пустые
         val isFormValid = startAmount.isNotBlank() && termMonths.isNotBlank()
 
-        // Анимируем цвет фона кнопки
-        val animatedContainerColor by animateColorAsState(
-            targetValue = if (isFormValid) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.38f)
-            },
-            label = "buttonColor"
-        )
-
-        val animatedContentColor by animateColorAsState(
-            targetValue = if (isFormValid) {
-                MaterialTheme.colorScheme.onPrimary
-            } else {
-                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f)
-            },
-            label = "buttonContentColor"
-        )
-
         Column(
             modifier = modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.Center,
@@ -176,17 +158,7 @@ class MainInputActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = onNextClick,
-                enabled = isFormValid,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = animatedContainerColor,
-                    contentColor = animatedContentColor,
-                    disabledContainerColor = animatedContainerColor,
-                    disabledContentColor = animatedContentColor)
-            ) {
-                Text("Далее")
-            }
+            AnimatedButton(onNextClick, isFormValid, "Далее")
         }
     }
 }

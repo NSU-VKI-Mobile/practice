@@ -44,10 +44,10 @@ class SecondInputViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     }
 
     fun updateTerm(value: String) {
-        _term.update { value }
-        savedStateHandle[KEY_TERM] = value
-        // При ручном изменении срока сбрасываем ставку (будет подобрана автоматически в UI)
-        // Но лучше дать UI самому обновить ставку через рекомендуемую логику
+        if (isValidTermMonths(value)) {
+            _term.update { value }
+            savedStateHandle[KEY_TERM] = value
+        }
     }
 
     fun updateRate(value: Double?) {
@@ -63,6 +63,10 @@ class SecondInputViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     fun updateStartAmount(value: Double) {
         _startAmount.update { value }
         savedStateHandle[KEY_START_AMOUNT] = value
+    }
+
+    private fun isValidTermMonths(value: String): Boolean {
+        return value.isEmpty() || value.all { it.isDigit() }
     }
 
     // Геттеры для удобства (используются перед отправкой результата)

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
+import ci.nsu.mobile.main.Components.AnimatedButton
 import ci.nsu.mobile.main.ViewModels.SecondInputViewModel
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
@@ -116,7 +117,6 @@ class SecondInputActivity : ComponentActivity() {
         }
     }
 
-
     @Composable
     fun RateSelectionScreen(
         innerPadding: PaddingValues,
@@ -137,6 +137,8 @@ class SecondInputActivity : ComponentActivity() {
         val context = LocalContext.current
 
         fun parseTerm(): Int? = termInput.toIntOrNull()
+
+        val isFormValid = termInput.isNotBlank()
 
         fun getTermForRate(rate: Double): Int = when (rate) {
             15.0 -> 5
@@ -260,20 +262,15 @@ class SecondInputActivity : ComponentActivity() {
                 )
             }
 
-            Button(
-                onClick = {
-                    val intent = Intent(context, ResultActivity::class.java).apply {
-                        putExtra("START_AMOUNT", viewModel.startAmount.value)
-                        putExtra("TERM", viewModel.getTermInt())
-                        putExtra("RATE", viewModel.getRateDouble())
-                        putExtra("CURRENCY", viewModel.currency.value)
-                    }
-                    context.startActivity(intent)
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Рассчитать")
-            }
+            AnimatedButton({
+                val intent = Intent(context, ResultActivity::class.java).apply {
+                    putExtra("START_AMOUNT", viewModel.startAmount.value)
+                    putExtra("TERM", viewModel.getTermInt())
+                    putExtra("RATE", viewModel.getRateDouble())
+                    putExtra("CURRENCY", viewModel.currency.value)
+                }
+                context.startActivity(intent)
+            },isFormValid, "Рассчитать", Modifier.fillMaxWidth())
         }
     }
 }
