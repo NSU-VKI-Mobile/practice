@@ -128,20 +128,20 @@ fun ResultScreen(startAmount: Double, term: Int, rate: Double, currency: String)
             ) {
                 Button(
                     onClick = {
-                        // Вернуться в самое начало (MainInputActivity)
-                        val intent = Intent(context, MainInputActivity::class.java).apply {
+                        // Вернуться в самое начало
+                        val intent = Intent(context, MainActivity::class.java).apply {
                             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                         }
                         context.startActivity(intent)
                         (context as? Activity)?.finish()
                     },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f).padding(vertical = 8.dp)
                 ) {
                     Text("Вернуться")
                 }
                 Button(
                     onClick = { viewModel.saveCalculation() },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f).padding(vertical = 8.dp)
                 ) {
                     Text("Сохранить")
                 }

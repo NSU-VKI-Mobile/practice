@@ -40,9 +40,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultCallback
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -131,6 +133,28 @@ class MainInputActivity : ComponentActivity() {
         onNextClick: () -> Unit,
         modifier: Modifier = Modifier
     ) {
+        // Проверяем, что оба поля не пустые
+        val isFormValid = startAmount.isNotBlank() && termMonths.isNotBlank()
+
+        // Анимируем цвет фона кнопки
+        val animatedContainerColor by animateColorAsState(
+            targetValue = if (isFormValid) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.38f)
+            },
+            label = "buttonColor"
+        )
+
+        val animatedContentColor by animateColorAsState(
+            targetValue = if (isFormValid) {
+                MaterialTheme.colorScheme.onPrimary
+            } else {
+                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f)
+            },
+            label = "buttonContentColor"
+        )
+
         Column(
             modifier = modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.Center,
@@ -152,7 +176,15 @@ class MainInputActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = onNextClick) {
+            Button(
+                onClick = onNextClick,
+                enabled = isFormValid,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = animatedContainerColor,
+                    contentColor = animatedContentColor,
+                    disabledContainerColor = animatedContainerColor,
+                    disabledContentColor = animatedContentColor)
+            ) {
                 Text("Далее")
             }
         }

@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 class MainActivity : ComponentActivity() {
@@ -61,12 +62,14 @@ class MainActivity : ComponentActivity() {
                 Button(onClick = {
                     val intent = Intent(context, MainInputActivity::class.java)
                     context.startActivity(intent)
-                }, modifier = Modifier.padding(innerPadding)) { Text("Рассчитать") }
+                }, modifier = Modifier.padding(vertical = 8.dp)) { Text("Рассчитать") }
                 Button(onClick = {
                     val intent = Intent(context, HistoryActivity::class.java)
                     context.startActivity(intent)
-                }, modifier = Modifier.padding(innerPadding)) { Text("История расчётов") }
-                Button(onClick = {}, modifier = Modifier.padding(innerPadding)) { Text("Закрыть приложение") }
+                }, modifier = Modifier.padding(vertical = 8.dp)) { Text("История расчётов") }
+                Button(onClick = {
+                    finishAndRemoveTask()
+                }, modifier = Modifier.padding(vertical = 8.dp)) { Text("Закрыть приложение") }
             }
         }
     }
