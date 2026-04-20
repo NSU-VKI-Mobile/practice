@@ -3,7 +3,7 @@ package ci.nsu.mobile.calculations.ui
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.calculations.data.DepositRepository
+import ci.nsu.mobile.calculations.data.repository.DepositRepository
 import ci.nsu.mobile.domain.models.DepositCalculation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
