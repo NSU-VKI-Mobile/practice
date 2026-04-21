@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [DepositEntity::class], //список классов Entity; массив
+    entities = [DepositCalculations::class], //список классов Entity; массив
     version = 1,
     exportSchema = false //не созд. лишние файлы
 )

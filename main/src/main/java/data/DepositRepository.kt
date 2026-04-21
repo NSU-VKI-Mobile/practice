@@ -7,17 +7,17 @@ class DepositRepository(
 )
 {
     //сохр. расчет
-    suspend fun saveCalculation(deposit: DepositEntity){
+    suspend fun saveCalculation(deposit: DepositCalculations){
         depositDao.insertDeposit(deposit)
     }
 
     //получ. списка всех расчетов
-    fun getAllCalculations(): Flow<List<DepositEntity>> {
+    fun getAllCalculations(): Flow<List<DepositCalculations>> {
         return depositDao.getAllDeposit()
     }
 
     //получение одного расчета по ид
-    suspend fun getCalculationById(id: Long): DepositEntity? {
+    suspend fun getCalculationById(id: Long): DepositCalculations? {
         return depositDao.getDepositById(id)
     }
 
