@@ -6,20 +6,26 @@ import ci.nsu.mobile.main.data.dto.GroupDto
 import ci.nsu.mobile.main.data.dto.LoginRequest
 import ci.nsu.mobile.main.data.dto.RegisterRequest
 import ci.nsu.mobile.main.data.dto.UserDto
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class AuthRepository (){
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val api = ApiClient.api
 
-    suspend fun login(login: String, password: String): Result<String?>{
-        try{
-            val response = api.login(LoginRequest(login,password))
-            return if(response.isSuccessful){
-                Result.success(response.body())
-            }else{
-                Result.failure(Exception("Неправильный логин или пароль"))
+    fun login(login: String, password: String): Result<String?> {
+        coroutineScope.launch() {
+            try {
+                val response = api.login(LoginRequest(login, password))
+                if (response.isSuccessful) {
+                    Result.success(response.body()) // Вернет токен
+                } else {
+                    Result.failure(Exception("Неправильный логин или пароль"))
+                }
+            } catch (e: Exception) {
+                Result.failure(Exception("Ошибка: ${e.message}"))
             }
-        }catch (e: Exception){
-            return Result.failure(Exception("Ошибка: ${e.message}"))
         }
     }
 

@@ -46,7 +46,6 @@ class MainActivity : ComponentActivity() {
 fun Greeting(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val context = LocalContext.current
-
     NavHost(
         modifier = modifier,
         navController = navController,

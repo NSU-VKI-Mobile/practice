@@ -52,6 +52,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:3.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.tracing.perfetto.handshake)
