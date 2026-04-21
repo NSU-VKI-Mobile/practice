@@ -64,6 +64,17 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
     }
+    fun loadUsers(){
+        viewModelScope.launch {
+            repository.getUsers()
+                .onSuccess {
+                    allUsers = it
+                }
+                .onFailure { error ->
+                    errorMessage = "${error.message}"
+                }
+        }
+    }
 
     fun registry(){
         viewModelScope.launch {
