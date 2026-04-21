@@ -14,18 +14,16 @@ class AuthRepository (){
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val api = ApiClient.api
 
-    fun login(login: String, password: String): Result<String?> {
-        coroutineScope.launch() {
-            try {
-                val response = api.login(LoginRequest(login, password))
-                if (response.isSuccessful) {
-                    Result.success(response.body()) // Вернет токен
-                } else {
-                    Result.failure(Exception("Неправильный логин или пароль"))
-                }
-            } catch (e: Exception) {
-                Result.failure(Exception("Ошибка: ${e.message}"))
+    suspend fun login(login: String, password: String): Result<String?> {
+        try {
+            val response = api.login(LoginRequest(login, password))
+            return if (response.isSuccessful) {
+                Result.success(response.body()) // Вернет токен
+            } else {
+                Result.failure(Exception("Неправильный логин или пароль"))
             }
+        } catch (e: Exception) {
+            return Result.failure(Exception("Ошибка: ${e.message}"))
         }
     }
 
