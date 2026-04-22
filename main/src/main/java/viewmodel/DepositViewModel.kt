@@ -81,7 +81,7 @@ class DepositViewModel(
     }
 
 
-    //TODO:расчет
+    //расчет
     public fun performCalculation()
     {
         //начальная сумма проверки
