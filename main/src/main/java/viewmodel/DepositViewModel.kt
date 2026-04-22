@@ -141,5 +141,11 @@ class DepositViewModel(
         return repository.getAllCalculations()
     }
 
+    //TODO:сохранение расчета
+    fun saveCalculation()
+    {
+
+    }
+
 
 }

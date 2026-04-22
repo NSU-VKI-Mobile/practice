@@ -20,14 +20,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -44,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.DpOffset
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
+import data.SingletonDatabase
 
 class StepSecondActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,11 +66,13 @@ fun StepSecondScreenActivity(modifier: Modifier = Modifier
     .background(Color.LightGray))
 {
     val context = LocalContext.current
-    val text = remember { mutableStateOf("") }
-    val text_list = remember {mutableStateOf("")}
-    val list = listOf("Рубли", "Доллары", "Евро")
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf("") }
+
+    val app = context.applicationContext as SingletonDatabase
+    val viewModel = app.getViewModel()
+    val selectedCurrency by viewModel.selectedCurrency.collectAsState()
+    val monthlyDeposit by viewModel.monthlyDeposit.collectAsState()
+    val interestRate by viewModel.interestRate.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -99,11 +100,11 @@ fun StepSecondScreenActivity(modifier: Modifier = Modifier
             ) {
                 Row {
                     TextField(
-                        value = selectedOption,
+                        value = selectedCurrency,
                         textStyle = androidx.compose.ui.text.TextStyle(fontSize = 16.sp),
                         placeholder = { Text("Выберите валюту") },
-                        onValueChange = { newText ->
-                            selectedOption = newText
+                        onValueChange = {
+                            viewModel.updateSelectedCurrency(it)
                         },
                         readOnly = true
                     )
@@ -119,17 +120,26 @@ fun StepSecondScreenActivity(modifier: Modifier = Modifier
                     offset = DpOffset(x=220.dp, y=0.dp)
                 ) {
                     DropdownMenuItem(
-                        onClick = {selectedOption = "Рубли"},
+                        onClick = {
+                            viewModel.updateSelectedCurrency("Рубли");
+                            expanded = false //закрыть меню
+                        },
                         text = {Text("Рубли")}
                     )
                     HorizontalDivider()
                     DropdownMenuItem(
-                        onClick = {selectedOption = "Доллары"},
+                        onClick = {
+                            viewModel.updateSelectedCurrency("Доллары");
+                            expanded = false
+                        },
                         text = {Text("Доллары")}
                     )
                     HorizontalDivider()
                     DropdownMenuItem(
-                        onClick = {selectedOption = "Евро"},
+                        onClick = {
+                            viewModel.updateSelectedCurrency("Евро");
+                            expanded = false
+                        },
                         text = {Text("Евро")}
                     )
                 }
@@ -143,25 +153,23 @@ fun StepSecondScreenActivity(modifier: Modifier = Modifier
             Text(text="Сумма ежемесячного пополнения")
 
             TextField(
-                value = text.value,
+                value = monthlyDeposit,
                 textStyle = androidx.compose.ui.text.TextStyle(fontSize = 25.sp),
                 placeholder = { Text("Введите сумму") },
-                onValueChange = { newText ->
-                    text.value = newText
+                onValueChange = {
+                    viewModel.updateMonthlyDeposit(it)
                 })
+
+            Text(text="Процентная ставка: $interestRate")
 
             Row(modifier = Modifier
                 .height(100.dp)
             ){
                 Button(
                     onClick = {
-                        if (context is Activity) {
-                            context.finishAffinity()
-                            val intent = Intent(context, StepFirstActivity::class.java)
-                            context.startActivity(intent)
+                        (context as Activity).finish()
                         }
-
-                    },
+                    ,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Black
                     ),
@@ -174,6 +182,7 @@ fun StepSecondScreenActivity(modifier: Modifier = Modifier
 
                 Button(
                     onClick = {
+                        viewModel.performCalculation()
                         val intent = Intent(context, ResultActivity::class.java)
                         context.startActivity(intent)
                     },

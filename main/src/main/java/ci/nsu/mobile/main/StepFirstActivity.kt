@@ -24,6 +24,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -33,6 +35,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
+import data.AppDatabase
+import data.DepositRepository
+import data.SingletonDatabase
+import viewmodel.DepositViewModel
 import java.time.format.TextStyle
 
 class StepFirstActivity : ComponentActivity() {
@@ -57,6 +63,10 @@ fun StepFirstScreenActivity(modifier: Modifier = Modifier
     .background(Color.LightGray)) {
     val context = LocalContext.current
     val text = remember { mutableStateOf("") }
+    val app = context.applicationContext as SingletonDatabase
+    val viewModel = app.getViewModel()
+    val initialAmount by viewModel.initialAmount.collectAsState()
+    val termInMonth by viewModel.termInMonths.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -79,11 +89,11 @@ fun StepFirstScreenActivity(modifier: Modifier = Modifier
             Text(text="Стартовый взнос *")
 
             TextField(
-                value = text.value,
+                value = initialAmount,
                 textStyle = androidx.compose.ui.text.TextStyle(fontSize = 25.sp),
                 placeholder = { Text("Введите стартовый взнос") },
-                onValueChange = { newText ->
-                    text.value = newText
+                onValueChange = {
+                    viewModel.updateInititalAmount(it)
                 })
 
             Spacer(modifier = Modifier
@@ -92,11 +102,11 @@ fun StepFirstScreenActivity(modifier: Modifier = Modifier
             Text(text="Срок вклада в месяц *")
 
             TextField(
-                value = text.value,
+                value = termInMonth,
                 textStyle = androidx.compose.ui.text.TextStyle(fontSize = 25.sp),
                 placeholder = { Text("Введите срок вклада") },
-                onValueChange = { newText ->
-                    text.value = newText
+                onValueChange = {
+                    viewModel.updateTermInMonths(it)
                 })
 
             Row(modifier = Modifier
