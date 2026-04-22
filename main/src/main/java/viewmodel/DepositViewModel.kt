@@ -22,7 +22,7 @@ class DepositViewModel(
     private val _initialAmount = MutableStateFlow("") //начальная сумма
     private val _totalAmount = MutableStateFlow(0.0) //итоговая сумма
     private val _accruedInterest = MutableStateFlow(0.0) //начисленные проценты
-    private val _errorMessage = MutableStateFlow(null) //ошибка
+    private val _errorMessage = MutableStateFlow<String?>(null) //ошибка
 
 
     val termInMonths: StateFlow<String> = _termInMonths.asStateFlow()
@@ -81,7 +81,59 @@ class DepositViewModel(
     }
 
 
-    //TODO:сохранение расчета
+    //TODO:расчет
+    public fun performCalculation()
+    {
+        //начальная сумма проверки
+        if (_initialAmount.value.isEmpty())
+        {
+            _errorMessage.value = "Начальное значение пустое"
+            return
+        }
+        val countInitialAmount = _initialAmount.value.toDoubleOrNull()
+        if (countInitialAmount == null)
+        {
+            _errorMessage.value = "Ошибка начального значения"
+            return
+        }
+        if (countInitialAmount <= 0)
+        {
+            _errorMessage.value = "Начальное значение от 1"
+            return
+        }
+
+        //срок проверки
+        if (_termInMonths.value == "")
+        {
+            _errorMessage.value = "Срок не может быть пустым"
+            return
+        }
+        val termMonthly = _termInMonths.value.toIntOrNull()
+        if (termMonthly == null || termMonthly < 1)
+        {
+            _errorMessage.value = "Пополнение в месяц больше 1"
+            return
+        }
+
+        //пополнение в месяц проверки
+        if (_monthlyDeposit.value.isEmpty())
+        {
+            _monthlyDeposit.value = "0.0"
+        }
+        val monthDeposit = _monthlyDeposit.value.toDoubleOrNull()
+        if (monthDeposit == null || monthDeposit < 0)
+        {
+            _errorMessage.value = "Пополнение не может быть отрицательным"
+            return
+        }
+
+
+        val result = calculateTotalAmount(countInitialAmount, termMonthly, monthDeposit)
+
+        _totalAmount.value = result.first
+        _accruedInterest.value = result.second
+        _errorMessage.value = null
+    }
 
 
     //загрузка истории
