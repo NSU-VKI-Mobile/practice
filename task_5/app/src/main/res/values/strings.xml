@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Practice App</string>
+
+    <string name="prompt_interest">Процентная ставка</string>
+    <string name="hint_start_amount">Стартовая сумма</string>
+    <string name="hint_period">Срок вклада (в месяцах)</string>
+    <string name="hint_monthly_topup">Ежемесячное пополнение (необязательно)</string>
+</resources>
