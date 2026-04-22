@@ -27,15 +27,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.moble.main.ui.Screens.HomeScreen
+import ci.nsu.moble.main.ui.Screens.ScreenOneContent
+import ci.nsu.moble.main.ui.Screens.ScreenTwoContent
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
 // TODO: crate sealed class with 3 routes
-sealed class ThreeWays(){
-
+sealed class LunchTrayScreen(val title: String) {
+    data object Home : LunchTrayScreen("home")
+    data object ScreenOne : LunchTrayScreen("screenone")
+    data object ScreenTwo : LunchTrayScreen("screentwo")
 }
 
 class SecondActivity : ComponentActivity() {
@@ -89,6 +98,7 @@ fun SecondActivityScreen() {
 
                 onClick = {
                     // TODO: navigate to home screen by navController
+                    navController.navigate("home") {}
                     selectedItem = 0
                 })
             NavigationBarItem(
@@ -98,6 +108,7 @@ fun SecondActivityScreen() {
 
                 onClick = {
                     // TODO: navigate to screen one
+                    navController.navigate("screenone") {}
                     selectedItem = 1
                 })
             NavigationBarItem(
@@ -106,13 +117,23 @@ fun SecondActivityScreen() {
                 selected = selectedItem == 2,
                 onClick = {
                     // TODO: navigate to screen two
+                    navController.navigate("screentwo") {}
                     selectedItem = 2
                 })
         }
     }) { innerPadding ->
         // TODO: create a nav graph with 3 screens
-        // NavHost() {}
-        // composable(Screen.Home.route) { HomeScreen() }
+        NavHost(navController = navController, startDestination = LunchTrayScreen.Home.title) {
+            composable(LunchTrayScreen.Home.title) {
+                HomeScreen()
+            }
+            composable(LunchTrayScreen.ScreenOne.title) {
+                ScreenOneContent()
+            }
+            composable(LunchTrayScreen.ScreenTwo.title) {
+                ScreenTwoContent()
+            }
+        }
     }
 }
 
