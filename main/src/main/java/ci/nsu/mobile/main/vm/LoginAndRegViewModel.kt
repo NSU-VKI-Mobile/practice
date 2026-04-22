@@ -43,13 +43,14 @@ data class LoginAndRegUiState(
 
 class LoginAndRegViewModel(application: Application) : AndroidViewModel(application){
     val repository = AuthRepository()
-    val allGender = listOf<String>("Муж","Жен")
+    val allGenders = listOf<String>("Муж","Жен")
     private val _uiState = MutableStateFlow(LoginAndRegUiState())
     val uiState: StateFlow<LoginAndRegUiState> = _uiState.asStateFlow()
-    var errorMessage by mutableStateOf("")
+    var errorMessage by mutableStateOf<String?>(null)
     var allGroup by mutableStateOf<List<GroupDto>>(emptyList())
     var allUsers by mutableStateOf<List<UserDto>>(emptyList())
     init{
+        // Если ошибка, то что делать?
         viewModelScope.launch {
             var isFinish = false;
             while (!isFinish) {
@@ -60,6 +61,7 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
                     }
                     .onFailure { error ->
                         errorMessage = "${error.message}"
+                        isFinish = true
                     }
             }
         }

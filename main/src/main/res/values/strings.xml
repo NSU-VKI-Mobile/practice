@@ -15,4 +15,8 @@
     <string name="text_email">Почта</string>
     <string name="text_phone">Телефон</string>
     <string name="text_exit">Выход</string>
+    <string name="ok">Ок</string>
+    <string name="text_logOut">Выйти из аккаунта</string>
+    <string name="text_back">Назад</string>
+    <string name="id">ID</string>
 </resources>

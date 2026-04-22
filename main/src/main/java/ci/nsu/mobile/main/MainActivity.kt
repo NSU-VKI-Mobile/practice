@@ -13,13 +13,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.main.api.TokenManager
+import ci.nsu.mobile.main.ui.screens.ErrorScreen
 import ci.nsu.mobile.main.ui.screens.LogInScreen
 import ci.nsu.mobile.main.ui.screens.MainScreen
 import ci.nsu.mobile.main.ui.screens.RegistryScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
+import ci.nsu.mobile.main.vm.LoginAndRegViewModel
 
 sealed class Screen(val route: String) {
     object LogIn : Screen("login")
@@ -43,7 +47,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(modifier: Modifier = Modifier) {
+fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = viewModel()) {
     val navController = rememberNavController()
     val context = LocalContext.current
     NavHost(
@@ -54,21 +58,39 @@ fun Greeting(modifier: Modifier = Modifier) {
         composable(Screen.LogIn.route) {
             LogInScreen(
                 onRegClick = {navController.navigate(Screen.Registry.route) },
-                onLogInClick = {navController.navigate(Screen.Main.route) }
+                onLogInClick = {
+                    viewModel.logIn()
+                    if (TokenManager.token != null) navController.navigate(Screen.Main.route) },
+                onExitClick = {(context as? Activity)?.finish()},
+                viewModel = viewModel
             )
         }
 
         composable(Screen.Registry.route) {
             RegistryScreen(
-                onRegClick = {navController.navigate(Screen.Main.route) }
+                onRegClick = {
+                    viewModel.registry()
+                    if(viewModel.errorMessage == null) navController.navigate(Screen.Main.route) },
+                onBackClick = {navController.popBackStack()},
+                viewModel = viewModel
             )
         }
 
         composable(Screen.Main.route) {
             MainScreen(
-                onExitClick = {(context as? Activity)?.finish()}
+                onLogOutClick = {
+                    viewModel.logOut()
+                    navController.navigate(Screen.LogIn.route)
+                },
+                viewModel = viewModel
             )
         }
+    }
+    viewModel.errorMessage?.let{e ->
+        ErrorScreen(
+            onDismiss = {viewModel.errorMessage = null},
+            onExit = {(context as? Activity)?.finish()},
+            error = e)
     }
 }
 
