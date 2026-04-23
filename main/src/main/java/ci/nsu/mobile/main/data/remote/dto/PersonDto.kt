@@ -1,13 +1,20 @@
 package ci.nsu.mobile.main.data.remote.dto
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class PersonDto(
+    @SerialName("firstName")
     val firstName: String,
+    @SerialName("lastName")
     val lastName: String,
+    @SerialName("middleName")
     val middleName: String,
-    val birthDate: String, // "YYYY-MM-DD"
-    val gender: String,    // "MALE" или "FEMALE"
+    @SerialName("birthDate")
+    val birthDate: String,
+    @SerialName("gender")
+    val gender: String,
+    @SerialName("groupId")
     val groupId: Int
 )
