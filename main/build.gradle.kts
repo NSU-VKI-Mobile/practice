@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+  // id("plugin.serialization") version "2.0.21"
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -33,12 +35,39 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        compose = true
+    }
+
+    kotlin {
+        sourceSets.all {
+            languageSettings.optIn("kotlin.serialization.ExperimentalSerializationApi")
+        }
+    }
 }
 
 dependencies {
 
     implementation(libs.androidx.appcompat)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+    implementation("androidx.activity:activity-compose:1.13.0")
+    implementation("androidx.compose.ui:ui:1.10.6")
+    implementation("androidx.compose.material:material:1.10.6")
+ //   implementation("com.squareup.retrofit2:retrofit:2.9.0")
+ //   implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }
