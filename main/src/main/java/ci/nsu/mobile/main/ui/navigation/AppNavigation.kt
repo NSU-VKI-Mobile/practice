@@ -21,12 +21,13 @@ import ci.nsu.mobile.main.ui.screens.Stage2Screen
 fun AppNavigation(modifier: Modifier = Modifier) {
     val database = AppDatabase.getDatabase(androidx.compose.ui.platform.LocalContext.current)
     val repository = DepositRepository(database.depositDao())
+    // Создаём ViewModel с фабрикой, которая передаёт repository
     val viewModel: DepositViewModel = viewModel(
         factory = DepositViewModelFactory(repository)
     )
 
     val currentScreen by viewModel.currentScreen.collectAsState()
-
+    // При изменении _currentScreen, Compose автоматически перерисует UI
     when (currentScreen) {
         is Screen.Main -> MainScreen(viewModel, modifier)
         is Screen.Stage1 -> Stage1Screen(viewModel, modifier)

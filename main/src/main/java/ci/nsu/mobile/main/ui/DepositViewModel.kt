@@ -21,8 +21,9 @@ data class DepositState(
 class DepositViewModel(
     private val repository: DepositRepository
 ) : ViewModel() {
-
+    // Можно менять (только внутри ViewModel)
     private val _currentScreen = MutableStateFlow<Screen>(Screen.Main)
+    // Только читать (для UI)
     val currentScreen: StateFlow<Screen> = _currentScreen
 
     private val _depositState = MutableStateFlow(DepositState())
@@ -35,13 +36,13 @@ class DepositViewModel(
     val selectedCalculation: StateFlow<DepositCalculation?> = _selectedCalculation
 
     private val availableRates = mapOf(
-        "less6" to 15.0,
-        "6to12" to 10.0,
-        "more12" to 5.0
+        "less6" to 15.0,   // до 6 месяцев
+        "6to12" to 10.0,   // от 6 до 12 месяцев
+        "more12" to 5.0    // от 12 месяцев
     )
-
+    //Навигация между экранами
     fun navigateTo(screen: Screen) {
-        _currentScreen.value = screen
+        _currentScreen.value = screen  // Просто меняем значение потока
     }
 
     fun navigateBack() {
@@ -65,7 +66,7 @@ class DepositViewModel(
     fun updatePeriodMonths(value: String) {
         _depositState.value = _depositState.value.copy(periodMonths = value)
         updateAvailableRate()
-    }
+    }  // При изменении срока пересчитываем ставку
 
     fun updateMonthlyTopUp(value: String) {
         _depositState.value = _depositState.value.copy(monthlyTopUp = value)
@@ -74,7 +75,7 @@ class DepositViewModel(
     fun setInterestRate(rate: Double) {
         _depositState.value = _depositState.value.copy(interestRate = rate)
     }
-
+//Логика выбора ставки
     private fun updateAvailableRate() {
         val period = _depositState.value.periodMonths.toIntOrNull()
         when {
@@ -103,7 +104,7 @@ class DepositViewModel(
             }
         }
     }
-
+    //Валидация данных
     fun validateStage1(): Boolean {
         val state = _depositState.value
         return when {
@@ -143,7 +144,7 @@ class DepositViewModel(
             }
         }
     }
-
+    // Расчёт вклада
     fun calculateResult() {
         val state = _depositState.value
         val initial = state.initialAmount.toDouble()
@@ -166,7 +167,7 @@ class DepositViewModel(
 
         _currentScreen.value = Screen.Result
     }
-
+    //Сохранение в базу данных
     fun saveCalculation() {
         val state = _depositState.value
         val calculation = DepositCalculation(
@@ -180,14 +181,14 @@ class DepositViewModel(
         )
 
         viewModelScope.launch {
-            repository.insertCalculation(calculation)
+            repository.insertCalculation(calculation)  // Асинхронное сохранение
         }
     }
 
     fun loadAllCalculations() {
         viewModelScope.launch {
             repository.getAllCalculations().collect { list ->
-                _calculations.value = list
+                _calculations.value = list // Автообновление при изменениях
             }
         }
     }
