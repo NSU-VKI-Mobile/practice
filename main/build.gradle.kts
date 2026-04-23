@@ -4,17 +4,17 @@ plugins {
 }
 
 android {
-    namespace = "ci.nsu.moble.main"
+    namespace = "ci.nsu.mobile.main"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "ci.nsu.moble.main"
+        applicationId = "ci.nsu.mobile.main"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -37,8 +37,8 @@ android {
 
 dependencies {
 
-    implementation("com.android.support:appcompat-v7:28.0.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("com.android.support.test:runner:1.0.2")
-    androidTestImplementation("com.android.support.test.espresso:espresso-core:3.0.2")
+    implementation(libs.androidx.appcompat)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
