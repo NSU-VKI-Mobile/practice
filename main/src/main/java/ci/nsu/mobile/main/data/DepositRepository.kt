@@ -12,6 +12,6 @@ class DepositRepository(private val depositDao: DepositDao) {
     }
 
     suspend fun getCalculationById(id: Long): DepositCalculation? {
-        return depositDao.getCalculationById(id)
+        return depositDao.getCalculationById(id) //ihoh
     }
 }
