@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_mainFragment_to_step1Fragment"
             app:destination="@id/step1Fragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_historyFragment"
+            app:destination="@id/historyFragment" />
     </fragment>
 
     <fragment
@@ -30,6 +33,9 @@
         android:name="ci.nsu.mobile.main.ui.step2.Step2Fragment"
         android:label="Дополнительные параметры"
         tools:layout="@layout/fragment_step2">
+        <argument
+            android:name="depositData"
+            app:argType="ci.nsu.mobile.main.DepositData" />
         <action
             android:id="@+id/action_step2Fragment_to_resultFragment"
             app:destination="@id/resultFragment" />
@@ -39,12 +45,30 @@
         android:id="@+id/resultFragment"
         android:name="ci.nsu.mobile.main.ui.result.ResultFragment"
         android:label="Результат"
-        tools:layout="@layout/fragment_result" />
+        tools:layout="@layout/fragment_result">
+        <argument
+            android:name="depositData"
+            app:argType="ci.nsu.mobile.main.DepositData" />
+    </fragment>
 
     <fragment
         android:id="@+id/historyFragment"
         android:name="ci.nsu.mobile.main.ui.history.HistoryFragment"
         android:label="История"
-        tools:layout="@layout/fragment_history" />
+        tools:layout="@layout/fragment_history">
+
+        <action
+            android:id="@+id/action_historyFragment_to_detailDialogFragment"
+            app:destination="@id/detailDialogFragment" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/detailDialogFragment"
+        android:name="ci.nsu.mobile.main.ui.history.DetailDialogFragment"
+        android:label="Детали расчёта">
+        <argument
+            android:name="calculation"
+            app:argType="ci.nsu.mobile.main.data.database.DepositCalculation" />
+    </dialog>
 
 </navigation>

@@ -19,6 +19,7 @@ class ResultFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: ResultViewModel by viewModels()
     private val decimalFormat = DecimalFormat("#,##0.00")
+    private var isSaved = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,16 +38,9 @@ class ResultFragment : Fragment() {
         displayResult(depositData)
 
         binding.btnSave.setOnClickListener {
-            viewModel.saveCalculation(
-                initialAmount = depositData.initialAmount,
-                periodMonths = depositData.periodMonths,
-                interestRate = depositData.interestRate,
-                monthlyTopUp = depositData.monthlyTopUp,
-                finalAmount = depositData.finalAmount,
-                interestEarned = depositData.interestEarned,
-                timestamp = System.currentTimeMillis()
-            )
-            Toast.makeText(requireContext(), "Расчёт сохранён", Toast.LENGTH_SHORT).show()
+            if (!isSaved) {
+                saveCalculation(depositData)
+            }
         }
 
         binding.btnBackToMain.setOnClickListener {
@@ -63,6 +57,30 @@ class ResultFragment : Fragment() {
         } ?: "Не указано"
         binding.tvFinalAmountValue.text = "${decimalFormat.format(data.finalAmount)} ₽"
         binding.tvInterestEarnedValue.text = "${decimalFormat.format(data.interestEarned)} ₽"
+    }
+
+    private fun saveCalculation(data: DepositData) {
+        val timestamp = System.currentTimeMillis()
+
+        viewModel.saveCalculation(
+            initialAmount = data.initialAmount,
+            periodMonths = data.periodMonths,
+            interestRate = data.interestRate,
+            monthlyTopUp = data.monthlyTopUp,
+            finalAmount = data.finalAmount,
+            interestEarned = data.interestEarned,
+            timestamp = timestamp
+        )
+
+        isSaved = true
+        binding.btnSave.isEnabled = false
+        binding.btnSave.text = "Сохранено!"
+
+        Toast.makeText(requireContext(), "Расчёт сохранён", Toast.LENGTH_SHORT).show()
+
+        binding.btnSave.postDelayed({
+            findNavController().popBackStack(R.id.mainFragment, false)
+        }, 1500)
     }
 
     override fun onDestroyView() {
