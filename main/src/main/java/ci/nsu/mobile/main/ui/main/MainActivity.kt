@@ -1,6 +1,7 @@
 package ci.nsu.mobile.main.ui.main
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -33,5 +34,13 @@ class MainActivity : AppCompatActivity() {
       //  navView.setupWithNavController(navController)
 
         supportActionBar?.setDisplayShowHomeEnabled(true)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        if (item.itemId == android.R.id.home) { // Это ID кнопки "назад"
+            navController.popBackStack()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
