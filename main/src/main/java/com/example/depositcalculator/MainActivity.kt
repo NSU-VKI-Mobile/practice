@@ -28,6 +28,10 @@ import com.example.depositcalculator.screen.ResultScreen
 import com.example.depositcalculator.screen.Step1Screen
 import com.example.depositcalculator.screen.Step2Screen
 import com.example.depositcalculator.viewmodel.DepositeViewModel
+import com.example.depositcalculator.Deposit
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,24 +90,14 @@ class MainActivity : ComponentActivity() {
                     HistoryScreen(history = history, onBack = { navController.navigate("main")})
                 }
             }
-
-            MaterialTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    MainScreen(
-                        onCloseApp = {
-                            finish()
-                        }
-                    )
-                }
-            }
         }
     }
 }
 
 @Composable
 fun MainScreen(
+    onCalculate: () -> Unit,
+    onHistory: () -> Unit,
     onCloseApp: () -> Unit
 ) {
     Surface(
@@ -124,7 +118,7 @@ fun MainScreen(
             )
 
             Button(
-                onClick = {},
+                onClick = onCalculate,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
@@ -133,7 +127,7 @@ fun MainScreen(
             }
 
             Button(
-                onClick = {},
+                onClick = onHistory,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
