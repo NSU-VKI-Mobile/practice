@@ -95,7 +95,7 @@ fun HistoryItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { onClick() }  // ← ДОБАВЬ ЭТУ СТРОКУ
+            .clickable { onClick() }
     ) {
         Column(
             modifier = Modifier
