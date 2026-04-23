@@ -58,7 +58,7 @@
                 android:layout_weight="1"
                 android:text="Назад"
                 android:layout_marginEnd="8dp"
-                style="@style/Widget.Material3.Button.TextButton" />
+                />
 
             <Button
                 android:id="@+id/btnCalculate"
