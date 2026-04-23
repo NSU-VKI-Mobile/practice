@@ -7,14 +7,16 @@ import ci.nsu.mobile.main.data.database.AppDatabase
 import ci.nsu.mobile.main.data.database.DepositCalculation
 import ci.nsu.mobile.main.data.repository.DepositRepository
 import kotlinx.coroutines.launch
-import java.time.temporal.TemporalAmount
 
 class ResultViewModel(application: Application) : AndroidViewModel(application) {
+
     private val repository: DepositRepository
+
     init {
         val database = AppDatabase.getDatabase(application)
         repository = DepositRepository(database)
     }
+
     fun saveCalculation(
         initialAmount: Double,
         periodMonths: Int,

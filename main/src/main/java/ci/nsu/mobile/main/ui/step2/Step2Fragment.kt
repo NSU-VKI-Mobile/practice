@@ -11,78 +11,111 @@ import androidx.navigation.fragment.findNavController
 import ci.nsu.mobile.main.DepositData
 import ci.nsu.mobile.main.R
 import ci.nsu.mobile.main.databinding.FragmentStep2Binding
-import java.time.Month
 
-class Step2Fragment : Fragment(){
-    private var _binding: FragmentStep2Binding?= null
+class Step2Fragment : Fragment() {
+
+    private var _binding: FragmentStep2Binding? = null
     private val binding get() = _binding!!
+
+    // Объявляем переменную как var, чтобы можно было изменять
+    private var currentDepositData: DepositData? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentStep2Binding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val depositData = arguments?.getSerializable("depositData") as DepositData
-        setupSpinner(depositData.periodMonths)
+
+        // Получаем данные из аргументов
+        currentDepositData = arguments?.getSerializable("depositData") as? DepositData
+
+        currentDepositData?.let { depositData ->
+            setupSpinner(depositData.periodMonths)
+        }
+
         binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
-        binding.btnCalcilate.setOnClickListener {
-            if (depositData.periodMonths <= -0) {
-                Toast.makeText(requireContext(), "Некорректный срок вклада. Вернитесь и укажите срок",
-                    Toast.LENGTH_LONG).show()
+
+        binding.btnCalculate.setOnClickListener {
+            val depositData = currentDepositData
+            if (depositData == null) {
+                Toast.makeText(requireContext(), "Ошибка: данные не найдены", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val selctedRate = binding.spinnerInterestRate.selectedItem.toString().replace("%", "").toDouble()
-            val monthlyTopUp = if (binding.etMonthlyTopUp.text.toString().isEmpty()){
+
+            if (depositData.periodMonths <= 0) {
+                Toast.makeText(requireContext(), "Некорректный срок вклада. Вернитесь и укажите срок", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            val selectedRate = binding.spinnerInterestRate.selectedItem.toString().replace("%", "").toDouble()
+            val monthlyTopUp = if (binding.etMonthlyTopUp.text.toString().isEmpty()) {
                 null
             } else {
                 try {
                     binding.etMonthlyTopUp.text.toString().toDouble()
-                } catch (e: NumberFormatException){
+                } catch (e: NumberFormatException) {
                     Toast.makeText(requireContext(), "Некорректная сумма пополнения", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
             }
-            depositData.interestRate = selctedRate
-            depositData.monthlyTopUp = monthlyTopUp
-            calculateResult(depositData)
-            val action = Step2FragmentDirections.actionStep2FragmentToResultFragment(depositData)
-            findNavController().navigate(action)
+
+            // Создаем новый объект с обновленными данными
+            val updatedData = DepositData(
+                initialAmount = depositData.initialAmount,
+                periodMonths = depositData.periodMonths,
+                interestRate = selectedRate,
+                monthlyTopUp = monthlyTopUp,
+                finalAmount = depositData.finalAmount,
+                interestEarned = depositData.interestEarned
+            )
+
+            calculateResult(updatedData)
+
+            // Используем Bundle вместо Directions
+            val bundle = Bundle()
+            bundle.putSerializable("depositData", updatedData)
+            findNavController().navigate(R.id.action_step2Fragment_to_resultFragment, bundle)
         }
     }
-    private fun setupSpinner(periodMonth: Int) {
+
+    private fun setupSpinner(periodMonths: Int) {
         val rates = when {
-            periodMonth < 6 -> listOf("15%")
-            periodMonth < 12 -> listOf("10%")
-            periodMonth >= 12 -> listOf("5%")
+            periodMonths < 6 -> listOf("15%")
+            periodMonths < 12 -> listOf("10%")
+            periodMonths >= 12 -> listOf("5%")
             else -> listOf("5%")
         }
+
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, rates)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerInterestRate.adapter = adapter
     }
+
     private fun calculateResult(data: DepositData) {
         val monthlyRate = data.interestRate / 100 / 12
-        val currentAmount = data.initialAmount
-        var totalInsert = 0.0
+        var currentAmount = data.initialAmount
+        var totalInterest = 0.0
+
         for (month in 1..data.periodMonths) {
             val interest = currentAmount * monthlyRate
-            totalInsert += interest
+            totalInterest += interest
             currentAmount += interest
 
             data.monthlyTopUp?.let {
                 currentAmount += it
             }
         }
+
         data.finalAmount = currentAmount
-        data.interestEarned = totalInsert
+        data.interestEarned = totalInterest
     }
 
     override fun onDestroyView() {

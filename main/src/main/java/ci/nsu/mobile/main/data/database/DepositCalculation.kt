@@ -2,11 +2,10 @@ package ci.nsu.mobile.main.data.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.Month
-import java.time.temporal.TemporalAmount
+import java.io.Serializable
 
-@Entity(tableName = "deposit_calculation")
-data class DepositCalculation (
+@Entity(tableName = "deposit_calculations")
+data class DepositCalculation(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val initialAmount: Double,
@@ -15,5 +14,5 @@ data class DepositCalculation (
     val monthlyTopUp: Double?,
     val finalAmount: Double,
     val interestEarned: Double,
-    val colculationDate: Long
-)
+    val calculationDate: Long
+) : Serializable

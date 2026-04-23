@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="ci.nsu.mobile.main.ui.main.MainFragment"
+        android:label="Главная"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_step1Fragment"
+            app:destination="@id/step1Fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/step1Fragment"
+        android:name="ci.nsu.mobile.main.ui.step1.Step1Fragment"
+        android:label="Параметры вклада"
+        tools:layout="@layout/fragment_step1">
+        <action
+            android:id="@+id/action_step1Fragment_to_step2Fragment"
+            app:destination="@id/step2Fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/step2Fragment"
+        android:name="ci.nsu.mobile.main.ui.step2.Step2Fragment"
+        android:label="Дополнительные параметры"
+        tools:layout="@layout/fragment_step2">
+        <action
+            android:id="@+id/action_step2Fragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="ci.nsu.mobile.main.ui.result.ResultFragment"
+        android:label="Результат"
+        tools:layout="@layout/fragment_result" />
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="ci.nsu.mobile.main.ui.history.HistoryFragment"
+        android:label="История"
+        tools:layout="@layout/fragment_history" />
+
+</navigation>
