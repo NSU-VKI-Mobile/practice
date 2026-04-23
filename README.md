@@ -1,308 +1,182 @@
-# Лабораторная работа: MVVM с UiState подходом
+# Лабораторная работа по Android-разработке: Расчёт вкладов
 
-## Правила оформления
-**Название ветки:** Группа_фамилия_номерЛабораторной_вариант
+## Описание задания
 
-## Варианты заданий
+Необходимо разработать Android-приложение для расчёта прибыльности вклада. Приложение должно реализовывать двухэтапный ввод данных (каждый этап — отдельный экран) и использовать архитектурный подход MVVM с сохранением данных через Room Database.
 
-### Вариант 1: Простой счетчик с историей
-**Цель:** Понять базовую структуру ViewModel + UiState
+## Основные требования
 
-**Задание:** Создать приложение "Счетчик", которое:
-1. Показывает текущее значение счетчика
-2. Имеет 3 кнопки: "+", "-", "Сброс"
-3. Показывает историю последних 5 действий
+### Главный экран
+- В шапке экрана отображается название приложения: **"Расчёт вкладов"**.
+- На экране присутствуют три кнопки:
+  1. **"Рассчитать"** — переход к первому этапу ввода данных.
+  2. **"История расчётов"** — открытие списка сохранённых расчётов.
+  3. **"Закрыть приложение"** — завершение работы приложения.
 
-**Код для ViewModel:**
-```kotlin
-// UiState - простой data class
-data class CounterUiState(
-    val count: Int = 0,
-    val history: List<String> = emptyList()
-)
+### Этап 1: Ввод основных параметров вклада
+- Поля для ввода:
+  - Стартовый взнос (обязательное поле).
+  - Срок вклада в месяцах (обязательное поле).
+- Кнопки управления:
+  - **"В начало"** — возврат на главный экран.
+  - **"Далее"** — переход ко второму этапу.
 
-class CounterViewModel : ViewModel() {
-    // StateFlow для UiState
-    private val _uiState = MutableStateFlow(CounterUiState())
-    val uiState: StateFlow<CounterUiState> = _uiState.asStateFlow()
-    
-    // Методы для изменения состояния
-    fun increment() {
-        _uiState.update { currentState ->
-            val newCount = currentState.count + 1
-            val newHistory = listOf("+1 (итого: $newCount)") + currentState.history.take(4)
-            currentState.copy(
-                count = newCount,
-                history = newHistory
-            )
-        }
-    }
-    
-    fun decrement() {
-        // TODO: реализовать аналогично increment()
-    }
-    
-    fun reset() {
-        // TODO: реализовать
-    }
-}
-```
+### Этап 2: Дополнительные параметры вклада
+- Выбор процентной ставки (выпадающий список):
+  - Если срок < 6 месяцев — доступна ставка 15%.
+  - Если срок ≥ 6 месяцев и < 12 месяцев — доступна ставка 10%.
+  - Если срок ≥ 12 месяцев — доступна ставка 5%.
+  - Если срок не указан — выводится предупреждение и возможность ввести корректный срок.
+- Поле для ежемесячного пополнения (необязательное).
+- Кнопки управления:
+  - **"Назад"** — возврат к первому этапу.
+  - **"Рассчитать"** — переход к результату.
 
-**Реализовать:**
-1. Создать экран с:
-   - Text для отображения uiState.count
-   - Column с 3 кнопками
-   - LazyColumn для отображения uiState.history
-2. Связать кнопки с методами ViewModel
-3. Показать, что состояние сохраняется при повороте экрана
+### Экран результата
+- Отображение всех финансовых показателей в виде карточки:
+  - Стартовый взнос.
+  - Срок вклада.
+  - Процентная ставка.
+  - Ежемесячное пополнение (если указано).
+  - Итоговая сумма.
+  - Начисленные проценты.
+- Кнопки:
+  - **"Сохранить"** — сохранение расчёта в базу данных.
+  - **"В начало"** — возврат на главный экран.
 
----
+### История расчётов
+- Отображение списка с краткой информацией о каждом расчёте (например: дата, стартовый взнос, итоговая сумма).
+- По нажатию на элемент списка — открытие детальной информации о расчёте (все параметры).
+- Каждая запись сохраняется с датой и временем расчёта.
 
-### Вариант 2: Конвертер температуры
-**Цель:** Работа с вычисляемыми значениями в UiState
+## Технические требования
 
-**Задание:** Конвертер между Цельсием и Фаренгейтом
-1. Поле ввода для градусов Цельсия
-2. Автоматический расчет Фаренгейта
-3. Поле ввода для градусов Фаренгейта
-4. Автоматический расчет Цельсия
+- Использовать **Room Database** для хранения истории расчётов.
+- Реализовать паттерн **MVVM** (Model-View-ViewModel).
+- Хранить данные в виде таблицы в локальной базе данных.
+- Обеспечить корректную навигацию между экранами.
+- Обеспечить валидацию вводимых данных.
 
-**Код для ViewModel:**
-```kotlin
-data class TemperatureUiState(
-    val celsius: String = "",
-    val fahrenheit: String = ""
-) {
-    // Вычисляемые свойства для валидации
-    val isCelsiusValid: Boolean get() = celsius.toDoubleOrNull() != null
-    val isFahrenheitValid: Boolean get() = fahrenheit.toDoubleOrNull() != null
-}
+## Дополнительно
 
-class TemperatureViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(TemperatureUiState())
-    val uiState: StateFlow<TemperatureUiState> = _uiState.asStateFlow()
-    
-    fun onCelsiusChanged(newValue: String) {
-        _uiState.update { currentState ->
-            val celsius = newValue
-            val fahrenheit = if (celsius.isNotBlank()) {
-                val c = celsius.toDoubleOrNull()
-                if (c != null) String.format("%.2f", c * 9/5 + 32)
-                else ""
-            } else ""
-            
-            currentState.copy(
-                celsius = celsius,
-                fahrenheit = fahrenheit
-            )
-        }
-    }
-    
-    fun onFahrenheitChanged(newValue: String) {
-        // TODO: реализовать обратный расчет
-    }
-}
-```
-
-**Реализовать:**
-1. Создать 2 TextField
-2. Связать их значения с uiState.celsius и uiState.fahrenheit
-3. Использовать isCelsiusValid для подсветки ошибок
-4. Показать автоматический пересчет при вводе
+- Приложение должно быть устойчиво к поворотам экрана (сохранение состояния).
+- Использовать современные подходы к UI/UX (Material Design приветствуется).
+- Обеспечить корректную обработку ошибок ввода.
 
 ---
 
-### Вариант 3: Список покупок (CRUD без БД)
-**Цель:** Работа со списками в UiState
+## Теоретическая часть
 
-**Задание:** Простой список покупок
-1. Поле ввода + кнопка "Добавить"
-2. Список добавленных товаров
-3. Возможность отметить товар купленным
-4. Возможность удалить товар
+### Паттерн Repository
 
-**Код для ViewModel:**
+Репозиторий (Repository) — это паттерн проектирования, который выступает в роли абстракции над источником данных. Он предоставляет чистый API для работы с данными, скрывая детали получения данных (из локальной базы, сети или других источников). В контексте Android и архитектуры MVVM, Repository отвечает за:
+- Объединение данных из нескольких источников (например, Room и Retrofit).
+- Предоставление данных ViewModel в асинхронном виде (через LiveData, Flow и т.д.).
+- Централизацию логики доступа к данным.
+
+Преимущества:
+- Упрощает тестирование (можно подменить реализацию).
+- Уменьшает дублирование кода.
+- Повышает гибкость и поддерживаемость приложения.
+
+### Синглтон (Singleton)
+
+Синглтон — это порождающий паттерн проектирования, гарантирующий, что у класса есть только один экземпляр, и предоставляющий глобальную точку доступа к нему. В Android часто используется для:
+- Управления базами данных (например, Room Database).
+- Кэширования данных.
+- Хранения глобального состояния приложения.
+
+Пример: база данных Room должна быть реализована как синглтон, чтобы избежать создания нескольких экземпляров и возможных конфликтов.
+
+Реализация в Kotlin:
 ```kotlin
-data class ShoppingItem(
-    val id: Int,
-    val name: String,
-    val isBought: Boolean = false
-)
+@Database(...)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun depositDao(): DepositDao
 
-data class ShoppingListUiState(
-    val items: List<ShoppingItem> = emptyList(),
-    val newItemText: String = ""
-)
+    companion object {
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
 
-class ShoppingViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(ShoppingListUiState())
-    val uiState: StateFlow<ShoppingListUiState> = _uiState.asStateFlow()
-    
-    fun onNewItemTextChanged(text: String) {
-        _uiState.update { it.copy(newItemText = text) }
-    }
-    
-    fun addItem() {
-        val currentText = _uiState.value.newItemText
-        if (currentText.isNotBlank()) {
-            _uiState.update { currentState ->
-                val newItem = ShoppingItem(
-                    id = currentState.items.size + 1,
-                    name = currentText
-                )
-                currentState.copy(
-                    items = currentState.items + newItem,
-                    newItemText = ""
-                )
-            }
-        }
-    }
-    
-    fun toggleItemBought(itemId: Int) {
-        _uiState.update { currentState ->
-            val updatedItems = currentState.items.map { item ->
-                if (item.id == itemId) {
-                    item.copy(isBought = !item.isBought)
-                } else {
-                    item
-                }
-            }
-            currentState.copy(items = updatedItems)
-        }
-    }
-    
-    fun deleteItem(itemId: Int) {
-        // TODO: реализовать
-    }
-}
-```
-
-**Реализовать:**
-1. Создать TextField и кнопку "Добавить"
-2. LazyColumn для списка товаров
-3. Каждый элемент: текст + Checkbox + кнопка удаления
-4. Показать изменение состояния списка
-
----
-
-### Вариант 4: Выбор цвета с предпросмотром
-**Цель:** Работа с несколькими свойствами в UiState
-
-**Задание:** Выбор цвета для текста
-1. 3 ползунка (Slider) для RGB
-2. Текст-предпросмотр с выбранным цветом
-3. Кнопка "Случайный цвет"
-
-**Код для ViewModel:**
-```kotlin
-data class ColorUiState(
-    val red: Int = 128,
-    val green: Int = 128,
-    val blue: Int = 128
-) {
-    // Вычисляемый цвет
-    val color: Color get() = Color(red, green, blue)
-    
-    // Текстовое представление
-    val hexCode: String get() = "#${red.toString(16)}${green.toString(16)}${blue.toString(16)}"
-}
-
-class ColorPickerViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(ColorUiState())
-    val uiState: StateFlow<ColorUiState> = _uiState.asStateFlow()
-    
-    fun onRedChanged(newValue: Float) {
-        _uiState.update { it.copy(red = newValue.toInt()) }
-    }
-    
-    fun onGreenChanged(newValue: Float) {
-        // TODO: реализовать
-    }
-    
-    fun onBlueChanged(newValue: Float) {
-        // TODO: реализовать
-    }
-    
-    fun generateRandomColor() {
-        _uiState.update {
-            ColorUiState(
-                red = (0..255).random(),
-                green = (0..255).random(),
-                blue = (0..255).random()
-            )
-        }
-    }
-}
-```
-
-**Реализовать:**
-1. Создать 3 Slider (0-255 диапазон)
-2. Text с uiState.hexCode
-3. Box с фоном uiState.color
-4. Кнопка для randomColor()
-5. Показать реактивное обновление при движении слайдеров
-
----
-
-## Общий шаблон для всех лабораторных работ
-
-### 1. Файл ViewModel:
-```kotlin
-data class MyUiState(
-    // свойства состояния
-)
-
-class MyViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(MyUiState())
-    val uiState: StateFlow<MyUiState> = _uiState.asStateFlow()
-    
-    fun updateSomething(newValue: String) {
-        _uiState.update { currentState ->
-            currentState.copy(/* изменения */)
-        }
-    }
-}
-```
-
-### 2. Файл Composable (UI):
-```kotlin
-@Composable
-fun MyScreen(
-    viewModel: MyViewModel = viewModel()
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    
-    Column {
-        // Отображение uiState
-        Text(text = uiState.someProperty)
-        
-        // Вызов методов ViewModel
-        Button(onClick = { viewModel.doSomething() }) {
-            Text("Кнопка")
-        }
-    }
-}
-```
-
-### 3. MainActivity:
-```kotlin
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MyAppTheme {
-                MyScreen()
+        fun getDatabase(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "deposits_db"
+                ).build().also { INSTANCE = it }
             }
         }
     }
 }
 ```
 
----
+### DBO (Data Base Object) и модель данных
 
-## Критерии проверки:
-1. Приложение собирается без ошибок
-2. Используется StateFlow для UiState
-3. UI реагирует на изменения состояния
-4. Состояние сохраняется при повороте экрана
-5. Нет прямого изменения UI из ViewModel
+**DBO (Data Base Object)** — это класс, представляющий таблицу в базе данных. В Room он аннотируется как `@Entity` и определяет структуру таблицы (столбцы, первичный ключ и т.д.).
+
+**Модель данных (Data Model)** — это класс, описывающий структуру данных приложения. Часто DBO и модель совпадают, но в сложных приложениях модель может отличаться от DBO (например, при работе с API).
+
+Пример DBO для расчёта вклада:
+```kotlin
+@Entity(tableName = "deposit_calculations")
+data class DepositCalculation(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val initialAmount: Double,
+    val periodMonths: Int,
+    val interestRate: Double,
+    val monthlyTopUp: Double?,
+    val finalAmount: Double,
+    val interestEarned: Double,
+    val calculationDate: Long // timestamp
+)
+```
+
+**Разделение ответственности**:
+- **DBO** — для хранения в базе.
+- **Domain Model** — для бизнес-логики.
+- **UI Model** — для отображения на экране.
+
+Это позволяет гибко управлять данными и изолировать слои приложения.
+
+---
+### Дополнительные полезные ресурсы
+
+- **Как работать с version catalog**
+  https://developer.android.com/build/migrate-to-catalogs?hl=ru
+
+- **Откуда брать версии библитек**
+    https://mvnrepository.com/open-source/android
+
+- **Официальная документация по архитектуре Android**
+  https://developer.android.com/topic/architecture?hl=ru
+  Подробное руководство по MVVM, Repository, Room и другим компонентам архитектуры.
+
+- **Android Developers: Room и DAO**
+  https://developer.android.com/training/data-storage/room?hl=ru
+  Полное руководство по работе с Room Database, включая аннотации, запросы и миграции.
+
+- **Android Developers: ViewModel**
+  https://developer.android.com/topic/libraries/architecture/viewmodel?hl=ru
+  Официальные руководства по компонентам архитектуры MVVM.
+
+- **Kotlin Coroutines Guide**
+  https://kotlinlang.org/docs/coroutines-guide.html
+  Руководство по асинхронному программированию в Kotlin, необходимому для работы с Flow и ViewModel.
+
+- **Android Jetpack Navigation Component**
+  https://developer.android.com/guide/navigation?hl=ru
+  Документация по навигации между экранами в Android-приложениях.
+
+- **Material Design 3 для Android**
+  https://m3.material.io/platforms/android
+  Официальные рекомендации по дизайну интерфейсов с примерами кода.
+
+- **Android Studio: Debugging и Profiling**
+  https://developer.android.com/studio/debug?hl=ru
+  Руководство по отладке приложений и анализу производительности.
+
+- **Stack Overflow: Android и Kotlin**
+  https://stackoverflow.com/questions/tagged/android
+  https://stackoverflow.com/questions/tagged/kotlin
+  Сообщество для решения конкретных проблем и вопросов по разработке.
