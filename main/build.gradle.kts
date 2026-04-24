@@ -53,7 +53,8 @@ dependencies {
     implementation(libs.androidx.material3)
     // Сетевой стек
     implementation(libs.retrofit)
-    implementation(libs.retrofit.serialization.converter)
+    //implementation(libs.retrofit.serialization.converter)
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
 

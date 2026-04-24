@@ -8,6 +8,7 @@ data class UserDto(
     val id: Int,
     val login: String,
     val email: String?,
+    val token: String?,
     @SerialName("phoneNumber")
     val phoneNumber: String?,
     val person: PersonDto?
