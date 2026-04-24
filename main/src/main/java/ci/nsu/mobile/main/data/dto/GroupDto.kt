@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GroupDto(
-    val id: Int,
-    val name: String
+    @SerialName("groupId") val id: Int,
+    @SerialName("groupName") val name: String
 )

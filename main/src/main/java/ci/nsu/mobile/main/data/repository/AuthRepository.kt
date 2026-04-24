@@ -2,6 +2,7 @@ package ci.nsu.mobile.main.data.repository
 
 import ci.nsu.mobile.main.api.ApiClient
 import ci.nsu.mobile.main.api.TokenManager
+import ci.nsu.mobile.main.data.dto.AuthTokenRespone
 import ci.nsu.mobile.main.data.dto.GroupDto
 import ci.nsu.mobile.main.data.dto.LoginRequest
 import ci.nsu.mobile.main.data.dto.RegisterRequest
@@ -11,14 +12,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AuthRepository (){
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val api = ApiClient.api
 
-    suspend fun login(login: String, password: String): Result<String?> {
+    suspend fun login(login: String, password: String): Result<AuthTokenRespone> {
         try {
             val response = api.login(LoginRequest(login, password))
             return if (response.isSuccessful) {
-                Result.success(response.body()) // Вернет токен
+                val answerReq = response.body()
+                if(answerReq != null) {
+                    Result.success(answerReq)
+                }
+                else{
+                    Result.failure(Exception("Пустой ответ от сервера"))
+                }
             } else {
                 Result.failure(Exception("Неправильный логин или пароль"))
             }

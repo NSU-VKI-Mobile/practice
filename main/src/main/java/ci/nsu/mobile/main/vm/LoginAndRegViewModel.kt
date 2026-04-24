@@ -43,6 +43,7 @@ data class LoginAndRegUiState(
 
 class LoginAndRegViewModel(application: Application) : AndroidViewModel(application){
     val repository = AuthRepository()
+    val tokenManager = TokenManager
     val allGenders = listOf<String>("Муж","Жен")
     private val _uiState = MutableStateFlow(LoginAndRegUiState())
     val uiState: StateFlow<LoginAndRegUiState> = _uiState.asStateFlow()
@@ -154,7 +155,7 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
                 var newPassword = currentState.password
                 repository.login(currentState.login,currentState.password)
                     .onSuccess {
-                        TokenManager.token = it
+                        tokenManager.token = it.token
                         newLogin = ""
                         newPassword = ""
                     }

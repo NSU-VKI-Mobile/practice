@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,8 +51,10 @@ class MainActivity : ComponentActivity() {
 fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = viewModel()) {
     val navController = rememberNavController()
     val context = LocalContext.current
+    // исправить токены
     NavHost(
-        modifier = modifier,
+        modifier = modifier
+            .padding(start = 100.dp),
         navController = navController,
         startDestination = Screen.LogIn.route
     ) {
@@ -59,8 +62,7 @@ fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = vi
             LogInScreen(
                 onRegClick = {navController.navigate(Screen.Registry.route) },
                 onLogInClick = {
-                    viewModel.logIn()
-                    if (TokenManager.token != null) navController.navigate(Screen.Main.route) },
+                    viewModel.logIn() },
                 onExitClick = {(context as? Activity)?.finish()},
                 viewModel = viewModel
             )
@@ -70,7 +72,7 @@ fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = vi
             RegistryScreen(
                 onRegClick = {
                     viewModel.registry()
-                    if(viewModel.errorMessage == null) navController.navigate(Screen.Main.route) },
+                    if(viewModel.errorMessage == null) navController.navigate(Screen.LogIn.route) },
                 onBackClick = {navController.popBackStack()},
                 viewModel = viewModel
             )
@@ -91,6 +93,9 @@ fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = vi
             onDismiss = {viewModel.errorMessage = null},
             onExit = {(context as? Activity)?.finish()},
             error = e)
+    }
+    viewModel.tokenManager.token?.let{_ ->
+        navController.navigate(Screen.Main.route)
     }
 }
 

@@ -1,5 +1,6 @@
 package ci.nsu.mobile.main.api
 
+import ci.nsu.mobile.main.data.dto.AuthTokenRespone
 import ci.nsu.mobile.main.data.dto.GroupDto
 import ci.nsu.mobile.main.data.dto.LoginRequest
 import ci.nsu.mobile.main.data.dto.RegisterRequest
@@ -11,7 +12,7 @@ import retrofit2.http.POST
 
 interface ApiService{
     @POST("auth/login")
-    suspend fun login(@Body request: LoginRequest): Response<String> // Возвращает токен
+    suspend fun login(@Body request: LoginRequest): Response<AuthTokenRespone> // Возвращает токен
 
     @POST("auth/register")
     suspend fun register(@Body request: RegisterRequest): Response<Unit>
