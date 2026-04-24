@@ -8,8 +8,8 @@ import androidx.compose.ui.test.performTextInput
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ci.nsu.mobile.auth.data.AuthRepository
-import ci.nsu.mobile.auth.data.AuthResponse // Импортируем твой класс ответа
+import ci.nsu.mobile.auth.data.dto.AuthResponse
+import ci.nsu.mobile.auth.data.repository.AuthRepository
 import io.mockk.coEvery // Импортируем функцию для обучения мока
 import io.mockk.mockk
 import org.junit.Rule

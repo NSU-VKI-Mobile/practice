@@ -1,27 +1,50 @@
 package ci.nsu.mobile.main
 
+import ci.nsu.mobile.calculations.ui.DepositCalculator
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class DepositCalculator {
-    fun calculate(initial: Double, percent: Double, months: Int): Double {
-        if (initial < 0) throw IllegalArgumentException("Сумма не может быть отрицательной")
-        return initial + (initial * (percent / 100) * (months / 12.0))
-    }
-}
-
 class DepositCalculatorTest {
-
     private val calculator = DepositCalculator()
 
     @Test
-    fun `when valid parameters then calculation is correct`() {
-        val result = calculator.calculate(10000.0, 12.0, 12)
-        assertEquals(11200.0, result, 0.01)
+    fun `when valid parameters without top-up then calculation is correct`() {
+        val result = calculator.calculate(
+            initialAmount = 10000.0,
+            periodMonths = 12,
+            interestRate = 12.0,
+            monthlyTopUp = 0.0
+        )
+        assertEquals(11268.25, result.finalAmount, 0.01)
+        assertEquals(1268.25, result.interestEarned, 0.01)
+    }
+
+    @Test
+    fun `when monthly top-up then final amount includes top-ups`() {
+        val result = calculator.calculate(
+            initialAmount = 10000.0,
+            periodMonths = 12,
+            interestRate = 12.0,
+            monthlyTopUp = 1000.0
+        )
+        assertEquals(24077.58, result.finalAmount, 0.01)
+    }
+
+    @Test
+    fun `when zero months then only initial amount returned`() {
+        val result = calculator.calculate(10000.0, 0, 12.0, 0.0)
+        assertEquals(10000.0, result.finalAmount, 0.01)
+        assertEquals(0.0, result.interestEarned, 0.01)
+    }
+
+    @Test
+    fun `when zero interest rate then amount stays same`() {
+        val result = calculator.calculate(10000.0, 12, 0.0, 0.0)
+        assertEquals(10000.0, result.finalAmount, 0.01)
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `when negative amount then throw exception`() {
-        calculator.calculate(-5000.0, 10.0, 12)
+    fun `when negative initial amount then throws exception`() {
+        calculator.calculate(-5000.0, 12, 10.0, 0.0)
     }
 }

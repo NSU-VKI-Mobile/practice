@@ -55,5 +55,6 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.6.0")
     androidTestImplementation("io.mockk:mockk-android:1.13.8")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.6.0")
+    testImplementation(kotlin("test"))
 
 }

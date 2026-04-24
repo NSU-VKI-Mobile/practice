@@ -13,7 +13,7 @@ class DepositViewModel(
     private val repository: DepositRepository,
     private val currentUserId: Int
 ) : ViewModel() {
-
+    private val calculator = DepositCalculator()
     var initialAmount by mutableStateOf("")
     var periodMonths by mutableStateOf("")
     var interestRate by mutableDoubleStateOf(0.0)
@@ -41,18 +41,9 @@ class DepositViewModel(
         val rate = interestRate
         val topUp = monthlyTopUp.toDoubleOrNull() ?: 0.0
 
-        var total = amount
-        var earned = 0.0
-        val monthlyRate = rate / 100 / 12
-
-        for (i in 1..months) {
-            total += topUp
-            val currentMonthInterest = total * monthlyRate
-            earned += currentMonthInterest
-            total += currentMonthInterest
-        }
-        finalAmount = total
-        interestEarned = earned
+        val result = calculator.calculate(amount, months, rate, topUp)
+        finalAmount = result.finalAmount
+        interestEarned = result.interestEarned
     }
 
     fun saveCalculation() {
