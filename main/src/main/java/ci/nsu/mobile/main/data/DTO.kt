@@ -1,0 +1,30 @@
+@file:OptIn(kotlinx.serialization.InternalSerializationApi::class)
+package ci.nsu.mobile.main.data
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class GroupDto(@SerialName("groupId") val id: Int, @SerialName("groupName") val name: String)
+@Serializable
+data class PersonDto(
+    val firstName: String,
+    val lastName: String,
+    val middleName: String?,
+    val birthDate: String,
+    val gender: String,
+    val groupId: Int
+)
+
+@Serializable
+data class UserDto(
+    val userId: Int,
+    val login: String,
+    val email: String,
+    val phoneNumber: String? = null,
+    val roleId: Int,
+    val authAllowed: Boolean,
+    val personId: Int,
+    val createdDate: String? = null,
+    val lastLoginDate: String? = null
+)
