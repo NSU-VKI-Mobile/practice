@@ -68,7 +68,7 @@ fun CounterContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         if (uiState.history.isEmpty()) {
-            Text(text = "Пусто")
+            Text(text = "-")
         } else {
             LazyColumn {
                 itemsIndexed(uiState.history) { index, action ->
