@@ -24,11 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
-sealed class Screen(val route: String) {
-    object Home : Screen("home")
-    object ScreenOne : Screen("screen_one")
-    object ScreenTwo : Screen("screen_two")
-}
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
