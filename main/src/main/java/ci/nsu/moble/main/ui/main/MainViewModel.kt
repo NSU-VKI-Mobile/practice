@@ -1,6 +1,10 @@
 package ci.nsu.moble.main.ui.main
 
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 // UiState - простой data class
 data class CounterUiState(
@@ -8,7 +12,7 @@ data class CounterUiState(
     val history: List<String> = emptyList()
 )
 
-class CounterViewModel : ViewModel() {
+class MainViewModel : ViewModel() {
     // StateFlow для UiState
     private val _uiState = MutableStateFlow(CounterUiState())
     val uiState: StateFlow<CounterUiState> = _uiState.asStateFlow()
