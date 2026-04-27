@@ -22,10 +22,12 @@ class SecondInputViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     private val _rate = MutableStateFlow(savedStateHandle.get<Double?>(KEY_RATE) ?: null)
     val rate: StateFlow<Double?> = _rate.asStateFlow()
 
-    private val _currency = MutableStateFlow(savedStateHandle.get<String>(KEY_CURRENCY) ?: "Рубли (RUB)")
+    private val _currency =
+        MutableStateFlow(savedStateHandle.get<String>(KEY_CURRENCY) ?: "Рубли (RUB)")
     val currency: StateFlow<String> = _currency.asStateFlow()
 
-    private val _startAmount = MutableStateFlow(savedStateHandle.get<Double>(KEY_START_AMOUNT) ?: 0.0)
+    private val _startAmount =
+        MutableStateFlow(savedStateHandle.get<Double>(KEY_START_AMOUNT) ?: 0.0)
     val startAmount: StateFlow<Double> = _startAmount.asStateFlow()
 
     // Метод для первоначальной инициализации из Intent (вызывается один раз из Activity)

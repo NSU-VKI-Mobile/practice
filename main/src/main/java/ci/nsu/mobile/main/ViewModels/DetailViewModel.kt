@@ -10,8 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class DetailViewModel(
-    private val repository: CalculationRepository,
-    private val calculationId: Long
+    private val repository: CalculationRepository, private val calculationId: Long
 ) : ViewModel() {
 
     private val _calculation = MutableStateFlow<CalculationEntity?>(null)

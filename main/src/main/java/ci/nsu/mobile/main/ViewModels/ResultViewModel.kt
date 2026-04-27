@@ -11,8 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ResultViewModel(
-    private val savedStateHandle: SavedStateHandle,
-    private val repository: CalculationRepository
+    private val savedStateHandle: SavedStateHandle, private val repository: CalculationRepository
 ) : ViewModel() {
 
     private val KEY_START = "startAmount"
@@ -32,7 +31,8 @@ class ResultViewModel(
     private val _rate = MutableStateFlow(savedStateHandle.get<Double>(KEY_RATE) ?: 0.0)
     val rate: StateFlow<Double> = _rate.asStateFlow()
 
-    private val _currency = MutableStateFlow(savedStateHandle.get<String>(KEY_CURRENCY) ?: "Рубли (RUB)")
+    private val _currency =
+        MutableStateFlow(savedStateHandle.get<String>(KEY_CURRENCY) ?: "Рубли (RUB)")
     val currency: StateFlow<String> = _currency.asStateFlow()
 
     private val _interest = MutableStateFlow(savedStateHandle.get<Double>(KEY_INTEREST) ?: 0.0)

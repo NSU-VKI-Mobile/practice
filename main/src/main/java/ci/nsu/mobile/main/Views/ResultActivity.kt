@@ -8,12 +8,31 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -23,7 +42,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import ci.nsu.mobile.main.Data.Database.AppDatabase
 import ci.nsu.mobile.main.Data.Repository.CalculationRepository
 import ci.nsu.mobile.main.ViewModels.ResultViewModel
@@ -50,6 +68,16 @@ class ResultActivity : ComponentActivity() {
 @Composable
 fun ResultScreen(startAmount: Double, term: Int, rate: Double, currency: String) {
     val context = LocalContext.current
+
+    // Вернуться в самое начало
+    fun navigateToMain() {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(intent)
+        (context as? Activity)?.finish()
+    }
+
     // Получаем ViewModel с репозиторием
     val repository = remember {
         CalculationRepository(
@@ -58,8 +86,7 @@ fun ResultScreen(startAmount: Double, term: Int, rate: Double, currency: String)
     }
     val factory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            @Suppress("UNCHECKED_CAST")
-            return ResultViewModel(SavedStateHandle(), repository) as T
+            @Suppress("UNCHECKED_CAST") return ResultViewModel(SavedStateHandle(), repository) as T
         }
     }
     val viewModel: ResultViewModel = viewModel(factory = factory)
@@ -79,23 +106,19 @@ fun ResultScreen(startAmount: Double, term: Int, rate: Double, currency: String)
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
+        modifier = Modifier.fillMaxSize(), topBar = {
             TopAppBar(
-                title = { Text("Результат расчёта") },
-                navigationIcon = {
-                    IconButton(onClick = { (context as? Activity)?.finish() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                title = { Text("Результат расчёта") }, navigationIcon = {
+                IconButton(onClick = { (context as? Activity)?.finish() }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
             )
-        }
-    ) { innerPadding ->
+            )
+        }) { innerPadding ->
         val startAmountState by viewModel.startAmount.collectAsState()
         val termState by viewModel.term.collectAsState()
         val rateState by viewModel.rate.collectAsState()
@@ -127,21 +150,20 @@ fun ResultScreen(startAmount: Double, term: Int, rate: Double, currency: String)
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Button(
-                    onClick = {
-                        // Вернуться в самое начало
-                        val intent = Intent(context, MainActivity::class.java).apply {
-                            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        }
-                        context.startActivity(intent)
-                        (context as? Activity)?.finish()
-                    },
-                    modifier = Modifier.weight(1f).padding(vertical = 8.dp)
+                    onClick = { navigateToMain() },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(vertical = 8.dp)
                 ) {
                     Text("Вернуться")
                 }
                 Button(
-                    onClick = { viewModel.saveCalculation() },
-                    modifier = Modifier.weight(1f).padding(vertical = 8.dp)
+                    onClick = {
+                        viewModel.saveCalculation()
+                        navigateToMain()
+                    }, modifier = Modifier
+                        .weight(1f)
+                        .padding(vertical = 8.dp)
                 ) {
                     Text("Сохранить")
                 }
@@ -191,14 +213,18 @@ fun ResultCard(
 }
 
 @Composable
-private fun InfoRow(label: String, value: String, textStyle: TextStyle = MaterialTheme.typography.bodyLarge) {
+private fun InfoRow(
+    label: String,
+    value: String,
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = label, style = MaterialTheme.typography.bodyLarge)
         Text(text = value, style = textStyle)
     }
 }
 
-private fun formatMoney(amount: Double, symbol: String): String = String.format("%.2f %s", amount, symbol)
+private fun formatMoney(amount: Double, symbol: String): String =
+    String.format("%.2f %s", amount, symbol)

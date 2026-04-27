@@ -1,9 +1,9 @@
 package ci.nsu.mobile.main.Data.Database
 
+import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import android.content.Context
 import ci.nsu.mobile.main.Data.DAO.CalculationDao
 import ci.nsu.mobile.main.Data.Entity.CalculationEntity
 
@@ -18,9 +18,7 @@ abstract class AppDatabase : RoomDatabase() {
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "calculations_db"
+                    context.applicationContext, AppDatabase::class.java, "calculations_db"
                 ).build()
                 INSTANCE = instance
                 instance

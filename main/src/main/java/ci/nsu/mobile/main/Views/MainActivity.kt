@@ -2,7 +2,6 @@
 
 package ci.nsu.mobile.main.Views
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -41,24 +40,23 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainActivityScreen() {
         val context = LocalContext.current
-        Scaffold(modifier = Modifier.fillMaxSize(), topBar =
-            {
-                TopAppBar(
-                    title = { Text("Расчёт вкладов") },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary, // фон
-                        titleContentColor = MaterialTheme.colorScheme.onPrimary, // цвет заголовка
-                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }) { innerPadding ->
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+        Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
+            TopAppBar(
+                title = { Text("Расчёт вкладов") }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary, // фон
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary, // цвет заголовка
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                ), modifier = Modifier.fillMaxWidth()
+            )
+        }) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 horizontalAlignment = Alignment.CenterHorizontally, // центрируем по горизонтали
-                verticalArrangement = Arrangement.Center) {
+                verticalArrangement = Arrangement.Center
+            ) {
                 Button(onClick = {
                     val intent = Intent(context, MainInputActivity::class.java)
                     context.startActivity(intent)

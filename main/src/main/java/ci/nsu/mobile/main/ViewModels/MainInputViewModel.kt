@@ -11,7 +11,8 @@ class MainInputViewModel(private val savedStateHandle: SavedStateHandle) : ViewM
     private val KEY_START_AMOUNT = "startAmount"
     private val KEY_TERM_MONTHS = "termMonths"
 
-    private val _startAmount = MutableStateFlow(savedStateHandle.get<String>(KEY_START_AMOUNT) ?: "")
+    private val _startAmount =
+        MutableStateFlow(savedStateHandle.get<String>(KEY_START_AMOUNT) ?: "")
     val startAmount: StateFlow<String> = _startAmount.asStateFlow()
 
     private val _termMonths = MutableStateFlow(savedStateHandle.get<String>(KEY_TERM_MONTHS) ?: "")

@@ -7,11 +7,30 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -27,7 +46,8 @@ import ci.nsu.mobile.main.Data.Repository.CalculationRepository
 import ci.nsu.mobile.main.ViewModels.DetailViewModel
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class DetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,33 +68,27 @@ fun DetailScreen(calculationId: Long) {
     val repository = remember {
         CalculationRepository(AppDatabase.getInstance(context.applicationContext).calculationDao())
     }
-    val viewModel: DetailViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return DetailViewModel(repository, calculationId) as T
-            }
+    val viewModel: DetailViewModel = viewModel(factory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            @Suppress("UNCHECKED_CAST") return DetailViewModel(repository, calculationId) as T
         }
-    )
+    })
     val calculation by viewModel.calculation.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Детали расчёта") },
-                navigationIcon = {
-                    IconButton(onClick = { (context as? Activity)?.finish() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                title = { Text("Детали расчёта") }, navigationIcon = {
+                IconButton(onClick = { (context as? Activity)?.finish() }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
             )
-        }
-    ) { innerPadding ->
+            )
+        }) { innerPadding ->
         calculation?.let { calc ->
             DetailCard(
                 calculation = calc,
@@ -123,7 +137,10 @@ fun DetailCard(calculation: CalculationEntity, modifier: Modifier = Modifier) {
             InfoRow("Стартовый взнос:", formatMoney(calculation.startAmount, calculation.currency))
             InfoRow("Срок вклада:", "${calculation.termMonths} месяцев")
             InfoRow("Процентная ставка:", "${String.format("%.2f", calculation.rate)}%")
-            InfoRow("Начисленные проценты:", formatMoney(calculation.interest, calculation.currency))
+            InfoRow(
+                "Начисленные проценты:",
+                formatMoney(calculation.interest, calculation.currency)
+            )
             HorizontalDivider()
             InfoRow(
                 "Итоговая сумма:",
@@ -135,10 +152,13 @@ fun DetailCard(calculation: CalculationEntity, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun InfoRow(label: String, value: String, textStyle: TextStyle = MaterialTheme.typography.bodyLarge) {
+private fun InfoRow(
+    label: String,
+    value: String,
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = label, style = MaterialTheme.typography.bodyLarge)
         Text(text = value, style = textStyle)

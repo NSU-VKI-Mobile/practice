@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -62,8 +61,7 @@ class SecondInputActivity : ComponentActivity() {
 
         // Создаём ViewModel с поддержкой SavedStateHandle
         viewModel = ViewModelProvider(
-            this,
-            SavedStateViewModelFactory(application, this)
+            this, SavedStateViewModelFactory(application, this)
         )[SecondInputViewModel::class.java]
 
         // Инициализируем ViewModel начальными данными (только при первом создании)
@@ -72,32 +70,30 @@ class SecondInputActivity : ComponentActivity() {
         setContent {
             PracticeTheme {
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    topBar = {
+                    modifier = Modifier.fillMaxSize(), topBar = {
                         TopAppBar(
-                            title = { Text("Расчёт вкладов") },
-                            navigationIcon = {
-                                IconButton(onClick = {
-                                    val resultIntent = Intent().apply {
-                                        putExtra("UPDATED_TERM", viewModel.getTermInt())
-                                        putExtra("UPDATED_RATE", viewModel.getRateDouble())
-                                    }
-                                    setResult(RESULT_OK, resultIntent)
-                                    finish()
-                                }) {
-                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                            title = { Text("Расчёт вкладов") }, navigationIcon = {
+                            IconButton(onClick = {
+                                val resultIntent = Intent().apply {
+                                    putExtra("UPDATED_TERM", viewModel.getTermInt())
+                                    putExtra("UPDATED_RATE", viewModel.getRateDouble())
                                 }
-                            },
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                                actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                            ),
-                            modifier = Modifier.fillMaxWidth()
+                                setResult(RESULT_OK, resultIntent)
+                                finish()
+                            }) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Назад"
+                                )
+                            }
+                        }, colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                        ), modifier = Modifier.fillMaxWidth()
                         )
-                    }
-                ) { innerPadding ->
+                    }) { innerPadding ->
                     // Подписываемся на состояния из ViewModel
                     val term by viewModel.term.collectAsState()
                     val rate by viewModel.rate.collectAsState()
@@ -110,8 +106,7 @@ class SecondInputActivity : ComponentActivity() {
                         selectedRate = rate,
                         onSelectedRateChange = { viewModel.updateRate(it) },
                         selectedCurrency = currency,
-                        onCurrencyChange = { viewModel.updateCurrency(it) }
-                    )
+                        onCurrencyChange = { viewModel.updateCurrency(it) })
                 }
             }
         }
@@ -145,6 +140,13 @@ class SecondInputActivity : ComponentActivity() {
             10.0 -> 10
             5.0 -> 12
             else -> 0
+        }
+
+        fun getConditionForRate(rate: Double): String = when (rate) {
+            15.0 -> "для срока < 6 месяцев"
+            10.0 -> "для срока от 6 до 11 месяцев"
+            5.0 -> "для срока ≥ 12 месяцев"
+            else -> ""
         }
 
         LaunchedEffect(termInput) {
@@ -204,24 +206,35 @@ class SecondInputActivity : ComponentActivity() {
                     readOnly = true,
                     label = { Text("Процентная ставка") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
                 )
                 ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
+                    expanded = expanded, onDismissRequest = { expanded = false }) {
                     allRates.forEach { rate ->
-                        DropdownMenuItem(
-                            text = { Text("$rate%") },
-                            onClick = {
-                                onSelectedRateChange(rate)
-                                onTermInputChange(getTermForRate(rate).toString())
-                                expanded = false
+                        DropdownMenuItem(text = {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text(
+                                    text = "$rate%", style = MaterialTheme.typography.bodyLarge
+                                )
+                                Text(
+                                    text = getConditionForRate(rate),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
-                        )
+                        }, onClick = {
+                            onSelectedRateChange(rate)
+                            onTermInputChange(getTermForRate(rate).toString())
+                            expanded = false
+                        })
                     }
                 }
             }
+
 
             // Выпадающий список валют
             ExposedDropdownMenuBox(
@@ -235,20 +248,17 @@ class SecondInputActivity : ComponentActivity() {
                     readOnly = true,
                     label = { Text("Валюта") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
                 )
                 ExposedDropdownMenu(
-                    expanded = currencyExpanded,
-                    onDismissRequest = { currencyExpanded = false }
-                ) {
+                    expanded = currencyExpanded, onDismissRequest = { currencyExpanded = false }) {
                     currencies.forEach { currency ->
-                        DropdownMenuItem(
-                            text = { Text(currency) },
-                            onClick = {
-                                onCurrencyChange(currency)
-                                currencyExpanded = false
-                            }
-                        )
+                        DropdownMenuItem(text = { Text(currency) }, onClick = {
+                            onCurrencyChange(currency)
+                            currencyExpanded = false
+                        })
                     }
                 }
             }
@@ -270,7 +280,7 @@ class SecondInputActivity : ComponentActivity() {
                     putExtra("CURRENCY", viewModel.currency.value)
                 }
                 context.startActivity(intent)
-            },isFormValid, "Рассчитать", Modifier.fillMaxWidth())
+            }, isFormValid, "Рассчитать", Modifier.fillMaxWidth())
         }
     }
 }

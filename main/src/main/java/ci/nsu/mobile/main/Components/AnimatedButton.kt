@@ -33,15 +33,12 @@ fun AnimatedButton(
 
     // Анимируем цвет текста
     Button(
-        onClick = onClick,
-        enabled = enabled,
-        colors = ButtonDefaults.buttonColors(
+        onClick = onClick, enabled = enabled, colors = ButtonDefaults.buttonColors(
             containerColor = animatedContainerColor,
             contentColor = animatedContentColor,
             disabledContainerColor = animatedContainerColor,
             disabledContentColor = animatedContentColor
-        ),
-        modifier = modifier
+        ), modifier = modifier
     ) {
         Text(text)
     }
