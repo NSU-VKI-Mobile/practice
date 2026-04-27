@@ -62,7 +62,6 @@ fun ColorScreen() {
             Text("Применить цвет", color = Color.White)
         }
 
-        Text("Палитра доступных цветов:", fontSize = 16.sp)
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(colorsMap.entries.toList()) { entry ->
