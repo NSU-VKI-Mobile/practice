@@ -29,7 +29,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
-// Sealed class с тремя маршрутами
 sealed class Screen(val route: String, val label: String) {
     object Home : Screen("home", "Home")
     object ScreenOne : Screen("screen_one", "Screen One")
@@ -59,7 +58,6 @@ fun SecondActivityScreen() {
         receivedText = context.intent.getStringExtra("text_data") ?: "No text received"
     }
 
-    // Следим за текущим маршрутом для подсветки активного элемента
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -128,8 +126,6 @@ fun SecondActivityScreen() {
         }
     }
 }
-
-// ── Три экрана для NavHost ────────────────────────────────────────────────────
 
 @Composable
 fun HomeScreen() {
