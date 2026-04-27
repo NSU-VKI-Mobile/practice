@@ -1,53 +1,53 @@
 package ci.nsu.moble.main.ui.main
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
-// UiState - простой data class
-data class CounterUiState(
-    val count: Int = 0,
-    val history: List<String> = emptyList()
-)
+class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
 
-class MainViewModel : ViewModel() {
-    // StateFlow для UiState
-    private val _uiState = MutableStateFlow(CounterUiState())
-    val uiState: StateFlow<CounterUiState> = _uiState.asStateFlow()
+    companion object {
+        private const val COUNT_KEY = "count"
+        private const val HISTORY_KEY = "history"
+    }
 
-    // Методы для изменения состояния
+    val uiState: StateFlow<CounterUiState> = savedStateHandle.getStateFlow(
+        "ui_state",
+        CounterUiState(
+            count = savedStateHandle[COUNT_KEY] ?: 0,
+            history = savedStateHandle[HISTORY_KEY] ?: emptyList()
+        )
+    )
+
     fun increment() {
-        _uiState.update { currentState ->
-            val newCount = currentState.count + 1
-            val newHistory = listOf("+1 (итого: $newCount)") + currentState.history.take(4)
-            currentState.copy(
-                count = newCount,
-                history = newHistory
-            )
-        }
+        val current = uiState.value
+        val newCount = current.count + 1
+        val newHistory = (listOf("+1 (итого: $newCount)") + current.history).take(5)
+        updateState(newCount, newHistory)
     }
 
     fun decrement() {
-        _uiState.update { currentState ->
-            val newCount = currentState.count - 1
-            val newHistory = listOf("-1 (итого: $newCount)") + currentState.history.take(4)
-            currentState.copy(
-                count = newCount,
-                history = newHistory
-            )
-        }
+        val current = uiState.value
+        val newCount = current.count - 1
+        val newHistory = (listOf("-1 (итого: $newCount)") + current.history).take(5)
+        updateState(newCount, newHistory)
     }
 
     fun reset() {
-        _uiState.update { currentState ->
-            val newCount = 0
-            val newHistory = listOf("Сброс (итого: $newCount)") + currentState.history.take(4)
-            currentState.copy(
-                count = newCount,
-                history = newHistory
-            )
-        }
+        val newCount = 0
+        val newHistory = (listOf("Сброс (итого: $newCount)") + uiState.value.history).take(5)
+        updateState(newCount, newHistory)
+    }
+
+    private fun updateState(count: Int, history: List<String>) {
+        val newState = CounterUiState(count, history)
+        savedStateHandle["ui_state"] = newState
+        savedStateHandle[COUNT_KEY] = count
+        savedStateHandle[HISTORY_KEY] = ArrayList(history)
     }
 }
+
+data class CounterUiState(
+    val count: Int = 0,
+    val history: List<String> = emptyList()
+) : java.io.Serializable

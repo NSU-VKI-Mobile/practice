@@ -59,85 +59,88 @@ fun CounterScreen(viewModel: MainViewModel) {
             )
         }
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Отображение счетчика
-            Text(
-                text = uiState.count.toString(),
-                style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(vertical = 24.dp)
-            )
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                // Отображение счетчика
+                Text(
+                    text = uiState.count.toString(),
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
 
-            // Кнопки управления в Column
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Row(
+            item {
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Button(
-                        onClick = { viewModel.decrement() },
-                        modifier = Modifier.weight(1f),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Button(
+                            onClick = { viewModel.decrement() },
+                            modifier = Modifier.weight(1f),
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text("-", fontSize = 24.sp)
+                        }
+                        Button(
+                            onClick = { viewModel.increment() },
+                            modifier = Modifier.weight(1f),
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text("+", fontSize = 24.sp)
+                        }
+                    }
+                    
+                    OutlinedButton(
+                        onClick = { viewModel.reset() },
+                        modifier = Modifier.fillMaxWidth(),
                         shape = MaterialTheme.shapes.medium
                     ) {
-                        Text("-", fontSize = 24.sp)
+                        Text("Reset", fontSize = 18.sp)
                     }
-                    Button(
-                        onClick = { viewModel.increment() },
-                        modifier = Modifier.weight(1f),
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        Text("+", fontSize = 24.sp)
-                    }
-                }
-                
-                OutlinedButton(
-                    onClick = { viewModel.reset() },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Text("Reset", fontSize = 18.sp)
                 }
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            item {
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-            // История изменений в LazyColumn
-            Text(
-                text = "История изменений",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.align(Alignment.Start)
-            )
+                Text(
+                    text = "История изменений",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(uiState.history) { entry ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
-                        Text(
-                            text = entry,
-                            modifier = Modifier.padding(12.dp),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+            items(uiState.history) { entry ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Text(
+                        text = entry,
+                        modifier = Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
+            }
+            
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
