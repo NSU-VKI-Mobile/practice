@@ -39,6 +39,11 @@ class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         updateState(newCount, newHistory)
     }
 
+    fun clearHistory() {
+        val newHistory = emptyList<String>()
+        updateState(uiState.value.count, newHistory)
+    }
+
     private fun updateState(count: Int, history: List<String>) {
         val newState = CounterUiState(count, history)
         savedStateHandle["ui_state"] = newState

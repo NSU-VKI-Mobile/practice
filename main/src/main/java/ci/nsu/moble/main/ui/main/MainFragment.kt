@@ -110,6 +110,14 @@ fun CounterScreen(viewModel: MainViewModel) {
                     ) {
                         Text("Reset", fontSize = 18.sp)
                     }
+
+                    OutlinedButton(
+                        onClick = { viewModel.clearHistory() },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Text("Clear history", fontSize = 18.sp)
+                    }
                 }
             }
 
