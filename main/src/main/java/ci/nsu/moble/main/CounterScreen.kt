@@ -25,7 +25,8 @@ fun CounterScreen(
         uiState = uiState,
         onIncrement = viewModel::increment,
         onDecrement = viewModel::decrement,
-        onReset = viewModel::reset
+        onReset = viewModel::reset,
+        onClear = viewModel::clear
     )
 }
 
@@ -35,7 +36,8 @@ fun CounterContent(
     uiState: CounterUiState,
     onIncrement: () -> Unit,
     onDecrement: () -> Unit,
-    onReset: () -> Unit
+    onReset: () -> Unit,
+    onClear: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -58,6 +60,8 @@ fun CounterContent(
             Button(onClick = onReset)    { Text("Сброс") }
             Button(onClick = onIncrement) { Text("+") }
         }
+
+        Button(onClick = onClear)    { Text("Очистить историю") }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -93,7 +97,8 @@ fun CounterPreview() {
             ),
             onIncrement = {},
             onDecrement = {},
-            onReset = {}
+            onReset = {},
+            onClear = {}
         )
     }
 }

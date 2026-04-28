@@ -44,4 +44,12 @@ class CounterViewModel : ViewModel() {
             )
         }
     }
+
+    fun clear() {
+        _uiState.update { state ->
+            state.copy(
+                history = emptyList()
+            )
+        }
+    }
 }
