@@ -1,11 +1,13 @@
 package ci.nsu.moble.main
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
@@ -26,12 +28,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import ci.nsu.moble.main.ui.Screens.HomeScreen
+import ci.nsu.moble.main.ui.Screens.ScreenOneContent
+import ci.nsu.moble.main.ui.Screens.ScreenTwoContent
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
 // TODO: crate sealed class with 3 routes
+sealed class LunchTrayScreen(val title: String) {
+    data object Home : LunchTrayScreen("home")
+    data object ScreenOne : LunchTrayScreen("screenone")
+    data object ScreenTwo : LunchTrayScreen("screentwo")
+}
 
 class SecondActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +64,7 @@ class SecondActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecondActivityScreen() {
-    // todo: create nav controller
+    val navController = rememberNavController()
     var selectedItem by remember { mutableStateOf(0) }
     val context = LocalContext.current
     var receivedText by remember { mutableStateOf("") }
@@ -60,7 +76,7 @@ fun SecondActivityScreen() {
         TopAppBar(
             title = { Text(receivedText) }, navigationIcon = {
                 IconButton(onClick = {
-                    // TODO: create intent and start MainActivity
+                    val intent = Intent(context, MainActivity::class.java).apply{}
                     if (context is Activity) {
                         context.finish()
                     }
@@ -84,6 +100,9 @@ fun SecondActivityScreen() {
 
                 onClick = {
                     // TODO: navigate to home screen by navController
+                    navController.navigate(LunchTrayScreen.Home.title){
+
+                    }
                     selectedItem = 0
                 })
             NavigationBarItem(
@@ -93,6 +112,9 @@ fun SecondActivityScreen() {
 
                 onClick = {
                     // TODO: navigate to screen one
+                    navController.navigate(LunchTrayScreen.ScreenOne.title) {
+
+                    }
                     selectedItem = 1
                 })
             NavigationBarItem(
@@ -101,13 +123,25 @@ fun SecondActivityScreen() {
                 selected = selectedItem == 2,
                 onClick = {
                     // TODO: navigate to screen two
+                    navController.navigate(LunchTrayScreen.ScreenTwo.title) {
+
+                    }
                     selectedItem = 2
                 })
         }
     }) { innerPadding ->
-        // TODO: create a nav graph with 3 screens
-        // NavHost() {}
-        // composable(Screen.Home.route) { HomeScreen() }
+        NavHost(navController = navController, startDestination = LunchTrayScreen.Home.title, modifier = Modifier.padding(innerPadding)) {
+
+            composable(LunchTrayScreen.Home.title) {
+                HomeScreen()
+            }
+            composable(LunchTrayScreen.ScreenOne.title) {
+                ScreenOneContent()
+            }
+            composable(LunchTrayScreen.ScreenTwo.title) {
+                ScreenTwoContent()
+            }
+        }
     }
 }
 
@@ -118,3 +152,4 @@ fun HomeScreenPreview() {
         SecondActivityScreen()
     }
 }
+
