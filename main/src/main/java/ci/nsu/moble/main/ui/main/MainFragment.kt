@@ -55,7 +55,7 @@ fun CounterScreen(viewModel: MainViewModel) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Counter App", fontWeight = FontWeight.Bold) }
+                title = { Text("Счётчик", fontWeight = FontWeight.Bold) }
             )
         }
     ) { paddingValues ->
@@ -69,7 +69,6 @@ fun CounterScreen(viewModel: MainViewModel) {
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                // Отображение счетчика
                 Text(
                     text = uiState.count.toString(),
                     style = MaterialTheme.typography.displayLarge,
