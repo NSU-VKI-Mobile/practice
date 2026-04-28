@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -14,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ci.nsu.mobile.main.ui.components.RateDropdown
@@ -24,8 +26,6 @@ import ci.nsu.mobile.main.viewModel.DepositViewModel
 fun Step2Screen(navController: NavController, vm: DepositViewModel) {
 
     val rates = vm.determineRate()
-
-
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -52,7 +52,10 @@ fun Step2Screen(navController: NavController, vm: DepositViewModel) {
         OutlinedTextField(
             value = vm.monthlyTopUp,
             onValueChange = { vm.monthlyTopUp = it },
-            label = { Text("Ежемесячное пополнение") }
+            label = { Text("Ежемесячное пополнение") },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            )
         )
 
         Row {

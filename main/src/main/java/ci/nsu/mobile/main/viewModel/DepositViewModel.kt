@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+
 class DepositViewModel(
     private val repository: DepositRepository
 ) : ViewModel() {
@@ -77,5 +78,14 @@ class DepositViewModel(
         monthlyTopUp = ""
 
         result = null
+    }
+
+    fun formatDate(timestamp: Long): String {
+        val sdf = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm", java.util.Locale.getDefault())
+        return sdf.format(java.util.Date(timestamp))
+    }
+
+    fun formatDouble(value: Double): String {
+        return String.format("%.2f", value)
     }
 }
