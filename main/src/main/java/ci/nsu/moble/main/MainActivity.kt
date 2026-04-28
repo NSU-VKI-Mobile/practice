@@ -59,7 +59,7 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         Button(
             onClick = {
                 val intent = Intent(context, SecondActivity::class.java).apply{
-                    putExtra("ID", 123)
+                    putExtra("text_data", text)
                 }
                 context?.startActivity(intent)
             },
