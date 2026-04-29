@@ -2,10 +2,9 @@ package ci.nsu.mobile.main.data.repository
 
 import ci.nsu.mobile.main.data.api.RetrofitClient
 import ci.nsu.mobile.main.data.datasource.local.TokenManager
-import ci.nsu.mobile.main.data.dto.LoginRequestDto
+import ci.nsu.mobile.main.data.dto.LoginRequest
+import ci.nsu.mobile.main.data.dto.RegisterRequest
 import ci.nsu.mobile.main.data.model.Result
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -16,7 +15,7 @@ class AuthRepository(
 
     suspend fun login(login: String, password: String): Result<String> {
         return try {
-            val response = apiService.login(LoginRequestDto(login, password))
+            val response = apiService.login(LoginRequest(login, password))
 
             if (response.isSuccessful) {
                 val loginResponse = response.body()
@@ -43,5 +42,31 @@ class AuthRepository(
         } catch (e: Exception) {
             Result.Error("Неизвестная ошибка: ${e.message}")
         }
+    }
+
+    suspend fun register(request: RegisterRequest): Result<Unit> {
+        return try {
+            val response = apiService.register(request)
+
+            if (response.isSuccessful) {
+                Result.Success(Unit)
+            } else {
+                val errorMessage = when (response.code()) {
+                    400 -> "Неверные данные регистрации"
+                    409 -> "Пользователь с таким логином или email уже существует"
+                    else -> "Ошибка регистрации: ${response.code()}"
+                }
+                Result.Error(errorMessage, response.code())
+            }
+        } catch (e: IOException) {
+            Result.Error("Ошибка сети: проверьте подключение")
+        } catch (e: HttpException) {
+            Result.Error("Ошибка сервера: ${e.code()}")
+        } catch (e: Exception) {
+            Result.Error("Неизвестная ошибка: ${e.message}")
+        }
+    }
+    fun logout() {
+        tokenManager.clear()
     }
 }

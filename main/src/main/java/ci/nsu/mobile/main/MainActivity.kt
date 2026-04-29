@@ -13,9 +13,11 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.data.datasource.local.TokenManager
 import ci.nsu.mobile.main.data.repository.AuthRepository
+import ci.nsu.mobile.main.data.repository.UserRepository
 import ci.nsu.mobile.main.ui.auth.login.LoginViewModel
 import ci.nsu.mobile.main.ui.navigation.NavGraph
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
+import ci.nsu.mobile.main.ui.users.UsersViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,11 +26,15 @@ class MainActivity : ComponentActivity() {
         // Create dependencies
         val tokenManager = TokenManager(applicationContext)
         val authRepository = AuthRepository(tokenManager)
+        val userRepository = UserRepository(tokenManager)
 
         setContent {
             PracticeTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    AppNavigation(authRepository = authRepository)
+                    AppNavigation(
+                        authRepository = authRepository,
+                        userRepository = userRepository
+                    )
                 }
             }
         }
@@ -36,7 +42,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppNavigation(authRepository: AuthRepository) {
+fun AppNavigation(
+    authRepository: AuthRepository,
+    userRepository: UserRepository
+) {
     val navController = rememberNavController()
 
     // Create ViewModel with repository
@@ -48,8 +57,15 @@ fun AppNavigation(authRepository: AuthRepository) {
         }
     )
 
+    val usersViewModel: UsersViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { UsersViewModel(userRepository, authRepository) }
+        }
+    )
+
     NavGraph(
         navController = navController,
-        loginViewModel = loginViewModel
+        loginViewModel = loginViewModel,
+        usersViewModel = usersViewModel
     )
 }
