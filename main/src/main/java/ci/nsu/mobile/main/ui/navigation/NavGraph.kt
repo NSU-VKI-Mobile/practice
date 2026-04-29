@@ -5,23 +5,30 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ci.nsu.mobile.main.ui.auth.login.LoginScreen
+import ci.nsu.mobile.main.ui.auth.login.LoginViewModel
 
 @Composable
 fun NavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    loginViewModel: LoginViewModel,
+    startDestination: String = Route.Login.route
 ) {
     NavHost(
         navController = navController,
         startDestination = "login"
     ) {
-        composable("login") {
+        composable(Route.Login.route) {
             LoginScreen(
                 onNavigateToRegister = {
-                    // TODO: Navigate to register screen
+                    navController.navigate(Route.Register.route)
                 },
-                onNavigateToUsers = {
-                    // TODO: Navigate to users screen
-                }
+                onNavigateToUsers = { token ->
+                    // Save token if needed, then navigate
+                    navController.navigate(Route.Users.route) {
+                        popUpTo(Route.Login.route) { inclusive = true }
+                    }
+                },
+                viewModel = loginViewModel
             )
         }
 

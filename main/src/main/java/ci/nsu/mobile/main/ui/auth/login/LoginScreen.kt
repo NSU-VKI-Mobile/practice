@@ -14,7 +14,7 @@ import ci.nsu.mobile.main.ui.components.ProgressBar
 @Composable
 fun LoginScreen(
     onNavigateToRegister: () -> Unit,
-    onNavigateToUsers: () -> Unit,
+    onNavigateToUsers: (String) -> Unit,  // Takes token parameter
     viewModel: LoginViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -23,7 +23,8 @@ fun LoginScreen(
     // Handle navigation on success
     LaunchedEffect(uiState.loginState) {
         if (uiState.loginState is LoginState.Success && !uiState.hasNavigated) {
-            onNavigateToUsers()
+            val token = (uiState.loginState as LoginState.Success).token
+            onNavigateToUsers(token)  // Pass the token to navigation
         }
     }
 
