@@ -39,6 +39,9 @@ class AuthViewModel(
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
     fun login(login: String, password: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -71,9 +74,12 @@ class AuthViewModel(
     fun loadUsers() {
         viewModelScope.launch {
             _usersLoading.value = true
+            _error.value = null
             val result = repository.getUsers()
-            if (result is ApiResult.Success) {
-                _users.value = result.data
+            when (result) {
+                is ApiResult.Success -> _users.value = result.data
+                is ApiResult.Error -> _error.value = result.message
+                else -> {}
             }
             _usersLoading.value = false
         }
