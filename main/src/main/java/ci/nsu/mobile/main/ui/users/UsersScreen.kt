@@ -1,5 +1,4 @@
 package ci.nsu.mobile.main.ui.users
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,8 +8,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ci.nsu.mobile.main.data.dto.UserDto
 import ci.nsu.mobile.main.ui.components.ProgressBar
+import ci.nsu.mobile.main.ui.components.UserCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,8 +20,8 @@ fun UsersScreen(
     viewModel: UsersViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    //val currentUserId by viewModel.currentUserId.collectAsState()
 
-    // Load users when screen appears
     LaunchedEffect(Unit) {
         viewModel.loadUsers()
     }
@@ -55,7 +56,10 @@ fun UsersScreen(
                     ProgressBar()
                 }
                 is UsersState.Success -> {
-                    UserList(users = state.users)
+                    UserList(
+                        users = state.users,
+                        currentUserId = null//currentUserId
+                    )
                 }
                 is UsersState.Error -> {
                     ErrorScreen(
@@ -63,16 +67,17 @@ fun UsersScreen(
                         onRetry = { viewModel.loadUsers() }
                     )
                 }
-                is UsersState.Idle -> {
-                    // Show nothing, loading will start
-                }
+                is UsersState.Idle -> { }
             }
         }
     }
 }
 
 @Composable
-fun UserList(users: List<UserDto>) {
+fun UserList(
+    users: List<UserDto>,
+    currentUserId: Long?
+) {
     if (users.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -80,55 +85,56 @@ fun UserList(users: List<UserDto>) {
         ) {
             Text("Пользователи не найдены")
         }
-    } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(users) { user ->
-                UserCard(user = user)
-            }
-        }
+        return
     }
-}
 
-@Composable
-fun UserCard(user: UserDto) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    // Split users into current user and others
+    val currentUser = if (currentUserId != null) {
+        users.find { it.id == currentUserId }
+    } else null
+
+    val otherUsers = if (currentUserId != null) {
+        users.filter { it.id != currentUserId }
+    } else {
+        users
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = user.login,
-                fontSize = 18.sp,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = user.email,
-                fontSize = 14.sp,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            user.phoneNumber?.let {
-                Spacer(modifier = Modifier.height(4.dp))
+        // Pinned current user at top
+        if (currentUser != null) {
+            item {
                 Text(
-                    text = it,
-                    fontSize = 14.sp,
-                    style = MaterialTheme.typography.bodyMedium
+                    text = "Вы",
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                UserCard(
+                    user = currentUser,
+                    isCurrentUser = true
                 )
             }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "ID: ${user.id} | Role: ${user.role}",
-                fontSize = 12.sp,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+
+            if (otherUsers.isNotEmpty()) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Другие пользователи",
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+            }
+        }
+
+        // Other users
+        items(otherUsers) { user ->
+            UserCard(
+                user = user,
+                isCurrentUser = false
             )
         }
     }

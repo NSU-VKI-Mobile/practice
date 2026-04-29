@@ -9,5 +9,5 @@ data class PersonDto(
     val middleName: String? = null,
     val birthDate: String,
     val gender: String,
-    val groupId: Long
+    val groupId: Int
 )

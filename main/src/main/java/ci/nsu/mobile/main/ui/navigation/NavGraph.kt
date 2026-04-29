@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ci.nsu.mobile.main.ui.auth.login.LoginScreen
 import ci.nsu.mobile.main.ui.auth.login.LoginViewModel
+import ci.nsu.mobile.main.ui.auth.register.RegisterScreen
+import ci.nsu.mobile.main.ui.auth.register.RegisterViewModel
 import ci.nsu.mobile.main.ui.users.UsersScreen
 import ci.nsu.mobile.main.ui.users.UsersViewModel
 
@@ -14,7 +16,8 @@ fun NavGraph(
     navController: NavHostController,
     loginViewModel: LoginViewModel,
     usersViewModel: UsersViewModel,
-    startDestination: String = Route.Login.route
+    startDestination: String = Route.Login.route,
+    registerViewModel: RegisterViewModel
 ) {
     NavHost(
         navController = navController,
@@ -35,7 +38,19 @@ fun NavGraph(
             )
         }
 
-        // TODO: Add register screen
+        composable(Route.Register.route) {
+            RegisterScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToUsers = {
+                    navController.navigate(Route.Users.route) {
+                        popUpTo(Route.Login.route) { inclusive = true }
+                    }
+                },
+                viewModel = registerViewModel
+            )
+        }
 
         composable(Route.Users.route) {
             UsersScreen(

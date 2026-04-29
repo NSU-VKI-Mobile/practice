@@ -13,8 +13,10 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.data.datasource.local.TokenManager
 import ci.nsu.mobile.main.data.repository.AuthRepository
+import ci.nsu.mobile.main.data.repository.GroupRepository
 import ci.nsu.mobile.main.data.repository.UserRepository
 import ci.nsu.mobile.main.ui.auth.login.LoginViewModel
+import ci.nsu.mobile.main.ui.auth.register.RegisterViewModel
 import ci.nsu.mobile.main.ui.navigation.NavGraph
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 import ci.nsu.mobile.main.ui.users.UsersViewModel
@@ -27,13 +29,15 @@ class MainActivity : ComponentActivity() {
         val tokenManager = TokenManager(applicationContext)
         val authRepository = AuthRepository(tokenManager)
         val userRepository = UserRepository(tokenManager)
+        val groupRepository = GroupRepository(tokenManager)
 
         setContent {
             PracticeTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     AppNavigation(
                         authRepository = authRepository,
-                        userRepository = userRepository
+                        userRepository = userRepository,
+                        groupRepository = groupRepository
                     )
                 }
             }
@@ -44,7 +48,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation(
     authRepository: AuthRepository,
-    userRepository: UserRepository
+    userRepository: UserRepository,
+    groupRepository: GroupRepository
 ) {
     val navController = rememberNavController()
 
@@ -63,9 +68,16 @@ fun AppNavigation(
         }
     )
 
+    val registerViewModel: RegisterViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { RegisterViewModel(authRepository, groupRepository) }
+        }
+    )
+
     NavGraph(
         navController = navController,
         loginViewModel = loginViewModel,
-        usersViewModel = usersViewModel
+        registerViewModel = registerViewModel,
+        usersViewModel = usersViewModel,
     )
 }
