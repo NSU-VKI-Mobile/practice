@@ -36,6 +36,18 @@ class TemperatureViewModel : ViewModel() {
     }
 
     fun onFahrenheitChanged(newValue: String) {
-        // TODO: реализовать обратный расчет
+        _uiState.update { currentState ->
+            val fahrenheit = newValue
+            val celsius = if (fahrenheit.isNotBlank()) {
+                val f = fahrenheit.toDoubleOrNull()
+                if (f != null) String.format("%.2f", (f - 32) * 5.0 / 9.0)
+                else ""
+            } else ""
+
+            currentState.copy(
+                celsius = celsius,
+                fahrenheit = fahrenheit
+            )
+        }
     }
 }
