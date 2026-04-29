@@ -10,4 +10,8 @@ class DepositRepository(private val dao: DepositDao) {
     suspend fun insert(deposit: DepositEntity) {
         dao.insert(deposit)
     }
+
+    suspend fun deleteAll(){
+        dao.deleteAll()
+    }
 }

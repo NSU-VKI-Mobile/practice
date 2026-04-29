@@ -14,4 +14,5 @@ interface DepositDao {
 
     @Query("DELETE FROM deposits")
     suspend fun deleteAll()
+
 }

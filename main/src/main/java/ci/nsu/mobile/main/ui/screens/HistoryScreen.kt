@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -34,7 +35,7 @@ fun HistoryScreen(navController: NavController, vm: DepositViewModel) {
     var selectedItem by remember { mutableStateOf<DepositEntity?>(null) }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().safeDrawingPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -56,6 +57,13 @@ fun HistoryScreen(navController: NavController, vm: DepositViewModel) {
                     }
                 }
             }
+        }
+
+        Button(
+            onClick = { vm.clearAll() },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text("Очистить историю")
         }
 
         Button(onClick = { navController.popBackStack() }) {

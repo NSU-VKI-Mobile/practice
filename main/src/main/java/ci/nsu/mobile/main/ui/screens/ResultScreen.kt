@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -26,6 +27,7 @@ fun ResultScreen(navController: NavController, vm: DepositViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .safeDrawingPadding()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
@@ -53,24 +55,16 @@ fun ResultScreen(navController: NavController, vm: DepositViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { vm.save() },
+            onClick = { vm.save()
+                navController.navigate(Screen.Main.route) {
+                popUpTo(Screen.Main.route) { inclusive = true }
+            }
+                vm.reset() },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Сохранить")
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
 
-        Button(
-            onClick = {
-                navController.navigate(Screen.Main.route) {
-                    popUpTo(Screen.Main.route) { inclusive = true }
-                }
-                vm.reset()
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("В начало")
-        }
     }
 }

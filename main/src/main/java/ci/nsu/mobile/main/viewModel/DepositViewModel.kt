@@ -88,4 +88,11 @@ class DepositViewModel(
     fun formatDouble(value: Double): String {
         return String.format("%.2f", value)
     }
+
+    fun clearAll() {
+        viewModelScope.launch {
+            repository.deleteAll()
+        }
+    }
+
 }
