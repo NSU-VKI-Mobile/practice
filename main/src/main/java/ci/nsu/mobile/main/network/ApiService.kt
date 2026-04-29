@@ -2,14 +2,13 @@ package ci.nsu.mobile.main.network
 
 import ci.nsu.mobile.main.data.models.*
 import retrofit2.http.*
-import retrofit2.Call
 
 interface ApiService {
     @POST("auth/login")
-    suspend fun login(@Body request: LoginRequest): LoginResponse
+    suspend fun login(@Body request: LoginRequest): Map<String, String>
 
     @POST("auth/register")
-    suspend fun register(@Body request: RegisterRequest): Unit
+    suspend fun register(@Body request: RegisterRequest)
 
     @GET("users")
     suspend fun getUsers(): List<UserDto>

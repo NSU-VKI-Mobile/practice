@@ -41,14 +41,14 @@ fun UserListScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when (usersState) {
+            when (val state = usersState) {
                 is UserListState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
                 is UserListState.Success -> {
-                    val users = (usersState as UserListState.Success).users
+                    val users = state.users
                     if (users.isEmpty()) {
                         Text(
                             text = "No users found",
@@ -76,7 +76,7 @@ fun UserListScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = (usersState as UserListState.Error).message,
+                            text = state.message,
                             color = MaterialTheme.colorScheme.error,
                             fontSize = 16.sp
                         )
@@ -106,28 +106,7 @@ fun UserCard(user: ci.nsu.mobile.main.data.models.UserDto) {
                 fontSize = 18.sp,
                 style = MaterialTheme.typography.titleMedium
             )
-            Text(
-                text = "Email: ${user.email}",
-                fontSize = 14.sp,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            user.person?.let { person ->
-                Text(
-                    text = "Name: ${person.lastName} ${person.firstName} ${person.middleName ?: ""}",
-                    fontSize = 14.sp,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Birth Date: ${person.birthDate}",
-                    fontSize = 14.sp,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Gender: ${person.gender}",
-                    fontSize = 14.sp,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+
         }
     }
 }

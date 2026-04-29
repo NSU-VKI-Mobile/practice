@@ -1,26 +1,24 @@
-package ci.nsu.mobile.main.data
+package ci.nsu.mobile.main
 
 import android.content.Context
 import android.content.SharedPreferences
 
-class TokenManager(context: Context) {
-    private val prefs: SharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+object TokenManager {
+    private const val PREFS = "auth_prefs"
+    private const val KEY = "token"
+    private var prefs: SharedPreferences? = null
+
+    fun init(context: Context) {
+        prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    }
 
     var token: String?
-        get() = prefs.getString(KEY_TOKEN, null)
+        get() = prefs?.getString(KEY, null)
         set(value) {
-            if (value == null) {
-                prefs.edit().remove(KEY_TOKEN).apply()
-            } else {
-                prefs.edit().putString(KEY_TOKEN, value).apply()
-            }
+            prefs?.edit()?.putString(KEY, value)?.apply()
         }
 
     fun clear() {
-        prefs.edit().clear().apply()
-    }
-
-    companion object {
-        private const val KEY_TOKEN = "jwt_token"
+        prefs?.edit()?.clear()?.apply()
     }
 }

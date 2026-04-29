@@ -2,7 +2,7 @@ package ci.nsu.mobile.main.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.models.UserDto
+import ci.nsu.mobile.main.data.models.UserDto  // <-- Добавьте
 import ci.nsu.mobile.main.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

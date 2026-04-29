@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import ci.nsu.mobile.main.data.TokenManager
 import ci.nsu.mobile.main.network.RetrofitInstance
 import ci.nsu.mobile.main.repository.AuthRepository
 import ci.nsu.mobile.main.ui.theme.DraftTheme
@@ -24,15 +23,17 @@ import ci.nsu.mobile.main.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var tokenManager: TokenManager
     private lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        tokenManager = TokenManager(applicationContext)
-        val apiService = RetrofitInstance.createApiService(tokenManager)
-        authRepository = AuthRepository(apiService, tokenManager)
+        // Инициализация TokenManager (теперь это синглтон)
+        TokenManager.init(this)
+
+        // Создаем ApiService и Repository
+        val apiService = RetrofitInstance.createApiService()
+        authRepository = AuthRepository(apiService)
 
         setContent {
             DraftTheme {
@@ -41,8 +42,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     AppNavigation(
-                        authRepository = authRepository,
-                        tokenManager = tokenManager
+                        authRepository = authRepository
                     )
                 }
             }
@@ -52,8 +52,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppNavigation(
-    authRepository: AuthRepository,
-    tokenManager: TokenManager
+    authRepository: AuthRepository
 ) {
     var isAuthenticated by remember { mutableStateOf(authRepository.isAuthenticated()) }
 

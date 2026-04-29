@@ -1,9 +1,9 @@
 package ci.nsu.mobile.main.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,7 +32,7 @@ fun RegisterScreen(
     var lastName by remember { mutableStateOf("") }
     var middleName by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
-    var gender by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf("MALE") }
     var selectedGroupId by remember { mutableStateOf<Int?>(null) }
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -40,17 +40,12 @@ fun RegisterScreen(
     var phoneNumber by remember { mutableStateOf("") }
 
     // Состояния для выпадающих меню
-    var genderExpanded by remember { mutableStateOf(false) }
     var groupExpanded by remember { mutableStateOf(false) }
 
-    // Варианты для выбора
-    val genderOptions = listOf("MALE", "FEMALE")
-
-    // Состояния из ViewModel
     val registerState by authViewModel.registerState.collectAsState()
     val groupsState by groupViewModel.groupsState.collectAsState()
 
-    // Загрузка групп при открытии экрана
+    // Загрузка групп
     LaunchedEffect(Unit) {
         groupViewModel.loadGroups()
     }
@@ -63,258 +58,229 @@ fun RegisterScreen(
         }
     }
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // Заголовок
-        item {
-            Text(
-                text = "Registration",
-                fontSize = 32.sp,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-        }
-
-        // Фамилия
-        item {
-            OutlinedTextField(
-                value = lastName,
-                onValueChange = { lastName = it },
-                label = { Text("Last Name *") },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        Text(
+            text = "Registration",
+            fontSize = 32.sp,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
         // Имя
-        item {
-            OutlinedTextField(
-                value = firstName,
-                onValueChange = { firstName = it },
-                label = { Text("First Name *") },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        OutlinedTextField(
+            value = firstName,
+            onValueChange = { firstName = it },
+            label = { Text("First Name *") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        // Фамилия
+        OutlinedTextField(
+            value = lastName,
+            onValueChange = { lastName = it },
+            label = { Text("Last Name *") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
         // Отчество
-        item {
-            OutlinedTextField(
-                value = middleName,
-                onValueChange = { middleName = it },
-                label = { Text("Middle Name") },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        OutlinedTextField(
+            value = middleName,
+            onValueChange = { middleName = it },
+            label = { Text("Middle Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
         // Дата рождения
-        item {
-            OutlinedTextField(
-                value = birthDate,
-                onValueChange = { birthDate = it },
-                label = { Text("Birth Date (YYYY-MM-DD) *") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                placeholder = { Text("2000-01-01") }
-            )
-        }
+        OutlinedTextField(
+            value = birthDate,
+            onValueChange = { birthDate = it },
+            label = { Text("Birth Date (YYYY-MM-DD) *") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            placeholder = { Text("2000-01-01") }
+        )
 
-        // Выбор пола (Gender)
-        item {
-            ExposedDropdownMenuBox(
-                expanded = genderExpanded,
-                onExpandedChange = { genderExpanded = it }
-            ) {
-                TextField(
-                    value = gender,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Gender *") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = genderExpanded) },
-                    modifier = Modifier.menuAnchor()
+        // Выбор пола (RadioButton)
+        Text("Gender *", style = MaterialTheme.typography.bodyLarge)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = gender == "MALE",
+                    onClick = { gender = "MALE" }
                 )
-                ExposedDropdownMenu(
-                    expanded = genderExpanded,
-                    onDismissRequest = { genderExpanded = false }
-                ) {
-                    genderOptions.forEach { option ->
-                        DropdownMenuItem(
-                            text = { Text(option) },
-                            onClick = {
-                                gender = option
-                                genderExpanded = false
-                            }
-                        )
-                    }
-                }
+                Text("Male", modifier = Modifier.padding(start = 4.dp))
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = gender == "FEMALE",
+                    onClick = { gender = "FEMALE" }
+                )
+                Text("Female", modifier = Modifier.padding(start = 4.dp))
             }
         }
 
         // Выбор группы
-        item {
-            when (groupsState) {
-                is GroupListState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+        when (groupsState) {
+            is GroupListState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-                is GroupListState.Success -> {
-                    val groups = (groupsState as GroupListState.Success).groups
-                    ExposedDropdownMenuBox(
+            }
+            is GroupListState.Success -> {
+                val groups = (groupsState as GroupListState.Success).groups
+
+                ExposedDropdownMenuBox(
+                    expanded = groupExpanded,
+                    onExpandedChange = { groupExpanded = it }
+                ) {
+                    // Используем groupId и groupName вместо id и name
+                    val selectedGroup = groups.find { it.groupId == selectedGroupId }
+                    TextField(
+                        value = selectedGroup?.groupName ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Group *") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = groupExpanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
+                    ExposedDropdownMenu(
                         expanded = groupExpanded,
-                        onExpandedChange = { groupExpanded = it }
+                        onDismissRequest = { groupExpanded = false }
                     ) {
-                        val selectedGroup = groups.find { it.id == selectedGroupId }
-                        TextField(
-                            value = selectedGroup?.name ?: "",
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Group *") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = groupExpanded) },
-                            modifier = Modifier.menuAnchor()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = groupExpanded,
-                            onDismissRequest = { groupExpanded = false }
-                        ) {
-                            groups.forEach { group ->
-                                DropdownMenuItem(
-                                    text = { Text(group.name) },
-                                    onClick = {
-                                        selectedGroupId = group.id
-                                        groupExpanded = false
-                                    }
-                                )
-                            }
+                        groups.forEach { group ->
+                            DropdownMenuItem(
+                                text = { Text(group.groupName) },  // groupName вместо name
+                                onClick = {
+                                    selectedGroupId = group.groupId  // groupId вместо id
+                                    groupExpanded = false
+                                }
+                            )
                         }
                     }
                 }
-                is GroupListState.Error -> {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer
-                        )
-                    ) {
-                        Text(
-                            text = "Failed to load groups: ${(groupsState as GroupListState.Error).message}",
-                            modifier = Modifier.padding(16.dp),
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
+            }
+            is GroupListState.Error -> {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Text(
+                        text = "Failed to load groups",
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }
 
         // Логин
-        item {
-            OutlinedTextField(
-                value = login,
-                onValueChange = { login = it },
-                label = { Text("Login *") },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        OutlinedTextField(
+            value = login,
+            onValueChange = { login = it },
+            label = { Text("Login *") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
         // Пароль
-        item {
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password *") },
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-            )
-        }
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password *") },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+        )
 
         // Email
-        item {
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email *") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
-            )
-        }
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email *") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+        )
 
         // Телефон
-        item {
-            OutlinedTextField(
-                value = phoneNumber,
-                onValueChange = { phoneNumber = it },
-                label = { Text("Phone Number") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
-            )
-        }
+        OutlinedTextField(
+            value = phoneNumber,
+            onValueChange = { phoneNumber = it },
+            label = { Text("Phone Number") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+        )
 
         // Кнопка регистрации
-        item {
-            Button(
-                onClick = {
-                    if (validateForm(firstName, lastName, login, password, email, birthDate, gender, selectedGroupId)) {
-                        val person = PersonDto(
-                            firstName = firstName,
-                            lastName = lastName,
-                            middleName = middleName.ifEmpty { null },
-                            birthDate = birthDate,
-                            gender = gender,
-                            groupId = selectedGroupId!!
-                        )
+        Button(
+            onClick = {
+                if (validateForm(firstName, lastName, login, password, email, birthDate, selectedGroupId)) {
+                    val person = PersonDto(
+                        firstName = firstName,
+                        lastName = lastName,
+                        middleName = middleName,
+                        birthDate = birthDate,
+                        gender = gender,
+                        groupId = selectedGroupId!!
+                    )
 
-                        val request = RegisterRequest(
-                            login = login,
-                            password = password,
-                            email = email,
-                            phoneNumber = phoneNumber,
-                            person = person
-                        )
+                    val request = RegisterRequest(
+                        login = login,
+                        password = password,
+                        email = email,
+                        phoneNumber = phoneNumber,
+                        roleId = 1,
+                        authAllowed = true,
+                        person = person
+                    )
 
-                        authViewModel.register(request)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = registerState !is AuthState.Loading
-            ) {
-                if (registerState is AuthState.Loading) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                } else {
-                    Text("Register")
+                    authViewModel.register(request)
                 }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = registerState !is AuthState.Loading
+        ) {
+            if (registerState is AuthState.Loading) {
+                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+            } else {
+                Text("Register")
             }
         }
 
-        // Кнопка возврата к логину
-        item {
-            TextButton(
-                onClick = onNavigateBack,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Back to Login")
-            }
+        // Кнопка назад
+        TextButton(
+            onClick = onNavigateBack,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Back to Login")
         }
 
-        // Отображение ошибок
+        // Ошибки
         when (val state = registerState) {
             is AuthState.Error -> {
-                item {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer
-                        )
-                    ) {
-                        Text(
-                            text = state.message,
-                            modifier = Modifier.padding(16.dp),
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Text(
+                        text = state.message,
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
             else -> {}
@@ -322,7 +288,6 @@ fun RegisterScreen(
     }
 }
 
-// Функция валидации формы
 private fun validateForm(
     firstName: String,
     lastName: String,
@@ -330,7 +295,6 @@ private fun validateForm(
     password: String,
     email: String,
     birthDate: String,
-    gender: String,
     groupId: Int?
 ): Boolean {
     return firstName.isNotBlank() &&
@@ -339,6 +303,5 @@ private fun validateForm(
             password.isNotBlank() &&
             email.isNotBlank() &&
             birthDate.isNotBlank() &&
-            gender.isNotBlank() &&
             groupId != null
 }
