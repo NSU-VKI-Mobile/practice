@@ -1,15 +1,14 @@
 package viewmodel
 
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import data.DepositCalculations
 import data.DepositRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.time.Month
-import java.time.temporal.TemporalAmount
+import kotlinx.coroutines.launch
 
 class DepositViewModel(
     private val repository: DepositRepository
@@ -111,7 +110,7 @@ class DepositViewModel(
         val termMonthly = _termInMonths.value.toIntOrNull()
         if (termMonthly == null || termMonthly < 1)
         {
-            _errorMessage.value = "Пополнение в месяц больше 1"
+            _errorMessage.value = "Срок должен быть больше 1"
             return
         }
 
@@ -141,11 +140,39 @@ class DepositViewModel(
         return repository.getAllCalculations()
     }
 
-    //TODO:сохранение расчета
+    //сохранение расчета
     fun saveCalculation()
     {
+            viewModelScope.launch { //запуск корутины - выполнение в фоне, экраны не заморожены
 
+                try {
+                    if (_totalAmount.value > 0) {
+                        val objectDeposit = DepositCalculations(
+                            id = 0,
+                            initialAmount = _initialAmount.value.toDouble(),
+                            termMonths = _termInMonths.value.toInt(),
+                            interestRate = _interestRate.value,
+                            monthlyTopUp = _monthlyDeposit.value.toDoubleOrNull(),
+                            finalAmount = _totalAmount.value,
+                            interestEarned = _accruedInterest.value,
+                            calculationDate = System.currentTimeMillis(),
+                            currency = _selectedCurrency.value
+                        )
+                        repository.saveCalculation(objectDeposit)
+                    } else {
+                        _errorMessage.value = "Ошибка расчета общей суммы"
+                        return@launch
+                    }
+                }
+                catch (e: Exception)
+                {
+                    _errorMessage.value = "Ошибка: ${e.message}"
+                }
+            }
     }
 
-
+    suspend fun getCalculationById(id: Long): DepositCalculations? {
+        return repository.getCalculationById(id)
+    }
 }
+

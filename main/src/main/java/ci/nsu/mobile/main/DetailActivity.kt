@@ -10,41 +10,41 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
+import data.DepositCalculations
 import data.SingletonDatabase
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
-class SaveListDepositActivity : ComponentActivity() {
+class DetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             PracticeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SaveListDepositScreenActivity(
+                    DetailScreenActivity(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -53,17 +53,28 @@ class SaveListDepositActivity : ComponentActivity() {
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SaveListDepositScreenActivity(modifier: Modifier = Modifier
-    .background(Color.LightGray))
-{
+fun DetailScreenActivity(
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
+
+) {
     val context = LocalContext.current
     val app = context.applicationContext as SingletonDatabase
     val viewModel = app.getViewModel()
 
-    val listDeposit by viewModel.getAllHistory().collectAsState(initial = emptyList())
+    var deposit by remember {mutableStateOf<DepositCalculations?>(null)}
+
+    val depositId = (context as Activity).intent.getLongExtra("deposit_id", -1L)
+
+    //LaunchedEffect принимает ключ. ключ меняется - код запускается заново
+    LaunchedEffect(depositId) {
+        if (depositId >= 0)
+        {
+            deposit = viewModel.getCalculationById(depositId)
+        }
+
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -78,43 +89,41 @@ fun SaveListDepositScreenActivity(modifier: Modifier = Modifier
         }
     ) { innerPadding ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(16.dp),
         ) {
-            if (listDeposit.isEmpty()) {
-                Text("История пуста")
-            } else {
-                LazyColumn(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    items(listDeposit) { deposit ->
-                        Card(
-                            modifier = Modifier
-                                .padding(10.dp)
-                                .border(width = 1.dp, color = Color.Black)
-                                .padding(10.dp)
-                                .background(Color.White),
-                            onClick = {
-                                val intent = Intent(context, DetailActivity::class.java)
-                                intent.putExtra("deposit_id", deposit.id)
-                                context.startActivity(intent)
-                            }
-                        ) {
-                            Column(modifier = Modifier.padding(8.dp)) {
-                                val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
-                                Text("Дата: ${formatter.format(Date(deposit.calculationDate))}")
-                                Text("Стартовый взнос: ${deposit.initialAmount}")
-                                Text("Срок вклада: ${deposit.termMonths}")
-                                Text("Итоговая сумма: ${deposit.finalAmount}")
-                            }
-                        }
-                    }
+
+            Text(text = "Детальная информация")
+
+            Column(
+                modifier = Modifier
+                    .width(700.dp)
+                    .padding(10.dp)
+                    .border(width = 1.dp, color = Color.Black)
+                    .padding(10.dp)
+                    .background(Color.White)
+
+            ) {
+
+                deposit?.let { dep ->
+                    Text("Стартовый взнос: ${dep.initialAmount}")
+                    Text("Срок вклада: ${dep.termMonths}")
+                    Text("Процентная ставка: ${dep.interestRate}")
+                    Text("Валюта: ${dep.currency}")
+                    Text("Ежемесячное пополнение: ${dep.monthlyTopUp ?: "-"}")
+                    Text("Итоговая сумма: ${dep.finalAmount}")
+                    Text("Начисленные проценты: ${dep.interestEarned}")
                 }
+            }
+
+            Row(
+                modifier = Modifier
+            ) {
                 Button(
                     onClick = {
-                        val intent = Intent(context, MainActivity::class.java)
+                        val intent = Intent(context, SaveListDepositActivity::class.java)
                         context.startActivity(intent)
                         (context as Activity).finish()
                     },
@@ -123,18 +132,20 @@ fun SaveListDepositScreenActivity(modifier: Modifier = Modifier
                     ),
                     modifier = Modifier
                         .padding(top = 16.dp)
+                        .width(170.dp)
                 ) {
-                    Text("В начало")
+                    Text("Назад")
                 }
             }
         }
     }
+
 }
 
 @Preview(showBackground = true)
 @Composable
-fun SaveListDepositPreview() {
+fun DetailPreview() {
     PracticeTheme {
-        SaveListDepositScreenActivity()
+        DetailScreenActivity()
     }
 }

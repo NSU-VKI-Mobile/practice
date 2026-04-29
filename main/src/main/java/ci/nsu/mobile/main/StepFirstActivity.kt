@@ -62,7 +62,6 @@ class StepFirstActivity : ComponentActivity() {
 fun StepFirstScreenActivity(modifier: Modifier = Modifier
     .background(Color.LightGray)) {
     val context = LocalContext.current
-    val text = remember { mutableStateOf("") }
     val app = context.applicationContext as SingletonDatabase
     val viewModel = app.getViewModel()
     val initialAmount by viewModel.initialAmount.collectAsState()
@@ -84,7 +83,7 @@ fun StepFirstScreenActivity(modifier: Modifier = Modifier
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
         ) {
             Text(text="Стартовый взнос *")
 
@@ -114,11 +113,7 @@ fun StepFirstScreenActivity(modifier: Modifier = Modifier
             ){
                 Button(
                     onClick = {
-                        if (context is Activity) {
-                            context.finishAffinity()
-                            val intent = Intent(context, MainActivity::class.java)
-                            context.startActivity(intent)
-                        }
+                        (context as Activity).finish()
 
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -136,6 +131,7 @@ fun StepFirstScreenActivity(modifier: Modifier = Modifier
                         val intent = Intent(context, StepSecondActivity::class.java)
                         context.startActivity(intent)
                     },
+                    enabled = initialAmount.isNotEmpty() && termInMonth.isNotEmpty(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Black
                     ),

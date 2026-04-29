@@ -88,8 +88,7 @@ fun ResultScreenActivity(modifier: Modifier = Modifier
         Text(text = "Несохраненный расчет вклада")
 
         Column(modifier = Modifier
-            .height(200.dp)
-            .width(500.dp)
+            .width(700.dp)
             .padding(10.dp)
             .border(width = 1.dp, color = Color.Black)
             .padding(10.dp)
@@ -112,13 +111,10 @@ fun ResultScreenActivity(modifier: Modifier = Modifier
         ) {
             Button(
                 onClick = {
-                    if (context is Activity) {
-                        context.finishAffinity()
-                        val intent = Intent(context, MainActivity::class.java)
-                        context.startActivity(intent)
-                    }
-
-                },
+                    val intent = Intent(context, MainActivity::class.java)
+                    context.startActivity(intent)
+                    (context as Activity).finish()
+                          },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black
                 ),
@@ -131,11 +127,9 @@ fun ResultScreenActivity(modifier: Modifier = Modifier
 
             Button(
                 onClick = {
-                    if (context is Activity) {
-                        context.finishAffinity()
-                        val intent = Intent(context, SaveListDepositActivity::class.java)
-                        context.startActivity(intent)
-                    }
+                    viewModel.saveCalculation()
+                    val intent = Intent(context, SaveListDepositActivity::class.java)
+                    context.startActivity(intent)
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black
