@@ -1,20 +1,13 @@
 package ci.nsu.moble.main
 
+import android.content.Intent  // ДОБАВИТЬ
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,7 +30,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-// TODO:  here is to open the second activity
+
 @Composable
 fun MainScreenActivity(modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
@@ -47,10 +40,20 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // TODO:  нужно добавить  TextField
+        // ДОБАВИТЬ TextField
+        OutlinedTextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text("Введите текст") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Button(
             onClick = {
-                // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
+                // ДОБАВИТЬ кнопку которая по клику открывает второе активити через интент
+                val intent = Intent(context, SecondActivity::class.java)
+                intent.putExtra("text_data", text.ifEmpty { "Привет из MainActivity!" })
+                context.startActivity(intent)
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {

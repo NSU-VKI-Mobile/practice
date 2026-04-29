@@ -5,33 +5,33 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
-// TODO: crate sealed class with 3 routes
+// ДОБАВИТЬ sealed class с 3 routes
+sealed class Screen(val route: String, val title: String) {
+    object Home : Screen("home", "Home")
+    object List : Screen("list", "List")
+    object Settings : Screen("settings", "Settings")
+}
 
 class SecondActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +48,8 @@ class SecondActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecondActivityScreen() {
-    // todo: create nav controller
+    // ДОБАВИТЬ nav controller
+    val navController = rememberNavController()
     var selectedItem by remember { mutableStateOf(0) }
     val context = LocalContext.current
     var receivedText by remember { mutableStateOf("") }
@@ -56,11 +57,15 @@ fun SecondActivityScreen() {
         receivedText = context.intent.getStringExtra("text_data") ?: "No text received"
     }
 
+    // Получаем текущий маршрут для подсветки меню
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         TopAppBar(
             title = { Text(receivedText) }, navigationIcon = {
                 IconButton(onClick = {
-                    // TODO: create intent and start MainActivity
+                    // ДОБАВИТЬ intent и start MainActivity
                     if (context is Activity) {
                         context.finish()
                     }
@@ -80,34 +85,83 @@ fun SecondActivityScreen() {
             NavigationBarItem(
                 icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Home") },
                 label = { Text("Home") },
-                selected = selectedItem == 0,
-
+                selected = currentRoute == Screen.Home.route,
                 onClick = {
-                    // TODO: navigate to home screen by navController
+                    // ДОБАВИТЬ navigate to home screen by navController
+                    navController.navigate(Screen.Home.route)
                     selectedItem = 0
                 })
             NavigationBarItem(
                 icon = { Icon(imageVector = Icons.Filled.List, contentDescription = "Screen One") },
                 label = { Text("Screen One") },
-                selected = selectedItem == 1,
-
+                selected = currentRoute == Screen.List.route,
                 onClick = {
-                    // TODO: navigate to screen one
+                    // ДОБАВИТЬ navigate to screen one
+                    navController.navigate(Screen.List.route)
                     selectedItem = 1
                 })
             NavigationBarItem(
                 icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Screen Two") },
                 label = { Text("Screen Two") },
-                selected = selectedItem == 2,
+                selected = currentRoute == Screen.Settings.route,
                 onClick = {
-                    // TODO: navigate to screen two
+                    // ДОБАВИТЬ navigate to screen two
+                    navController.navigate(Screen.Settings.route)
                     selectedItem = 2
                 })
         }
     }) { innerPadding ->
-        // TODO: create a nav graph with 3 screens
-        // NavHost() {}
-        // composable(Screen.Home.route) { HomeScreen() }
+        // ДОБАВИТЬ nav graph с 3 экранами
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(Screen.Home.route) {
+                HomeContent(receivedText)
+            }
+            composable(Screen.List.route) {
+                ListContent()
+            }
+            composable(Screen.Settings.route) {
+                SettingsContent()
+            }
+        }
+    }
+}
+
+// ДОБАВИТЬ экраны для навигации
+@Composable
+fun HomeContent(receivedText: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("🏠 Home Screen", fontSize = 24.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Получено: $receivedText", fontSize = 16.sp, color = Color.Blue)
+        }
+    }
+}
+
+@Composable
+fun ListContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("📋 List Screen", fontSize = 24.sp)
+    }
+}
+
+@Composable
+fun SettingsContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("⚙️ Settings Screen", fontSize = 24.sp)
     }
 }
 
