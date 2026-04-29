@@ -2,6 +2,7 @@ package ci.nsu.mobile.main.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,8 +18,6 @@ import ci.nsu.mobile.main.viewmodel.AuthState
 import ci.nsu.mobile.main.viewmodel.AuthViewModel
 import ci.nsu.mobile.main.viewmodel.GroupListState
 import ci.nsu.mobile.main.viewmodel.GroupViewModel
-import java.text.SimpleDateFormat
-import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +27,7 @@ fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
+    // Поля формы
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var middleName by remember { mutableStateOf("") }
@@ -39,14 +39,23 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
 
+    // Состояния для выпадающих меню
+    var genderExpanded by remember { mutableStateOf(false) }
+    var groupExpanded by remember { mutableStateOf(false) }
+
+    // Варианты для выбора
+    val genderOptions = listOf("MALE", "FEMALE")
+
+    // Состояния из ViewModel
     val registerState by authViewModel.registerState.collectAsState()
     val groupsState by groupViewModel.groupsState.collectAsState()
 
-    // Load groups when screen is first shown
+    // Загрузка групп при открытии экрана
     LaunchedEffect(Unit) {
         groupViewModel.loadGroups()
     }
 
+    // Обработка успешной регистрации
     LaunchedEffect(registerState) {
         if (registerState is AuthState.Success) {
             onRegisterSuccess()
@@ -54,14 +63,13 @@ fun RegisterScreen(
         }
     }
 
-    val genderOptions = listOf("MALE", "FEMALE")
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // Заголовок
         item {
             Text(
                 text = "Registration",
@@ -71,6 +79,7 @@ fun RegisterScreen(
             )
         }
 
+        // Фамилия
         item {
             OutlinedTextField(
                 value = lastName,
@@ -80,6 +89,7 @@ fun RegisterScreen(
             )
         }
 
+        // Имя
         item {
             OutlinedTextField(
                 value = firstName,
@@ -89,6 +99,7 @@ fun RegisterScreen(
             )
         }
 
+        // Отчество
         item {
             OutlinedTextField(
                 value = middleName,
@@ -98,77 +109,85 @@ fun RegisterScreen(
             )
         }
 
+        // Дата рождения
         item {
             OutlinedTextField(
                 value = birthDate,
                 onValueChange = { birthDate = it },
                 label = { Text("Birth Date (YYYY-MM-DD) *") },
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                placeholder = { Text("2000-01-01") }
             )
         }
 
+        // Выбор пола (Gender)
         item {
             ExposedDropdownMenuBox(
-                expanded = false,
-                onExpandedChange = {}
+                expanded = genderExpanded,
+                onExpandedChange = { genderExpanded = it }
             ) {
                 TextField(
                     value = gender,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Gender *") },
-                    modifier = Modifier.menuAnchor(),
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) }
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = genderExpanded) },
+                    modifier = Modifier.menuAnchor()
                 )
-                DropdownMenu(
-                    expanded = false,
-                    onDismissRequest = {},
-                    modifier = Modifier.fillMaxWidth()
+                ExposedDropdownMenu(
+                    expanded = genderExpanded,
+                    onDismissRequest = { genderExpanded = false }
                 ) {
                     genderOptions.forEach { option ->
                         DropdownMenuItem(
                             text = { Text(option) },
-                            onClick = { gender = option }
+                            onClick = {
+                                gender = option
+                                genderExpanded = false
+                            }
                         )
                     }
                 }
             }
         }
 
+        // Выбор группы
         item {
             when (groupsState) {
                 is GroupListState.Loading -> {
-                    CircularProgressIndicator()
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
                 is GroupListState.Success -> {
                     val groups = (groupsState as GroupListState.Success).groups
-                    var expanded by remember { mutableStateOf(false) }
-                    val selectedGroup = groups.find { it.id == selectedGroupId }
-
                     ExposedDropdownMenuBox(
-                        expanded = expanded,
-                        onExpandedChange = { expanded = it }
+                        expanded = groupExpanded,
+                        onExpandedChange = { groupExpanded = it }
                     ) {
+                        val selectedGroup = groups.find { it.id == selectedGroupId }
                         TextField(
                             value = selectedGroup?.name ?: "",
                             onValueChange = {},
                             readOnly = true,
                             label = { Text("Group *") },
-                            modifier = Modifier.menuAnchor(),
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = groupExpanded) },
+                            modifier = Modifier.menuAnchor()
                         )
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                            modifier = Modifier.fillMaxWidth()
+                        ExposedDropdownMenu(
+                            expanded = groupExpanded,
+                            onDismissRequest = { groupExpanded = false }
                         ) {
                             groups.forEach { group ->
                                 DropdownMenuItem(
                                     text = { Text(group.name) },
                                     onClick = {
                                         selectedGroupId = group.id
-                                        expanded = false
+                                        groupExpanded = false
                                     }
                                 )
                             }
@@ -176,11 +195,22 @@ fun RegisterScreen(
                     }
                 }
                 is GroupListState.Error -> {
-                    Text("Failed to load groups", color = MaterialTheme.colorScheme.error)
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Text(
+                            text = "Failed to load groups: ${(groupsState as GroupListState.Error).message}",
+                            modifier = Modifier.padding(16.dp),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
         }
 
+        // Логин
         item {
             OutlinedTextField(
                 value = login,
@@ -190,6 +220,7 @@ fun RegisterScreen(
             )
         }
 
+        // Пароль
         item {
             OutlinedTextField(
                 value = password,
@@ -201,6 +232,7 @@ fun RegisterScreen(
             )
         }
 
+        // Email
         item {
             OutlinedTextField(
                 value = email,
@@ -211,6 +243,7 @@ fun RegisterScreen(
             )
         }
 
+        // Телефон
         item {
             OutlinedTextField(
                 value = phoneNumber,
@@ -221,6 +254,7 @@ fun RegisterScreen(
             )
         }
 
+        // Кнопка регистрации
         item {
             Button(
                 onClick = {
@@ -256,17 +290,24 @@ fun RegisterScreen(
             }
         }
 
+        // Кнопка возврата к логину
         item {
-            TextButton(onClick = onNavigateBack, modifier = Modifier.fillMaxWidth()) {
+            TextButton(
+                onClick = onNavigateBack,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text("Back to Login")
             }
         }
 
+        // Отображение ошибок
         when (val state = registerState) {
             is AuthState.Error -> {
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
                     ) {
                         Text(
                             text = state.message,
@@ -281,6 +322,7 @@ fun RegisterScreen(
     }
 }
 
+// Функция валидации формы
 private fun validateForm(
     firstName: String,
     lastName: String,
