@@ -1,6 +1,6 @@
 package ci.nsu.moble.main
 
-import android.content.Intent  // ДОБАВИТЬ
+import android.content.Intent  // ДОБАВИТ
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
