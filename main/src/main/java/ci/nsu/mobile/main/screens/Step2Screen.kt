@@ -80,7 +80,12 @@ fun Step2Screen(
 
             OutlinedTextField(
                 value = monthlyTopUp,
-                onValueChange = { viewModel.monthlyTopUp = it },
+                onValueChange = {
+                    // Только цифры и точка/запятая
+                    if (it.isEmpty() || it.matches(Regex("^\\d*[.,]?\\d*$"))) {
+                        viewModel.monthlyTopUp = it.replace(',', '.')
+                    }
+                },
                 label = { Text("Ежемесячное пополнение (₽) (необязательно)") },
                 modifier = Modifier.fillMaxWidth()
             )

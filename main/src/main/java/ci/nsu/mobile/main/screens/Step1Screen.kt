@@ -48,19 +48,25 @@ fun Step1Screen(
         ) {
             OutlinedTextField(
                 value = initialAmount,
-                onValueChange = { viewModel.initialAmount = it },
+                onValueChange = {
+                    // Только цифры и точка/запятая
+                    if (it.isEmpty() || it.matches(Regex("^\\d*[.,]?\\d*$"))) {
+                        viewModel.initialAmount = it.replace(',', '.')
+                    }
+                },
                 label = { Text("Стартовый взнос (₽)") },
                 isError = validationError != null && validationError!!.contains("взнос"),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             OutlinedTextField(
                 value = periodMonths,
                 onValueChange = {
-                    viewModel.periodMonths = it
-                    viewModel.updateAvailableRates(it)
+                    // Только цифры
+                    if (it.isEmpty() || it.matches(Regex("^\\d*$"))) {
+                        viewModel.periodMonths = it
+                        viewModel.updateAvailableRates(it)
+                    }
                 },
                 label = { Text("Срок вклада (месяцы)") },
                 isError = validationError != null && validationError!!.contains("срок"),
