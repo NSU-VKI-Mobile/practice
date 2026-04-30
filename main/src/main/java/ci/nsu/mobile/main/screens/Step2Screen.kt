@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -14,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -42,9 +44,12 @@ fun Step2Screen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text("Выберите процентную ставку:")
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             if (availableRates.isEmpty()) {
                 Text(
@@ -52,14 +57,21 @@ fun Step2Screen(
                     color = androidx.compose.ui.graphics.Color.Red
                 )
             } else {
-                availableRates.forEach { rate ->
-                    Button(
-                        onClick = { viewModel.selectedRate = rate },
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    ) {
-                        Text(
-                            if (selectedRate == rate) "✓ $rate%" else "$rate%"
-                        )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    availableRates.forEach { rate ->
+                        Button(
+                            onClick = { viewModel.selectedRate = rate },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        ) {
+                            Text(
+                                if (selectedRate == rate) "✓ $rate%" else "$rate%"
+                            )
+                        }
                     }
                 }
             }
@@ -70,18 +82,18 @@ fun Step2Screen(
                 value = monthlyTopUp,
                 onValueChange = { viewModel.monthlyTopUp = it },
                 label = { Text("Ежемесячное пополнение (₽) (необязательно)") },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
             )
 
             if (validationError != null) {
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = validationError!!,
-                    color = androidx.compose.ui.graphics.Color.Red,
-                    modifier = Modifier.padding(top = 8.dp)
+                    color = androidx.compose.ui.graphics.Color.Red
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
@@ -90,18 +102,18 @@ fun Step2Screen(
                         navController.navigate("result")
                     }
                 },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Рассчитать")
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Button(
                 onClick = {
                     navController.popBackStack()
                 },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Назад")
             }
