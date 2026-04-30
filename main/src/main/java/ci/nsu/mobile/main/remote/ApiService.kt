@@ -1,17 +1,30 @@
 package ci.nsu.mobile.main.remote
 
+import ci.nsu.mobile.main.model.*
+import io.ktor.client.call.body
+import io.ktor.client.request.*
+import io.ktor.http.*
 
+class ApiService {
+    private val client = NetworkClient.client
 
-interface ApiService {
-//    @POST("auth/login")
-//    suspend fun login(@Body request: LoginRequest): Response<AuthResponse>
-//
-//    @POST("auth/register")
-//    suspend fun register(@Body request: RegisterRequest): Reponse<Unit>
-//
-//    @GET("users")
-//    suspend fun getUsers(): Reponse<List<UserDto>>
-//
-//    @GET("groups")
-//    suspend fun getGroups(): Reponse<List<GroupDto>>
+    suspend fun login(request: LoginRequest): AuthResponse {
+        return client.post("auth/login") {
+            setBody(request)
+        }.body()
+    }
+
+    suspend fun register(request: RegisterRequest) {
+        client.post("auth/login") {
+            setBody(request)
+        }
+    }
+
+    suspend fun getUsers(): List<UserDto> {
+        return client.get("users").body()
+    }
+
+    suspend fun getGroups(): List<GroupDto> {
+        return client.get("groups").body()
+    }
 }
