@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_view_model">ViewModel</string>
+    <string name="title_activity_ui_state">UiState</string>
 </resources>
