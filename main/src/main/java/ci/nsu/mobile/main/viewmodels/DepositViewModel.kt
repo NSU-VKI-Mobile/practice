@@ -138,8 +138,20 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             repository.saveCalculation(calculation)
             loadHistory()
+            clearForm()  // <- добавляем очистку формы
             onSuccess()
         }
+    }
+
+    // Новый метод для очистки формы
+    fun clearForm() {
+        initialAmount = ""
+        periodMonths = ""
+        monthlyTopUp = ""
+        selectedRate = 0.0
+        validationError = null
+        calculationResult = null
+        availableRates = emptyList()
     }
 
     private fun loadHistory() {
