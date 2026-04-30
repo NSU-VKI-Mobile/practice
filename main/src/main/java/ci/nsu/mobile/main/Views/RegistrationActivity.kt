@@ -7,10 +7,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import ci.nsu.mobile.main.Views.ui.theme.PracticeTheme
 
 class RegistrationActivity : ComponentActivity() {
@@ -20,8 +18,7 @@ class RegistrationActivity : ComponentActivity() {
         setContent {
             PracticeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    RegistrationActivityScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -31,17 +28,6 @@ class RegistrationActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun RegistrationActivityScreen(modifier: Modifier = Modifier) {
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PracticeTheme {
-        Greeting("Android")
-    }
 }
