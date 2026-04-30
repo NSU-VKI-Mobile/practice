@@ -80,6 +80,15 @@ fun TemperatureConverterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { viewModel.clearFields() },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("Clear all")
+        }
+
         Spacer(modifier = Modifier.height(32.dp))
 
 

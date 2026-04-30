@@ -34,6 +34,15 @@ class TemperatureViewModel : ViewModel() {
         }
     }
 
+    fun clearFields() {
+        _uiState.update {
+            TemperatureUiState(
+                celsius = "",
+                fahrenheit = "",
+            )
+        }
+    }
+
     fun onFahrenheitChanged(newValue: String) {
         _uiState.update { currentState ->
             val fahrenheit = newValue
