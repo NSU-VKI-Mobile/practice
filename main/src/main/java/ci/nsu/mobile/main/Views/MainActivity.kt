@@ -22,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -71,6 +72,7 @@ fun MainActivityScreen(
     password: String,
     onPasswordChange: (String) -> Unit,
     modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -100,9 +102,12 @@ fun MainActivityScreen(
             }) { Text("Войти") }
         Spacer(modifier = Modifier.height(16.dp))
         val annotatedText = buildAnnotatedString {
+            append("Нет аккаунта?\t")
             withLink(
                 LinkAnnotation.Clickable(
-                    onClick = {
+                    tag = "register",  // уникальный идентификатор (может быть любым)
+                    linkInteractionListener = {
+                        // здесь выполняется переход
                         val intent = Intent(context, RegistrationActivity::class.java)
                         context.startActivity(intent)
                     },
@@ -114,7 +119,7 @@ fun MainActivityScreen(
                     )
                 )
             ) {
-                append("Кликабельная ссылка")
+                append("Зарегистрироваться")
             }
         }
 
