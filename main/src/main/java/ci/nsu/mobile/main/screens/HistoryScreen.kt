@@ -1,9 +1,11 @@
 package ci.nsu.mobile.main.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,9 +56,17 @@ fun HistoryScreen(
                 .padding(16.dp)
         ) {
             if (history.isEmpty()) {
-                Text("Нет сохранённых расчётов")
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text("Нет сохранённых расчётов")
+                }
             } else {
-                LazyColumn {
+                LazyColumn(
+                    modifier = Modifier.weight(1f)
+                ) {
                     items(history) { calculation ->
                         CalculationItem(
                             calculation = calculation,
@@ -74,13 +85,14 @@ fun HistoryScreen(
                         popUpTo("main") { inclusive = true }
                     }
                 },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("В начало")
             }
         }
     }
 
+    // Диалог с деталями расчёта
     selectedCalculation?.let { calc ->
         AlertDialog(
             onDismissRequest = { selectedCalculation = null },
@@ -91,6 +103,7 @@ fun HistoryScreen(
                     Text("📅 Срок: ${calc.periodMonths} мес.")
                     Text("📈 Ставка: ${calc.interestRate}%")
                     Text("💸 Пополнение: ${calc.monthlyTopUp ?: "не указано"} ₽")
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text("🏦 Итоговая сумма: ${String.format("%.2f", calc.finalAmount)} ₽")
                     Text("✨ Начисленные проценты: ${String.format("%.2f", calc.interestEarned)} ₽")
                     Text("📅 Дата: ${formatDate(calc.calculationDate)}")
@@ -112,10 +125,13 @@ fun CalculationItem(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .clickable { onClick() }
+            .padding(vertical = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
             Text("💰 ${calculation.initialAmount} ₽ → ${String.format("%.2f", calculation.finalAmount)} ₽")
             Text("📅 ${formatDate(calculation.calculationDate)}")
         }

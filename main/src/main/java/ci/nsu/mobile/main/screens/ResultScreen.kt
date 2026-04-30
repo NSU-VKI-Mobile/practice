@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -14,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -46,10 +48,11 @@ fun ResultScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Card(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -58,12 +61,13 @@ fun ResultScreen(
                     Text("📅 Срок вклада: ${periodMonths.toIntOrNull() ?: 0} мес.")
                     Text("📈 Процентная ставка: $selectedRate%")
                     Text("💸 Ежемесячное пополнение: ${monthlyTopUp.toDoubleOrNull() ?: 0} ₽")
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text("🏦 Итоговая сумма: ${String.format("%.2f", finalAmount)} ₽")
                     Text("✨ Начисленные проценты: ${String.format("%.2f", interestEarned)} ₽")
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
@@ -73,12 +77,12 @@ fun ResultScreen(
                         }
                     }
                 },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Сохранить")
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Button(
                 onClick = {
@@ -87,7 +91,7 @@ fun ResultScreen(
                         popUpTo("main") { inclusive = true }
                     }
                 },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("В начало")
             }
