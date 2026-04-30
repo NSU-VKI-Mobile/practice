@@ -17,7 +17,7 @@ class AuthRepository {
     private val tokenManager = TokenManager
 
     // 🔧 ПЕРЕКЛЮЧАТЕЛЬ: true - моки (для дома), false - реальный сервер (для колледжа)
-    private val USE_MOCK_DATA = true
+    private val USE_MOCK_DATA = false
 
     suspend fun login(login: String, password: String): Result<UserDto> = withContext(Dispatchers.IO) {
         if (USE_MOCK_DATA) {
@@ -49,22 +49,24 @@ class AuthRepository {
             try {
                 val response = apiService.login(LoginRequest(login, password))
                 if (response.isSuccessful && response.body() != null) {
-                    val user = response.body()!!
-                    user.token?.let { tokenManager.token = it }
-                    Result.success(user)
-                } else {
-                    val errorMsg = when (response.code()) {
-                        401 -> "Неверный логин или пароль"
-                        400 -> "Ошибка валидации данных"
-                        500 -> "Ошибка сервера"
-                        else -> "Ошибка входа: ${response.code()}"
+                    val token = response.body()!!.token
+                    TokenManager.token = token
+                    val usersResponse = apiService.getUsers()
+                    if (usersResponse.isSuccessful && usersResponse.body() != null) {
+                        val user = usersResponse.body()!!.find { it.login == login }
+                            ?: usersResponse.body()!!.firstOrNull()
+
+                        if (user != null) {
+                            Result.success(user)
+                        } else {
+                            Result.success(UserDto(0, login, null, null, null, null))
+                        }
+                    } else {
+                        Result.failure(IOException("Ошибка получения списка пользователей"))
                     }
-                    Result.failure(IOException(errorMsg))
+                } else {
+                    Result.failure(IOException("Неверный логин или пароль"))
                 }
-            } catch (e: java.net.SocketTimeoutException) {
-                Result.failure(IOException("Сервер не отвечает. Проверьте подключение."))
-            } catch (e: java.net.UnknownHostException) {
-                Result.failure(IOException("Сервер недоступен."))
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -120,7 +122,8 @@ class AuthRepository {
                 if (response.isSuccessful) {
                     Result.success(Unit)
                 } else {
-                    Result.failure(IOException("Ошибка регистрации"))
+                    val errorMsg = "${response.code()}"
+                    Result.failure(IOException(errorMsg))
                 }
             } catch (e: Exception) {
                 Result.failure(e)

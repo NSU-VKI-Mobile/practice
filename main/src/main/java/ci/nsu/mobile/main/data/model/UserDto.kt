@@ -8,9 +8,18 @@ data class UserDto(
     val id: Int,
     val login: String,
     val email: String?,
-    val token: String?,
-    @SerialName("phoneNumber")
     val phoneNumber: String?,
     val person: PersonDto?,
     val token: String? = null
 )
+
+fun UserResponse.toUserDto(token: String? = null): UserDto {
+    return UserDto (
+        id = this.userId,
+        login = this.login,
+        email = this.email,
+        phoneNumber = this.phoneNumber,
+        person = this.personId?.let { PersonDto(id = it)},
+        token = token
+    )
+}
