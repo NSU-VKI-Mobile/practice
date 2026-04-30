@@ -10,4 +10,8 @@ class DepositRepository(private val dao: DepositDao) {
     fun getAllCalculations(): Flow<List<DepositCalculation>> = dao.getAllCalculations()
 
     suspend fun getCalculationById(id: Long): DepositCalculation? = dao.getCalculationById(id)
+
+    suspend fun deleteCalculation(calculation: DepositCalculation) {
+        dao.delete(calculation)
+    }
 }

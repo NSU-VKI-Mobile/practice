@@ -1,6 +1,7 @@
 package ci.nsu.mobile.main.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
@@ -15,4 +16,8 @@ interface DepositDao {
 
     @Query("SELECT * FROM deposit_calculations WHERE id = :id")
     suspend fun getCalculationById(id: Long): DepositCalculation?
+
+    // Новый метод для удаления
+    @Delete
+    suspend fun delete(calculation: DepositCalculation)
 }

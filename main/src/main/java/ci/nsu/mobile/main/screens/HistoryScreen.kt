@@ -3,6 +3,7 @@ package ci.nsu.mobile.main.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -64,13 +66,12 @@ fun HistoryScreen(
                     Text("Нет сохранённых расчётов")
                 }
             } else {
-                LazyColumn(
-                    modifier = Modifier.weight(1f)
-                ) {
+                LazyColumn {
                     items(history) { calculation ->
                         CalculationItem(
                             calculation = calculation,
-                            onClick = { selectedCalculation = calculation }
+                            onClick = { selectedCalculation = calculation },
+                            onDelete = { viewModel.deleteCalculation(calculation) }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
@@ -121,19 +122,37 @@ fun HistoryScreen(
 @Composable
 fun CalculationItem(
     calculation: DepositCalculation,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onDelete: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
             .padding(vertical = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() }
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("💰 ${calculation.initialAmount} ₽ → ${String.format("%.2f", calculation.finalAmount)} ₽")
-            Text("📅 ${formatDate(calculation.calculationDate)}")
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("💰 ${calculation.initialAmount} ₽ → ${String.format("%.2f", calculation.finalAmount)} ₽")
+                Text("📅 ${formatDate(calculation.calculationDate)}")
+            }
+
+            // Кнопка удаления
+            Text(
+                text = "🗑️",
+                modifier = Modifier
+                    .clickable { onDelete() }
+                    .padding(8.dp),
+                color = Color.Red
+            )
         }
     }
 }

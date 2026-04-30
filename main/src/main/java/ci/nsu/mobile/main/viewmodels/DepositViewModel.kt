@@ -172,4 +172,12 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
         calculationResult = null
         availableRates = emptyList()
     }
+
+    // Delete calculation from database
+    fun deleteCalculation(calculation: DepositCalculation) {
+        viewModelScope.launch {
+            repository.deleteCalculation(calculation)
+            // loadHistory() не нужен, потому что Flow сам обновится
+        }
+    }
 }
