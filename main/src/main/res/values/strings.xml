@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main_fragment">MainFragment</string>
+    <string name="title_activity_step1_fragment">Step1Fragment</string>
+    <string name="title_activity_step2_fragment">Step2Fragment</string>
+    <string name="title_activity_result_fragment">ResultFragment</string>
+    <string name="title_activity_history_fragment">HistoryFragment</string>
+    <string name="title_activity_history_adapter">HistoryAdapter</string>
 </resources>

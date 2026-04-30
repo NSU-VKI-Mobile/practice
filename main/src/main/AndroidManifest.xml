@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ci.nsu.mobile.main"> <!-- Проверьте, чтобы package совпадал с build.gradle -->
 
     <application
         android:allowBackup="true"
@@ -7,6 +8,22 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Draft" />
+        android:theme="@style/Theme.Draft">
+
+        <!-- Оставляем только ОДНУ главную Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Draft">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Все <activity> для Fragment и Adapter удалены, так как это ошибка -->
+
+    </application>
 
 </manifest>

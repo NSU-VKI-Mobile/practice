@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://android.com"
+    xmlns:app="http://android.com"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="ci.nsu.moble.main.MainFragment"
+        android:label="MainFragment">
+        <action
+            android:id="@+id/action_mainFragment_to_step1Fragment"
+            app:destination="@id/step1Fragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_historyFragment"
+            app:destination="@id/historyFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/step1Fragment"
+        android:name="ci.nsu.moble.main.Step1Fragment"
+        android:label="Step1Fragment">
+        <action
+            android:id="@+id/action_step1Fragment_to_step2Fragment"
+            app:destination="@id/step2Fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/step2Fragment"
+        android:name="ci.nsu.moble.main.Step2Fragment"
+        android:label="Step2Fragment">
+        <action
+            android:id="@+id/action_step2Fragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="ci.nsu.moble.main.ResultFragment"
+        android:label="ResultFragment" />
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="ci.nsu.moble.main.HistoryFragment"
+        android:label="HistoryFragment" />
+</navigation>

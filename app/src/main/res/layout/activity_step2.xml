@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16.dp">
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Выберите ставку:"/>
+    <Spinner android:id="@+id/spRate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8.dp"/>
+
+    <EditText android:id="@+id/etMonthlyAdd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ежемесячное пополнение (0 по умолчанию)"
+        android:inputType="numberDecimal"/>
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20.dp">
+        <Button android:id="@+id/btnBack"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Назад"/>
+        <Button android:id="@+id/btnFinishCalc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Рассчитать"/>
+    </LinearLayout>
+
+</LinearLayout>
