@@ -8,6 +8,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Draft">
+
+        <!-- ТОЛЬКО ОДНА ГЛАВНАЯ АКТИВНОСТЬ -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -16,6 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Удалили старую активность .navigation совсем или убрали из неё intent-filter -->
+        <activity
+            android:name=".SecondActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
