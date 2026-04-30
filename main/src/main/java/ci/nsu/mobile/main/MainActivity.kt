@@ -1,18 +1,20 @@
 package ci.nsu.mobile.main
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import ci.nsu.mobile.main.ui.main.MainFragment
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import ci.nsu.mobile.main.ui.theme.PracticeTheme
+import ci.nsu.moble.main.MyScreen
 
-class MainActivity : AppCompatActivity() {
-
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, MainFragment.newInstance())
-                .commitNow()
+        enableEdgeToEdge()
+        setContent {
+            PracticeTheme {
+                MyScreen()
+            }
         }
     }
 }
