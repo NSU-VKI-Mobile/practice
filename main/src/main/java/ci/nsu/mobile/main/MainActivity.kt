@@ -46,14 +46,12 @@ fun TemperatureConverterScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // LBL
         Text(
             text = "Temperature converter",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // Celsius textbox
         TemperatureTextField(
             value = uiState.celsius,
             onValueChange = { viewModel.onCelsiusChanged(it) },
@@ -65,7 +63,6 @@ fun TemperatureConverterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Convert symbol
         Text(
             text = "⇅",
             color = Color(196,196,196),
@@ -74,7 +71,6 @@ fun TemperatureConverterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Fhrnht textbox
         TemperatureTextField(
             value = uiState.fahrenheit,
             onValueChange = { viewModel.onFahrenheitChanged(it) },
