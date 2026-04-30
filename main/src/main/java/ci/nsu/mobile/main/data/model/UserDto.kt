@@ -11,5 +11,6 @@ data class UserDto(
     val token: String?,
     @SerialName("phoneNumber")
     val phoneNumber: String?,
-    val person: PersonDto?
+    val person: PersonDto?,
+    val token: String? = null
 )
