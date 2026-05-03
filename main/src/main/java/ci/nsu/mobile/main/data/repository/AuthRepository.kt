@@ -1,15 +1,11 @@
 package ci.nsu.mobile.main.data.repository
 
 import ci.nsu.mobile.main.api.ApiClient
-import ci.nsu.mobile.main.api.TokenManager
 import ci.nsu.mobile.main.data.dto.AuthTokenRespone
 import ci.nsu.mobile.main.data.dto.GroupDto
 import ci.nsu.mobile.main.data.dto.LoginRequest
 import ci.nsu.mobile.main.data.dto.RegisterRequest
 import ci.nsu.mobile.main.data.dto.UserDto
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class AuthRepository (){
     private val api = ApiClient.api
@@ -39,7 +35,7 @@ class AuthRepository (){
             return if(response.isSuccessful){
                 Result.success(Unit)
             }else{
-                Result.failure(Exception("Ошибка регистрации: ${response.errorBody()}"))
+                Result.failure(Exception("Ошибка регистрации: ${response.errorBody()?.string()}"))
             }
         }catch (e: Exception){
             return Result.failure(Exception("Ошибка: ${e.message}"))
@@ -52,7 +48,7 @@ class AuthRepository (){
             return if(response.isSuccessful){
                 Result.success(response.body() ?: emptyList())
             }else{
-                Result.failure(Exception("Ошибка загрузки: ${response.errorBody()}"))
+                Result.failure(Exception("Ошибка загрузки: ${response.errorBody()?.string()}"))
             }
         }catch (e: Exception){
             return Result.failure(Exception("Ошибка: ${e.message}"))
@@ -65,7 +61,7 @@ class AuthRepository (){
             return if(response.isSuccessful){
                 Result.success(response.body() ?: emptyList())
             }else{
-                Result.failure(Exception("Ошибка загрузки: ${response.errorBody()}"))
+                Result.failure(Exception("Ошибка загрузки: ${response.errorBody()?.string()}"))
             }
         }catch (e: Exception){
             return Result.failure(Exception("Ошибка: ${e.message}"))

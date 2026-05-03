@@ -51,7 +51,6 @@ class MainActivity : ComponentActivity() {
 fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = viewModel()) {
     val navController = rememberNavController()
     val context = LocalContext.current
-    // исправить токены
     NavHost(
         modifier = modifier
             .padding(start = 100.dp),
@@ -94,7 +93,8 @@ fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = vi
             onExit = {(context as? Activity)?.finish()},
             error = e)
     }
-    viewModel.tokenManager.token?.let{_ ->
+    //LaunchedEffect
+    TokenManager.token?.let{_ ->
         navController.navigate(Screen.Main.route)
     }
 }

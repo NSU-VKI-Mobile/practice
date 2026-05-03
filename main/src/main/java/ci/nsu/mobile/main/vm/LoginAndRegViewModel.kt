@@ -33,17 +33,17 @@ data class LoginAndRegUiState(
     val regLogin: String = "",
     val regPassword: String = "",
     val email: String = "",
-    val phone: String = ""
+    val phone: String = "",
+    val isLoading: Boolean = false
 ){
     val isBirthDateValid: Boolean get()= birthDate != null && (try{LocalDate.parse(birthDate); true} catch (e: Exception){false})
     val isGenderValid: Boolean get() = gender != null
     val isGroupValid: Boolean get() = group != null
-    val isAllCorrect: Boolean get() = isBirthDateValid && isGroupValid && isGroupValid
+    val isAllCorrect: Boolean get() = isBirthDateValid && isGroupValid && isGenderValid
 }
 
 class LoginAndRegViewModel(application: Application) : AndroidViewModel(application){
     val repository = AuthRepository()
-    val tokenManager = TokenManager
     val allGenders = listOf<String>("Муж","Жен")
     private val _uiState = MutableStateFlow(LoginAndRegUiState())
     val uiState: StateFlow<LoginAndRegUiState> = _uiState.asStateFlow()
@@ -51,7 +51,10 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
     var allGroup by mutableStateOf<List<GroupDto>>(emptyList())
     var allUsers by mutableStateOf<List<UserDto>>(emptyList())
     init{
-        // Если ошибка, то что делать?
+        TokenManager.init(application.applicationContext)
+        loadGroups()
+    }
+    private fun loadGroups(){
         viewModelScope.launch {
             var isFinish = false;
             while (!isFinish) {
@@ -62,11 +65,11 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
                     }
                     .onFailure { error ->
                         errorMessage = "${error.message}"
-                        isFinish = true
                     }
             }
         }
     }
+
     fun loadUsers(){
         viewModelScope.launch {
             repository.getUsers()
@@ -80,98 +83,81 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun registry(){
+        if (_uiState.value.isLoading) return
+        val currentState = _uiState.value
+
         viewModelScope.launch {
-            _uiState.update { currentState ->
-                var newLogin = currentState.login
-                var newPassword = currentState.password
-                var newFirstName = currentState.firstName
-                var newLastName = currentState.lastName
-                var newMiddleName = currentState.middleName
-                var newBirthDate= currentState.birthDate
-                var newGender = currentState.gender
-                var newGroup = currentState.group
-                var newRegLogin = currentState.regLogin
-                var newRegPassword = currentState.regPassword
-                var newEmail = currentState.email
-                var newPhone= currentState.phone
-                if (currentState.isAllCorrect) {
-                    repository.register(
-                        RegisterRequest(
-                            person = PersonDto(
-                                firstName = currentState.firstName,
-                                lastName = currentState.lastName,
-                                middleName = currentState.middleName,
-                                birthDate = currentState.birthDate!!,
-                                gender = currentState.gender!!,
-                                groupId = currentState.group!!.id),
-                            login = currentState.regLogin,
-                            password = currentState.regPassword,
-                            email = currentState.email,
-                            phoneNumber = currentState.phone,
-                            roleId = 1,
-                            authAllowed = true
-                        )
-                    )
-                        .onSuccess {
-                            newLogin = currentState.regLogin
-                            newPassword = currentState.regPassword
-                            newFirstName = ""
-                            newLastName = ""
-                            newMiddleName = ""
-                            newBirthDate= null
-                            newGender = null
-                            newGroup = null
-                            newRegLogin = ""
-                            newRegPassword = ""
-                            newEmail = ""
-                            newPhone= ""
-                        }
-                        .onFailure {error ->
-                            errorMessage = "${error.message}"
-                    }
-                }
-                currentState.copy(
-                    login = newLogin,
-                    password = newPassword,
-                    firstName = newFirstName,
-                    lastName = newLastName,
-                    middleName = newMiddleName,
-                    birthDate = newBirthDate,
-                    gender = newGender,
-                    group = newGroup,
-                    regLogin = newRegLogin,
-                    regPassword = newRegPassword,
-                    email = newEmail,
-                    phone = newPhone
+            _uiState.update { it.copy(isLoading = true) }
+
+            repository.register(
+                RegisterRequest(
+                    person = PersonDto(
+                        firstName = currentState.firstName,
+                        lastName = currentState.lastName,
+                        middleName = currentState.middleName,
+                        birthDate = currentState.birthDate!!,
+                        gender = currentState.gender!!,
+                        groupId = currentState.group!!.id
+                    ),
+                    login = currentState.regLogin,
+                    password = currentState.regPassword,
+                    email = currentState.email,
+                    phoneNumber = currentState.phone,
+                    roleId = 1,
+                    authAllowed = true
                 )
+            ).onSuccess {
+                _uiState.update {
+                    it.copy(
+                        login = it.regLogin,
+                        password = it.regPassword,
+                        firstName = "",
+                        lastName = "",
+                        middleName = "",
+                        birthDate = null,
+                        gender = null,
+                        group = null,
+                        regLogin = "",
+                        regPassword = "",
+                        email = "",
+                        phone = "",
+                        isLoading = false
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update { it.copy(isLoading = false) }
+                errorMessage = error.message
             }
         }
     }
 
     fun logIn(){
+        if (_uiState.value.isLoading) return
+        val currentState = _uiState.value
+
         viewModelScope.launch {
-            _uiState.update { currentState ->
-                var newLogin = currentState.login
-                var newPassword = currentState.password
-                repository.login(currentState.login,currentState.password)
-                    .onSuccess {
-                        tokenManager.token = it.token
-                        newLogin = ""
-                        newPassword = ""
+            _uiState.update { it.copy(isLoading = true) }
+
+            repository.login(currentState.login, currentState.password)
+                .onSuccess { authToken ->
+                    TokenManager.token = authToken.token
+                    _uiState.update {
+                        it.copy(
+                            login = "",
+                            password = "",
+                            isLoading = false
+                        )
                     }
-                    .onFailure { error ->
-                        errorMessage = "${error.message}"
-                    }
-                currentState.copy(
-                    login = newLogin,
-                    password = newPassword
-                )
-            }
+                }.onFailure { error ->
+                    _uiState.update { it.copy(isLoading = false) }
+                    errorMessage = error.message
+                }
         }
     }
 
     fun logOut(){
         TokenManager.clear()
+        _uiState.update { LoginAndRegUiState() }
     }
 
     fun setLogin(newValue: String){
