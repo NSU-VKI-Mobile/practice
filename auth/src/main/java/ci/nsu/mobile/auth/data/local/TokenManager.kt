@@ -12,6 +12,7 @@ object TokenManager {
     private const val PREFS_NAME = "auth_prefs"
     private const val TOKEN_KEY = "jwt_token"
     private const val LOGIN_KEY = "user_login"
+    private const val PASSWORD_KEY = "user_password"
     private var prefs: SharedPreferences? = null
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
@@ -36,8 +37,14 @@ object TokenManager {
             syncAuthState()
         }
 
+    var password: String?
+        get() = prefs?.getString(PASSWORD_KEY, null)
+        set(value) {
+            prefs?.edit()?.putString(PASSWORD_KEY, value)?.apply()
+        }
+
     fun clear() {
-        prefs?.edit()?.remove(TOKEN_KEY)?.remove(LOGIN_KEY)?.apply()
+        prefs?.edit()?.remove(TOKEN_KEY)?.remove(LOGIN_KEY)?.remove(PASSWORD_KEY)?.apply()
         _authState.value = AuthState.Unauthenticated
     }
 

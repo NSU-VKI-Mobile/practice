@@ -41,6 +41,7 @@ class RegisterViewModel(private val repository: AuthRepository) : ViewModel() {
             repository.register(request)
                 .onSuccess {
                     TokenManager.login = request.login
+                    TokenManager.password = request.password
                     _uiState.update { it.copy(isLoading = false) }
                     onSuccess()
                 }

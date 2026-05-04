@@ -3,16 +3,12 @@ package ci.nsu.mobile.main
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -23,14 +19,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.auth.ui.LoginScreen
+import ci.nsu.mobile.auth.ui.ProfileScreen
 import ci.nsu.mobile.auth.ui.RegisterScreen
-import ci.nsu.mobile.auth.ui.UsersScreen
 import ci.nsu.mobile.calculations.ui.DepositCalculatorScreen
 import ci.nsu.mobile.calculations.ui.HistoryScreen
 import ci.nsu.mobile.domain.auth.AuthManager
@@ -112,8 +107,8 @@ fun MainScreenWithBottomNav(
                 val currentRoute = navBackStackEntry?.destination?.route
 
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Пользователи") },
-                    label = { Text("Пользователи") },
+                    icon = { Icon(Icons.Default.Person, contentDescription = "Профиль") },
+                    label = { Text("Профиль") },
                     selected = currentRoute == "users",
                     onClick = {
                         bottomNavController.navigate("users") {
@@ -156,18 +151,7 @@ fun MainScreenWithBottomNav(
             modifier = Modifier.padding(paddingValues)
         ) {
             composable("users") {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    Button(
-                        onClick = onLogout,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                    ) {
-                        Text("Выйти из аккаунта")
-                    }
-                    UsersScreen()
-                }
+                ProfileScreen(onLogout = onLogout)
             }
 
             composable("new_calc") {

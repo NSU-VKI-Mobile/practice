@@ -1,6 +1,12 @@
 ﻿package ci.nsu.mobile.auth.ui
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,6 +23,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import ci.nsu.mobile.auth.QrScannerActivity
 import ci.nsu.mobile.auth.data.model.PersonDto
 import ci.nsu.mobile.auth.data.model.RegisterRequest
 import ci.nsu.mobile.auth.viewmodel.AuthViewModel
@@ -66,6 +74,35 @@ fun LoginScreen(
     val context = LocalContext.current
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showCameraExplanation by remember { mutableStateOf(false) }
+    var showPermissionDeniedDialog by remember { mutableStateOf(false) }
+
+    val qrScannerLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            val scannedLogin = data?.getStringExtra(QrScannerActivity.EXTRA_LOGIN).orEmpty()
+            val scannedPassword = data?.getStringExtra(QrScannerActivity.EXTRA_PASSWORD).orEmpty()
+            if (scannedLogin.isNotBlank() && scannedPassword.isNotBlank()) {
+                login = scannedLogin
+                password = scannedPassword
+                Toast.makeText(context, "Данные из QR-кода загружены", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(context, "QR-код не распознан или время истекло", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            qrScannerLauncher.launch(Intent(context, QrScannerActivity::class.java))
+        } else {
+            showPermissionDeniedDialog = true
+        }
+    }
 
     // Показ ошибок
     LaunchedEffect(uiState.error) {
@@ -111,10 +148,63 @@ fun LoginScreen(
                 enabled = login.isNotBlank() && password.isNotBlank()
             ) { Text("Войти") }
             Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = {
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                        qrScannerLauncher.launch(Intent(context, QrScannerActivity::class.java))
+                    } else {
+                        showCameraExplanation = true
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Авторизация через QR-код")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
             TextButton(onClick = onNavigateToRegister) {
                 Text("Нет аккаунта? Зарегистрироваться")
             }
         }
+    }
+
+    if (showCameraExplanation) {
+        AlertDialog(
+            onDismissRequest = { showCameraExplanation = false },
+            title = { Text("Нужен доступ к камере") },
+            text = {
+                Text("Камера используется только для сканирования QR-кода авторизации. Без этого разрешения автоматический вход по QR-коду невозможен.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showCameraExplanation = false
+                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                ) {
+                    Text("Разрешить")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCameraExplanation = false }) {
+                    Text("Отмена")
+                }
+            }
+        )
+    }
+
+    if (showPermissionDeniedDialog) {
+        AlertDialog(
+            onDismissRequest = { showPermissionDeniedDialog = false },
+            title = { Text("Доступ к камере запрещён") },
+            text = {
+                Text("Вы можете войти обычным способом или разрешить камеру в настройках приложения.")
+            },
+            confirmButton = {
+                TextButton(onClick = { showPermissionDeniedDialog = false }) {
+                    Text("Понятно")
+                }
+            }
+        )
     }
 }
 
