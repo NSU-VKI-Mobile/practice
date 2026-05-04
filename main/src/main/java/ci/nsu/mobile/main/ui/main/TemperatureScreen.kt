@@ -1,47 +1,49 @@
 package ci.nsu.mobile.main.ui.main
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import ci.nsu.mobile.main.ui.main.ui.theme.PracticeTheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-class TemperatureScreen : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            PracticeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+@Composable
+fun TemperatureScreenContent(
+    viewModel: TemperatureViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+
+        OutlinedTextField(
+            value = uiState.celsius,
+            onValueChange = viewModel::onCelsiusChanged,
+            label = { Text("Цельсий") },
+            isError = uiState.celsius.isNotBlank() && !uiState.isCelsiusValid,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = uiState.fahrenheit,
+            onValueChange = viewModel::onFahrenheitChanged,
+            label = { Text("Фаренгейт") },
+            isError = uiState.fahrenheit.isNotBlank() && !uiState.isFahrenheitValid,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        if (uiState.celsius.isNotBlank() && !uiState.isCelsiusValid) {
+            Text("Ошибка ввода Цельсий", color = Color.Red)
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PracticeTheme {
-        Greeting("Android")
+        if (uiState.fahrenheit.isNotBlank() && !uiState.isFahrenheitValid) {
+            Text("Ошибка ввода Фаренгейт", color = Color.Red)
+        }
     }
 }
