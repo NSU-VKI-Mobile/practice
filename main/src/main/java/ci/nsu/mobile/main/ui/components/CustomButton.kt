@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun CustomButton(func: () -> Unit, title: String) {
-    Button(onClick = func,
+fun CustomButton(onClick: () -> Unit, title: String) {
+    Button(onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black,
             contentColor = Color.White
