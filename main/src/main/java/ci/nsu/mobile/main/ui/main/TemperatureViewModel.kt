@@ -1,6 +1,5 @@
 package ci.nsu.mobile.main.ui.main
 
-
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,14 +8,27 @@ import kotlinx.coroutines.flow.update
 
 data class TemperatureUiState(
     val celsius: String = "",
-    val fahrenheit: String = ""
+    val fahrenheit: String = "",
+    val lastEdited: EditedField = EditedField.NONE
 ) {
     val isCelsiusValid: Boolean
         get() = celsius.toDoubleOrNull() != null
 
     val isFahrenheitValid: Boolean
         get() = fahrenheit.toDoubleOrNull() != null
+
+    val showCelsiusError: Boolean
+        get() = lastEdited == EditedField.CELSIUS
+                && celsius.isNotBlank()
+                && !isCelsiusValid
+
+    val showFahrenheitError: Boolean
+        get() = lastEdited == EditedField.FAHRENHEIT
+                && fahrenheit.isNotBlank()
+                && !isFahrenheitValid
 }
+
+enum class EditedField { NONE, CELSIUS, FAHRENHEIT }
 
 class TemperatureViewModel : ViewModel() {
 
@@ -24,35 +36,27 @@ class TemperatureViewModel : ViewModel() {
     val uiState: StateFlow<TemperatureUiState> = _uiState.asStateFlow()
 
     fun onCelsiusChanged(newValue: String) {
-        _uiState.update { currentState ->
-            val celsius = newValue
-
-            val fahrenheit = if (celsius.isNotBlank()) {
-                val c = celsius.toDoubleOrNull()
-                if (c != null) String.format("%.2f", c * 9 / 5 + 32)
-                else ""
-            } else ""
-
-            currentState.copy(
-                celsius = celsius,
-                fahrenheit = fahrenheit
+        _uiState.update { current ->
+            val fahrenheit = newValue.toDoubleOrNull()
+                ?.let { String.format("%.2f", it * 9.0 / 5.0 + 32) }
+                ?: ""
+            current.copy(
+                celsius = newValue,
+                fahrenheit = fahrenheit,
+                lastEdited = EditedField.CELSIUS
             )
         }
     }
 
     fun onFahrenheitChanged(newValue: String) {
-        _uiState.update { currentState ->
-            val fahrenheit = newValue
-
-            val celsius = if (fahrenheit.isNotBlank()) {
-                val f = fahrenheit.toDoubleOrNull()
-                if (f != null) String.format("%.2f", (f - 32) * 5 / 9)
-                else ""
-            } else ""
-
-            currentState.copy(
+        _uiState.update { current ->
+            val celsius = newValue.toDoubleOrNull()
+                ?.let { String.format("%.2f", (it - 32) * 5.0 / 9.0) }
+                ?: ""
+            current.copy(
                 celsius = celsius,
-                fahrenheit = fahrenheit
+                fahrenheit = newValue,
+                lastEdited = EditedField.FAHRENHEIT
             )
         }
     }

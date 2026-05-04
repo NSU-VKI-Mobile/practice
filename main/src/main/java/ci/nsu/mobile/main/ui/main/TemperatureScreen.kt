@@ -7,8 +7,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun TemperatureScreenContent(
@@ -23,13 +23,15 @@ fun TemperatureScreenContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         OutlinedTextField(
             value = uiState.celsius,
             onValueChange = viewModel::onCelsiusChanged,
             label = { Text("Цельсий") },
-            isError = uiState.celsius.isNotBlank() && !uiState.isCelsiusValid,
-            modifier = Modifier.fillMaxWidth(0.8f)
+            isError = uiState.showCelsiusError,
+            modifier = Modifier.fillMaxWidth(0.8f),
+            supportingText = if (uiState.showCelsiusError) {
+                { Text("Ошибка ввода Цельсий", color = Color.Red) }
+            } else null
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -38,24 +40,11 @@ fun TemperatureScreenContent(
             value = uiState.fahrenheit,
             onValueChange = viewModel::onFahrenheitChanged,
             label = { Text("Фаренгейт") },
-            isError = uiState.fahrenheit.isNotBlank() && !uiState.isFahrenheitValid,
-            modifier = Modifier.fillMaxWidth(0.8f)
+            isError = uiState.showFahrenheitError,
+            modifier = Modifier.fillMaxWidth(0.8f),
+            supportingText = if (uiState.showFahrenheitError) {
+                { Text("Ошибка ввода Фаренгейт", color = Color.Red) }
+            } else null
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (uiState.celsius.isNotBlank() && !uiState.isCelsiusValid) {
-            Text(
-                text = "Ошибка ввода Цельсий",
-                color = Color.Red
-            )
-        }
-
-        if (uiState.fahrenheit.isNotBlank() && !uiState.isFahrenheitValid) {
-            Text(
-                text = "Ошибка ввода Фаренгейт",
-                color = Color.Red
-            )
-        }
     }
 }
