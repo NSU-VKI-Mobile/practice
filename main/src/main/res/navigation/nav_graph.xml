@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="ci.nsu.mobile.main.ui.main.MainFragment"
+        android:label="Расчёт вкладов"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_main_to_input"
+            app:destination="@id/inputFragment" />
+        <action
+            android:id="@+id/action_main_to_history"
+            app:destination="@id/historyFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/inputFragment"
+        android:name="ci.nsu.mobile.main.ui.input.InputFragment"
+        android:label="Параметры вклада"
+        tools:layout="@layout/fragment_input">
+        <action
+            android:id="@+id/action_input_to_result"
+            app:destination="@id/resultFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="ci.nsu.mobile.main.ui.result.ResultFragment"
+        android:label="Результат расчёта"
+        tools:layout="@layout/fragment_result">
+        <argument
+            android:name="calculationResult"
+            app:argType="ci.nsu.mobile.main.data.entity.CalculationResult" />
+        <action
+            android:id="@+id/action_result_to_main"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="ci.nsu.mobile.main.ui.history.HistoryFragment"
+        android:label="История расчётов"
+        tools:layout="@layout/fragment_history">
+        <action
+            android:id="@+id/action_history_to_details"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="ci.nsu.mobile.main.ui.details.DetailsFragment"
+        android:label="Детали расчёта"
+        tools:layout="@layout/fragment_details">
+        <argument
+            android:name="calculationId"
+            app:argType="long" />
+    </fragment>
+
+</navigation>

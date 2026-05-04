@@ -1,3 +1,46 @@
 <resources>
-    <string name="app_name">main</string>
+    <string name="app_name">Расчёт вкладов</string>
+    <string name="app_title">Расчёт вкладов</string>
+
+    <!-- Main screen -->
+    <string name="btn_calculate">Рассчитать</string>
+    <string name="btn_history">История расчётов</string>
+    <string name="btn_close">Закрыть приложение</string>
+
+    <!-- Input screen -->
+    <string name="step1_title">Шаг 1: Основные параметры</string>
+    <string name="step2_title">Шаг 2: Дополнительные параметры</string>
+    <string name="hint_initial_amount">Стартовый взнос (руб.)</string>
+    <string name="hint_period_months">Срок вклада (месяцев)</string>
+    <string name="hint_monthly_top_up">Ежемесячное пополнение (руб., необязательно)</string>
+    <string name="label_interest_rate">Процентная ставка</string>
+    <string name="btn_next">Далее</string>
+    <string name="btn_back">Назад</string>
+    <string name="btn_to_main">В начало</string>
+
+    <!-- Result screen -->
+    <string name="result_title">Результат расчёта</string>
+    <string name="btn_save">Сохранить</string>
+    <string name="label_initial_amount">Стартовый взнос: %1$s руб.</string>
+    <string name="label_period_months">Срок: %1$d мес.</string>
+    <string name="label_interest_rate_value">Ставка: %1$s%%</string>
+    <string name="label_monthly_top_up">Пополнение: %1$s руб./мес.</string>
+    <string name="label_final_amount">Итоговая сумма: %1$s руб.</string>
+    <string name="label_interest_earned">Начислено процентов: %1$s руб.</string>
+    <string name="snackbar_saved">Расчёт сохранён</string>
+    <string name="snackbar_save_error">Ошибка при сохранении</string>
+
+    <!-- History screen -->
+    <string name="history_empty">История расчётов пуста</string>
+
+    <!-- Details screen -->
+    <string name="details_title">Детали расчёта</string>
+    <string name="label_date">Дата: %1$s</string>
+
+    <!-- Validation errors -->
+    <string name="error_initial_amount_empty">Введите стартовый взнос</string>
+    <string name="error_initial_amount_invalid">Введите корректную сумму (больше 0)</string>
+    <string name="error_period_months_empty">Введите срок вклада</string>
+    <string name="error_period_months_invalid">Введите корректный срок (больше 0)</string>
+    <string name="error_monthly_top_up_invalid">Введите корректную сумму пополнения (не менее 0)</string>
 </resources>
