@@ -2,7 +2,7 @@ package ci.nsu.mobile.main.viewmodel.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ci.nsu.mobile.main.repository.AuthRepository
+import ci.nsu.mobile.main.data.repository.AuthRepository
 import ci.nsu.mobile.main.viewmodel.LoginViewModel
 import ci.nsu.mobile.main.viewmodel.RegistrationViewModel
 

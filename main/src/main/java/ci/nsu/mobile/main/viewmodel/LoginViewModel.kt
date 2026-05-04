@@ -1,7 +1,7 @@
 package ci.nsu.mobile.main.viewmodel
 
 import androidx.lifecycle.ViewModel
-import ci.nsu.mobile.main.repository.AuthRepository
+import ci.nsu.mobile.main.data.repository.AuthRepository
 import ci.nsu.mobile.main.viewmodel.state.LoginState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.navigation.Navigation
-import ci.nsu.mobile.main.repository.AuthRepository
+import ci.nsu.mobile.main.data.repository.AuthRepository
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 import ci.nsu.mobile.main.viewmodel.LoginViewModel
 import ci.nsu.mobile.main.viewmodel.factory.ViewModelsFactory
