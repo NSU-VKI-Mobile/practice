@@ -6,6 +6,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 
 object ApiClient {
     private const val BASE_URL = "http://10.0.2.2:8080/"
@@ -19,6 +20,10 @@ object ApiClient {
     }
 
     private val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .retryOnConnectionFailure(true)
         .addInterceptor(AuthInterceptor()) // Наш перехватчик с токеном
         .addInterceptor(loggingInterceptor)
         .build()

@@ -12,6 +12,7 @@ class AuthInterceptor : Interceptor {
         val token = TokenManager.token
 
         requestBuilder.addHeader("Content-Type", "application/json")
+        requestBuilder.addHeader("Connection", "close")
 
         // Если токен есть в хранилище, добавляем его в заголовок
         token?.let {
