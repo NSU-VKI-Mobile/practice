@@ -8,17 +8,22 @@ import kotlinx.coroutines.flow.update
 
 class CounterViewModel : ViewModel() {
 
-    // Приватный изменяемый поток
+    // Максимальное количество записей в истории
+    companion object {
+        private const val MAX_HISTORY_SIZE = 8
+    }
+
     private val _uiState = MutableStateFlow(CounterUiState())
-    // Публичный, только для чтения
     val uiState: StateFlow<CounterUiState> = _uiState.asStateFlow()
 
     fun increment() {
         _uiState.update { currentState ->
             val newCount = currentState.count + 1
             val action = "+1 (итого: $newCount)"
-            val newHistory = listOf(action) + currentState.history.take(4)
-            currentState.copy(count = newCount, history = newHistory)
+            currentState.copy(
+                count = newCount,
+                history = buildHistory(currentState.history, action)
+            )
         }
     }
 
@@ -26,16 +31,25 @@ class CounterViewModel : ViewModel() {
         _uiState.update { currentState ->
             val newCount = currentState.count - 1
             val action = "-1 (итого: $newCount)"
-            val newHistory = listOf(action) + currentState.history.take(4)
-            currentState.copy(count = newCount, history = newHistory)
+            currentState.copy(
+                count = newCount,
+                history = buildHistory(currentState.history, action)
+            )
         }
     }
 
     fun reset() {
         _uiState.update { currentState ->
             val action = "Сброс (было: ${currentState.count})"
-            val newHistory = listOf(action) + currentState.history.take(4)
-            currentState.copy(count = 0, history = newHistory)
+            currentState.copy(
+                count = 0,
+                history = buildHistory(currentState.history, action)
+            )
         }
+    }
+
+
+    private fun buildHistory(currentHistory: List<String>, action: String): List<String> {
+        return listOf(action) + currentHistory.take(MAX_HISTORY_SIZE - 1)
     }
 }
