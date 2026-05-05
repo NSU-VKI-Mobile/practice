@@ -67,13 +67,13 @@ class ResultFragment : Fragment() {
     }
 
     private fun displayResult(result: CalculationResult) {
-        binding.tvInitialAmount.text = getString(R.string.label_initial_amount, result.initialAmount.toString())
+        binding.tvInitialAmount.text = getString(R.string.label_initial_amount,String.format("%.2f",result.initialAmount))
         binding.tvPeriodMonths.text = getString(R.string.label_period_months, result.periodMonths)
         binding.tvInterestRate.text = getString(R.string.label_interest_rate_value, result.interestRate.toString())
-        val topUp = if (result.monthlyTopUp == 0.0) "Не указано" else result.monthlyTopUp.toString()
+        val topUp = if (result.monthlyTopUp == 0.0) "Не указано" else String.format("%.2f",result.monthlyTopUp)
         binding.tvMonthlyTopUp.text = getString(R.string.label_monthly_top_up, topUp)
-        binding.tvFinalAmount.text = getString(R.string.label_final_amount, result.finalAmount.toString())
-        binding.tvInterestEarned.text = getString(R.string.label_interest_earned, result.interestEarned.toString())
+        binding.tvFinalAmount.text = getString(R.string.label_final_amount,String.format("%.2f",result.finalAmount))
+        binding.tvInterestEarned.text = getString(R.string.label_interest_earned, String.format("%.2f",result.interestEarned))
     }
 
     override fun onDestroyView() {

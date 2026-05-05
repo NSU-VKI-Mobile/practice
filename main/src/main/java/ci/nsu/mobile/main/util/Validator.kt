@@ -24,7 +24,7 @@ object Validator {
     }
 
     fun validateMonthlyTopUp(value: String): ValidationResult {
-        if (value.isBlank()) return ValidationResult.Valid  // необязательное поле
+        if (value.isBlank()) return ValidationResult.Valid
         val amount = value.toDoubleOrNull()
             ?: return ValidationResult.Invalid("Введите корректное число")
         if (amount < 0) return ValidationResult.Invalid("Пополнение не может быть отрицательным")

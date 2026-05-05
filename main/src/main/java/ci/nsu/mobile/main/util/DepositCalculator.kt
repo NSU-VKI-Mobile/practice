@@ -10,31 +10,13 @@ data class CalculationResult(
 
 object DepositCalculator {
 
-    /**
-     * Выбирает процентную ставку по сроку вклада:
-     * < 6 мес → 15.0%
-     * 6..11 мес → 10.0%
-     * >= 12 мес → 5.0%
-     */
+
     fun selectRate(periodMonths: Int): Double = when {
         periodMonths < 6 -> 15.0
         periodMonths < 12 -> 10.0
         else -> 5.0
     }
 
-    /**
-     * Рассчитывает итоговую сумму и начисленные проценты.
-     * Формула сложных процентов с ежемесячным пополнением:
-     * monthlyRate = interestRate / 100 / 12
-     * FinalAmount = initialAmount * (1 + monthlyRate)^periodMonths
-     *             + monthlyTopUp * ((1 + monthlyRate)^periodMonths - 1) / monthlyRate
-     *
-     * Особый случай monthlyRate == 0.0:
-     * FinalAmount = initialAmount + monthlyTopUp * periodMonths
-     *
-     * InterestEarned = FinalAmount - (initialAmount + monthlyTopUp * periodMonths)
-     * Округление до 2 знаков через BigDecimal.
-     */
     fun calculate(
         initialAmount: Double,
         periodMonths: Int,

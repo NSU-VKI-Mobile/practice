@@ -43,13 +43,13 @@ class DetailsFragment : Fragment() {
     private fun displayDetails(item: DepositCalculation) {
         val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
         binding.tvDetailDate.text = "Дата: ${dateFormat.format(Date(item.calculationDate))}"
-        binding.tvDetailInitialAmount.text = "Стартовый взнос: ${item.initialAmount} руб."
+        binding.tvDetailInitialAmount.text = "Стартовый взнос: ${String.format("%.2f",item.initialAmount)} руб."
         binding.tvDetailPeriodMonths.text = "Срок: ${item.periodMonths} мес."
         binding.tvDetailInterestRate.text = "Ставка: ${item.interestRate}%"
         val topUp = if (item.monthlyTopUp == 0.0) "Не указано" else "${item.monthlyTopUp} руб./мес."
         binding.tvDetailMonthlyTopUp.text = "Пополнение: $topUp"
-        binding.tvDetailFinalAmount.text = "Итоговая сумма: ${item.finalAmount} руб."
-        binding.tvDetailInterestEarned.text = "Начислено процентов: ${item.interestEarned} руб."
+        binding.tvDetailFinalAmount.text = "Итоговая сумма: ${String.format("%.2f",item.finalAmount)} руб."
+        binding.tvDetailInterestEarned.text = "Начислено процентов: ${String.format("%.2f",item.interestEarned)} руб."
     }
 
     override fun onDestroyView() {

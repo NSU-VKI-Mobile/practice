@@ -32,8 +32,8 @@ class HistoryAdapter(
         fun bind(item: DepositCalculation) {
             val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
             binding.tvDate.text = dateFormat.format(Date(item.calculationDate))
-            binding.tvItemInitialAmount.text = "Взнос: ${item.initialAmount} руб."
-            binding.tvItemFinalAmount.text = "Итого: ${item.finalAmount} руб."
+            binding.tvItemInitialAmount.text = "Взнос: ${String.format("%.2f",item.finalAmount)} руб."
+            binding.tvItemFinalAmount.text = "Итого: ${String.format("%.2f",item.finalAmount)} руб."
             binding.root.setOnClickListener { onItemClick(item.id) }
         }
     }
