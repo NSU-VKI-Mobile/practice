@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Этап 1: Основные данные"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="32dp"/>
+
+    <EditText
+        android:id="@+id/etInitialAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Стартовый взнос (₽) *"
+        android:inputType="numberDecimal"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etPeriodMonths"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Срок вклада (месяцев) *"
+        android:inputType="number"
+        android:textSize="18sp"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Далее"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnBackToMain"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="В начало"
+        style="?attr/materialButtonOutlinedStyle"
+        android:textSize="18sp"/>
+
+</LinearLayout>
