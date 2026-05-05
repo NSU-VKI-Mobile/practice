@@ -26,11 +26,45 @@ class AuthRepository(
             Result.failure(e)
         }
     }
-    fun register(registerRequest: RegisterRequest): Result<Unit> {
+    suspend fun register(registerRequest: RegisterRequest): Result<UserDto> {
+        return try {
+            val response = service.registerUser(registerRequest)
+            if (response.isSuccessful && response.body() != null) {
+                val authResponse = response.body()!!
+                TokenManager.token = authResponse.token
+                TokenManager.userLogin = registerRequest.login
+                TokenManager.userId = authResponse.user.userId
+                Result.success(authResponse.user)
+            } else {
+                Result.failure(Exception("error register"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
-    fun getUsers(): Result<List<UserDto>> {
+    suspend fun getUsers(): Result<List<UserDto>> {
+        return try {
+            val response = service.getUsers()
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("error get users"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
-    fun getGroups(): Result<List<GroupDto>> {
+    suspend fun getGroups(): Result<List<GroupDto>> {
+        return try {
+            val response = service.getGroups()
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("error get groups"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
 }
