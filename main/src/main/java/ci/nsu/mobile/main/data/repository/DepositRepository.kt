@@ -1,49 +1,15 @@
 package ci.nsu.mobile.main.data.repository
 
-import ci.nsu.mobile.main.data.database.DepositDao
-import ci.nsu.mobile.main.models.DepositCalculation
+
+import ci.nsu.mobile.main.data.database.CalculationDao
+import ci.nsu.mobile.main.data.database.CalculationEntity
 import kotlinx.coroutines.flow.Flow
 
-class DepositRepository(private val depositDao: DepositDao) {
+class DepositRepository(private val dao: CalculationDao) {
+    fun getAllCalculations(): Flow<List<CalculationEntity>> = dao.getAllCalculations()
 
-    fun getAllCalculations(): Flow<List<DepositCalculation>> =
-        depositDao.getAllCalculations()
+    suspend fun insertCalculation(calculation: CalculationEntity) = dao.insert(calculation)
 
-    suspend fun getCalculationById(id: Long): DepositCalculation? =
-        depositDao.getCalculationById(id)
-
-    suspend fun insertCalculation(calculation: DepositCalculation): Long =
-        depositDao.insertCalculation(calculation)
-
-    suspend fun deleteCalculation(calculation: DepositCalculation) =
-        depositDao.deleteCalculation(calculation)
-
-    fun calculateDeposit(
-        initialAmount: Double,
-        periodMonths: Int,
-        interestRate: Double,
-        monthlyTopUp: Double?
-    ): Pair<Double, Double> {
-        val monthlyRate = interestRate / 100 / 12
-        var finalAmount = initialAmount
-
-        for (month in 1..periodMonths) {
-            finalAmount += finalAmount * monthlyRate
-            monthlyTopUp?.let { finalAmount += it }
-        }
-
-        val interestEarned = finalAmount - initialAmount - (monthlyTopUp ?: 0.0) * periodMonths
-        return Pair(finalAmount, interestEarned)
-    }
-
-    companion object {
-        fun getInterestRate(periodMonths: Int?): Double? {
-            return when {
-                periodMonths == null -> null
-                periodMonths < 6 -> 15.0
-                periodMonths < 12 -> 10.0
-                else -> 5.0
-            }
-        }
-    }
+    suspend fun deleteCalculation(id: Long) = dao.deleteById(id)
+    fun getCalculationById(id: Long): Flow<CalculationEntity?> = dao.getCalculationById(id)
 }

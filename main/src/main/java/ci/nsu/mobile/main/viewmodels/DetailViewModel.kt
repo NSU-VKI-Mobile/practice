@@ -9,19 +9,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class HistoryViewModel(private val repository: DepositRepository) : ViewModel() {
+class DetailViewModel(
+    private val repository: DepositRepository, private val calculationId: Long
+) : ViewModel() {
 
-    private val _calculations = MutableStateFlow<List<CalculationEntity>>(emptyList())
-    val calculations: StateFlow<List<CalculationEntity>> = _calculations.asStateFlow()
+    private val _calculation = MutableStateFlow<CalculationEntity?>(null)
+    val calculation: StateFlow<CalculationEntity?> = _calculation.asStateFlow()
 
     init {
-        loadCalculations()
-    }
-
-    private fun loadCalculations() {
         viewModelScope.launch {
-            repository.getAllCalculations().collect { list ->
-                _calculations.value = list
+            repository.getCalculationById(calculationId).collect { calc ->
+                _calculation.value = calc
             }
         }
     }

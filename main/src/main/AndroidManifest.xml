@@ -9,7 +9,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Draft">
         <activity
-            android:name=".MainActivity"
+            android:name=".screens.ResultActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".screens.SecondInputActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".screens.MainInputScreen"
+            android:exported="false"
+            android:theme="@style/Theme.Draft" />
+        <activity android:name=".screens.HistoryActivity" />
+        <activity android:name=".screens.DetailActivity" />
+        <activity
+            android:name=".screens.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.Draft">

@@ -1,35 +1,22 @@
 package ci.nsu.mobile.main.data.database
 
-import android.annotation.SuppressLint
 import android.content.Context
-import androidx.databinding.adapters.Converters
-
-import androidx.room3.Database
-import androidx.room3.Room
-import androidx.room3.RoomDatabase
-import androidx.room3.TypeConverters
-import ci.nsu.mobile.main.models.DepositCalculation
-
-@SuppressLint("RestrictedApi")
-@Database(
-    entities = [DepositCalculation::class],
-    version = 1,
-    exportSchema = false
-)
-@TypeConverters(Converters::class)
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import ci.nsu.mobile.main.data.database.CalculationDao
+@Database(entities = [CalculationEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun depositDao(): DepositDao
+    abstract fun calculationDao(): CalculationDao
 
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        fun getDatabase(context: Context): AppDatabase {
+        fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "deposits_db"
+                    context.applicationContext, AppDatabase::class.java, "calculations_db"
                 ).build()
                 INSTANCE = instance
                 instance
