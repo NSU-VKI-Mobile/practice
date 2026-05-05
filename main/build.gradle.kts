@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "ci.nsu.mobile.main"
+    namespace = "ci.nsu.mobile.main"  // Обратите внимание на "mobile" (не "moble")
     compileSdk = 36
 
     defaultConfig {
