@@ -2,6 +2,10 @@ package ci.nsu.mobile.main.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.*
+import ci.nsu.mobile.main.screens.HistoryScreen
+import ci.nsu.mobile.main.screens.ResultScreen
+import ci.nsu.mobile.main.screens.Step1Screen
+import ci.nsu.mobile.main.screens.Step2Screen
 import ci.nsu.mobile.main.ui.screens.*
 
 @Composable
