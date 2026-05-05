@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Этап 2: Детали"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="32dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Доступная процентная ставка:"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerRate"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="24dp"/>
+
+    <EditText
+        android:id="@+id/etMonthlyTopUp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ежемесячное пополнение (необязательно)"
+        android:inputType="numberDecimal"
+        android:textSize="18sp"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/btnCalculateFinal"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Рассчитать результат"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Назад"
+        style="?attr/materialButtonOutlinedStyle"
+        android:textSize="18sp"/>
+
+</LinearLayout>
