@@ -11,15 +11,17 @@ fun MainScreen(navController: NavController) {
         topBar = {
             TopAppBar(title = { Text("Расчёт вкладов") })
         }
-    ) { padding ->
+    ) {
         Column {
             Button(onClick = { navController.navigate("step1") }) {
                 Text("Рассчитать")
             }
+
             Button(onClick = { navController.navigate("history") }) {
                 Text("История расчётов")
             }
-            Button(onClick = { /* exit */ }) {
+
+            Button(onClick = { /* TODO */ }) {
                 Text("Закрыть приложение")
             }
         }

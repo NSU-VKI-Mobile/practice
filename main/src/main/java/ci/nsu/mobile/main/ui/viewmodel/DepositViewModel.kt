@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 class DepositViewModel : ViewModel() {
 
+    val history: Any
     private val _initialAmount = MutableStateFlow("")
     val initialAmount: StateFlow<String> = _initialAmount
 
@@ -37,5 +38,25 @@ class DepositViewModel : ViewModel() {
             m < 12 -> 10.0
             else -> 5.0
         }
+    }
+
+    fun calculateResult(): Pair<Double, Double> {
+        val initial = _initialAmount.value.toDoubleOrNull() ?: 0.0
+        val months = _months.value.toIntOrNull() ?: 0
+        val rate = _rate.value / 100
+        val topUp = _topUp.value.toDoubleOrNull() ?: 0.0
+
+        var total = initial
+
+        repeat(months) {
+
+            total += total * rate / 12
+
+            total += topUp
+        }
+
+        val interest = total - initial - (topUp * months)
+
+        return total to interest
     }
 }
