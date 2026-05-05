@@ -42,8 +42,7 @@ class TemperatureViewModel : ViewModel() {
                 ?: ""
             current.copy(
                 celsius = newValue,
-                fahrenheit = fahrenheit,
-                lastEdited = EditedField.CELSIUS
+                fahrenheit = fahrenheit
             )
         }
     }
@@ -55,9 +54,16 @@ class TemperatureViewModel : ViewModel() {
                 ?: ""
             current.copy(
                 celsius = celsius,
-                fahrenheit = newValue,
-                lastEdited = EditedField.FAHRENHEIT
+                fahrenheit = newValue
             )
         }
+    }
+
+    fun onCelsiusFocused() {
+        _uiState.update { it.copy(lastEdited = EditedField.CELSIUS) }
+    }
+
+    fun onFahrenheitFocused() {
+        _uiState.update { it.copy(lastEdited = EditedField.FAHRENHEIT) }
     }
 }
