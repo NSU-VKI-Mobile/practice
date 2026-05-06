@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -25,8 +26,7 @@ fun TemperatureScreen(
 ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Column(
-        modifier = Modifier.fillMaxSize().padding(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.fillMaxSize().safeDrawingPadding()
 
     ) {
         TextField(
