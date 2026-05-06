@@ -9,7 +9,9 @@ import java.util.concurrent.TimeUnit
 
 object NetworkModule {
 
-    private const val BASE_URL = "http://192.168.200.160:8080/api/"
+//    private const val BASE_URL = "http://192.168.200.160:8080/api/"
+//    private const val BASE_URL = "http://192.168.1.218:8080/api/"
+    private const val BASE_URL = "http://10.0.2.2:8080/api/"
 
     fun provideOkHttpClient(tokenManager: TokenManager): OkHttpClient {
         return OkHttpClient.Builder()
