@@ -33,6 +33,12 @@ fun TemperatureScreen(
             value = uiState.celsius,
             onValueChange = viewModel::onCelsiusChanged,
             label = {Text("Цельсия")},
+            isError = !uiState.isCelsiusValid && uiState.celsius.isNotBlank(),
+            supportingText = {
+                if (!uiState.isCelsiusValid && uiState.celsius.isNotBlank()){
+                    Text("Введите число")
+                }
+            },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
@@ -41,6 +47,12 @@ fun TemperatureScreen(
             value = uiState.fahrenheit,
             onValueChange = viewModel::onFahrenheitChanged,
             label = {Text("Фаренгейт")},
+            isError = !uiState.isFahrenheitValid && uiState.fahrenheit.isNotBlank(),
+            supportingText = {
+                if (!uiState.isFahrenheitValid && uiState.fahrenheit.isNotBlank()){
+                    Text("Введите число")
+                }
+            },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
