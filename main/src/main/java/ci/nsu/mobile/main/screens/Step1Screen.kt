@@ -25,7 +25,10 @@ fun Step1Screen(navController: NavController, vm: DepositViewModel) {
 
         TextField(
             value = amount,
-            onValueChange = vm::setInitialAmount,
+            onValueChange = {
+                vm.setInitialAmount(it)
+                error = ""
+            },
             label = { Text("Стартовый взнос") }
         )
 
@@ -33,7 +36,10 @@ fun Step1Screen(navController: NavController, vm: DepositViewModel) {
 
         TextField(
             value = months,
-            onValueChange = vm::setMonths,
+            onValueChange = {
+                vm.setMonths(it)
+                error = ""
+            },
             label = { Text("Срок (месяцы)") }
         )
 
@@ -43,21 +49,36 @@ fun Step1Screen(navController: NavController, vm: DepositViewModel) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(onClick = { navController.navigate("main") }) {
-            Text("В начало")
-        }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
 
-        Button(onClick = {
-            if (amount.isEmpty() || months.isEmpty()) {
-                error = "Заполните все поля"
-            } else {
-                vm.calculateRate()
-                navController.navigate("step2")
+            Button(onClick = { navController.navigate("main") }) {
+                Text("В начало")
             }
-        }) {
-            Text("Далее")
+
+            Button(onClick = {
+                when {
+                    amount.isEmpty() -> error = "Введите сумму"
+                    amount.toDoubleOrNull() == null -> error = "Сумма должна быть числом"
+                    amount.toDouble() <= 0 -> error = "Сумма > 0"
+
+                    months.isEmpty() -> error = "Введите срок"
+                    months.toIntOrNull() == null -> error = "Срок должен быть числом"
+                    months.toInt() <= 0 -> error = "Срок > 0"
+
+                    else -> {
+                        vm.calculateRate()
+                        navController.navigate("step2")
+                    }
+                }
+            }) {
+                Text("Далее")
+            }
         }
     }
 }

@@ -1,24 +1,55 @@
-package ci.nsu.mobile.main.screens
+package ci.nsu.mobile.main.ui.screens
 
-
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 
 @Composable
-fun ResultScreen(navController: NavController, vm: DepositViewModel = viewModel()) {
+fun ResultScreen(navController: NavController, vm: DepositViewModel) {
 
-    val result = vm.calculateResult()
+    val (total, interest) = vm.calculateResult()
 
-    Column {
-        Text("Итог: ${result.first}")
-        Text("Проценты: ${result.second}")
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
-        Button(onClick = { navController.navigate("main") }) {
-            Text("В начало")
+        Card {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Старт: ${vm.initialAmount.value}")
+                Text("Срок: ${vm.months.value}")
+                Text("Ставка: ${vm.rate.value}%")
+                Text("Итог: $total")
+                Text("Проценты: $interest")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+
+            Button(onClick = { navController.popBackStack() }) {
+                Text("Назад")
+            }
+
+            Button(onClick = {
+                vm.save()
+                navController.navigate("main")
+            }) {
+                Text("В начало")
+            }
         }
     }
 }

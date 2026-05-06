@@ -81,4 +81,6 @@ class DepositViewModel(
             repository.insert(entity)
         }
     }
+
+    fun setRate(toDouble: Double) {}
 }
