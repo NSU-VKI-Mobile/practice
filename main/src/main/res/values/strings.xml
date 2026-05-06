@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="title_activity_temperature_screen">TemperatureScreen</string>
+    <string name="title_activity_temperature_ui_state">TemperatureUiState</string>
 </resources>
