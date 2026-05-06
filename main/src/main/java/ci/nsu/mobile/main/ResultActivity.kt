@@ -11,7 +11,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -50,8 +49,7 @@ class ResultActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResultScreenActivity(modifier: Modifier = Modifier
-    .background(Color.LightGray)) {
+fun ResultScreenActivity(modifier: Modifier = Modifier) {
 
     val context = LocalContext.current
 
@@ -131,13 +129,13 @@ fun ResultScreenActivity(modifier: Modifier = Modifier
                     val intent = Intent(context, SaveListDepositActivity::class.java)
                     context.startActivity(intent)
                 },
+                enabled = totalAmount > 0.0,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black
                 ),
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .width(170.dp)
-
             ) {
                 Text("Сохранить")
             }

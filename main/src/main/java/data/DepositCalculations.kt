@@ -15,5 +15,4 @@ data class DepositCalculations(
     val interestEarned: Double,
     val calculationDate: Long,
     val currency: String
-
 )

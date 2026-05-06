@@ -2,7 +2,7 @@ package data
 
 import kotlinx.coroutines.flow.Flow
 
-class DepositRepository(
+class DepositRepository( //посредник между dao и viewModel
     private val depositDao: DepositDao
 )
 {

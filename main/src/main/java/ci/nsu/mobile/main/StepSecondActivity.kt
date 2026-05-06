@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
@@ -37,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,6 +75,8 @@ fun StepSecondScreenActivity(modifier: Modifier = Modifier
     val selectedCurrency by viewModel.selectedCurrency.collectAsState()
     val monthlyDeposit by viewModel.monthlyDeposit.collectAsState()
     val interestRate by viewModel.interestRate.collectAsState()
+    val canCalculate = interestRate > 0.0
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -154,11 +158,19 @@ fun StepSecondScreenActivity(modifier: Modifier = Modifier
 
             TextField(
                 value = monthlyDeposit,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 textStyle = androidx.compose.ui.text.TextStyle(fontSize = 25.sp),
                 placeholder = { Text("Введите сумму") },
                 onValueChange = {
                     viewModel.updateMonthlyDeposit(it)
                 })
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage!!,
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
 
             Text(text="Процентная ставка: $interestRate")
 
@@ -182,17 +194,18 @@ fun StepSecondScreenActivity(modifier: Modifier = Modifier
 
                 Button(
                     onClick = {
-                        viewModel.performCalculation()
-                        val intent = Intent(context, ResultActivity::class.java)
-                        context.startActivity(intent)
+                        if (viewModel.performCalculation()) {
+                            val intent = Intent(context, ResultActivity::class.java)
+                            context.startActivity(intent)
+                        }
                     },
+                    enabled = canCalculate,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Black
                     ),
                     modifier = Modifier
                         .padding(top = 16.dp)
                         .width(170.dp)
-
                 ) {
                     Text("Рассчитать")
                 }

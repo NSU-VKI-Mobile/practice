@@ -37,20 +37,26 @@ class DepositViewModel(
     //обновление начальной суммы
     fun updateInititalAmount(value: String) {
         _initialAmount.value = value
+        _errorMessage.value = null
     }
     //обновление срока в месяцах
     fun updateTermInMonths(value: String) {
         _termInMonths.value = value
         val months = value.toIntOrNull() ?: 0
         _interestRate.value = calculateInterestRate(months)
+        _errorMessage.value = null
     }
     //обновление ежемесячного платежа
     fun updateMonthlyDeposit(value: String) {
         _monthlyDeposit.value = value
+        _errorMessage.value = null
     }
     //обновление выбранной валюты
     fun updateSelectedCurrency(value: String) {
         _selectedCurrency.value = value
+    }
+    fun clearError() {
+        _errorMessage.value = null
     }
 
     //расчет процентной ставки по сроку
@@ -81,57 +87,50 @@ class DepositViewModel(
 
 
     //расчет
-    public fun performCalculation()
-    {
-        //начальная сумма проверки
-        if (_initialAmount.value.isEmpty())
-        {
-            _errorMessage.value = "Начальное значение пустое"
-            return
+    fun performCalculation(): Boolean {
+        if (_initialAmount.value.isEmpty()) {
+            _errorMessage.value = "Введите начальную сумму"
+            return false
         }
-        val countInitialAmount = _initialAmount.value.toDoubleOrNull()
-        if (countInitialAmount == null)
-        {
-            _errorMessage.value = "Ошибка начального значения"
-            return
+        val amount = _initialAmount.value.toDoubleOrNull()
+        if (amount == null) {
+            _errorMessage.value = "Стартовый взнос должен быть числом"
+            return false
         }
-        if (countInitialAmount <= 0)
-        {
-            _errorMessage.value = "Начальное значение от 1"
-            return
+        if (amount <= 0) {
+            _errorMessage.value = "Стартовый взнос должен быть больше нуля"
+            return false
         }
 
-        //срок проверки
-        if (_termInMonths.value == "")
-        {
-            _errorMessage.value = "Срок не может быть пустым"
-            return
+        if (_termInMonths.value.isEmpty()) {
+            _errorMessage.value = "Введите срок вклада"
+            return false
         }
-        val termMonthly = _termInMonths.value.toIntOrNull()
-        if (termMonthly == null || termMonthly < 1)
-        {
-            _errorMessage.value = "Срок должен быть больше 1"
-            return
+        val term = _termInMonths.value.toIntOrNull()
+        if (term == null) {
+            _errorMessage.value = "Срок вклада должен быть целым числом"
+            return false
+        }
+        if (term < 1) {
+            _errorMessage.value = "Срок вклада должен быть не менее 1 месяца"
+            return false
         }
 
-        //пополнение в месяц проверки
-        if (_monthlyDeposit.value.isEmpty())
-        {
-            _monthlyDeposit.value = "0.0"
+        val deposit = if (_monthlyDeposit.value.isEmpty()) {
+            0.0
+        } else {
+            _monthlyDeposit.value.toDoubleOrNull() ?: 0.0
         }
-        val monthDeposit = _monthlyDeposit.value.toDoubleOrNull()
-        if (monthDeposit == null || monthDeposit < 0)
-        {
+        if (deposit < 0) {
             _errorMessage.value = "Пополнение не может быть отрицательным"
-            return
+            return false
         }
 
-
-        val result = calculateTotalAmount(countInitialAmount, termMonthly, monthDeposit)
-
+        val result = calculateTotalAmount(amount, term, deposit)
         _totalAmount.value = result.first
         _accruedInterest.value = result.second
         _errorMessage.value = null
+        return true
     }
 
 
@@ -160,13 +159,12 @@ class DepositViewModel(
                         )
                         repository.saveCalculation(objectDeposit)
                     } else {
-                        _errorMessage.value = "Ошибка расчета общей суммы"
-                        return@launch
+                        _errorMessage.value = "Сначала выполните расчет"
                     }
                 }
                 catch (e: Exception)
                 {
-                    _errorMessage.value = "Ошибка: ${e.message}"
+                    _errorMessage.value = "Ошибка сохранения: ${e.message}"
                 }
             }
     }
