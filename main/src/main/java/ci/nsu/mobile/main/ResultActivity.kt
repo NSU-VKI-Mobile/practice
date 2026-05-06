@@ -99,8 +99,8 @@ fun ResultScreenActivity(modifier: Modifier = Modifier) {
             Text("Процентная ставка: $interestRate")
             Text("Валюта: $selectedCurrency")
             Text("Ежемесячное пополнение: $monthlyDeposit")
-            Text("Итоговая сумма: $totalAmount")
-            Text("Начисленные проценты: $accruedInterest")
+            Text("Итоговая сумма: ${"%.2f".format(totalAmount)}")
+            Text("Начисленные проценты: ${"%.2f".format(accruedInterest)}")
 
         }
 

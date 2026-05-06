@@ -113,8 +113,9 @@ fun DetailScreenActivity(
                     Text("Процентная ставка: ${dep.interestRate}")
                     Text("Валюта: ${dep.currency}")
                     Text("Ежемесячное пополнение: ${dep.monthlyTopUp ?: "-"}")
-                    Text("Итоговая сумма: ${dep.finalAmount}")
-                    Text("Начисленные проценты: ${dep.interestEarned}")
+                    Text("Итоговая сумма: ${"%.2f".format(dep.finalAmount)}")
+                    Text("Начисленные проценты: ${"%.2f".format(dep.interestEarned)}")
+
                 }
             }
 

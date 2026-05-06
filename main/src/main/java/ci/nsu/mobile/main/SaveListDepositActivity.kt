@@ -107,7 +107,8 @@ fun SaveListDepositScreenActivity(modifier: Modifier = Modifier
                                 Text("Дата: ${formatter.format(Date(deposit.calculationDate))}")
                                 Text("Стартовый взнос: ${deposit.initialAmount}")
                                 Text("Срок вклада: ${deposit.termMonths}")
-                                Text("Итоговая сумма: ${deposit.finalAmount}")
+                                Text("Итоговая сумма: ${"%.2f".format(deposit.finalAmount)}")
+
                             }
                         }
                     }
