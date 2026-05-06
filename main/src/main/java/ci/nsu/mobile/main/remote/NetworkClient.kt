@@ -24,7 +24,7 @@ object NetworkClient {
         }
 
         install(Logging) {
-            level = LogLevel.All
+            level = LogLevel.ALL
         }
 
         defaultRequest {
