@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">main</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_second">SecondActivity</string>
+    <string name="app_name">Расчёт вкладов</string>
+    <string name="calculate">Рассчитать</string>
+    <string name="history">История расчётов</string>
+    <string name="close_app">Закрыть приложение</string>
+    <string name="save">Сохранить</string>
+    <string name="back">В начало</string>
+    <string name="next">Далее</string>
 </resources>
