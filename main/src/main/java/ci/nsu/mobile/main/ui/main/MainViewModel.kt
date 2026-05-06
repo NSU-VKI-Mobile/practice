@@ -15,7 +15,9 @@ class MainViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    val historyLength = 50
+    companion object {
+        const val historyLength = 50
+    }
 
     // Методы для изменения состояния
     fun increment() {

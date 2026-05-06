@@ -51,7 +51,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
 
         Button(
             onClick = { viewModel.clearHistory() },
-            modifier = Modifier.padding(vertical = 16.dp)
+            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
         ) {
             Text("Clear history")
         }
