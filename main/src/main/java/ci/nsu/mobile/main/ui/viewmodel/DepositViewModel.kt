@@ -1,8 +1,12 @@
 package ci.nsu.mobile.main.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import ci.nsu.mobile.main.data.local.DepositEntity
+import ci.nsu.mobile.main.data.repository.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class DepositViewModel : ViewModel() {
 
@@ -39,7 +43,23 @@ class DepositViewModel : ViewModel() {
             else -> 5.0
         }
     }
+    fun save(repository: DepositRepository) {
+        val (total, interest) = calculateResult()
 
+        val entity = DepositEntity(
+            initialAmount = _initialAmount.value.toDouble(),
+            months = _months.value.toInt(),
+            rate = _rate.value,
+            topUp = _topUp.value.toDoubleOrNull() ?: 0.0,
+            finalAmount = total,
+            interest = interest,
+            date = System.currentTimeMillis()
+        )
+
+        viewModelScope.launch {
+            repository.insert(entity)
+        }
+    }
     fun calculateResult(): Pair<Double, Double> {
         val initial = _initialAmount.value.toDoubleOrNull() ?: 0.0
         val months = _months.value.toIntOrNull() ?: 0
