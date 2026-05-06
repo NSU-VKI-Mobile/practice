@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -93,9 +94,11 @@ fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = vi
             onExit = {(context as? Activity)?.finish()},
             error = e)
     }
-    //LaunchedEffect
-    TokenManager.token?.let{_ ->
-        navController.navigate(Screen.Main.route)
+
+    LaunchedEffect(TokenManager.token){
+        if(TokenManager.token != null) {
+            navController.navigate(Screen.Main.route)
+        }
     }
 }
 
