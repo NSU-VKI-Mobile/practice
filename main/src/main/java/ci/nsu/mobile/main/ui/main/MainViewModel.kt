@@ -15,11 +15,13 @@ class MainViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
+    val historyLength = 50
+
     // Методы для изменения состояния
     fun increment() {
         _uiState.update { currentState ->
             val newCount = currentState.count + 1
-            val newHistory = listOf("+1 (итого: $newCount)") + currentState.history.take(4)
+            val newHistory = listOf("+1 (итого: $newCount)") + currentState.history.take(historyLength - 1)
             currentState.copy(
                 count = newCount,
                 history = newHistory
@@ -30,7 +32,7 @@ class MainViewModel : ViewModel() {
     fun decrement() {
         _uiState.update { currentState ->
             val newCount = currentState.count - 1
-            val newHistory = listOf("-1 (итого: $newCount)") + currentState.history.take(4)
+            val newHistory = listOf("-1 (итого: $newCount)") + currentState.history.take(historyLength - 1)
             currentState.copy(
                 count = newCount,
                 history = newHistory
@@ -44,6 +46,15 @@ class MainViewModel : ViewModel() {
             val newHistory = emptyList<String>()
             currentState.copy(
                 count = newCount,
+                history = newHistory
+            )
+        }
+    }
+
+    fun clearHistory() {
+        _uiState.update { currentState ->
+            val newHistory = emptyList<String>()
+            currentState.copy(
                 history = newHistory
             )
         }
