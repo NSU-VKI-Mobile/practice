@@ -13,13 +13,11 @@ data class UserDto(
     val token: String? = null
 )
 
-fun UserResponse.toUserDto(token: String? = null): UserDto {
-    return UserDto (
-        id = this.userId,
-        login = this.login,
-        email = this.email,
-        phoneNumber = this.phoneNumber,
-        person = this.personId?.let { PersonDto(id = it)},
-        token = token
-    )
-}
+fun UserResponse.toUserDto(person: PersonDto?, token: String? = null) = UserDto(
+    id = this.userId,
+    login = this.login,
+    email = this.email,
+    phoneNumber = this.phoneNumber,
+    person = person,
+    token = token
+)
