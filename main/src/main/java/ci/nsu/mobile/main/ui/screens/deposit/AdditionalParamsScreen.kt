@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.main.ui.screens.deposit
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,14 +99,14 @@ fun AdditionalParamsScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Укажите корректный срок на предыдущем экране",
-                color = androidx.compose.ui.graphics.Color.Red,
+                color = Color.Red,
                 fontSize = 14.sp
             )
         } else if (availableRates.isEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Нет доступных ставок для указанного срока",
-                color = androidx.compose.ui.graphics.Color.Red,
+                color = Color.Red,
                 fontSize = 14.sp
             )
         }

@@ -15,4 +15,10 @@ interface DepositDao {
 
     @Query("SELECT * FROM deposit_calculations WHERE id = :id")
     suspend fun getCalculationById(id: Long): DepositCalculation?
+
+    @Query("SELECT * FROM deposit_calculations WHERE userId = :userId ORDER BY calculationDate DESC")
+    suspend fun getCalculationsByUserId(userId: Long): List<DepositCalculation>
+
+    @Query("DELETE FROM deposit_calculations WHERE id = :id AND userId = :userId")
+    suspend fun deleteCalculationById(id: Long, userId: Long): Int
 }
