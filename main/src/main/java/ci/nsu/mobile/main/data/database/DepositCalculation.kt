@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 data class DepositCalculation(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val userId: Long,
     val initialAmount: Double,       // Стартовый взнос
     val periodMonths: Int,           // Срок в месяцах
     val interestRate: Double,        // Процентная ставка

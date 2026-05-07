@@ -7,6 +7,4 @@
         <item name="colorAccent">@color/teal_200</item>
         <!-- Customize your theme here. -->
     </style>
-
-    <style name="Theme.Practice" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
