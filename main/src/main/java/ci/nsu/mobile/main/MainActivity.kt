@@ -47,7 +47,7 @@ fun AppNavigation() {
     // внедрение зависимостей через ServiceLocator
     val serviceLocator = remember { ServiceLocator(context.applicationContext) }
 
-    val userPreferences = serviceLocator.getUserPreferences()
+    val userPreferences = serviceLocator.userPreferences
     val authRepository = serviceLocator.authRepository
     val depositRepository = serviceLocator.depositRepository
 
