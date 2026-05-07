@@ -48,9 +48,8 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
         }
         composable(Routes.RESULT) {
             ResultScreen(
-                onHome = {
-                    navController.popBackStack(Routes.HOME, inclusive = false)
-                }
+                onBack = { navController.popBackStack() },
+                onHome = { navController.popBackStack(Routes.HOME, inclusive = false) }
             )
         }
         composable(Routes.HISTORY) {

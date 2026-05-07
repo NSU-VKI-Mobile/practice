@@ -33,12 +33,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17    // ✅ изменено с 11 на 17
-        targetCompatibility = JavaVersion.VERSION_17    // ✅ изменено с 11 на 17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "17"                                // ✅ остаётся 17
+        jvmTarget = "17"
     }
 
     composeOptions {

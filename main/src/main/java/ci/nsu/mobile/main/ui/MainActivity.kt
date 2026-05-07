@@ -26,7 +26,6 @@ class MainActivity : ComponentActivity() {
 
         val database = AppDatabase.getInstance(applicationContext)
         val repository = DepositRepository(database.depositDao())
-        // Создаём общий экземпляр DepositViewModel
         val depositViewModel = DepositViewModel(repository)
 
         setContent {
