@@ -11,6 +11,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +54,7 @@ class MainActivity : ComponentActivity() {
 fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = viewModel()) {
     val navController = rememberNavController()
     val context = LocalContext.current
+    val token by viewModel.token.collectAsState()
     NavHost(
         modifier = modifier
             .padding(start = 100.dp),
@@ -88,6 +91,8 @@ fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = vi
             )
         }
     }
+
+
     viewModel.errorMessage?.let{e ->
         ErrorScreen(
             onDismiss = {viewModel.errorMessage = null},
@@ -95,8 +100,8 @@ fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = vi
             error = e)
     }
 
-    LaunchedEffect(TokenManager.token){
-        if(TokenManager.token != null) {
+    LaunchedEffect(token){
+        if(token != null) {
             navController.navigate(Screen.Main.route)
         }
     }

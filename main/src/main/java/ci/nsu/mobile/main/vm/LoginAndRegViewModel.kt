@@ -47,6 +47,8 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
     val allGenders = listOf<String>("Муж","Жен")
     private val _uiState = MutableStateFlow(LoginAndRegUiState())
     val uiState: StateFlow<LoginAndRegUiState> = _uiState.asStateFlow()
+    private val _token = MutableStateFlow<String?>(null)
+    val token: StateFlow<String?> = _token.asStateFlow()
     var errorMessage by mutableStateOf<String?>(null)
     var allGroup by mutableStateOf<List<GroupDto>>(emptyList())
     var allUsers by mutableStateOf<List<UserDto>>(emptyList())
@@ -67,6 +69,15 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
                         errorMessage = "${error.message}"
                     }
             }
+        }
+    }
+
+    private fun updateToken(newToken: String?) {
+        _token.value = newToken
+        if (newToken != null) {
+            TokenManager.token = newToken
+        } else {
+            TokenManager.clear()
         }
     }
 
@@ -140,7 +151,7 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
 
             repository.login(currentState.login, currentState.password)
                 .onSuccess { authToken ->
-                    TokenManager.token = authToken.token
+                    updateToken(authToken.token)
                     _uiState.update {
                         it.copy(
                             login = "",
@@ -156,7 +167,7 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun logOut(){
-        TokenManager.clear()
+        updateToken(null)
         _uiState.update { LoginAndRegUiState() }
     }
 
