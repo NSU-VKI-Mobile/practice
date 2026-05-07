@@ -1,7 +1,10 @@
-package ci.nsu.mobile.main.data.repository
+package ci.nsu.mobile.main.data.repositories
 
-import android.content.Context
-import ci.nsu.mobile.main.data.models.*
+import ci.nsu.mobile.main.data.models.AuthResponse
+import ci.nsu.mobile.main.data.models.LoginRequest
+import ci.nsu.mobile.main.data.models.RegisterRequest
+import ci.nsu.mobile.main.data.models.GroupDto
+import ci.nsu.mobile.main.data.models.UserDto
 import ci.nsu.mobile.main.data.network.NetworkModule
 import ci.nsu.mobile.main.utils.UserPreferences
 import retrofit2.HttpException
@@ -13,12 +16,13 @@ sealed class ApiResult<out T> {
     object Loading : ApiResult<Nothing>()
 }
 
-class AuthRepository(private val context: Context) {
+class AuthRepository(
+    private val userPreferences: UserPreferences
+) {
 
-    private val tokenManager = UserPreferences(context)
     private val apiService = NetworkModule.provideApiService(
         NetworkModule.provideRetrofit(
-            NetworkModule.provideOkHttpClient(tokenManager)
+            NetworkModule.provideOkHttpClient(userPreferences)
         )
     )
 
@@ -46,7 +50,9 @@ class AuthRepository(private val context: Context) {
 
             if (response.isSuccessful && response.body() != null) {
                 val authResponse = response.body()!!
-                tokenManager.saveToken(authResponse.token)
+                userPreferences.saveToken(authResponse.token)
+                // Временно сохраняем userId как заглушку (потом заменим на реальный из ответа)
+                userPreferences.saveUserId(1L)
                 ApiResult.Success(authResponse)
             } else {
                 ApiResult.Error("Неверный логин или пароль")
@@ -97,11 +103,11 @@ class AuthRepository(private val context: Context) {
     }
 
     suspend fun logout() {
-        tokenManager.clear()
+        userPreferences.clear()
     }
 
     suspend fun isAuthenticated(): Boolean {
-        val token = tokenManager.getToken()
+        val token = userPreferences.getToken()
         return !token.isNullOrEmpty()
     }
 }
