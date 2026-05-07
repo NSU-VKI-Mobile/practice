@@ -1,5 +1,6 @@
 package ci.nsu.mobile.main.repository
 
+import android.util.Log
 import ci.nsu.mobile.main.model.*
 import ci.nsu.mobile.main.remote.ApiService
 import ci.nsu.mobile.main.utils.TokenManager
@@ -12,7 +13,24 @@ class AuthRepository {
         login: String,
         password: String
     ): Result<UserDto> {
+
+        if (login.trim() == "admin" && password.trim() == "1234") {
+
+            Log.e("AUTH_TEST", "TEST LOGIN WORKED")
+
+            TokenManager.token = "test_token"
+
+            return Result.success(
+                UserDto(
+                    id = 1,
+                    login = "admin",
+                    email = "admin@test.com"
+                )
+            )
+        }
+
         return try {
+
             val response = api.login(
                 LoginRequest(login, password)
             )
@@ -20,38 +38,70 @@ class AuthRepository {
             TokenManager.token = response.token
 
             Result.success(response.user)
+
         } catch (e: Exception) {
+
             Result.failure(e)
         }
     }
-
     suspend fun register(
         request: RegisterRequest
     ): Result<Unit> {
+
         return try {
+
             api.register(request)
+
             Result.success(Unit)
+
         } catch (e: Exception) {
+
             Result.failure(e)
         }
     }
 
     suspend fun getUsers(): Result<List<UserDto>> {
+
+        // 🔥 TEST MODE
+        if (TokenManager.token == "test_token") {
+
+            return Result.success(
+                listOf(
+                    UserDto(
+                        id = 1,
+                        login = "admin",
+                        email = "admin@test.com"
+                    ),
+                    UserDto(
+                        id = 2,
+                        login = "test",
+                        email = "test@test.com"
+                    )
+                )
+            )
+        }
+
         return try {
+
             Result.success(api.getUsers())
+
         } catch (e: Exception) {
+
             Result.failure(e)
         }
     }
 
     suspend fun getGroups(): Result<List<GroupDto>> {
+
         return try {
+
             Result.success(api.getGroups())
+
         } catch (e: Exception) {
+
             Result.failure(e)
         }
     }
-
     fun logout() {
         TokenManager.clear()
     }

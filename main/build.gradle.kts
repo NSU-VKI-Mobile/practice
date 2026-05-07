@@ -1,8 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-  // id("plugin.serialization") version "2.0.21"
-    alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
 }
 
 android {
@@ -38,12 +38,6 @@ android {
     buildFeatures {
         compose = true
     }
-
-    kotlin {
-        sourceSets.all {
-            languageSettings.optIn("kotlin.serialization.ExperimentalSerializationApi")
-        }
-    }
 }
 
 dependencies {
@@ -55,6 +49,7 @@ dependencies {
     implementation("androidx.compose.material:material:1.10.6")
     implementation("androidx.compose.ui:ui-tooling:1.11.0")
     implementation("androidx.compose.ui:ui-test-manifest:1.11.0")
+    implementation("androidx.navigation:navigation-compose:2.9.8")
     implementation("io.ktor:ktor-client-core:2.3.12")
     implementation("io.ktor:ktor-client-okhttp:2.3.12")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.12")

@@ -89,4 +89,8 @@ class AuthViewModel(
             }
         }
     }
+
+    fun clearError() {
+        error = null
+    }
 }
