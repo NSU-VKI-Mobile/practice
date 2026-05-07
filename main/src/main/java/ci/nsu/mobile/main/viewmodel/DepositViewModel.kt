@@ -4,13 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.database.DepositCalculation
 import ci.nsu.mobile.main.data.repositories.DepositRepository
+import ci.nsu.mobile.main.utils.UserPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class DepositViewModel(
-    private val repository: DepositRepository
+    private val repository: DepositRepository,
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
 
     private val _initialAmount = MutableStateFlow("")
@@ -24,20 +26,17 @@ class DepositViewModel(
         _periodMonths.value = months
     }
 
-
     private val _interestRate = MutableStateFlow<Double?>(null)
     val interestRate: StateFlow<Double?> = _interestRate.asStateFlow()
 
     private val _monthlyTopUp = MutableStateFlow<String>("")
     val monthlyTopUp: StateFlow<String> = _monthlyTopUp.asStateFlow()
 
-
     private val _finalAmount = MutableStateFlow(0.0)
     val finalAmount: StateFlow<Double> = _finalAmount.asStateFlow()
 
     private val _interestEarned = MutableStateFlow(0.0)
     val interestEarned: StateFlow<Double> = _interestEarned.asStateFlow()
-
 
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
@@ -65,14 +64,12 @@ class DepositViewModel(
             val interest = finalAmount * monthlyRate
             finalAmount += interest
             totalInterest += interest
-
             finalAmount += topUp
         }
 
         _finalAmount.value = finalAmount
         _interestEarned.value = totalInterest
     }
-
 
     fun saveCalculation() {
         viewModelScope.launch {
@@ -84,8 +81,10 @@ class DepositViewModel(
                 val months = _periodMonths.value.toIntOrNull() ?: 0
                 val rate = _interestRate.value ?: 0.0
                 val topUp = _monthlyTopUp.value.toDoubleOrNull()
+                val userId = userPreferences.getUserId() ?: 0L
 
                 val calculation = DepositCalculation(
+                    userId = userId,
                     initialAmount = initial,
                     periodMonths = months,
                     interestRate = rate,
