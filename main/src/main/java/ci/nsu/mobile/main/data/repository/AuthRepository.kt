@@ -1,10 +1,10 @@
 package ci.nsu.mobile.main.data.repository
 
 import ci.nsu.mobile.main.api.ApiClient
-import ci.nsu.mobile.main.data.dto.AuthTokenRespone
+import ci.nsu.mobile.main.api.requestData.AuthTokenRespone
 import ci.nsu.mobile.main.data.dto.GroupDto
-import ci.nsu.mobile.main.data.dto.LoginRequest
-import ci.nsu.mobile.main.data.dto.RegisterRequest
+import ci.nsu.mobile.main.api.requestData.LoginRequest
+import ci.nsu.mobile.main.api.requestData.RegisterRequest
 import ci.nsu.mobile.main.data.dto.UserDto
 
 class AuthRepository (){

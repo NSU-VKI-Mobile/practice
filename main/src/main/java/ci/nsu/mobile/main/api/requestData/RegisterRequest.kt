@@ -1,5 +1,6 @@
-package ci.nsu.mobile.main.data.dto
+package ci.nsu.mobile.main.api.requestData
 
+import ci.nsu.mobile.main.data.dto.PersonDto
 import kotlinx.serialization.Serializable
 
 @Serializable

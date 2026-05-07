@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.api.TokenManager
 import ci.nsu.mobile.main.data.dto.GroupDto
 import ci.nsu.mobile.main.data.dto.PersonDto
-import ci.nsu.mobile.main.data.dto.RegisterRequest
+import ci.nsu.mobile.main.api.requestData.RegisterRequest
 import ci.nsu.mobile.main.data.dto.UserDto
 import ci.nsu.mobile.main.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
