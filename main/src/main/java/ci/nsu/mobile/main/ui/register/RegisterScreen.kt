@@ -100,16 +100,16 @@ fun RegisterScreen(
                     onValueChange = { newValue: String ->  // <-- Явно указываем тип String
                         dateOfBirth = newValue
                         // Простая валидация формата DD.MM.YYYY
-                        val dateRegex = Regex("^\\d{2}\\.\\d{2}\\.\\d{4}$")
+                        val dateRegex = Regex("^\\d{4}-\\d{2}-\\d{2}$") // ГГГГ-ММ-ДД
                         dateError = if (newValue.isNotEmpty() && !dateRegex.matches(newValue)) {
-                            "Формат: ДД.ММ.ГГГГ"
+                            "Формат: ГГГГ-ММ-ДД"
                         } else {
                             null
                         }
                     },
-                    label = { Text("Дата рождения (ДД.ММ.ГГГГ) *") },
+                    label = { Text("Дата рождения (ГГГГ-ММ-ДД) *") },
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("31.12.2000") },
+                    placeholder = { Text("2000-12-31") },
                     isError = dateError != null,
                     supportingText = dateError?.let { { Text(it) } },
                     singleLine = true

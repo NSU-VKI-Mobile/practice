@@ -113,31 +113,20 @@ private fun UserCard(user: UserDto) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            val person = user.person
-            val fullName = if (person != null) {
-                "${person.lastName} ${person.firstName}${person.middleName?.let { " $it" } ?: ""}"
-            } else {
-                user.login
-            }
-
             Text(
-                text = fullName,
+                text = user.login,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(text = "📧 ${user.email ?: "Не указан"}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "📧 ${user.email}", style = MaterialTheme.typography.bodyMedium)
             user.phoneNumber?.let {
                 Text(text = "📱 $it", style = MaterialTheme.typography.bodyMedium)
             }
-            Text(text = "👤 Логин: ${user.login}", style = MaterialTheme.typography.bodySmall)
-
-            person?.let {
-                Text(text = " Группа: ${it.groupId}", style = MaterialTheme.typography.bodySmall)
-                Text(text = "🎂 ${it.birthDate}", style = MaterialTheme.typography.bodySmall)
-            }
+            Text(text = "👤 ID: ${user.userId}", style = MaterialTheme.typography.bodySmall)
+            Text(text = "🏫 Person ID: ${user.personId}", style = MaterialTheme.typography.bodySmall)
         }
     }
 }
