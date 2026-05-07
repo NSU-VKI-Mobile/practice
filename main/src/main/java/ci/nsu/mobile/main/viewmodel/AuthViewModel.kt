@@ -2,9 +2,11 @@ package ci.nsu.mobile.main.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.models.*
-import ci.nsu.mobile.main.data.repository.ApiResult
-import ci.nsu.mobile.main.data.repository.AuthRepository
+import ci.nsu.mobile.main.data.models.AuthResponse
+import ci.nsu.mobile.main.data.models.GroupDto
+import ci.nsu.mobile.main.data.models.RegisterRequest
+import ci.nsu.mobile.main.data.repositories.ApiResult
+import ci.nsu.mobile.main.data.repositories.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,23 +24,17 @@ class AuthViewModel(
     private val _registerState = MutableStateFlow<ApiResult<Unit>?>(null)
     val registerState: StateFlow<ApiResult<Unit>?> = _registerState.asStateFlow()
 
-    // Список групп
+    // Список групп (для экрана регистрации)
     private val _groups = MutableStateFlow<List<GroupDto>>(emptyList())
     val groups: StateFlow<List<GroupDto>> = _groups.asStateFlow()
     private val _groupsLoading = MutableStateFlow(false)
     val groupsLoading: StateFlow<Boolean> = _groupsLoading.asStateFlow()
 
-    // Список пользователей
-    private val _users = MutableStateFlow<List<UserDto>>(emptyList())
-    val users: StateFlow<List<UserDto>> = _users.asStateFlow()
-    private val _usersLoading = MutableStateFlow(false)
-    val usersLoading: StateFlow<Boolean> = _usersLoading.asStateFlow()
-
     // Общее состояние загрузки
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-
+    // Общая ошибка
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
@@ -47,6 +43,9 @@ class AuthViewModel(
             _isLoading.value = true
             val result = repository.login(login, password)
             _loginState.value = result
+            if (result is ApiResult.Error) {
+                _error.value = result.message
+            }
             _isLoading.value = false
         }
     }
@@ -56,6 +55,9 @@ class AuthViewModel(
             _isLoading.value = true
             val result = repository.register(request)
             _registerState.value = result
+            if (result is ApiResult.Error) {
+                _error.value = result.message
+            }
             _isLoading.value = false
         }
     }
@@ -66,22 +68,10 @@ class AuthViewModel(
             val result = repository.getGroups()
             if (result is ApiResult.Success) {
                 _groups.value = result.data
+            } else if (result is ApiResult.Error) {
+                _error.value = result.message
             }
             _groupsLoading.value = false
-        }
-    }
-
-    fun loadUsers() {
-        viewModelScope.launch {
-            _usersLoading.value = true
-            _error.value = null
-            val result = repository.getUsers()
-            when (result) {
-                is ApiResult.Success -> _users.value = result.data
-                is ApiResult.Error -> _error.value = result.message
-                else -> {}
-            }
-            _usersLoading.value = false
         }
     }
 
@@ -94,5 +84,6 @@ class AuthViewModel(
     fun clearStates() {
         _loginState.value = null
         _registerState.value = null
+        _error.value = null
     }
 }
