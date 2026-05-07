@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.main.ui.screens.mycalculations
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,58 +24,49 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.MaterialTheme
 
 @Composable
-fun HistoryScreen(
+fun MyCalculationsScreen(
     calculations: List<DepositCalculation>,
     isLoading: Boolean,
     error: String?,
     onItemClick: (Long) -> Unit,
-    onLoad: () -> Unit,
-    onBackClick: () -> Unit
+    onRefresh: () -> Unit
 ) {
     LaunchedEffect(Unit) {
-        onLoad()
+        onRefresh()
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Button(
-            onClick = onBackClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text("← Назад")
-        }
-
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            when {
-                isLoading -> {
-                    CircularProgressIndicator()
+        when {
+            isLoading -> CircularProgressIndicator()
+            error != null -> {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(error, color = MaterialTheme.colorScheme.error)
+                    Button(onClick = onRefresh) {
+                        Text("Повторить")
+                    }
                 }
-                error != null -> {
-                    Text(text = error, fontSize = 16.sp)
-                }
-                calculations.isEmpty() -> {
-                    Text(text = "Нет сохранённых расчётов", fontSize = 18.sp)
-                }
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp)
-                    ) {
-                        items(calculations) { calculation ->
-                            HistoryItem(
-                                calculation = calculation,
-                                onClick = { onItemClick(calculation.id) }
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
+            }
+            calculations.isEmpty() -> Text("Нет сохранённых расчётов")
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                    items(calculations) { calculation ->
+                        HistoryItem(
+                            calculation = calculation,
+                            onClick = { onItemClick(calculation.id) }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }

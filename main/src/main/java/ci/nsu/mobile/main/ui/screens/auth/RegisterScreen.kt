@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.main.ui.screens.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,7 +9,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ci.nsu.mobile.main.data.models.*
-import ci.nsu.mobile.main.data.repository.ApiResult
+import ci.nsu.mobile.main.data.repositories.ApiResult
 import ci.nsu.mobile.main.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
