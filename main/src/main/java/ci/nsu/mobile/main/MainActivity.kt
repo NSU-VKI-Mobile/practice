@@ -57,7 +57,7 @@ fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = vi
     val token by viewModel.token.collectAsState()
     NavHost(
         modifier = modifier
-            .padding(start = 100.dp),
+            .padding(start = 20.dp),
         navController = navController,
         startDestination = Screen.LogIn.route
     ) {
