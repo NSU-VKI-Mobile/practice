@@ -64,8 +64,7 @@ fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = vi
         composable(Screen.LogIn.route) {
             LogInScreen(
                 onRegClick = {navController.navigate(Screen.Registry.route) },
-                onLogInClick = {
-                    viewModel.logIn() },
+                onLogInClick = { viewModel.logIn() },
                 onExitClick = {(context as? Activity)?.finish()},
                 viewModel = viewModel
             )
@@ -91,7 +90,6 @@ fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = vi
             )
         }
     }
-
 
     viewModel.errorMessage?.let{e ->
         ErrorScreen(
