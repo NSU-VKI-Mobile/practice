@@ -13,19 +13,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ci.nsu.mobile.main.data.database.AppDatabase
-import ci.nsu.mobile.main.data.repositories.AuthRepository
-import ci.nsu.mobile.main.data.repositories.DepositRepository
+import ci.nsu.mobile.main.di.ServiceLocator
 import ci.nsu.mobile.main.ui.screens.MainScreen
 import ci.nsu.mobile.main.ui.screens.SplashScreen
 import ci.nsu.mobile.main.ui.screens.auth.LoginScreen
 import ci.nsu.mobile.main.ui.screens.auth.RegisterScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
-import ci.nsu.mobile.main.utils.UserPreferences
-import ci.nsu.mobile.main.viewmodel.AuthViewModel
-import ci.nsu.mobile.main.viewmodel.DepositViewModel
-import ci.nsu.mobile.main.viewmodel.MyCalculationsViewModel
-import ci.nsu.mobile.main.viewmodel.UsersViewModel
+import ci.nsu.mobile.main.viewmodel.*
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -50,13 +44,14 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val context = androidx.compose.ui.platform.LocalContext.current
 
-    // Dependencies
-    val userPreferences = remember { UserPreferences(context.applicationContext) }
-    val database = remember { AppDatabase.getDatabase(context.applicationContext) }
-    val depositRepository = remember { DepositRepository(database.depositDao()) }
-    val authRepository = remember { AuthRepository(userPreferences) }
+    // внедрение зависимостей через ServiceLocator
+    val serviceLocator = remember { ServiceLocator(context.applicationContext) }
 
-    // ViewModels
+    val userPreferences = serviceLocator.getUserPreferences()
+    val authRepository = serviceLocator.authRepository
+    val depositRepository = serviceLocator.depositRepository
+
+    // ViewModels (зависимости передаются через конструктор)
     val authViewModel = AuthViewModel(authRepository)
     val depositViewModel = DepositViewModel(depositRepository, userPreferences)
     val myCalculationsViewModel = MyCalculationsViewModel(depositRepository, userPreferences)
@@ -108,7 +103,6 @@ fun AppNavigation() {
         composable("main") {
             MainScreen(
                 onLogout = {
-                    // Очищаем данные и возвращаемся на экран входа
                     val activity = context as? MainActivity
                     activity?.lifecycleScope?.launch {
                         userPreferences.clear()
