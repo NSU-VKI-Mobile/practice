@@ -25,8 +25,8 @@ fun ResultScreen(navController: NavController, vm: DepositViewModel) {
                 Text("Старт: ${vm.initialAmount.value}")
                 Text("Срок: ${vm.months.value}")
                 Text("Ставка: ${vm.rate.value}%")
-                Text("Итог: $total")
-                Text("Проценты: $interest")
+                Text("Итог: ${String.format("%.2f", total)}")
+                Text("Проценты: ${String.format("%.2f", interest)}")
             }
         }
 
