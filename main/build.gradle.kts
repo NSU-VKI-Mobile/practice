@@ -72,4 +72,6 @@ dependencies {
     testImplementation("androidx.room:room-testing:$room_version")
     implementation("androidx.room:room-paging:$room_version")
     implementation("androidx.navigation:navigation-compose:$room_version")
+
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }
