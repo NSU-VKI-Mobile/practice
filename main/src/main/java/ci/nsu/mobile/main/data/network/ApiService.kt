@@ -1,6 +1,6 @@
-package ci.nsu.mobile.auth.data.network
+package ci.nsu.mobile.main.data.network
 
-import ci.nsu.mobile.auth.data.models.*
+import ci.nsu.mobile.main.data.models.*
 import retrofit2.http.*
 
 interface ApiService {

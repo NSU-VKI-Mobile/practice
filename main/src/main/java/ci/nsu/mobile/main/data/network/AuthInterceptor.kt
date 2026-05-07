@@ -1,12 +1,12 @@
-package ci.nsu.mobile.auth.data.network
+package ci.nsu.mobile.main.data.network
 
-import ci.nsu.mobile.auth.utils.TokenManager
+import ci.nsu.mobile.main.utils.UserPreferences
 import okhttp3.Interceptor
 import okhttp3.Response
 import kotlinx.coroutines.runBlocking
 
 class AuthInterceptor(
-    private val tokenManager: TokenManager
+    private val tokenManager: UserPreferences
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {

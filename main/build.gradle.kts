@@ -74,4 +74,16 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$room_version")
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+    // Gson (для @SerializedName)
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // Retrofit + Gson converter
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // OkHttp + Logging
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 }

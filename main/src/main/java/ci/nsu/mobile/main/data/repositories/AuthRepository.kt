@@ -1,9 +1,9 @@
-package ci.nsu.mobile.auth.data.repository
+package ci.nsu.mobile.main.data.repository
 
 import android.content.Context
-import ci.nsu.mobile.auth.data.models.*
-import ci.nsu.mobile.auth.data.network.NetworkModule
-import ci.nsu.mobile.auth.utils.TokenManager
+import ci.nsu.mobile.main.data.models.*
+import ci.nsu.mobile.main.data.network.NetworkModule
+import ci.nsu.mobile.main.utils.UserPreferences
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -15,7 +15,7 @@ sealed class ApiResult<out T> {
 
 class AuthRepository(private val context: Context) {
 
-    private val tokenManager = TokenManager(context)
+    private val tokenManager = UserPreferences(context)
     private val apiService = NetworkModule.provideApiService(
         NetworkModule.provideRetrofit(
             NetworkModule.provideOkHttpClient(tokenManager)
@@ -97,7 +97,7 @@ class AuthRepository(private val context: Context) {
     }
 
     suspend fun logout() {
-        tokenManager.clearToken()
+        tokenManager.clear()
     }
 
     suspend fun isAuthenticated(): Boolean {
