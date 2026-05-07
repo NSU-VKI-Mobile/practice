@@ -1,4 +1,9 @@
 package ci.nsu.mobile.main.units.data.model
 
-class LoginRequest {
-}
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class LoginRequest(
+    val login: String,
+    val password: String
+)
