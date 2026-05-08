@@ -74,7 +74,7 @@ fun Greeting(modifier: Modifier = Modifier, viewModel: LoginAndRegViewModel = vi
             RegistryScreen(
                 onRegClick = {
                     viewModel.registry()
-                    if(viewModel.errorMessage == null) navController.navigate(Screen.LogIn.route) },
+                    navController.navigate(Screen.LogIn.route) },
                 onBackClick = {navController.popBackStack()},
                 viewModel = viewModel
             )
