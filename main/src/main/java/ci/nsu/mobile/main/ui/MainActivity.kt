@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val database = AppDatabase.getInstance(applicationContext)
+        val database = AppDatabase.getDataBase(applicationContext)
         val repository = DepositRepository(database.depositDao())
         val depositViewModel = DepositViewModel(repository)
 
