@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.room.util.TableInfo
 import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -17,67 +18,59 @@ fun HistoryScreen(vm: DepositViewModel) {
 
     val list by vm.history.collectAsState(initial = emptyList())
 
-    // Формат даты
-    val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
-
     if (list.isEmpty()) {
-
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Text("История пуста")
         }
-
     } else {
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 80.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(16.dp)
-        ) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(WindowInsets.systemBars.asPaddingValues())) {
+            Button(
+                onClick = { vm.deleteAll() }
+            ) {
+                Text("Удалить все")
+            }
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
 
-            items(list) { item ->
+                items(list) { item ->
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 6.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-
-                    Column(
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .padding(vertical = 6.dp)
                     ) {
 
-                        Text(
-                            text = formatter.format(Date(item.date)),
-                            style = MaterialTheme.typography.titleSmall
-                        )
+                        Column(modifier = Modifier.padding(16.dp)) {
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                "Старт: ${String.format("%.2f", item.initialAmount)}"
+                            )
 
-                        Text(
-                            text = "Стартовый взнос: ${
-                                String.format("%.2f", item.initialAmount)
-                            }",
-                            textAlign = TextAlign.Center
-                        )
+                            Text(
+                                "Итог: ${String.format("%.2f", item.finalAmount)}"
+                            )
 
-                        Text(
-                            text = "Итоговая сумма: ${
-                                String.format("%.2f", item.finalAmount)
-                            }",
-                            textAlign = TextAlign.Center
-                        )
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Button(
+                                onClick = { vm.delete(item) }
+                            ) {
+                                Text("Удалить")
+                            }
+                        }
                     }
                 }
             }
         }
+
+
     }
 }

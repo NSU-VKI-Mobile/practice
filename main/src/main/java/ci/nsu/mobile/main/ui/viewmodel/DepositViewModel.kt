@@ -45,7 +45,16 @@ class DepositViewModel(
             else -> 5.0
         }
     }
-
+    fun delete(entity: DepositEntity) {
+        viewModelScope.launch {
+            repository.delete(entity)
+        }
+    }
+    fun deleteAll(){
+        viewModelScope.launch {
+            repository.deleteAll()
+        }
+    }
     fun calculateResult(): Pair<Double, Double> {
         val initial = _initialAmount.value.toDoubleOrNull() ?: 0.0
         val months = _months.value.toIntOrNull() ?: 0

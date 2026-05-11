@@ -6,9 +6,17 @@ import kotlinx.coroutines.flow.Flow
 
 class DepositRepository(private val dao: DepositDao) {
 
-    fun getAll(): Flow<List<DepositEntity>> = dao.getAll()
+    fun getAll() = dao.getAll()
 
     suspend fun insert(entity: DepositEntity) {
         dao.insert(entity)
+    }
+
+
+    suspend fun delete(entity: DepositEntity) {
+        dao.delete(entity)
+    }
+    suspend fun deleteAll() {
+        dao.deleteAll()
     }
 }

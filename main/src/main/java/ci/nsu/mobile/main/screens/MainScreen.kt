@@ -35,10 +35,10 @@ fun MainScreen(navController: NavController) {
             Text("История расчётов")
         }
 
-//        Spacer(modifier = Modifier.height(10.dp))
-//
-//        Button(onClick = { activity.finish() }) {
-//            Text("Закрыть приложение")
-//        }
+        Spacer(modifier = Modifier.height(10.dp))
+
+      Button(onClick = { activity.finish() }) {
+         Text("Закрыть приложение")
+        }
     }
 }
