@@ -6,7 +6,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.dbo.AppDatabase
 import ci.nsu.mobile.main.data.entity.Deposit
-import ci.nsu.mobile.main.data.DepositRepository
+import ci.nsu.mobile.main.data.repository.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
