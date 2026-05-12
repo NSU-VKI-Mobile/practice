@@ -9,6 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -16,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.main.sl.ServiceLocator
 import ci.nsu.mobile.main.ui.screens.CalcScreen
 import ci.nsu.mobile.main.ui.screens.HistoryCalcScreen
 import ci.nsu.mobile.main.ui.screens.Input1Screen
@@ -23,6 +30,7 @@ import ci.nsu.mobile.main.ui.screens.Input2Screen
 import ci.nsu.mobile.main.ui.screens.MainScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 import ci.nsu.mobile.main.vm.DepositsViewModel
+import ci.nsu.mobile.main.vm.LoginAndRegViewModel
 
 sealed class Screen(val route: String) {
     object Main : Screen("main")
@@ -30,6 +38,9 @@ sealed class Screen(val route: String) {
     object Input2 : Screen("input2")
     object Calc : Screen("calc")
     object HistoryCalc : Screen("HistoryCalc")
+    object LogIn : Screen("login")
+    object Registry : Screen("registry")
+    object Main2 : Screen("main")
 }
 
 class MainActivity : ComponentActivity() {
@@ -40,8 +51,7 @@ class MainActivity : ComponentActivity() {
             PracticeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                        Modifier.padding(innerPadding)
                     )
                 }
             }
@@ -50,10 +60,23 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier,viewModel: DepositsViewModel = viewModel()) {
-    val navController = rememberNavController()
+fun Greeting(
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
+    val serviceLocator = remember { ServiceLocator.getInstance(context) }
+    var selectedTab by remember { mutableIntStateOf(0) }
 
+    val authViewModel: LoginAndRegViewModel = viewModel(
+        factory = serviceLocator.viewModelFactory
+    )
+
+    val depositViewModel: DepositsViewModel = viewModel(
+        factory = serviceLocator.viewModelFactory
+    )
+
+    val token by authViewModel.token.collectAsState()
+    val navController = rememberNavController()
     NavHost(
         modifier = modifier,
         navController = navController,
@@ -71,7 +94,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier,viewModel: DepositsView
             Input1Screen(
                 onBackClick = { navController.popBackStack(Screen.Main.route, inclusive = false) },
                 onNextClick = {navController.navigate(Screen.Input2.route) },
-                viewModel = viewModel
+                viewModel = depositViewModel
             )
         }
 
@@ -79,14 +102,14 @@ fun Greeting(name: String, modifier: Modifier = Modifier,viewModel: DepositsView
             Input2Screen(
                 onBackClick = { navController.popBackStack() },
                 onCalcClick = { navController.navigate(Screen.Calc.route) },
-                viewModel = viewModel
+                viewModel = depositViewModel
             )
         }
 
         composable(Screen.Calc.route) {
             CalcScreen(
                 onMainClick = { navController.popBackStack(Screen.Main.route, inclusive = false) },
-                viewModel = viewModel
+                viewModel = depositViewModel
             )
         }
 
@@ -102,6 +125,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier,viewModel: DepositsView
 @Composable
 fun GreetingPreview() {
     PracticeTheme {
-        Greeting("Android")
+        Greeting()
     }
 }

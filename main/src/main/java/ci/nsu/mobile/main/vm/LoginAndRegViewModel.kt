@@ -141,7 +141,7 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
         }
     }
 
-    fun logIn(){
+    fun logIn(onSuccess: () -> Unit){
         if (_uiState.value.isLoading) return
         val currentState = _uiState.value
 
@@ -158,6 +158,7 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
                             isLoading = false
                         )
                     }
+                    onSuccess()
                 }.onFailure { error ->
                     _uiState.update { it.copy(isLoading = false) }
                     errorMessage = error.message
