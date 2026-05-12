@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.vm.DepositsViewModel
 import ci.nsu.mobile.main.vm.LoginAndRegViewModel
 
@@ -51,12 +52,13 @@ sealed class UseIcons(val icon: ImageVector){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    navController: NavHostController,
     depositsViewModel: DepositsViewModel,
     authViewModel: LoginAndRegViewModel,
     onBackClick : () -> Unit
 ){
     var selectedItem by remember { mutableIntStateOf(0) }
+
+    val navController = rememberNavController()
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         TopAppBar(
@@ -121,7 +123,7 @@ fun MainScreen(
             }
             composable(Screen.Input1.route) {
                 Input1Screen(
-                    onNextClick = { navController.navigate(Screen.Calc.route) },
+                    onNextClick = { navController.navigate(Screen.Input2.route) },
                     viewModel = depositsViewModel
                 )
             }

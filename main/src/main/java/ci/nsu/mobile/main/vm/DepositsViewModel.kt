@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import java.text.SimpleDateFormat
@@ -43,14 +44,18 @@ class DepositsViewModel(application: Application, private val depositRepository:
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = depositRepository.depositList.value ?: emptyList()
         )
-    var curDepositList = allDepositList.value
+
+    val userDeposits: StateFlow<List<Deposit>> = allDepositList.map { deposits ->
+        deposits.filter { it.userId == TokenManager.userId }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
     val allInterestRates = mapOf(1 to 0.15, 6 to 0.10, 12 to 0.05)
     private val _uiState = MutableStateFlow(DepositsUiState())
     val uiState: StateFlow<DepositsUiState> = _uiState.asStateFlow()
 
-    fun LoadUserDeposit(){
-        curDepositList = allDepositList.value.filter { it.userId == TokenManager.userId }
-    }
     fun setInitialAmount(newValue: String){
         _uiState.update { currentState ->
             currentState.copy(
@@ -127,7 +132,7 @@ class DepositsViewModel(application: Application, private val depositRepository:
                         finalAmount = currentState.finalAmount,
                         interestEarned = currentState.interestEarned,
                         calculationDate = System.currentTimeMillis(),
-                        userId = TokenManager.userId
+                        userId = TokenManager.userId?: -1
                     )
                 )
                 currentState.copy(

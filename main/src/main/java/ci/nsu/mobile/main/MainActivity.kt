@@ -110,10 +110,9 @@ fun Greeting(
 
         composable(Screen.Main.route) {
             MainScreen(
-                navController = navController,
                 depositsViewModel = depositViewModel,
                 authViewModel = authViewModel,
-                onBackClick = {navController.navigate(Screen.LogIn.route)}
+                onBackClick = {authViewModel.logOut(); navController.navigate(Screen.LogIn.route)}
             )
         }
     }

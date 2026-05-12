@@ -12,8 +12,6 @@ object TokenManager {
 
     fun init(context: Context) {
         prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        token = "123"
-        userId = 1
     }
 
     var token: String?

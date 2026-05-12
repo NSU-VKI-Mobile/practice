@@ -29,8 +29,7 @@ import ci.nsu.mobile.main.vm.DepositsViewModel
 fun HistoryCalcScreen(
     viewModel: DepositsViewModel = viewModel()
 ) {
-    viewModel.LoadUserDeposit()
-    val depositList = viewModel.curDepositList
+    val depositList by viewModel.userDeposits.collectAsStateWithLifecycle()
     var selectedDeposit by remember { mutableStateOf<Deposit?>(null) }
     Box() {
         LazyColumn(
