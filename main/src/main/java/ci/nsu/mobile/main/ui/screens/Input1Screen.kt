@@ -12,7 +12,6 @@ import ci.nsu.mobile.main.vm.DepositsViewModel
 
 @Composable
 fun Input1Screen(
-    onBackClick: () -> Unit,
     onNextClick: () -> Unit,
     viewModel: DepositsViewModel = viewModel()
 ) {
@@ -32,9 +31,6 @@ fun Input1Screen(
         )
         Button(onClick = onNextClick) {
             Text("Далее")
-        }
-        Button(onClick = onBackClick) {
-            Text("В начало")
         }
     }
 }

@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.dbo.AppDatabase
+import ci.nsu.mobile.main.api.TokenManager
 import ci.nsu.mobile.main.data.entity.Deposit
 import ci.nsu.mobile.main.data.repository.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,10 +43,14 @@ class DepositsViewModel(application: Application, private val depositRepository:
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = depositRepository.depositList.value ?: emptyList()
         )
+    var curDepositList = allDepositList.value
     val allInterestRates = mapOf(1 to 0.15, 6 to 0.10, 12 to 0.05)
     private val _uiState = MutableStateFlow(DepositsUiState())
     val uiState: StateFlow<DepositsUiState> = _uiState.asStateFlow()
 
+    fun LoadUserDeposit(){
+        curDepositList = allDepositList.value.filter { it.userId == TokenManager.userId }
+    }
     fun setInitialAmount(newValue: String){
         _uiState.update { currentState ->
             currentState.copy(
@@ -122,7 +126,8 @@ class DepositsViewModel(application: Application, private val depositRepository:
                         monthlyTopUp = currentState.monthlyTopUp.toDoubleOrNull(),
                         finalAmount = currentState.finalAmount,
                         interestEarned = currentState.interestEarned,
-                        calculationDate = System.currentTimeMillis()
+                        calculationDate = System.currentTimeMillis(),
+                        userId = TokenManager.userId
                     )
                 )
                 currentState.copy(

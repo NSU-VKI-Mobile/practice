@@ -71,15 +71,24 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
         }
     }
 
-    private fun updateToken(newToken: String?) {
+    private suspend fun updateToken(newToken: String?, newLogin: String? = null) {
         _token.value = newToken
         if (newToken != null) {
-            TokenManager.token = newToken
+            authRepository.getUsers()
+                .onSuccess { users ->
+                    TokenManager.userId = users.find { it.login == newLogin }?.id as Long?
+                    if(TokenManager.userId?.toInt() != -1)
+                        TokenManager.token = newToken
+                    else
+                        TokenManager.token = null
+                }
+                .onFailure { error ->
+                    errorMessage = "${error.message}"
+                }
         } else {
             TokenManager.clear()
         }
     }
-
     fun loadUsers(){
         viewModelScope.launch {
             authRepository.getUsers()
@@ -150,7 +159,7 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
 
             authRepository.login(currentState.login, currentState.password)
                 .onSuccess { authToken ->
-                    updateToken(authToken.token)
+                    updateToken(authToken.token, currentState.login)
                     _uiState.update {
                         it.copy(
                             login = "",
@@ -167,8 +176,10 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
     }
 
     fun logOut(){
-        updateToken(null)
-        _uiState.update { LoginAndRegUiState() }
+        viewModelScope.launch {
+            updateToken(null)
+            _uiState.update { LoginAndRegUiState() }
+        }
     }
 
     fun setLogin(newValue: String){

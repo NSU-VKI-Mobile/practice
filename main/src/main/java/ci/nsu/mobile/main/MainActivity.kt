@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.main.api.TokenManager
 import ci.nsu.mobile.main.data.repository.DepositRepository
 import ci.nsu.mobile.main.sl.ServiceLocator
 import ci.nsu.mobile.main.ui.screens.CalcScreen
@@ -33,6 +34,7 @@ import ci.nsu.mobile.main.ui.screens.HistoryCalcScreen
 import ci.nsu.mobile.main.ui.screens.Input1Screen
 import ci.nsu.mobile.main.ui.screens.Input2Screen
 import ci.nsu.mobile.main.ui.screens.LogInScreen
+import ci.nsu.mobile.main.ui.screens.MainScreen
 import ci.nsu.mobile.main.ui.screens.RegistryScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 import ci.nsu.mobile.main.vm.DepositsViewModel
@@ -85,7 +87,7 @@ fun Greeting(
         modifier = modifier
             .padding(start = 20.dp),
         navController = navController,
-        startDestination = Screen.LogIn.route
+        startDestination = if(TokenManager.token == null) Screen.LogIn.route else Screen.Main.route
     ) {
         composable(Screen.LogIn.route) {
             LogInScreen(
@@ -108,11 +110,10 @@ fun Greeting(
 
         composable(Screen.Main.route) {
             MainScreen(
-                onLogOutClick = {
-                    authViewModel.logOut()
-                    navController.navigate(Screen.LogIn.route)
-                },
-                viewModel = authViewModel
+                navController = navController,
+                depositsViewModel = depositViewModel,
+                authViewModel = authViewModel,
+                onBackClick = {navController.navigate(Screen.LogIn.route)}
             )
         }
     }
