@@ -43,7 +43,7 @@ data class LoginAndRegUiState(
 }
 
 class LoginAndRegViewModel(application: Application, private val authRepository: AuthRepository) : AndroidViewModel(application){
-    val allGenders = listOf<String>("Муж","Жен")
+    val allGenders = listOf("Муж","Жен")
     private val _uiState = MutableStateFlow(LoginAndRegUiState())
     val uiState: StateFlow<LoginAndRegUiState> = _uiState.asStateFlow()
     private val _token = MutableStateFlow<String?>(null)
@@ -57,7 +57,7 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
     }
     private fun loadGroups(){
         viewModelScope.launch {
-            var isFinish = false;
+            var isFinish = false
             while (!isFinish) {
                 authRepository.getGroups()
                     .onSuccess {

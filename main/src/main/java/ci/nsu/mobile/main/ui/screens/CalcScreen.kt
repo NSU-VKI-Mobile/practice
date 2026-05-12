@@ -6,8 +6,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ci.nsu.mobile.main.R
 import ci.nsu.mobile.main.vm.DepositsViewModel
 
 @Composable
@@ -18,18 +20,18 @@ fun CalcScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     viewModel.calcFinalAmountAndEarned()
     Column() {
-        Text("Стартовый взнос: " + uiState.initialAmount)
-        Text("Срок вклада: " + uiState.periodMonths)
-        Text("Процентная ставка: " + uiState.interestRate)
-        Text("Ежемесячное пополнение: " + uiState.monthlyTopUp)
-        Text("Итоговая сумма: " + uiState.finalAmount)
-        Text("Начисленные проценты: " + uiState.interestEarned)
+        Text(stringResource(R.string.initialAmount) + ": " + uiState.initialAmount)
+        Text(stringResource(R.string.periodMonths) + ": " + uiState.periodMonths)
+        Text(stringResource(R.string.interestRate) + ": " + uiState.interestRate)
+        Text(stringResource(R.string.monthlyTopUp) + ": " + uiState.monthlyTopUp)
+        Text(stringResource(R.string.finalAmount) + ": " + uiState.finalAmount)
+        Text(stringResource(R.string.interestEarned) + ": " + uiState.interestEarned)
 
         Button(onClick = {viewModel.saveDeposit()}, enabled = uiState.isAllCorrect) {
-            Text("Сохранить")
+            Text(stringResource(R.string.save))
         }
         Button(onClick = onMainClick) {
-            Text("В начало")
+            Text(stringResource(R.string.text_back))
         }
     }
 }

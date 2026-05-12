@@ -19,9 +19,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ci.nsu.mobile.main.R
 import ci.nsu.mobile.main.data.entity.Deposit
 import ci.nsu.mobile.main.vm.DepositsViewModel
 
@@ -51,9 +53,9 @@ fun HistoryCalcScreen(
                             }
                             .padding(16.dp)
                     ) {
-                        Text("Дата: " + viewModel.formatTime(item.calculationDate))
-                        Text("Стартовый взнос: " + item.initialAmount.toString())
-                        Text("Итоговая сумма: " + item.finalAmount.toString())
+                        Text(stringResource(R.string.date) + ": " + viewModel.formatTime(item.calculationDate))
+                        Text(stringResource(R.string.initialAmount) + ": " + item.initialAmount.toString())
+                        Text(stringResource(R.string.finalAmount) + ": " + item.finalAmount.toString())
                     }
                 }
             }

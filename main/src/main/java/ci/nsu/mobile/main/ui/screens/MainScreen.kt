@@ -25,11 +25,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.main.R
 import ci.nsu.mobile.main.vm.DepositsViewModel
 import ci.nsu.mobile.main.vm.LoginAndRegViewModel
 
@@ -62,20 +64,24 @@ fun MainScreen(
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         TopAppBar(
-            title = { Text("Приложение: Расчёт вкладов") }, navigationIcon = {
+            title = { Text(stringResource(R.string.app_name)) },
+            navigationIcon = {
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = UseIcons.Back.icon,
-                        contentDescription = "Back"
+                        contentDescription = "Back",
+                        tint = Color.White
                     )
                 }
-            }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Blue, titleContentColor = Color.White)
         )
     }, bottomBar = {
         NavigationBar {
             NavigationBarItem(
-                icon = { Icon(imageVector = UseIcons.UserList.icon, contentDescription = "User List") },
-                label = { Text("User List") },
+                icon = { Icon(imageVector = UseIcons.UserList.icon, contentDescription = stringResource(R.string.user_list)) },
+                label = { Text(stringResource(R.string.user_list)) },
                 selected = selectedItem == 0,
 
                 onClick = {
@@ -86,8 +92,8 @@ fun MainScreen(
                     selectedItem = 0
                 })
             NavigationBarItem(
-                icon = { Icon(imageVector = UseIcons.HistoryCalc.icon, contentDescription = "History of deposit") },
-                label = { Text("History of deposit") },
+                icon = { Icon(imageVector = UseIcons.HistoryCalc.icon, contentDescription = stringResource(R.string.history_calc)) },
+                label = { Text(stringResource(R.string.history_calc)) },
                 selected = selectedItem == 1,
 
                 onClick = {
@@ -98,8 +104,8 @@ fun MainScreen(
                     selectedItem = 1
                 })
             NavigationBarItem(
-                icon = { Icon(imageVector = UseIcons.AddCalc.icon, contentDescription = "Add deposit") },
-                label = { Text("Add deposit") },
+                icon = { Icon(imageVector = UseIcons.AddCalc.icon, contentDescription = stringResource(R.string.add_deposit)) },
+                label = { Text(stringResource(R.string.add_deposit)) },
                 selected = selectedItem == 2,
                 onClick = {
                     navController.navigate(Screen.Input1.route) {

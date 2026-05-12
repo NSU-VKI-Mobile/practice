@@ -9,9 +9,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ci.nsu.mobile.main.R
 import ci.nsu.mobile.main.data.entity.Deposit
 import ci.nsu.mobile.main.vm.DepositsViewModel
 
@@ -29,14 +31,14 @@ fun SingleShowDepositDialogScreen(
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column() {
-                Text("Id: " + thisDeposit.id)
-                Text("Стартовый взнос: " + thisDeposit.initialAmount)
-                Text("Период(в месяцах): " + thisDeposit.periodMonths)
-                Text("Процентная ставка: " + thisDeposit.interestRate)
-                Text("Ежемесячный взнос: " + thisDeposit.monthlyTopUp)
-                Text("Итоговая сумма: " + thisDeposit.finalAmount)
-                Text("Начисленные проценты: " + thisDeposit.interestEarned)
-                Text("Дата: " + viewModel.formatTime(thisDeposit.calculationDate))
+                Text(stringResource(R.string.id) + ": " + thisDeposit.id)
+                Text(stringResource(R.string.initialAmount) + ": " + thisDeposit.initialAmount)
+                Text(stringResource(R.string.periodMonths) + ": " + thisDeposit.periodMonths)
+                Text(stringResource(R.string.interestRate) + ": " + thisDeposit.interestRate)
+                Text(stringResource(R.string.monthlyTopUp) + ": " + thisDeposit.monthlyTopUp)
+                Text(stringResource(R.string.finalAmount) + ": " + thisDeposit.finalAmount)
+                Text(stringResource(R.string.interestEarned) + ": " + thisDeposit.interestEarned)
+                Text(stringResource(R.string.date) + ": " + viewModel.formatTime(thisDeposit.calculationDate))
                 Button(onClick = onDismiss) {
                     Text("Назад")
                 }
