@@ -11,28 +11,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.api.TokenManager
-import ci.nsu.mobile.main.data.repository.DepositRepository
 import ci.nsu.mobile.main.sl.ServiceLocator
-import ci.nsu.mobile.main.ui.screens.CalcScreen
 import ci.nsu.mobile.main.ui.screens.ErrorScreen
-import ci.nsu.mobile.main.ui.screens.HistoryCalcScreen
-import ci.nsu.mobile.main.ui.screens.Input1Screen
-import ci.nsu.mobile.main.ui.screens.Input2Screen
 import ci.nsu.mobile.main.ui.screens.LogInScreen
 import ci.nsu.mobile.main.ui.screens.MainScreen
 import ci.nsu.mobile.main.ui.screens.RegistryScreen
@@ -44,10 +34,6 @@ sealed class Screen(val route: String) {
     object LogIn : Screen("login")
     object Registry : Screen("registry")
     object Main : Screen("main")
-    object Input1 : Screen("input1")
-    object Input2 : Screen("input2")
-    object Calc : Screen("calc")
-    object HistoryCalc : Screen("HistoryCalc")
 }
 
 class MainActivity : ComponentActivity() {
@@ -80,8 +66,6 @@ fun Greeting(
     val depositViewModel: DepositsViewModel = viewModel(
         factory = serviceLocator.viewModelFactory
     )
-
-    val token by authViewModel.token.collectAsState()
     val navController = rememberNavController()
     NavHost(
         modifier = modifier
