@@ -42,8 +42,7 @@ data class LoginAndRegUiState(
     val isAllCorrect: Boolean get() = isBirthDateValid && isGroupValid && isGenderValid
 }
 
-class LoginAndRegViewModel(application: Application) : AndroidViewModel(application){
-    val repository = AuthRepository()
+class LoginAndRegViewModel(application: Application, private val authRepository: AuthRepository) : AndroidViewModel(application){
     val allGenders = listOf<String>("Муж","Жен")
     private val _uiState = MutableStateFlow(LoginAndRegUiState())
     val uiState: StateFlow<LoginAndRegUiState> = _uiState.asStateFlow()
@@ -60,7 +59,7 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             var isFinish = false;
             while (!isFinish) {
-                repository.getGroups()
+                authRepository.getGroups()
                     .onSuccess {
                         allGroup = it
                         isFinish = true
@@ -83,7 +82,7 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
 
     fun loadUsers(){
         viewModelScope.launch {
-            repository.getUsers()
+            authRepository.getUsers()
                 .onSuccess {
                     allUsers = it
                 }
@@ -100,7 +99,7 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            repository.register(
+            authRepository.register(
                 RegisterRequest(
                     person = PersonDto(
                         firstName = currentState.firstName,
@@ -149,7 +148,7 @@ class LoginAndRegViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            repository.login(currentState.login, currentState.password)
+            authRepository.login(currentState.login, currentState.password)
                 .onSuccess { authToken ->
                     updateToken(authToken.token)
                     _uiState.update {

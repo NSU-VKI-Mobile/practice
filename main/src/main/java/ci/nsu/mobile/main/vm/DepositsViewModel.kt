@@ -35,17 +35,13 @@ data class DepositsUiState(
     val isAllCorrect: Boolean get() = isInitialAmountValid && isPeriodMonthsValid && isInterestRateValid && isMonthlyTopUpValid
 }
 
-class DepositsViewModel(application: Application) : AndroidViewModel(application){
+class DepositsViewModel(application: Application, private val depositRepository: DepositRepository) : AndroidViewModel(application){
     private val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
-    val depositDb = AppDatabase.getDatabase(application)
-    val depositDbo = depositDb.depositDao()
-    val repository: DepositRepository = DepositRepository(depositDbo)
-    //++
-    val allDepositList: StateFlow<List<Deposit>> = repository.depositList.asFlow()
+    val allDepositList: StateFlow<List<Deposit>> = depositRepository.depositList.asFlow()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = repository.depositList.value ?: emptyList()
+            initialValue = depositRepository.depositList.value ?: emptyList()
         )
     val allInterestRates = mapOf(1 to 0.15, 6 to 0.10, 12 to 0.05)
     private val _uiState = MutableStateFlow(DepositsUiState())
@@ -118,7 +114,7 @@ class DepositsViewModel(application: Application) : AndroidViewModel(application
     fun saveDeposit(){
         _uiState.update { currentState ->
             if(currentState.isAllCorrect) {
-                repository.addDeposit(
+                depositRepository.addDeposit(
                     Deposit(
                         initialAmount = currentState.initialAmount.toDouble(),
                         periodMonths = currentState.periodMonths.toInt(),
