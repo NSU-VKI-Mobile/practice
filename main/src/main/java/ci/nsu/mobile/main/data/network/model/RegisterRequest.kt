@@ -7,7 +7,7 @@ data class RegisterRequest(
     val login: String,
     val password: String,
     val email: String,
-    val phoneNumber: String?,
+    val phoneNumber: String? = null,
     val roleId: Int = 1,
     val authAllowed: Boolean = true,
     val person: PersonDto

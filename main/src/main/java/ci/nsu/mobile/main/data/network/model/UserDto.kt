@@ -7,10 +7,10 @@ data class UserDto(
     val userId: Int,
     val login: String,
     val email: String,
-    val phoneNumber: String?,
+    val phoneNumber: String? = null,
     val roleId: Int = 1,
-    val authAllowed: Boolean,
+    val authAllowed: Boolean = true,
     val personId: Int,
     val createdDate: String,
-    val lastLoginDate: String?,
+    val lastLoginDate: String? = null
 )
