@@ -3,18 +3,22 @@ package ci.nsu.mobile.main.data.network
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object TokenManager {
+@Singleton
+class TokenManager @Inject constructor(
+    private val context: Context
+) {
+    private val prefs: SharedPreferences by lazy {
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+    }
 
-    private lateinit var prefs: SharedPreferences
-
-    private const val PREF_NAME = "auth_prefs"
-    private const val TOKEN_KEY = "jwt_token"
-    private const val USER_LOGIN_KEY = "user_login"
-    private const val USER_ID_KEY = "user_id"
-
-    fun init(context: Context) {
-        prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+    companion object {
+        private const val PREF_NAME = "auth_prefs"
+        private const val TOKEN_KEY = "jwt_token"
+        private const val USER_LOGIN_KEY = "user_login"
+        private const val USER_ID_KEY = "user_id"
     }
 
     var token: String?
@@ -36,7 +40,7 @@ object TokenManager {
         }
 
     fun clear() {
-        prefs.run { edit().clear().apply() }
+        prefs.edit { clear() }
     }
 
     fun isLoggedIn(): Boolean {

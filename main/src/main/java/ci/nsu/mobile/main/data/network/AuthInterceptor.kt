@@ -2,14 +2,18 @@ package ci.nsu.mobile.main.data.network
 
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthInterceptor : Interceptor {
+@Singleton
+class AuthInterceptor @Inject constructor(
+    private val tokenManager: TokenManager
+) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-
         val requestBuilder = originalRequest.newBuilder()
 
-        val token = TokenManager.token
+        val token = tokenManager.token
         requestBuilder.addHeader("Content-Type", "application/json")
         token?.let {
             requestBuilder.addHeader("Authorization", "Bearer $it")

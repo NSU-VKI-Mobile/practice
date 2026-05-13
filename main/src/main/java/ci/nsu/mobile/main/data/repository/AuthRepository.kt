@@ -6,65 +6,104 @@ import ci.nsu.mobile.main.data.network.model.GroupDto
 import ci.nsu.mobile.main.data.network.model.LoginRequest
 import ci.nsu.mobile.main.data.network.model.RegisterRequest
 import ci.nsu.mobile.main.data.network.model.UserDto
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthRepository(
-    private val service: ApiService
+@Singleton
+class AuthRepository @Inject constructor(
+    private val service: ApiService,
+    private val tokenManager: TokenManager
 ) {
     suspend fun login(login: String, password: String): Result<UserDto> {
         return try {
+            // 1. Получаем токен
             val response = service.loginUser(LoginRequest(login = login, password = password))
-            if (response.isSuccessful && response.body() != null) {
-                val authResponse = response.body()!!
-                TokenManager.token = authResponse.token
-                TokenManager.userLogin = login
-                TokenManager.userId = authResponse.user.userId
-                Result.success(authResponse.user)
-            } else {
-                Result.failure(Exception("error login"))
+            if (!response.isSuccessful || response.body() == null) {
+                return Result.failure(Exception("Ошибка входа: ${response.code()} ${response.message()}"))
             }
+
+            val authResponse = response.body()!!
+            tokenManager.token = authResponse.token
+            tokenManager.userLogin = login
+
+            // 2. Получаем список пользователей
+            val usersResponse = service.getUsers()
+            if (!usersResponse.isSuccessful || usersResponse.body() == null) {
+                return Result.failure(Exception("Ошибка получения пользователей"))
+            }
+
+            // 3. Находим текущего пользователя по логину
+            val currentUser = usersResponse.body()!!.find { it.login == login }
+            if (currentUser != null) {
+                tokenManager.userId = currentUser.userId
+                Result.success(currentUser)
+            } else {
+                // Если пользователь не найден - очищаем токен
+                tokenManager.clear()
+                Result.failure(Exception("Пользователь не найден в системе"))
+            }
+
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception("Сетевая ошибка: ${e.message}", e))
         }
     }
+
     suspend fun register(registerRequest: RegisterRequest): Result<UserDto> {
         return try {
+            // 1. Регистрируем пользователя
             val response = service.registerUser(registerRequest)
-            if (response.isSuccessful && response.body() != null) {
-                val authResponse = response.body()!!
-                TokenManager.token = authResponse.token
-                TokenManager.userLogin = registerRequest.login
-                TokenManager.userId = authResponse.user.userId
-                Result.success(authResponse.user)
-            } else {
-                Result.failure(Exception("error register"))
+            if (!response.isSuccessful || response.body() == null) {
+                return Result.failure(Exception("Ошибка регистрации: ${response.code()} ${response.message()}"))
             }
+
+            val authResponse = response.body()!!
+            tokenManager.token = authResponse.token
+            tokenManager.userLogin = registerRequest.login
+
+            // 2. Получаем список пользователей
+            val usersResponse = service.getUsers()
+            if (!usersResponse.isSuccessful || usersResponse.body() == null) {
+                return Result.failure(Exception("Ошибка получения пользователей"))
+            }
+
+            // 3. Находим созданного пользователя
+            val currentUser = usersResponse.body()!!.find { it.login == registerRequest.login }
+            if (currentUser != null) {
+                tokenManager.userId = currentUser.userId
+                Result.success(currentUser)
+            } else {
+                tokenManager.clear()
+                Result.failure(Exception("Пользователь не найден после регистрации"))
+            }
+
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception("Сетевая ошибка: ${e.message}", e))
         }
     }
+
     suspend fun getUsers(): Result<List<UserDto>> {
         return try {
             val response = service.getUsers()
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
-                Result.failure(Exception("error get users"))
+                Result.failure(Exception("Ошибка получения пользователей"))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception("Сетевая ошибка: ${e.message}", e))
         }
     }
+
     suspend fun getGroups(): Result<List<GroupDto>> {
         return try {
             val response = service.getGroups()
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
-                Result.failure(Exception("error get groups"))
+                Result.failure(Exception("Ошибка получения групп"))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception("Сетевая ошибка: ${e.message}", e))
         }
     }
-
 }

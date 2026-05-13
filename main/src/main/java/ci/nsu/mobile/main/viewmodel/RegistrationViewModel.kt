@@ -7,13 +7,16 @@ import ci.nsu.mobile.main.data.network.model.RegisterRequest
 import ci.nsu.mobile.main.data.repository.AuthRepository
 import ci.nsu.mobile.main.viewmodel.state.RegisterEvents
 import ci.nsu.mobile.main.viewmodel.state.RegisterState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RegistrationViewModel(val repository: AuthRepository) : ViewModel() {
+@HiltViewModel
+class RegistrationViewModel @Inject constructor(val repository: AuthRepository) : ViewModel() {
     private val _state = MutableStateFlow(RegisterState())
     val state: StateFlow<RegisterState> = _state.asStateFlow()
 
