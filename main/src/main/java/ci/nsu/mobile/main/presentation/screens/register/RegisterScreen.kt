@@ -6,6 +6,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -16,15 +17,15 @@ import ci.nsu.mobile.main.presentation.components.LoadingButton
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
-    navController: NavController,
-    viewModel: RegisterViewModel = viewModel(
-        factory = RegisterViewModelFactory(
-            (androidx.compose.ui.platform.LocalContext.current.applicationContext as DepositApplication).repository
-        )
-    )
+    navController: NavController
 ) {
+    val application = LocalContext.current.applicationContext as DepositApplication
+    val viewModel: RegisterViewModel = viewModel(
+        factory = RegisterViewModelFactory(application.locator.authRepository)
+    )
+
     val uiState by viewModel.uiState.collectAsState()
-    var expanded by remember { mutableStateOf(false) }
+    var groupExpanded by remember { mutableStateOf(false) }
     val genders = listOf("MALE" to "Мужской", "FEMALE" to "Женский")
     var genderExpanded by remember { mutableStateOf(false) }
 
@@ -39,7 +40,6 @@ fun RegisterScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Персональные данные
             OutlinedTextField(
                 value = uiState.firstName,
                 onValueChange = { viewModel.updateFirstName(it) },
@@ -73,7 +73,6 @@ fun RegisterScreen(
                 singleLine = true
             )
 
-            // Пол
             ExposedDropdownMenuBox(
                 expanded = genderExpanded,
                 onExpandedChange = { genderExpanded = it }
@@ -84,7 +83,7 @@ fun RegisterScreen(
                     readOnly = true,
                     label = { Text("Пол") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = genderExpanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                    modifier = Modifier.fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = genderExpanded,
@@ -102,29 +101,28 @@ fun RegisterScreen(
                 }
             }
 
-            // Группа
             ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = it }
+                expanded = groupExpanded,
+                onExpandedChange = { groupExpanded = it }
             ) {
                 OutlinedTextField(
                     value = uiState.groups.find { it.id == uiState.groupId }?.name ?: "Выберите группу *",
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Группа *") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = groupExpanded) },
+                    modifier = Modifier.fillMaxWidth()
                 )
                 ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    expanded = groupExpanded,
+                    onDismissRequest = { groupExpanded = false }
                 ) {
                     uiState.groups.forEach { group ->
                         DropdownMenuItem(
                             text = { Text(group.name) },
                             onClick = {
                                 viewModel.updateGroupId(group.id)
-                                expanded = false
+                                groupExpanded = false
                             }
                         )
                     }
@@ -133,7 +131,6 @@ fun RegisterScreen(
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-            // Учётные данные
             OutlinedTextField(
                 value = uiState.login,
                 onValueChange = { viewModel.updateLogin(it) },
@@ -168,10 +165,7 @@ fun RegisterScreen(
             )
 
             uiState.error?.let { error ->
-                Text(
-                    text = error,
-                    color = MaterialTheme.colorScheme.error
-                )
+                Text(text = error, color = MaterialTheme.colorScheme.error)
             }
 
             Row(

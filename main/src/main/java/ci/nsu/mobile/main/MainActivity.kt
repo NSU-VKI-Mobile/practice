@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import ci.nsu.mobile.main.presentation.navigation.NavGraph
+import ci.nsu.mobile.main.presentation.navigation.AppNavHost
 import ci.nsu.mobile.main.presentation.theme.PracticeTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavGraph()
+                    AppNavHost()
                 }
             }
         }
