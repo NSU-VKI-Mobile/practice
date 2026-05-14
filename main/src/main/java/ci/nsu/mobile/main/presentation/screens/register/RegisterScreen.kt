@@ -73,6 +73,7 @@ fun RegisterScreen(
                 singleLine = true
             )
 
+            // Пол
             ExposedDropdownMenuBox(
                 expanded = genderExpanded,
                 onExpandedChange = { genderExpanded = it }
@@ -83,7 +84,9 @@ fun RegisterScreen(
                     readOnly = true,
                     label = { Text("Пол") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = genderExpanded) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                 )
                 ExposedDropdownMenu(
                     expanded = genderExpanded,
@@ -101,6 +104,7 @@ fun RegisterScreen(
                 }
             }
 
+            // Группа
             ExposedDropdownMenuBox(
                 expanded = groupExpanded,
                 onExpandedChange = { groupExpanded = it }
@@ -111,7 +115,9 @@ fun RegisterScreen(
                     readOnly = true,
                     label = { Text("Группа *") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = groupExpanded) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                 )
                 ExposedDropdownMenu(
                     expanded = groupExpanded,
