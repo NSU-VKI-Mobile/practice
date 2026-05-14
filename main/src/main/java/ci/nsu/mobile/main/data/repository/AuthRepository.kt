@@ -22,6 +22,7 @@ class AuthRepository(
                 if (loginResponse != null) {
                     // Save token
                     tokenManager.token = loginResponse.token
+                    saveUserIdFromToken()
                     Result.Success(loginResponse.token)
                 } else {
                     Result.Error("Empty response from server")
@@ -49,6 +50,11 @@ class AuthRepository(
             val response = apiService.register(request)
 
             if (response.isSuccessful) {
+                val registerResponse = response.body()
+                if (registerResponse != null && registerResponse.token != null) {
+                    tokenManager.token = registerResponse.token
+                    saveUserIdFromToken()
+                }
                 Result.Success(Unit)
             } else {
                 val errorMessage = when (response.code()) {
@@ -66,6 +72,24 @@ class AuthRepository(
             Result.Error("Неизвестная ошибка: ${e.message}")
         }
     }
+
+    private suspend fun saveUserIdFromToken() {
+        try {
+            val login = tokenManager.getUserLoginFromToken()
+
+            if (login != null) {
+                val userResponse = apiService.getUserByLogin(login)
+                if (userResponse.isSuccessful && userResponse.body() != null) {
+                    val user = userResponse.body()!!
+                    tokenManager.userId = user.id
+                }
+            }
+        } catch (e: Exception) {
+            // Лог
+            e.printStackTrace()
+        }
+    }
+
     fun logout() {
         tokenManager.clear()
     }

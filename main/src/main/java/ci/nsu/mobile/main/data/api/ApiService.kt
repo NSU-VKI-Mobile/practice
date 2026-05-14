@@ -9,6 +9,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiService {
     @POST("auth/login")
@@ -17,7 +18,10 @@ interface ApiService {
     @POST("auth/register")
     suspend fun register(
         @Body request: RegisterRequest
-    ): Response<Unit>
+    ): Response<AuthResponse>
+
+    @GET("users/login/{login}")
+    suspend fun getUserByLogin(@Path("login") login: String): Response<UserDto>
 
     @GET("users")
     suspend fun getUsers(): Response<List<UserDto>>

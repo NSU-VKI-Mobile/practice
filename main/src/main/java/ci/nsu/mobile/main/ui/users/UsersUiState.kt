@@ -10,5 +10,6 @@ sealed class UsersState {
 }
 
 data class UsersUiState(
-    val usersState: UsersState = UsersState.Idle
+    val usersState: UsersState = UsersState.Idle,
+    val currentUserId: Long? = null
 )

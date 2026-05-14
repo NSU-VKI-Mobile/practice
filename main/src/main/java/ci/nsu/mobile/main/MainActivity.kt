@@ -37,7 +37,8 @@ class MainActivity : ComponentActivity() {
                     AppNavigation(
                         authRepository = authRepository,
                         userRepository = userRepository,
-                        groupRepository = groupRepository
+                        groupRepository = groupRepository,
+                        tokenManager = tokenManager
                     )
                 }
             }
@@ -49,7 +50,8 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(
     authRepository: AuthRepository,
     userRepository: UserRepository,
-    groupRepository: GroupRepository
+    groupRepository: GroupRepository,
+    tokenManager: TokenManager
 ) {
     val navController = rememberNavController()
 
@@ -64,7 +66,7 @@ fun AppNavigation(
 
     val usersViewModel: UsersViewModel = viewModel(
         factory = viewModelFactory {
-            initializer { UsersViewModel(userRepository, authRepository) }
+            initializer { UsersViewModel(userRepository, authRepository, tokenManager) }
         }
     )
 

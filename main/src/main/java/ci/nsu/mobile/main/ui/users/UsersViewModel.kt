@@ -2,6 +2,7 @@ package ci.nsu.mobile.main.ui.users
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ci.nsu.mobile.main.data.datasource.local.TokenManager
 import ci.nsu.mobile.main.data.repository.AuthRepository
 import ci.nsu.mobile.main.data.model.Result
 import ci.nsu.mobile.main.data.repository.UserRepository
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 
 class UsersViewModel(
     private val userRepository: UserRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UsersUiState())
@@ -21,7 +23,8 @@ class UsersViewModel(
 
     fun loadUsers() {
         viewModelScope.launch {
-            _uiState.update { it.copy(usersState = UsersState.Loading) }
+            _uiState.update { it.copy(usersState = UsersState.Loading,
+                currentUserId = tokenManager.userId ) }
 
             val result = userRepository.getUsers()
 
@@ -46,4 +49,6 @@ class UsersViewModel(
     fun logout() {
         authRepository.logout()
     }
+
+    fun getCurrentUserId(): Long? = tokenManager.userId
 }

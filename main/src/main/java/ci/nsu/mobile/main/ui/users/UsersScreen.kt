@@ -58,7 +58,7 @@ fun UsersScreen(
                 is UsersState.Success -> {
                     UserList(
                         users = state.users,
-                        currentUserId = null//currentUserId
+                        currentUserId = uiState.currentUserId //currentUserId
                     )
                 }
                 is UsersState.Error -> {

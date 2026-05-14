@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
     // For emulator to reach computer's localhost
-    const val BASE_URL = "http://192.168.200.160:8080/" // "http://10.0.2.2:8080/"
+    const val BASE_URL = "http://10.0.2.2:8080/" // "http://10.0.2.2:8080/"  "http://192.168.200.160:8080/"
 
     private val json = Json {
         ignoreUnknownKeys = true
