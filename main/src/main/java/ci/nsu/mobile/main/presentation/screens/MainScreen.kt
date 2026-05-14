@@ -22,13 +22,9 @@ import ci.nsu.mobile.main.presentation.screens.users.UsersScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
-    var selectedTab by remember { mutableIntStateOf(0) }
+fun MainScreen(viewModel: MainViewModel) {
+    val uiState by viewModel.uiState.collectAsState()
     val application = LocalContext.current.applicationContext as DepositApplication
-
-    var currentScreen by remember { mutableStateOf("main") }
-    var detailId by remember { mutableStateOf<Long?>(null) }
-    var resultData by remember { mutableStateOf<Map<String, String>?>(null) }
 
     val inputViewModel: InputViewModel = viewModel(
         factory = InputViewModelFactory(application.locator.calculateDepositUseCase)
@@ -36,28 +32,28 @@ fun MainScreen() {
 
     Scaffold(
         topBar = {
-            if (currentScreen == "main") {
+            if (uiState.currentScreen == "main") {
                 TopAppBar(title = { Text("Расчёт вкладов") })
             }
         },
         bottomBar = {
-            if (currentScreen == "main") {
+            if (uiState.currentScreen == "main") {
                 NavigationBar {
                     NavigationBarItem(
-                        selected = selectedTab == 0,
-                        onClick = { selectedTab = 0 },
+                        selected = uiState.selectedTab == 0,
+                        onClick = { viewModel.selectTab(0) },
                         icon = { Icon(Icons.Default.Person, contentDescription = null) },
                         label = { Text("Пользователи") }
                     )
                     NavigationBarItem(
-                        selected = selectedTab == 1,
-                        onClick = { selectedTab = 1 },
+                        selected = uiState.selectedTab == 1,
+                        onClick = { viewModel.selectTab(1) },
                         icon = { Icon(Icons.Default.History, contentDescription = null) },
                         label = { Text("Мои расчёты") }
                     )
                     NavigationBarItem(
-                        selected = selectedTab == 2,
-                        onClick = { selectedTab = 2 },
+                        selected = uiState.selectedTab == 2,
+                        onClick = { viewModel.selectTab(2) },
                         icon = { Icon(Icons.Default.Add, contentDescription = null) },
                         label = { Text("Новый расчёт") }
                     )
@@ -67,31 +63,31 @@ fun MainScreen() {
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             when {
-                detailId != null -> {
+                uiState.detailId != null -> {
                     HistoryDetailScreen(
-                        calculationId = detailId!!,
-                        onBack = { detailId = null }
+                        calculationId = uiState.detailId!!,
+                        onBack = { viewModel.hideDetail() }
                     )
                 }
-                resultData != null -> {
+                uiState.resultData != null -> {
                     ResultScreen(
-                        initialAmount = resultData!!["initialAmount"] ?: "",
-                        periodMonths = resultData!!["periodMonths"] ?: "",
-                        interestRate = resultData!!["interestRate"]?.toDoubleOrNull(),
-                        monthlyTopUp = resultData!!["monthlyTopUp"],
-                        onBack = { resultData = null }
+                        initialAmount = uiState.resultData!!["initialAmount"] ?: "",
+                        periodMonths = uiState.resultData!!["periodMonths"] ?: "",
+                        interestRate = uiState.resultData!!["interestRate"]?.toDoubleOrNull(),
+                        monthlyTopUp = uiState.resultData!!["monthlyTopUp"],
+                        onBack = { viewModel.hideResult() }
                     )
                 }
                 else -> {
-                    when (selectedTab) {
+                    when (uiState.selectedTab) {
                         0 -> UsersScreen()
                         1 -> HistoryScreen(
-                            onNavigateToDetail = { id -> detailId = id }
+                            onNavigateToDetail = { id -> viewModel.showDetail(id) }
                         )
                         2 -> Step1Screen(
                             viewModel = inputViewModel,
-                            onNavigateToHome = { selectedTab = 0 },
-                            onNext = { currentScreen = "step2" }
+                            onNavigateToHome = { viewModel.selectTab(0) },
+                            onNext = { viewModel.navigateTo("step2") }
                         )
                     }
                 }
@@ -99,19 +95,21 @@ fun MainScreen() {
         }
     }
 
-    if (currentScreen == "step2") {
+    if (uiState.currentScreen == "step2") {
         Step2Screen(
             viewModel = inputViewModel,
             onCalculate = { initialAmount, periodMonths, interestRate, monthlyTopUp ->
-                resultData = mapOf(
-                    "initialAmount" to initialAmount,
-                    "periodMonths" to periodMonths,
-                    "interestRate" to interestRate,
-                    "monthlyTopUp" to monthlyTopUp
+                viewModel.showResult(
+                    mapOf(
+                        "initialAmount" to initialAmount,
+                        "periodMonths" to periodMonths,
+                        "interestRate" to interestRate,
+                        "monthlyTopUp" to monthlyTopUp
+                    )
                 )
-                currentScreen = "result"
+                viewModel.navigateTo("result")
             },
-            onBack = { currentScreen = "main" }
+            onBack = { viewModel.resetToMain() }
         )
     }
 }
