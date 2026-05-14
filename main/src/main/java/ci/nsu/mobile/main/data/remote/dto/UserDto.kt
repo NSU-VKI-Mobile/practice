@@ -6,15 +6,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserDto(
     @SerialName("id")
-    val id: Int,
+    val id: Int? = null,
     @SerialName("login")
-    val login: String,
+    val login: String? = "",
     @SerialName("email")
-    val email: String,
+    val email: String? = "",
     @SerialName("phoneNumber")
-    val phone: String?,
+    val phone: String? = null,
     @SerialName("person")
-    val person: PersonDto?,
+    val person: PersonDto? = null,
     @SerialName("roles")
     val roles: List<RoleDto> = emptyList()
 )
@@ -22,7 +22,7 @@ data class UserDto(
 @Serializable
 data class RoleDto(
     @SerialName("id")
-    val id: Int,
+    val id: Int? = null,
     @SerialName("name")
-    val name: String
+    val name: String? = ""
 )
