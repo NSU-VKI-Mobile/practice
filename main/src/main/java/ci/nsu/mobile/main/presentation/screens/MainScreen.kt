@@ -78,7 +78,8 @@ fun MainScreen() {
                         initialAmount = resultData!!["initialAmount"] ?: "",
                         periodMonths = resultData!!["periodMonths"] ?: "",
                         interestRate = resultData!!["interestRate"]?.toDoubleOrNull(),
-                        monthlyTopUp = resultData!!["monthlyTopUp"]
+                        monthlyTopUp = resultData!!["monthlyTopUp"],
+                        onBack = { resultData = null }
                     )
                 }
                 else -> {

@@ -21,7 +21,8 @@ fun ResultScreen(
     initialAmount: String,
     periodMonths: String,
     interestRate: Double?,
-    monthlyTopUp: String?
+    monthlyTopUp: String?,
+    onBack: () -> Unit
 ) {
     val application = LocalContext.current.applicationContext as DepositApplication
     val viewModel: ResultViewModel = viewModel(
@@ -36,12 +37,7 @@ fun ResultScreen(
 
     LaunchedEffect(Unit) {
         interestRate?.let { rate ->
-            viewModel.calculateDeposit(
-                initialAmount = initialAmount,
-                periodMonths = periodMonths,
-                interestRate = rate,
-                monthlyTopUp = monthlyTopUp?.takeIf { it != "null" }
-            )
+            viewModel.calculateDeposit(initialAmount, periodMonths, rate, monthlyTopUp?.takeIf { it != "null" })
         }
     }
 
@@ -58,6 +54,12 @@ fun ResultScreen(
                     enabled = !uiState.isSaved && uiState.calculation != null
                 ) {
                     Text(if (uiState.isSaved) "Сохранено" else "Сохранить")
+                }
+                Button(
+                    onClick = onBack,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("На главную")
                 }
             }
         }
