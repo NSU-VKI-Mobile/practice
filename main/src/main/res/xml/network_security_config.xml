@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">192.168.0.106</domain>
+        <domain includeSubdomains="true">192.168.200.160</domain> <!--college-->
+        <domain includeSubdomains="true">127.0.0.1</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain> <!--self-hosted-->
+    </domain-config>
+</network-security-config>
