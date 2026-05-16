@@ -34,7 +34,6 @@ fun Navigation(
         }
         composable(Screens.RegistrationScreen.route) {
             RegistrationScreen(
-                navTo = { navigateTo -> navController.navigate(navigateTo) },
                 viewModel = registerViewModel,
                 onRegisterSuccess = {
                     navController.navigate(Screens.UsersScreen.route) {

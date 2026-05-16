@@ -18,7 +18,11 @@ class AuthInterceptor @Inject constructor(
         token?.let {
             requestBuilder.addHeader("Authorization", "Bearer $it")
         }
+        val response = chain.proceed(requestBuilder.build())
 
-        return chain.proceed(requestBuilder.build())
+        if (response.code == 401 || response.code == 403) {
+            tokenManager.clear()
+        }
+        return response
     }
 }

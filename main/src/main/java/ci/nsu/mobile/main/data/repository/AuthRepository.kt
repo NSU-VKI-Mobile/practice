@@ -16,33 +16,25 @@ class AuthRepository @Inject constructor(
 ) {
     suspend fun login(login: String, password: String): Result<UserDto> {
         return try {
-            // 1. Получаем токен
             val response = service.loginUser(LoginRequest(login = login, password = password))
             if (!response.isSuccessful || response.body() == null) {
                 return Result.failure(Exception("Ошибка входа: ${response.code()} ${response.message()}"))
             }
-
             val authResponse = response.body()!!
             tokenManager.token = authResponse.token
             tokenManager.userLogin = login
-
-            // 2. Получаем список пользователей
             val usersResponse = service.getUsers()
             if (!usersResponse.isSuccessful || usersResponse.body() == null) {
                 return Result.failure(Exception("Ошибка получения пользователей"))
             }
-
-            // 3. Находим текущего пользователя по логину
             val currentUser = usersResponse.body()!!.find { it.login == login }
             if (currentUser != null) {
                 tokenManager.userId = currentUser.userId
                 Result.success(currentUser)
             } else {
-                // Если пользователь не найден - очищаем токен
                 tokenManager.clear()
                 Result.failure(Exception("Пользователь не найден в системе"))
             }
-
         } catch (e: Exception) {
             Result.failure(Exception("Сетевая ошибка: ${e.message}", e))
         }
@@ -50,23 +42,17 @@ class AuthRepository @Inject constructor(
 
     suspend fun register(registerRequest: RegisterRequest): Result<UserDto> {
         return try {
-            // 1. Регистрируем пользователя
             val response = service.registerUser(registerRequest)
             if (!response.isSuccessful || response.body() == null) {
                 return Result.failure(Exception("Ошибка регистрации: ${response.code()} ${response.message()}"))
             }
-
             val authResponse = response.body()!!
             tokenManager.token = authResponse.token
             tokenManager.userLogin = registerRequest.login
-
-            // 2. Получаем список пользователей
             val usersResponse = service.getUsers()
             if (!usersResponse.isSuccessful || usersResponse.body() == null) {
                 return Result.failure(Exception("Ошибка получения пользователей"))
             }
-
-            // 3. Находим созданного пользователя
             val currentUser = usersResponse.body()!!.find { it.login == registerRequest.login }
             if (currentUser != null) {
                 tokenManager.userId = currentUser.userId
@@ -75,7 +61,6 @@ class AuthRepository @Inject constructor(
                 tokenManager.clear()
                 Result.failure(Exception("Пользователь не найден после регистрации"))
             }
-
         } catch (e: Exception) {
             Result.failure(Exception("Сетевая ошибка: ${e.message}", e))
         }

@@ -5,9 +5,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,10 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.navigation.Screens
 import ci.nsu.mobile.main.ui.components.CustomButton
+import ci.nsu.mobile.main.ui.components.TextFieldWithOptionalStar
 import ci.nsu.mobile.main.viewmodel.LoginViewModel
 import ci.nsu.mobile.main.viewmodel.state.LoginEvents
 
@@ -33,36 +42,50 @@ fun LoginScreen(onLoginSuccess: () -> Unit,
             onLoginSuccess()
         }
     }
-    Column(modifier = Modifier.fillMaxSize().padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
-        TextField(state.login,
-            onValueChange = {
-                viewModel.loginEvent(LoginEvents.LoginChanged(it))
-            },
-            label = {Text("Login")},
-            placeholder = {Text("Введите логин")},
-            modifier = Modifier.padding(bottom = 10.dp)
-        )
-        TextField(state.password,
-            onValueChange = {
-                viewModel.loginEvent(LoginEvents.PasswordChanged(it))
-            },
-            placeholder = {Text("Введите пароль")},
-            label = {Text("Password")},
-            modifier = Modifier.padding(bottom = 10.dp),
-            visualTransformation = PasswordVisualTransformation()
-        )
-        CustomButton({
-            viewModel.loginEvent(LoginEvents.SubmitLogin)
+    Scaffold() { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding).fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center) {
+            Text("Вход", fontSize = 45.sp)
+            Spacer(Modifier.height(60.dp))
+            TextFieldWithOptionalStar(
+                value = state.login,
+                onValueChange = {
+                    viewModel.loginEvent(LoginEvents.LoginChanged(it))
+                },
+                hasStar = false,
+                placeholder = "Логин"
+            )
+            TextFieldWithOptionalStar(
+                value = state.password,
+                onValueChange = {
+                    viewModel.loginEvent(LoginEvents.PasswordChanged(it))
+                },
+                hasStar = false,
+                placeholder = "Пароль",
+                trailingIcon = {
+                    val icon = if (state.passwordState)
+                        Icons.Filled.Visibility
+                    else
+                        Icons.Filled.VisibilityOff
+                    val contentDescription = if (state.passwordState) "Показать пароль" else "Скрыть пароль"
+                    IconButton({ viewModel.loginEvent(LoginEvents.PasswordVisibilityChanged(!state.passwordState))}) {
+                        Icon(icon, contentDescription)
+                    }
+                },
+                visualTransformation = if (!state.passwordState) PasswordVisualTransformation() else VisualTransformation.None
+            )
+            CustomButton({
+                viewModel.loginEvent(LoginEvents.SubmitLogin)
             }, "Войти")
-        Spacer(Modifier.padding((20.dp)))
-        Text("Нет аккаунта? Зарегистрироваться",
-            modifier = Modifier.clickable(
-                onClick =  {navTo(Screens.RegistrationScreen.route)}
-            ))
-        if (state.errorMessage != null) {
-            Text(state.errorMessage.toString(), color = Color.Red)
+            Spacer(Modifier.padding((20.dp)))
+            Text("Нет аккаунта? Зарегистрироваться",
+                modifier = Modifier.clickable(
+                    onClick =  {navTo(Screens.RegistrationScreen.route)}
+                ))
+            if (state.errorMessage != null) {
+                Text(state.errorMessage.toString(), color = Color.Red)
+            }
         }
     }
 }

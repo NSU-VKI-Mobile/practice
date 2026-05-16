@@ -26,21 +26,30 @@ class LoginViewModel @Inject constructor(val repository: AuthRepository) : ViewM
             is LoginEvents.PasswordChanged -> {
                 _state.update { it.copy(password = event.newPassword) }
             }
-            is LoginEvents.SubmitLogin -> login()
-            is LoginEvents.ValidationScreen -> validationLoginScreen()
+            is LoginEvents.PasswordVisibilityChanged -> {
+                _state.update { it.copy(passwordState = event.newState) }
+            }
+
+            is LoginEvents.SubmitLogin -> if (validationLoginScreen()) login()
             is LoginEvents.CleanAll ->  resetState()
         }
     }
-    private fun validationLoginScreen(){
+    private fun validationLoginScreen(): Boolean {
         val stateValue = _state.value
-        if (stateValue.login.isEmpty()) {
-            _state.update { it.copy(errorMessage = "login is empty") }
-        }
-        if (stateValue.password.isEmpty()) {
-            _state.update { it.copy(errorMessage = "password is empty") }
-        }
-        else {
-            _state.update { it.copy(isSuccess = true) }
+
+        return when {
+            stateValue.login.isEmpty() -> {
+                _state.update { it.copy(errorMessage = "Введите логин") }
+                false
+            }
+            stateValue.password.isEmpty() -> {
+                _state.update { it.copy(errorMessage = "Введите пароль") }
+                false
+            }
+            else -> {
+                _state.update { it.copy(errorMessage = null) }
+                true
+            }
         }
     }
     private fun login() {

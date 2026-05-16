@@ -72,16 +72,17 @@ class RegistrationViewModel @Inject constructor(val repository: AuthRepository) 
                 _state.update { it.copy(phoneNumber = event.newPhoneNumber) }
             }
 
-            is RegisterEvents.RBStateChanged -> {
-                _state.update { it.copy(radioButtonsState = event.newState) }
-            }
-
             is RegisterEvents.MenuStateChanged -> {
                 _state.update { it.copy(showDDMenu = event.newState) }
             }
 
-            RegisterEvents.SubmitRegister -> register()
-            RegisterEvents.ValidationScreen -> validation()
+            is RegisterEvents.PasswordVisibilityChanged -> {
+                _state.update { it.copy(passwordState = event.newState) }
+            }
+            is RegisterEvents.DatePickerVisibilityChanged -> {
+                _state.update { it.copy(showDatePicker = event.newState) }
+            }
+            RegisterEvents.SubmitRegister -> if (validation()) register()
             RegisterEvents.CleanAll -> cleanAll()
         }
     }
@@ -99,51 +100,65 @@ class RegistrationViewModel @Inject constructor(val repository: AuthRepository) 
     private fun register() {
         viewModelScope.launch {
             val person = PersonDto(
-                _state.value.firstName,
-                _state.value.lastName,
-                _state.value.middleName,
-                _state.value.birthDate,
-                _state.value.gender,
-                _state.value.groupId
+                firstName = _state.value.firstName,
+                lastName = _state.value.lastName,
+                middleName = _state.value.middleName,
+                birthDate = _state.value.birthDate,
+                gender = _state.value.gender,
+                groupId = _state.value.groupId
             )
             val regReq = RegisterRequest(
-                _state.value.login, _state.value.password,
-                _state.value.email, _state.value.phoneNumber, person = person
+                login = _state.value.login,
+                password = _state.value.password,
+                email = _state.value.email,
+                phoneNumber = _state.value.phoneNumber,
+                roleId = _state.value.roleId,
+                person = person
             )
             val result = repository.register(regReq)
             if (result.isSuccess) {
                 _state.update { it.copy(isSuccess = true, errorMessage = null) }
             }
             if (result.isFailure) {
-                _state.update { it.copy(isSuccess = false, errorMessage = "error login event") }
+                _state.update { it.copy(isSuccess = false, errorMessage = "error register") }
             }
         }
     }
 
-//    private suspend fun getGroupById(groupId: Int): String? {
-//        val allGroups = repository.getGroups()
-//        val result = allGroups.getOrNull() ?: emptyList()
-//        return result.find { it.groupId == groupId }?.groupName
-//    }
-    private fun validation() {
+    private fun validation(): Boolean {
         val stateValue = _state.value
-        if (stateValue.lastName.isEmpty()) {
-            _state.update { it.copy(errorMessage = "Заполните поле фамилия") }
-        }
-        if (stateValue.firstName.isEmpty()) {
-            _state.update { it.copy(errorMessage = "Заполните поле имя") }
-        }
-        if (stateValue.groupId == 0) {
-            _state.update { it.copy(errorMessage = "Выберете группу") }
-        }
-        if (stateValue.login.isEmpty()) {
-            _state.update { it.copy(errorMessage = "Заполните поле логин") }
-        }
-        if (stateValue.password.isEmpty()) {
-            _state.update { it.copy(errorMessage = "Заполните поле пароль") }
-        }
-        if (stateValue.email.isEmpty()) {
-            _state.update { it.copy(errorMessage = "Заполните поле почта") }
+
+        _state.update { it.copy(errorMessage = null) }
+
+        return when {
+            stateValue.lastName.isEmpty() -> {
+                _state.update { it.copy(errorMessage = "Заполните поле фамилия") }
+                false
+            }
+            stateValue.firstName.isEmpty() -> {
+                _state.update { it.copy(errorMessage = "Заполните поле имя") }
+                false
+            }
+            stateValue.groupId == 0 -> {
+                _state.update { it.copy(errorMessage = "Выберите группу") }
+                false
+            }
+            stateValue.login.isEmpty() -> {
+                _state.update { it.copy(errorMessage = "Заполните поле логин") }
+                false
+            }
+            stateValue.password.isEmpty() -> {
+                _state.update { it.copy(errorMessage = "Заполните поле пароль") }
+                false
+            }
+            stateValue.email.isEmpty() -> {
+                _state.update { it.copy(errorMessage = "Заполните поле почта") }
+                false
+            }
+            else -> {
+                _state.update { it.copy(errorMessage = null) }
+                true
+            }
         }
     }
 
