@@ -5,7 +5,8 @@ data class LoginState (
     val password: String = "",
     val errorMessage: String? = null,
     val isSuccess: Boolean = false,
-    val passwordState: Boolean = false
+    val passwordState: Boolean = false,
+    val isLoading: Boolean = false
 )
 
 sealed class LoginEvents {

@@ -3,11 +3,10 @@ package ci.nsu.mobile.main.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -62,6 +62,7 @@ fun RegistrationScreen(
             onRegisterSuccess()
         }
     }
+
     Scaffold() { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding)
@@ -70,8 +71,13 @@ fun RegistrationScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Регистрация", fontSize = 30.sp)
-            Spacer(Modifier.height(30.dp))
+            Text("Регистрация", fontSize = 30.sp, modifier = Modifier.padding(vertical = 20.dp))
+
+            if (state.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.padding(top = 20.dp, bottom = 10.dp))
+                Text("Регистрация...")
+            }
+
             TextFieldWithOptionalStar(
                 value = state.lastName,
                 onValueChange = { viewModel.registerEvent(RegisterEvents.SurnameChanged(it))},
@@ -191,6 +197,11 @@ fun RegistrationScreen(
                     }
                 }
             }
+            if (state.isLoadingGroups) {
+                CircularProgressIndicator(modifier = Modifier.padding(bottom = 7.dp)
+                    .size(30.dp))
+                Text("Загрузка групп...")
+            }
 
             TextFieldWithOptionalStar(
                 value = state.login,
@@ -230,13 +241,13 @@ fun RegistrationScreen(
             )
 
             CustomButton({
+
                 viewModel.registerEvent(RegisterEvents.SubmitRegister)},
                 "Зарегистрироваться"
             )
 
             if (state.errorMessage != null) {
                 Text(state.errorMessage.toString(), color = Color.Red)
-
             }
         }
     }

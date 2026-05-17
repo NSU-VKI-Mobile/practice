@@ -22,7 +22,9 @@ data class RegisterState(
     val groups: List<GroupDto> = emptyList(),
     val showDDMenu: Boolean = false,
     val passwordState: Boolean = false,
-    val showDatePicker: Boolean = false
+    val showDatePicker: Boolean = false,
+    val isLoading: Boolean = false,
+    val isLoadingGroups: Boolean = false
 )
 
 sealed class RegisterEvents {

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -20,8 +21,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,6 +51,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit,
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
+
             Text("Вход", fontSize = 45.sp)
             Spacer(Modifier.height(60.dp))
             TextFieldWithOptionalStar(
@@ -79,10 +85,21 @@ fun LoginScreen(onLoginSuccess: () -> Unit,
                 viewModel.loginEvent(LoginEvents.SubmitLogin)
             }, "Войти")
             Spacer(Modifier.padding((20.dp)))
-            Text("Нет аккаунта? Зарегистрироваться",
-                modifier = Modifier.clickable(
-                    onClick =  {navTo(Screens.RegistrationScreen.route)}
-                ))
+
+            Text(
+                buildAnnotatedString {
+                    append("Нет аккаунта? ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Зарегистрироваться")
+                    }
+                },
+                modifier = Modifier.clickable { navTo(Screens.RegistrationScreen.route) }
+            )
+
+            if (state.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.padding(top = 20.dp, bottom = 10.dp))
+                Text("Вход...")
+            }
             if (state.errorMessage != null) {
                 Text(state.errorMessage.toString(), color = Color.Red)
             }

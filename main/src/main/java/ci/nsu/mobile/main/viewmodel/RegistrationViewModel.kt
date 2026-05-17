@@ -88,16 +88,19 @@ class RegistrationViewModel @Inject constructor(val repository: AuthRepository) 
     }
 
     private fun loadGroups() {
+        _state.update { it.copy(isLoadingGroups = true) }
         viewModelScope.launch {
             val result = repository.getGroups()
             result.onSuccess { groups ->
-                _state.update { it.copy(groups = groups) }
+                _state.update { it.copy(isLoadingGroups = false, groups = groups) }
             }.onFailure { error ->
-                _state.update { it.copy(errorMessage = "Ошибка загрузки групп: ${error.message}") }
+                _state.update { it.copy(isLoadingGroups = false, errorMessage = "Ошибка загрузки групп: ${error.message}") }
             }
         }
     }
     private fun register() {
+        _state.update { it.copy(isLoading = true) }
+
         viewModelScope.launch {
             val person = PersonDto(
                 firstName = _state.value.firstName,
@@ -117,10 +120,10 @@ class RegistrationViewModel @Inject constructor(val repository: AuthRepository) 
             )
             val result = repository.register(regReq)
             if (result.isSuccess) {
-                _state.update { it.copy(isSuccess = true, errorMessage = null) }
+                _state.update { it.copy(isSuccess = true, isLoading = false, errorMessage = null) }
             }
             if (result.isFailure) {
-                _state.update { it.copy(isSuccess = false, errorMessage = "error register") }
+                _state.update { it.copy(isSuccess = false, isLoading = false, errorMessage = "error register") }
             }
         }
     }

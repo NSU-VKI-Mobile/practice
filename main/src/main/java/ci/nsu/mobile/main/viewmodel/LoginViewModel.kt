@@ -34,6 +34,7 @@ class LoginViewModel @Inject constructor(val repository: AuthRepository) : ViewM
             is LoginEvents.CleanAll ->  resetState()
         }
     }
+
     private fun validationLoginScreen(): Boolean {
         val stateValue = _state.value
 
@@ -54,12 +55,14 @@ class LoginViewModel @Inject constructor(val repository: AuthRepository) : ViewM
     }
     private fun login() {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
             val result = repository.login(_state.value.login, _state.value.password)
             if (result.isSuccess) {
-                _state.update { it.copy(isSuccess = true, errorMessage = null) }
+                _state.update { it.copy(isSuccess = true, isLoading = false, errorMessage = null) }
             }
             if (result.isFailure) {
-                _state.update { it.copy(isSuccess = false, errorMessage = "error login event")}
+                _state.update { it.copy(isSuccess = false, isLoading = false ,errorMessage = "error login event")}
             }
         }
     }
