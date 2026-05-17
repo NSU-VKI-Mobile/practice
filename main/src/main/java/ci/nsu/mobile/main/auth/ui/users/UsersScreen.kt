@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import ci.nsu.mobile.main.auth.data.dto.UserDto
 import ci.nsu.mobile.main.auth.ui.components.ProgressBar
 import ci.nsu.mobile.main.auth.ui.components.UserCard
@@ -17,9 +17,9 @@ import ci.nsu.mobile.main.auth.ui.components.UserCard
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UsersScreen(
-    onLogout: () -> Unit,
-    viewModel: UsersViewModel
+    onLogout: () -> Unit
 ) {
+    val viewModel: UsersViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     //val currentUserId by viewModel.currentUserId.collectAsState()
 

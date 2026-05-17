@@ -9,15 +9,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ci.nsu.mobile.main.auth.ui.components.ProgressBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     onNavigateBack: () -> Unit,
-    onRegisterSuccess: () -> Unit,
-    viewModel: RegisterViewModel
+    onRegisterSuccess: () -> Unit
 ) {
+    val viewModel: RegisterViewModel  = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val form = uiState.formState
     val isLoading = uiState.registerState is RegisterState.Loading

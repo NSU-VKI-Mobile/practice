@@ -9,14 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ci.nsu.mobile.main.auth.ui.components.ProgressBar
 
 @Composable
 fun LoginScreen(
     onNavigateToRegister: () -> Unit,
-    onLoginSuccess: () -> Unit,
-    viewModel: LoginViewModel
+    onLoginSuccess: () -> Unit
 ) {
+    val viewModel: LoginViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val isLoading = uiState.loginState is LoginState.Loading
 

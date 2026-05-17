@@ -23,4 +23,11 @@ object Routes {
     const val USERS = "users"
     const val HISTORY = "history"
     const val NEW_CALCULATION = "new_calculation"
+    const val ADDITIONAL = "additional/{amount}/{term}"
+    const val RESULT = "result/{amount}/{term}/{rate}/{monthlyAddition}"
+
+    // Helper functions to build routes with arguments
+    fun additional(amount: String, term: String) = "additional/$amount/$term"
+    fun result(amount: Double, term: Int, rate: Double, monthlyAddition: Double) =
+        "result/$amount/$term/$rate/$monthlyAddition"
 }
