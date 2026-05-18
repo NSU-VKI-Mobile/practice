@@ -1,10 +1,9 @@
-package ci.nsu.mobile.main.viewmodel
+package ci.nsu.mobile.main.viewmodel.users
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.network.TokenManager
 import ci.nsu.mobile.main.data.repository.AuthRepository
-import ci.nsu.mobile.main.viewmodel.state.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

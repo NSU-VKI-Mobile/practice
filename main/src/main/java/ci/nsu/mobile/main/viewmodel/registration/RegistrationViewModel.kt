@@ -1,12 +1,10 @@
-package ci.nsu.mobile.main.viewmodel
+package ci.nsu.mobile.main.viewmodel.registration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.network.model.PersonDto
 import ci.nsu.mobile.main.data.network.model.RegisterRequest
 import ci.nsu.mobile.main.data.repository.AuthRepository
-import ci.nsu.mobile.main.viewmodel.state.RegisterEvents
-import ci.nsu.mobile.main.viewmodel.state.RegisterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,11 +25,13 @@ class RegistrationViewModel @Inject constructor(val repository: AuthRepository) 
     fun registerEvent(event: RegisterEvents) {
         when (event) {
             is RegisterEvents.SurnameChanged -> {
-                _state.update { it.copy(lastName = event.newSurname) }
+                _state.update { it.copy(lastName = event.newSurname,
+                    errorFields = it.errorFields - "LastName") }
             }
 
             is RegisterEvents.NameChanged -> {
-                _state.update { it.copy(firstName = event.newName) }
+                _state.update { it.copy(firstName = event.newName,
+                    errorFields = it.errorFields - "FirstName") }
             }
 
             is RegisterEvents.PatronymicChanged -> {
@@ -43,7 +43,8 @@ class RegistrationViewModel @Inject constructor(val repository: AuthRepository) 
             }
 
             is RegisterEvents.EmailChanged -> {
-                _state.update { it.copy(email = event.newEmail) }
+                _state.update { it.copy(email = event.newEmail,
+                    errorFields = it.errorFields - "Email") }
             }
 
             is RegisterEvents.GenderChanged -> {
@@ -55,17 +56,19 @@ class RegistrationViewModel @Inject constructor(val repository: AuthRepository) 
                     val selectedGroup = currentState.groups.find { it.groupId == event.newGroup }
                     currentState.copy(
                         groupId = event.newGroup,
-                        groupName = selectedGroup?.groupName ?: ""
+                        groupName = selectedGroup?.groupName ?: "",
                     )
                 }
             }
 
             is RegisterEvents.LoginChanged -> {
-                _state.update { it.copy(login = event.newLogin) }
+                _state.update { it.copy(login = event.newLogin,
+                    errorFields = it.errorFields - "Login") }
             }
 
             is RegisterEvents.PasswordChanged -> {
-                _state.update { it.copy(password = event.newPassword) }
+                _state.update { it.copy(password = event.newPassword,
+                    errorFields = it.errorFields - "Password") }
             }
 
             is RegisterEvents.PhoneNumberChanged -> {
@@ -123,46 +126,33 @@ class RegistrationViewModel @Inject constructor(val repository: AuthRepository) 
                 _state.update { it.copy(isSuccess = true, isLoading = false, errorMessage = null) }
             }
             if (result.isFailure) {
-                _state.update { it.copy(isSuccess = false, isLoading = false, errorMessage = "error register") }
+                _state.update { it.copy(isSuccess = false, isLoading = false, errorMessage = "Ошибка регистрации. Проверьте введенные данные") }
             }
         }
     }
 
     private fun validation(): Boolean {
         val stateValue = _state.value
+        val errorFields = mutableSetOf<String>()
 
-        _state.update { it.copy(errorMessage = null) }
+        if (stateValue.lastName.isEmpty()) errorFields.add("LastName")
+        if (stateValue.firstName.isEmpty()) errorFields.add("FirstName")
+        if (stateValue.groupId == -1) errorFields.add("Group")
+        if (stateValue.login.isEmpty()) errorFields.add("Login")
+        if (stateValue.password.isEmpty()) errorFields.add("Password")
+        if (stateValue.email.isEmpty()) errorFields.add("Email")
 
-        return when {
-            stateValue.lastName.isEmpty() -> {
-                _state.update { it.copy(errorMessage = "Заполните поле фамилия") }
-                false
-            }
-            stateValue.firstName.isEmpty() -> {
-                _state.update { it.copy(errorMessage = "Заполните поле имя") }
-                false
-            }
-            stateValue.groupId == 0 -> {
-                _state.update { it.copy(errorMessage = "Выберите группу") }
-                false
-            }
-            stateValue.login.isEmpty() -> {
-                _state.update { it.copy(errorMessage = "Заполните поле логин") }
-                false
-            }
-            stateValue.password.isEmpty() -> {
-                _state.update { it.copy(errorMessage = "Заполните поле пароль") }
-                false
-            }
-            stateValue.email.isEmpty() -> {
-                _state.update { it.copy(errorMessage = "Заполните поле почта") }
-                false
-            }
-            else -> {
-                _state.update { it.copy(errorMessage = null) }
-                true
-            }
+        _state.update {
+            it.copy(
+                errorFields = errorFields,
+                errorMessage = when {
+                    errorFields.size > 1 -> "Заполните все обязательные поля"
+                    errorFields.size == 1 -> "Заполните обязательное поле"
+                    else -> null
+                }
+            )
         }
+        return errorFields.isEmpty()
     }
 
     private fun cleanAll() {

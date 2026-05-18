@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.navigation.Screens
 import ci.nsu.mobile.main.ui.components.CustomButton
-import ci.nsu.mobile.main.viewmodel.UsersViewModel
+import ci.nsu.mobile.main.viewmodel.users.UsersViewModel
 
 @Composable
 fun UsersScreen(

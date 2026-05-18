@@ -7,9 +7,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ci.nsu.mobile.main.ui.screens.LoginScreen
 import ci.nsu.mobile.main.ui.screens.RegistrationScreen
-import ci.nsu.mobile.main.viewmodel.LoginViewModel
-import ci.nsu.mobile.main.viewmodel.RegistrationViewModel
-import ci.nsu.mobile.main.viewmodel.UsersViewModel
+import ci.nsu.mobile.main.viewmodel.login.LoginViewModel
+import ci.nsu.mobile.main.viewmodel.registration.RegistrationViewModel
+import ci.nsu.mobile.main.viewmodel.users.UsersViewModel
 
 sealed class Screens(val route: String) {
     object LoginScreen: Screens("LoginScreen")

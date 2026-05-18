@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.viewmodel.state
+package ci.nsu.mobile.main.viewmodel.login
 
 data class LoginState (
     val login: String = "",
@@ -6,7 +6,8 @@ data class LoginState (
     val errorMessage: String? = null,
     val isSuccess: Boolean = false,
     val passwordState: Boolean = false,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val errorFields: Set<String> = emptySet()
 )
 
 sealed class LoginEvents {

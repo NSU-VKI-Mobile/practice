@@ -25,7 +25,9 @@ fun TextFieldWithOptionalStar(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     readOnly: Boolean = false,
     trailingIcon: @Composable (() -> Unit)? = null,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    isError: Boolean = false,
+    supportingText: String = "Заполните поле"
 ) {
     Row(modifier = modifier.fillMaxWidth()) {
         TextField(
@@ -37,7 +39,13 @@ fun TextFieldWithOptionalStar(
             readOnly = readOnly,
             label = { Text(placeholder)},
             trailingIcon = trailingIcon,
-            visualTransformation = visualTransformation
+            visualTransformation = visualTransformation,
+            isError = isError,
+            supportingText = {
+                if (isError) {
+                    Text(supportingText ?: "", color = Color.Red)
+                }
+            }
         )
         if (hasStar) {
             Spacer(Modifier.width(3.dp))

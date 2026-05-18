@@ -8,9 +8,9 @@ import androidx.activity.viewModels
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.navigation.Navigation
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
-import ci.nsu.mobile.main.viewmodel.LoginViewModel
-import ci.nsu.mobile.main.viewmodel.RegistrationViewModel
-import ci.nsu.mobile.main.viewmodel.UsersViewModel
+import ci.nsu.mobile.main.viewmodel.login.LoginViewModel
+import ci.nsu.mobile.main.viewmodel.registration.RegistrationViewModel
+import ci.nsu.mobile.main.viewmodel.users.UsersViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

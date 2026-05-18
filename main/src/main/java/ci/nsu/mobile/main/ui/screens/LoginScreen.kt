@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,8 +35,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.navigation.Screens
 import ci.nsu.mobile.main.ui.components.CustomButton
 import ci.nsu.mobile.main.ui.components.TextFieldWithOptionalStar
-import ci.nsu.mobile.main.viewmodel.LoginViewModel
-import ci.nsu.mobile.main.viewmodel.state.LoginEvents
+import ci.nsu.mobile.main.viewmodel.login.LoginEvents
+import ci.nsu.mobile.main.viewmodel.login.LoginViewModel
 
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit,
@@ -60,7 +62,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit,
                     viewModel.loginEvent(LoginEvents.LoginChanged(it))
                 },
                 hasStar = false,
-                placeholder = "Логин"
+                placeholder = "Логин",
+                isError = "Login" in state.errorFields
             )
             TextFieldWithOptionalStar(
                 value = state.password,
@@ -79,7 +82,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit,
                         Icon(icon, contentDescription)
                     }
                 },
-                visualTransformation = if (!state.passwordState) PasswordVisualTransformation() else VisualTransformation.None
+                visualTransformation = if (!state.passwordState) PasswordVisualTransformation() else VisualTransformation.None,
+                isError = "Password" in state.errorFields
             )
             CustomButton({
                 viewModel.loginEvent(LoginEvents.SubmitLogin)
@@ -93,7 +97,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit,
                         append("Зарегистрироваться")
                     }
                 },
-                modifier = Modifier.clickable { navTo(Screens.RegistrationScreen.route) }
+                modifier = Modifier.clickable { navTo(Screens.RegistrationScreen.route) },
             )
 
             if (state.isLoading) {
@@ -101,7 +105,10 @@ fun LoginScreen(onLoginSuccess: () -> Unit,
                 Text("Вход...")
             }
             if (state.errorMessage != null) {
-                Text(state.errorMessage.toString(), color = Color.Red)
+                Text(state.errorMessage.toString(), color = Color.Red,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }

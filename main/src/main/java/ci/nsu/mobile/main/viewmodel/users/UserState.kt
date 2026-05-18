@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.viewmodel.state
+package ci.nsu.mobile.main.viewmodel.users
 
 import ci.nsu.mobile.main.data.network.model.UserDto
 

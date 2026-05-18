@@ -39,13 +39,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.ui.components.CustomButton
 import ci.nsu.mobile.main.ui.components.TextFieldWithOptionalStar
-import ci.nsu.mobile.main.viewmodel.RegistrationViewModel
-import ci.nsu.mobile.main.viewmodel.state.RegisterEvents
+import ci.nsu.mobile.main.viewmodel.registration.RegisterEvents
+import ci.nsu.mobile.main.viewmodel.registration.RegistrationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +72,12 @@ fun RegistrationScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Регистрация", fontSize = 30.sp, modifier = Modifier.padding(vertical = 20.dp))
+            Text("Регистрация", fontSize = 30.sp, modifier = Modifier.padding(top = 20.dp, bottom = 5.dp))
+
+            Text("* - обязательное для заполнения поле", color = Color.Red,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp)
+            )
 
             if (state.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.padding(top = 20.dp, bottom = 10.dp))
@@ -82,14 +88,16 @@ fun RegistrationScreen(
                 value = state.lastName,
                 onValueChange = { viewModel.registerEvent(RegisterEvents.SurnameChanged(it))},
                 hasStar = true,
-                placeholder = "Фамилия"
+                placeholder = "Фамилия",
+                isError = "LastName" in state.errorFields,
             )
 
             TextFieldWithOptionalStar(
                 value = state.firstName,
                 onValueChange = { viewModel.registerEvent(RegisterEvents.NameChanged(it))},
                 hasStar = true,
-                placeholder = "Имя"
+                placeholder = "Имя",
+                isError = "FirstName" in state.errorFields
             )
 
             TextFieldWithOptionalStar(
@@ -177,7 +185,7 @@ fun RegistrationScreen(
                     },
                     modifier = Modifier.menuAnchor(
                         ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                        enabled = true).padding(bottom = 10.dp).fillMaxWidth(0.81f)
+                        enabled = true).padding(bottom = 20.dp).fillMaxWidth(0.81f)
                 )
                 ExposedDropdownMenu(
                     expanded = state.showDDMenu,
@@ -207,7 +215,8 @@ fun RegistrationScreen(
                 value = state.login,
                 onValueChange = { viewModel.registerEvent(RegisterEvents.LoginChanged(it))},
                 hasStar = true,
-                placeholder = "Логин"
+                placeholder = "Логин",
+                isError = "Login" in state.errorFields
             )
             TextFieldWithOptionalStar(
                 value = state.password,
@@ -224,13 +233,15 @@ fun RegistrationScreen(
                         Icon(icon, contentDescription)
                     }
                 },
+                isError = "Password" in state.errorFields,
                 visualTransformation = if (!state.passwordState) PasswordVisualTransformation() else VisualTransformation.None
             )
             TextFieldWithOptionalStar(
                 value = state.email,
                 onValueChange = { viewModel.registerEvent(RegisterEvents.EmailChanged(it))},
                 hasStar = true,
-                placeholder = "Почта"
+                placeholder = "Почта",
+                isError = "Email" in state.errorFields
             )
             TextFieldWithOptionalStar(
                 value = state.phoneNumber,
@@ -247,7 +258,10 @@ fun RegistrationScreen(
             )
 
             if (state.errorMessage != null) {
-                Text(state.errorMessage.toString(), color = Color.Red)
+                Text(state.errorMessage.toString(), color = Color.Red,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }

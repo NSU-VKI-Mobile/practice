@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.viewmodel.state
+package ci.nsu.mobile.main.viewmodel.registration
 
 import ci.nsu.mobile.main.data.network.model.GroupDto
 
@@ -24,7 +24,8 @@ data class RegisterState(
     val passwordState: Boolean = false,
     val showDatePicker: Boolean = false,
     val isLoading: Boolean = false,
-    val isLoadingGroups: Boolean = false
+    val isLoadingGroups: Boolean = false,
+    val errorFields: Set<String> = emptySet()
 )
 
 sealed class RegisterEvents {

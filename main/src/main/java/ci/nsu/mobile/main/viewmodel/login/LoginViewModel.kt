@@ -1,10 +1,8 @@
-package ci.nsu.mobile.main.viewmodel
+package ci.nsu.mobile.main.viewmodel.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.repository.AuthRepository
-import ci.nsu.mobile.main.viewmodel.state.LoginEvents
-import ci.nsu.mobile.main.viewmodel.state.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,56 +19,68 @@ class LoginViewModel @Inject constructor(val repository: AuthRepository) : ViewM
     fun loginEvent(event: LoginEvents) {
         when(event) {
             is LoginEvents.LoginChanged -> {
-                _state.update { it.copy(login = event.newLogin) }
+                _state.update { it.copy(login = event.newLogin,
+                    errorFields = it.errorFields - "Login") }
             }
             is LoginEvents.PasswordChanged -> {
-                _state.update { it.copy(password = event.newPassword) }
+                _state.update { it.copy(password = event.newPassword,
+                    errorFields = it.errorFields - "Password" ) }
             }
             is LoginEvents.PasswordVisibilityChanged -> {
                 _state.update { it.copy(passwordState = event.newState) }
             }
-
             is LoginEvents.SubmitLogin -> if (validationLoginScreen()) login()
             is LoginEvents.CleanAll ->  resetState()
         }
     }
 
     private fun validationLoginScreen(): Boolean {
-        val stateValue = _state.value
+        val errorFields = mutableSetOf<String>()
 
-        return when {
-            stateValue.login.isEmpty() -> {
-                _state.update { it.copy(errorMessage = "Введите логин") }
-                false
-            }
-            stateValue.password.isEmpty() -> {
-                _state.update { it.copy(errorMessage = "Введите пароль") }
-                false
-            }
-            else -> {
-                _state.update { it.copy(errorMessage = null) }
-                true
-            }
+        if (_state.value.login.isEmpty()) {
+            errorFields.add("Login")
         }
+        if (_state.value.password.isEmpty()) {
+            errorFields.add("Password")
+        }
+
+        _state.update {
+            it.copy(
+                errorFields = errorFields,
+                errorMessage = when {
+                    errorFields.size == 2 -> "Введите логин и пароль"
+                    errorFields.contains("Login") -> "Введите логин"
+                    errorFields.contains("Password") -> "Введите пароль"
+                    else -> null
+                }
+            )
+        }
+
+        return errorFields.isEmpty()
     }
+
     private fun login() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-
             val result = repository.login(_state.value.login, _state.value.password)
             if (result.isSuccess) {
                 _state.update { it.copy(isSuccess = true, isLoading = false, errorMessage = null) }
             }
             if (result.isFailure) {
-                _state.update { it.copy(isSuccess = false, isLoading = false ,errorMessage = "error login event")}
+                _state.update { it.copy(isSuccess = false, isLoading = false ,errorMessage = "Ошибка входа. Проверьте введенные данные")}
             }
         }
     }
 
     private fun resetState() {
-        _state.update{it.copy(login = "")}
-        _state.update{it.copy(password = "")}
-        _state.update{it.copy(errorMessage = null)}
-        _state.update{it.copy(isSuccess = false)}
+        _state.update {
+            it.copy(
+                login = "",
+                password = "",
+                errorMessage = null,
+                isSuccess = false,
+                errorFields = emptySet()
+            )
+        }
     }
 }
