@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.presentation.ui.screens
+package ci.nsu.mobile.main.presentation.screens
 
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement

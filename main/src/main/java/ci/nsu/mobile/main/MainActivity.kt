@@ -9,7 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.data.AppDatabase
 import ci.nsu.mobile.main.domain.DepositRepository
 import ci.nsu.mobile.main.navigation.NavControlFun
-import ci.nsu.mobile.main.presentation.ui.theme.AppTheme
+import ci.nsu.mobile.main.presentation.theme.AppTheme
 import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
 import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModelFactory
 import ci.nsu.mobile.main.viewmodel.HistoryDepositsViewModel

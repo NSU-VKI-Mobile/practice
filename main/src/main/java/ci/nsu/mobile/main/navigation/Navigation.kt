@@ -4,11 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import ci.nsu.mobile.main.presentation.ui.screens.FirstScreenContent
-import ci.nsu.mobile.main.presentation.ui.screens.HistoryScreenContent
-import ci.nsu.mobile.main.presentation.ui.screens.MainScreenContent
-import ci.nsu.mobile.main.presentation.ui.screens.ResultScreenContent
-import ci.nsu.mobile.main.presentation.ui.screens.SecondScreenContent
+import ci.nsu.mobile.main.presentation.screens.FirstScreenContent
+import ci.nsu.mobile.main.presentation.screens.HistoryScreenContent
+import ci.nsu.mobile.main.presentation.screens.MainScreenContent
+import ci.nsu.mobile.main.presentation.screens.ResultScreenContent
+import ci.nsu.mobile.main.presentation.screens.SecondScreenContent
 import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
 import ci.nsu.mobile.main.viewmodel.HistoryDepositsViewModel
 
