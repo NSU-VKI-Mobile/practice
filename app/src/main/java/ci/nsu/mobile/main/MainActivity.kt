@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,15 +18,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ci.nsu.mobile.main.api.TokenManager
 import ci.nsu.mobile.main.sl.ServiceLocator
-import ci.nsu.mobile.main.ui.screens.ErrorScreen
-import ci.nsu.mobile.main.ui.screens.LogInScreen
 import ci.nsu.mobile.main.ui.screens.MainScreen
-import ci.nsu.mobile.main.ui.screens.RegistryScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
-import ci.nsu.mobile.main.vm.DepositsViewModel
-import ci.nsu.mobile.main.vm.LoginAndRegViewModel
+import com.example.auth.manager.AuthManagerImpl
+import com.example.auth.ui.ErrorScreen
+import com.example.auth.ui.RegistryScreen
+import com.example.auth.ui.LogInScreen
+import com.example.auth.vm.LoginAndRegViewModel
+import com.example.calculations.vm.DepositsViewModel
+import com.example.domain.interfaces.AuthManager
 
 sealed class Screen(val route: String) {
     object LogIn : Screen("login")
@@ -66,12 +65,14 @@ fun Greeting(
     val depositViewModel: DepositsViewModel = viewModel(
         factory = serviceLocator.viewModelFactory
     )
+
+    val authManager: AuthManager = AuthManagerImpl()
     val navController = rememberNavController()
     NavHost(
         modifier = modifier
             .padding(start = 20.dp),
         navController = navController,
-        startDestination = if(TokenManager.token == null) Screen.LogIn.route else Screen.Main.route
+        startDestination = if(authManager.isLoggedIn()) Screen.Main.route else Screen.LogIn.route
     ) {
         composable(Screen.LogIn.route) {
             LogInScreen(
@@ -96,6 +97,7 @@ fun Greeting(
             MainScreen(
                 depositsViewModel = depositViewModel,
                 authViewModel = authViewModel,
+                authManager = authManager,
                 onBackClick = {authViewModel.logOut(); navController.navigate(Screen.LogIn.route)}
             )
         }

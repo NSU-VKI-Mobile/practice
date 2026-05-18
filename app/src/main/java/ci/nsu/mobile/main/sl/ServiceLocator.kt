@@ -1,13 +1,11 @@
 package ci.nsu.mobile.main.sl
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import androidx.lifecycle.ViewModelProvider
-import ci.nsu.mobile.main.data.dbo.AppDatabase
-import ci.nsu.mobile.main.data.repository.AuthRepository
-import ci.nsu.mobile.main.data.repository.DepositRepository
 import ci.nsu.mobile.main.vm.ViewModelFactory
+import com.example.auth.data.repository.AuthRepository
+import com.example.calculations.data.db.AppDatabase
+import com.example.calculations.data.repository.DepositRepository
 
 class ServiceLocator(private val context: Context) {
 

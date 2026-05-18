@@ -29,8 +29,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.R
-import ci.nsu.mobile.main.vm.DepositsViewModel
-import ci.nsu.mobile.main.vm.LoginAndRegViewModel
+import com.example.auth.ui.UserListScreen
+import com.example.auth.vm.LoginAndRegViewModel
+import com.example.calculations.ui.CalcScreen
+import com.example.calculations.ui.HistoryCalcScreen
+import com.example.calculations.ui.Input1Screen
+import com.example.calculations.ui.Input2Screen
+import com.example.calculations.vm.DepositsViewModel
+import com.example.domain.interfaces.AuthManager
 
 sealed class Screen(val route: String) {
     object Input1 : Screen("input1")
@@ -53,6 +59,7 @@ sealed class UseIcons(val icon: ImageVector){
 fun MainScreen(
     depositsViewModel: DepositsViewModel,
     authViewModel: LoginAndRegViewModel,
+    authManager: AuthManager,
     onBackClick : () -> Unit
 ){
     var selectedItem by remember { mutableIntStateOf(0) }
@@ -122,7 +129,10 @@ fun MainScreen(
                 UserListScreen(authViewModel)
             }
             composable(Screen.HistoryCalc.route) {
-                HistoryCalcScreen(depositsViewModel)
+                HistoryCalcScreen(
+                    depositsViewModel,
+                    authManager.getCurrentUser()?.id ?: -1
+                )
             }
             composable(Screen.Input1.route) {
                 Input1Screen(
@@ -140,7 +150,8 @@ fun MainScreen(
             composable(Screen.Calc.route) {
                 CalcScreen(
                     onMainClick = { navController.popBackStack(Screen.Input1.route, inclusive = false) },
-                    viewModel = depositsViewModel
+                    viewModel = depositsViewModel,
+                    authManager.getCurrentUser()?.id ?: -1
                 )
             }
         }
