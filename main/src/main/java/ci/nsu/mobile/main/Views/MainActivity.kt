@@ -1,5 +1,7 @@
 package ci.nsu.mobile.main.Views
 
+import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -30,99 +32,111 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ci.nsu.mobile.main.ViewModels.MainActivityViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.savedstate.SavedStateRegistryOwner
+import ci.nsu.mobile.main.Auth.TokenManager
+import ci.nsu.mobile.main.Network.ApiService
+import ci.nsu.mobile.main.Network.RetrofitClient
+import ci.nsu.mobile.main.Repository.AuthRepository
+import ci.nsu.mobile.main.ViewModels.LoginViewModel
+import ci.nsu.mobile.main.ViewModels.RegistrationViewModel
+import ci.nsu.mobile.main.ViewModels.UserListViewModel
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 
 class MainActivity : ComponentActivity() {
-    private lateinit var viewModel: MainActivityViewModel
+    private lateinit var tokenManager: TokenManager
+    private lateinit var apiService: ApiService
+    private lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Инициализируем ViewModel (фабрика с SavedStateHandle)
-        viewModel = ViewModelProvider(
-            this, SavedStateViewModelFactory(application, this)
-        )[MainActivityViewModel::class.java]
+        tokenManager = TokenManager(applicationContext)
+        apiService = RetrofitClient.getApiService(tokenManager)
+        authRepository = AuthRepository(apiService, tokenManager)
 
         setContent {
             PracticeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val login by viewModel.login.collectAsState()
-                    val password by viewModel.password.collectAsState()
-                    MainActivityScreen(
-                        login = login,
-                        onLoginChange = { viewModel.updateLogin(it) },
-                        password = password,
-                        onPasswordChange = { viewModel.updatePassword(it) },
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+                // Общая ViewModel для навигации (можно и без неё)
+                NavHost(navController, startDestination = "login") {
+                    composable("login") {
+                        val loginViewModel: LoginViewModel = viewModel(
+                            factory = loginViewModelFactory(application, this@MainActivity, authRepository)
+                        )
+                        LoginScreen(
+                            viewModel = loginViewModel,
+                            onLoginSuccess = { navController.navigate("userList") },
+                            onNavigateToRegister = { navController.navigate("register") }
+                        )
+                    }
+                    composable("register") {
+                        val registerViewModel: RegistrationViewModel = viewModel(
+                            factory = viewModelFactory { RegistrationViewModel(authRepository) }
+                        )
+                        RegistrationScreen(
+                            viewModel = registerViewModel,
+                            onRegisterSuccess = { navController.popBackStack() },
+                            onNavigateBack = { navController.popBackStack() }
+                        )
+                    }
+                    composable("userList") {
+                        val userListViewModel: UserListViewModel = viewModel(
+                            factory = viewModelFactory { UserListViewModel(authRepository) }
+                        )
+                        UserListScreen(
+                            viewModel = userListViewModel,
+                            onLogout = {
+                                navController.popBackStack("login", inclusive = false)
+                                navController.navigate("login") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
     }
-}
 
-@Composable
-fun MainActivityScreen(
-    login: String,
-    onLoginChange: (String) -> Unit,
-    password: String,
-    onPasswordChange: (String) -> Unit,
-    modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        OutlinedTextField(
-            value = login,
-            onValueChange = onLoginChange,
-            label = {Text("Логин")},
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = onPasswordChange,
-            label = {Text("Пароль")},
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick =
-            {
-
-            }) { Text("Войти") }
-        Spacer(modifier = Modifier.height(16.dp))
-        val annotatedText = buildAnnotatedString {
-            append("Нет аккаунта?\t")
-            withLink(
-                LinkAnnotation.Clickable(
-                    tag = "register",  // уникальный идентификатор (может быть любым)
-                    linkInteractionListener = {
-                        // здесь выполняется переход
-                        val intent = Intent(context, RegistrationActivity::class.java)
-                        context.startActivity(intent)
-                    },
-                    styles = TextLinkStyles(
-                        style = SpanStyle(
-                            color = androidx.compose.ui.graphics.Color.Blue,
-                            textDecoration = TextDecoration.Underline
-                        )
-                    )
-                )
-            ) {
-                append("Зарегистрироваться")
-            }
+    // Вспомогательная функция для создания фабрики ViewModel
+    private inline fun <reified VM : ViewModel> savedStateViewModelFactory(
+        crossinline factory: (SavedStateHandle) -> VM
+    ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return factory(SavedStateHandle()) as T
         }
+    }
 
-        BasicText(text = annotatedText)
+    private inline fun <reified VM : ViewModel> viewModelFactory(
+        crossinline factory: () -> VM
+    ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return factory() as T
+        }
+    }
+
+    private fun loginViewModelFactory(
+        application: Application,
+        owner: SavedStateRegistryOwner,
+        repository: AuthRepository
+    ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+        @SuppressLint("RestrictedApi")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            val savedStateHandle = SavedStateHandle.createHandle(
+                owner.savedStateRegistry.consumeRestoredStateForKey("login"),
+                null
+            )
+            return LoginViewModel(savedStateHandle, repository) as T
+        }
     }
 }
