@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "ci.nsu.mobile.domain"
+    namespace = "com.example.domain"
     compileSdk = 36
 
     defaultConfig { minSdk = 24 }
