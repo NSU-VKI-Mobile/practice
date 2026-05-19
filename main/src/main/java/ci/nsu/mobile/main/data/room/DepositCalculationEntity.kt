@@ -1,7 +1,4 @@
-package ci.nsu.mobile.main.data
-
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+package ci.nsu.mobile.main.data.room
 
 @Entity(tableName = "deposit_calculations")
 data class DepositCalculationEntity(

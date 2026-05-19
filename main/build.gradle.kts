@@ -81,6 +81,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.room3.common.jvm)
+    implementation(libs.androidx.room3.runtime)
     kapt(libs.hilt.compiler)
 
     // Coil

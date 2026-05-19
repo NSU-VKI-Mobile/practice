@@ -1,14 +1,17 @@
-package ci.nsu.mobile.main.viewmodel
+package ci.nsu.mobile.main.viewmodel.deposit
 
 import androidx.lifecycle.ViewModel
-import ci.nsu.mobile.main.data.DepositCalculationEntity
-import ci.nsu.mobile.main.domain.DepositRepository
+import ci.nsu.mobile.main.data.room.DepositCalculationEntity
+import ci.nsu.mobile.main.data.repository.DepositRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class DepositCalculationViewModel(val repos: DepositRepository): ViewModel() {
+@HiltViewModel
+class DepositCalculationViewModel @Inject constructor(val repository: DepositRepository) : ViewModel(){
     private val _uiState = MutableStateFlow(DepositUIState())
     val uiState: StateFlow<DepositUIState> = _uiState.asStateFlow()
     private val _errorMessage = MutableStateFlow("")
@@ -120,9 +123,9 @@ class DepositCalculationViewModel(val repos: DepositRepository): ViewModel() {
             interestEarned = state.interestEarned,
             calculationDate = state.calculationDate
         )
-        val exist = repos.findDuplication(entity)
+        val exist = repository.findDuplication(entity)
         if (exist == null) {
-            repos.insertDeposit(entity)
+            repository.insertDeposit(entity)
              return true
         } else {
             _errorMessage.value = "Расчет уже сохранен!"

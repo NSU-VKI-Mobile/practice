@@ -4,13 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import ci.nsu.mobile.main.presentation.screens.FirstScreenContent
-import ci.nsu.mobile.main.presentation.screens.HistoryScreenContent
-import ci.nsu.mobile.main.presentation.screens.MainScreenContent
-import ci.nsu.mobile.main.presentation.screens.ResultScreenContent
-import ci.nsu.mobile.main.presentation.screens.SecondScreenContent
-import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
-import ci.nsu.mobile.main.viewmodel.HistoryDepositsViewModel
+import ci.nsu.mobile.main.ui.depositScreens.FirstScreenContent
+import ci.nsu.mobile.main.ui.depositScreens.HistoryScreenContent
+import ci.nsu.mobile.main.ui.depositScreens.MainScreenContent
+import ci.nsu.mobile.main.ui.depositScreens.ResultScreenContent
+import ci.nsu.mobile.main.ui.depositScreens.SecondScreenContent
+import ci.nsu.mobile.main.viewmodel.deposit.DepositCalculationViewModel
+import ci.nsu.mobile.main.viewmodel.historyDeposits.HistoryDepositsViewModel
 
 sealed class Screen(val route: String) {
     object MainScreen : Screen("MainScreen")

@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.presentation.screens
+package ci.nsu.mobile.main.ui.depositScreens
 
 import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.navigation.Screen
-import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
+import ci.nsu.mobile.main.viewmodel.deposit.DepositCalculationViewModel
 import kotlinx.coroutines.launch
 import java.util.Date
 import java.util.Locale

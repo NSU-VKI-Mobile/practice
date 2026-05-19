@@ -14,7 +14,7 @@ import ci.nsu.mobile.main.viewmodel.users.UsersViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class AuthActivity : ComponentActivity() {
     private val loginViewModel: LoginViewModel by viewModels()
     private val registrationViewModel: RegistrationViewModel by viewModels()
     private val usersViewModel: UsersViewModel by viewModels()

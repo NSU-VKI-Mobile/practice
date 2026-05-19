@@ -1,7 +1,7 @@
-package ci.nsu.mobile.main.domain
+package ci.nsu.mobile.main.data.repository
 
-import ci.nsu.mobile.main.data.DepositCalculationEntity
-import ci.nsu.mobile.main.data.DepositDao
+import ci.nsu.mobile.main.data.room.DepositCalculationEntity
+import ci.nsu.mobile.main.data.room.DepositDao
 import kotlinx.coroutines.flow.Flow
 
 class DepositRepository(val depositDao: DepositDao) {

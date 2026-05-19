@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.presentation.screens
+package ci.nsu.mobile.main.ui.depositScreens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,7 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.navigation.Screen
-import ci.nsu.mobile.main.viewmodel.DepositCalculationViewModel
+import ci.nsu.mobile.main.viewmodel.deposit.DepositCalculationViewModel
 import kotlinx.coroutines.launch
 
 @Composable

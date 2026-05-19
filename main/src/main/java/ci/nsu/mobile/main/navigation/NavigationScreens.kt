@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import ci.nsu.mobile.main.ui.screens.LoginScreen
-import ci.nsu.mobile.main.ui.screens.RegistrationScreen
+import ci.nsu.mobile.main.ui.authScreens.LoginScreen
+import ci.nsu.mobile.main.ui.authScreens.RegistrationScreen
 import ci.nsu.mobile.main.viewmodel.login.LoginViewModel
 import ci.nsu.mobile.main.viewmodel.registration.RegistrationViewModel
 import ci.nsu.mobile.main.viewmodel.users.UsersViewModel

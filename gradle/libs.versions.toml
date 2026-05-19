@@ -32,6 +32,8 @@ datastore = "1.0.0"
 # Coil
 coil = "2.5.0"
 material3 = "1.4.0"
+room3CommonJvm = "3.0.0-alpha04"
+room3Runtime = "3.0.0-alpha04"
 
 [libraries]
 # AndroidX
@@ -83,6 +85,8 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+androidx-room3-common-jvm = { group = "androidx.room3", name = "room3-common-jvm", version.ref = "room3CommonJvm" }
+androidx-room3-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "room3Runtime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
