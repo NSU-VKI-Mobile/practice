@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -48,8 +49,11 @@ dependencies {
     // Для делегата viewModels (если не тянется с appcompat)
     implementation("androidx.activity:activity-ktx:1.9.0")
 
-    // RecyclerView
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
