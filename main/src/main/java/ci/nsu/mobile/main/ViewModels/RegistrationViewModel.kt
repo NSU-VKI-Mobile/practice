@@ -1,10 +1,10 @@
 package ci.nsu.mobile.main.ViewModels
 
-import RegisterRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.Data.Models.GroupDto
 import ci.nsu.mobile.main.Data.Models.PersonDto
+import ci.nsu.mobile.main.Data.Models.RegisterRequest
 import ci.nsu.mobile.main.Repository.AuthRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,11 +73,14 @@ class RegistrationViewModel(
 
     fun loadGroups() {
         viewModelScope.launch {
+            _isLoading.value = true
             val result = repository.getGroups()
+            _isLoading.value = false
             if (result.isSuccess) {
                 _groups.value = result.getOrNull() ?: emptyList()
             } else {
-                _errorMessage.value = "Не удалось загрузить группы"
+                val exception = result.exceptionOrNull()
+                _errorMessage.value = "Ошибка загрузки групп: ${exception?.message}"
             }
         }
     }

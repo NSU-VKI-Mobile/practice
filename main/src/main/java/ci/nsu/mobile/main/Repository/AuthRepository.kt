@@ -1,12 +1,12 @@
 package ci.nsu.mobile.main.Repository
 
-import RegisterRequest
 import ci.nsu.mobile.main.Auth.TokenManager
 import ci.nsu.mobile.main.Data.Models.GroupDto
 import ci.nsu.mobile.main.Data.Models.PersonDto
 import ci.nsu.mobile.main.Data.Models.UserDto
 import ci.nsu.mobile.main.Network.ApiService
-import ci.nsu.mobile.main.Network.LoginRequest
+import ci.nsu.mobile.main.Data.Models.LoginRequest
+import ci.nsu.mobile.main.Data.Models.RegisterRequest
 
 class AuthRepository(
     private val apiService: ApiService,

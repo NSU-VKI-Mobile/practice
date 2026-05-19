@@ -1,8 +1,7 @@
-package ci.nsu.mobile.main.Network;
+package ci.nsu.mobile.main.Network
 
-import RegisterRequest
-import retrofit2.http.*
 import ci.nsu.mobile.main.Data.Models.*
+import retrofit2.http.*
 
 interface ApiService {
     @POST("auth/login")
@@ -17,9 +16,3 @@ interface ApiService {
     @GET("groups")
     suspend fun getGroups(): List<GroupDto>
 }
-
-// Simple data class for login
-data class LoginRequest(
-        val login: String,
-        val password: String
-)

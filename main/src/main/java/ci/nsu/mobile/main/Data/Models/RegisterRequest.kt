@@ -1,6 +1,9 @@
-import ci.nsu.mobile.main.Data.Models.PersonDto
+package ci.nsu.mobile.main.Data.Models
+
+import android.annotation.SuppressLint
 import kotlinx.serialization.Serializable
 
+@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class RegisterRequest(
     val login: String,
