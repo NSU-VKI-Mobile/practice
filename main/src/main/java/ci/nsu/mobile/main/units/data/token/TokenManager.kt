@@ -20,4 +20,7 @@ class TokenManager @Inject constructor(
         set(value) {
             prefs.edit().putString(KEY_TOKEN, value).apply()
         }
+    fun clearToken() {
+        prefs.edit().remove(KEY_TOKEN).apply()
+    }
 }
