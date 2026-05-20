@@ -51,7 +51,7 @@ class AuthRepository(
             if (response.isSuccessful && response.body() != null) {
                 val authResponse = response.body()!!
                 userPreferences.saveToken(authResponse.token)
-                // Временно сохраняем userId как заглушку (потом заменим на реальный из ответа)
+                // сохраняем userId как заглушку ибо сервер не возвращает id(?)
                 userPreferences.saveUserId(1L)
                 ApiResult.Success(authResponse)
             } else {

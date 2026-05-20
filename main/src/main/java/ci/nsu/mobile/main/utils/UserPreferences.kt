@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
@@ -27,12 +26,6 @@ class UserPreferences(private val context: Context) {
         }
     }
 
-    fun getTokenFlow(): Flow<String?> {
-        return context.dataStore.data.map { prefs ->
-            prefs[TOKEN_KEY]
-        }
-    }
-
     suspend fun getToken(): String? {
         return context.dataStore.data.map { prefs ->
             prefs[TOKEN_KEY]
@@ -43,12 +36,6 @@ class UserPreferences(private val context: Context) {
     suspend fun saveUserId(userId: Long) {
         context.dataStore.edit { prefs ->
             prefs[USER_ID_KEY] = userId
-        }
-    }
-
-    fun getUserIdFlow(): Flow<Long?> {
-        return context.dataStore.data.map { prefs ->
-            prefs[USER_ID_KEY]
         }
     }
 

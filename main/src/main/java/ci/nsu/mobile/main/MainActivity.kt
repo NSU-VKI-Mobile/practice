@@ -99,7 +99,7 @@ fun AppNavigation() {
             )
         }
 
-        // Main App (with BottomNavigation)
+        // Главный экран (с BottomNavigation)
         composable("main") {
             MainScreen(
                 onLogout = {
