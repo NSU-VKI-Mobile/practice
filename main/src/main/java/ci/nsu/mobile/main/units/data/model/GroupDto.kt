@@ -1,13 +1,13 @@
 package ci.nsu.mobile.main.units.data.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 
 @Serializable
 data class GroupDto(
-    @JsonNames("groupId", "id")
+    @SerialName("groupId")
     val id: Int,
-    @JsonNames("groupName", "name")
+    @SerialName("groupName")
     val name: String
 )

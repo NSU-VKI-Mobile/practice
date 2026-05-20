@@ -9,5 +9,5 @@ data class UserDto(
     val email: String,
     val phoneNumber: String,
     val roleId: Int,
-    val person: PersonDto
+    val person: PersonDto? = null
 )
