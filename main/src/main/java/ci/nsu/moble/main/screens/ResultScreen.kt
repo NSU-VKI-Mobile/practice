@@ -22,13 +22,16 @@ fun ResultScreen(nav: NavController, vm: DepositViewModel) {
             Modifier.padding(padding).padding(16.dp)
         ) {
 
-            Card {
+            Card (
+                modifier = Modifier
+                    .fillMaxWidth()
+            ){
                 Column(Modifier.padding(16.dp)) {
 
                     Text("Старт: ${s.initialAmount}")
                     Text("Срок: ${s.months}")
                     Text("Ставка: ${s.rate}%")
-
+                    Text("Пополнение: ${s.monthly}")
                     Text("Итог: ${"%.2f".format(s.finalAmount)}")
                     Text("Доход: ${"%.2f".format(s.interest)}")
                 }
@@ -40,7 +43,8 @@ fun ResultScreen(nav: NavController, vm: DepositViewModel) {
                 onClick = { vm.save();
                     nav.navigate("home") {
                         popUpTo("home") { inclusive = true }
-                    }},
+                    }
+                          vm.clear()},
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Сохранить")

@@ -53,8 +53,8 @@ fun HistoryScreen(
                     }
                 ) {
                     Column(Modifier.padding(16.dp)) {
-                        Text("Взнос: ${item.initialAmount}")
-                        Text("Итог: ${item.finalAmount}")
+                        Text("Взнос: ${String.format("%.2f", item.initialAmount)}")
+                        Text("Итог: ${String.format("%.2f", item.finalAmount)}")
                     }
                 }
             }

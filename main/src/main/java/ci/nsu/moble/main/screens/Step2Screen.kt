@@ -1,9 +1,11 @@
 package ci.nsu.moble.main.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ci.nsu.moble.main.viewmodel.DepositViewModel
@@ -94,9 +96,11 @@ fun Step2Screen(nav: NavController, vm: DepositViewModel) {
 
             OutlinedTextField(
                 value = state.monthly,
-                onValueChange = { vm.setMonthly(it) },
+                onValueChange = { if (it.all { char -> char.isDigit() }) {
+                    vm.setMonthly(it)}  },
                 label = { Text("Ежемесячное пополнение") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
             Spacer(Modifier.height(20.dp))

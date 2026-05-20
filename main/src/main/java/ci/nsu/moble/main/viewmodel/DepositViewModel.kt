@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.math.pow
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 data class DepositState(
     val initialAmount: String = "",
@@ -99,6 +101,10 @@ class DepositViewModel(
                 )
             )
         }
+    }
+
+    fun clear(){
+        _state.value = DepositState()
     }
 
     fun deleteDeposit(item: DepositEntity) {

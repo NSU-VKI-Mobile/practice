@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
@@ -19,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ci.nsu.moble.main.viewmodel.DepositViewModel
@@ -40,18 +42,23 @@ fun Step1Screen(nav: NavController, vm: DepositViewModel) {
 
             OutlinedTextField(
                 value = state.initialAmount,
-                onValueChange = { vm.setInitial(it) },
+                onValueChange = { if (it.all { char -> char.isDigit() }) {
+                    vm.setInitial(it)
+                } },
                 label = { Text("Стартовый взнос") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
             Spacer(Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = state.months,
-                onValueChange = { vm.setMonths(it) },
+                onValueChange = { if (it.all { char -> char.isDigit() }) {
+                    vm.setMonths(it)} },
                 label = { Text("Срок (мес)") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
             Spacer(Modifier.height(8.dp))
