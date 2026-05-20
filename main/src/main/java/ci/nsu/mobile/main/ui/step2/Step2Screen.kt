@@ -18,14 +18,21 @@ fun Step2Screen(
 
     val months = viewModel.months.toIntOrNull() ?: 0
 
-    val percentOptions = when {
-        months < 6 -> listOf("15")
-        months < 12 -> listOf("10")
-        else -> listOf("5")
-    }
+    val regex = Regex("^\\d*(\\.\\d{0,2})?$")
 
-    var selectedPercent by remember { mutableStateOf(percentOptions.first()) }
+    val percentOptions = listOf("5", "10", "15")
+
+    var selectedPercent by remember(viewModel.months) {
+        mutableStateOf(
+            when (viewModel.months.toIntOrNull() ?: 0) {
+                in 0..5 -> "5"
+                in 6..11 -> "10"
+                else -> "15"
+            }
+        )
+    }
     var expanded by remember { mutableStateOf(false) }
+    var monthsR by remember { mutableStateOf(viewModel.months) }
 
     Column(
         modifier = Modifier
@@ -59,6 +66,20 @@ fun Step2Screen(
                         onClick = {
                             selectedPercent = item
                             expanded = false
+                            if (selectedPercent == "5") {
+                                if (monthsR.toInt() > 5)
+                                    monthsR = "5"
+                            }
+                            if (selectedPercent == "10") {
+                                if (monthsR.toInt() < 6)
+                                    monthsR = "6"
+                                else if (monthsR.toInt() > 11)
+                                    monthsR = "11"
+                            }
+                            if (selectedPercent == "15") {
+                                if (monthsR.toInt() < 12)
+                                    monthsR = "12"
+                            }
                         }
                     )
                 }
@@ -68,9 +89,26 @@ fun Step2Screen(
         Spacer(Modifier.height(12.dp))
 
         TextField(
+            value = monthsR,
+            onValueChange = {
+                if (it.all { ch -> ch.isDigit() } && it.length <= 2) {
+                    monthsR = it
+                }
+                selectedPercent =
+                    when (monthsR.toIntOrNull() ?: 0) {
+                        in 0..5 -> "5"
+                        in 6..11 -> "10"
+                        else -> "15" }
+            },
+            label = { Text("Срок") }
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        TextField(
             value = topUp,
             onValueChange = {
-                if (it.all { ch -> ch.isDigit() } && it.length <= 7) {
+                if ((it.isEmpty() || it.matches(regex)) && it.length <= 7) {
                     topUp = it
                 }
             },
@@ -80,6 +118,7 @@ fun Step2Screen(
         Spacer(Modifier.height(16.dp))
 
         Button(onClick = {
+            viewModel.months = monthsR
             viewModel.percent = selectedPercent
             viewModel.topUp = topUp
             navController.navigate("result")

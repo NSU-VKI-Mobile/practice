@@ -8,7 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ci.nsu.mobile.main.viewmodel.DepositViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+fun formatDate(time: Long): String {
+    val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+    return sdf.format(Date(time))
+}
 @Composable
 fun HistoryScreen(
     navController: NavController,
@@ -17,17 +24,28 @@ fun HistoryScreen(
     val history = viewModel.history.collectAsState().value
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
+
         Text("История")
 
         Spacer(Modifier.height(12.dp))
 
-        LazyColumn {
+        // список занимает всё доступное место
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+        ) {
             items(history) { item ->
-                Card {
-                    Column(Modifier.padding(8.dp)) {
-                        Text("Дата: ${item.calculationDate}")
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp) // ✔ отступ между плитками
+                ) {
+                    Column(Modifier.padding(12.dp)) {
+                        Text("Дата: ${formatDate(item.calculationDate)}")
                         Text("Старт: ${item.initialAmount}")
                         Text("Итог: ${item.finalAmount}")
                     }
@@ -37,9 +55,12 @@ fun HistoryScreen(
 
         Spacer(Modifier.height(12.dp))
 
-        Button(onClick = {
-            navController.navigate("main")
-        }) {
+        Button(
+            onClick = {
+                navController.navigate("main")
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("В начало")
         }
     }

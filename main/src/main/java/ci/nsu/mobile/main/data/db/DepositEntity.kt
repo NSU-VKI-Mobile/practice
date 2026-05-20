@@ -7,11 +7,11 @@ import androidx.room.PrimaryKey
 data class DepositEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val initialAmount: Int,
+    val initialAmount: Float,
     val periodMonths: Int,
     val interestRate: Double,
-    val monthlyTopUp: Int,
-    val finalAmount: Int,
-    val interestEarned: Int,
+    val monthlyTopUp: Float,
+    val finalAmount: Float,
+    val interestEarned: Float,
     val calculationDate: Long
 )

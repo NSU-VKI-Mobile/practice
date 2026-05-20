@@ -18,6 +18,7 @@ fun Step1Screen(
     var amount by remember { mutableStateOf("") }
     var months by remember { mutableStateOf("") }
     var isWarningVisible by remember { mutableStateOf(false) };
+    val regex = Regex("^\\d*(\\.\\d{0,2})?$")
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp)
@@ -29,7 +30,7 @@ fun Step1Screen(
         TextField(
             value = amount,
             onValueChange = {
-                if (it.all { ch -> ch.isDigit() } && it.length <= 7) {
+                if ((it.isEmpty() || it.matches(regex)) && it.length <= 7) {
                     amount = it
                 }
             },

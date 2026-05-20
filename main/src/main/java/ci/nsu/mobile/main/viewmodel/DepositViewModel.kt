@@ -29,31 +29,37 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
         loadHistory()
     }
 
-    fun calculateFinal(): Int {
-        val p = percent.toDoubleOrNull() ?: 0.0
-        val amount = startAmount.toIntOrNull() ?: 0
-        val monthsInt = months.toIntOrNull() ?: 0
-        val topUpInt = topUp.toIntOrNull() ?: 0
+    // ---------- CALCULATION ----------
 
-        var result = amount.toDouble()
+    fun calculateFinal(): Float {
+        val p = percent.toDoubleOrNull() ?: 0.0
+        val amount = startAmount.toDoubleOrNull() ?: 0.0
+        val monthsInt = months.toIntOrNull() ?: 0
+        val topUpVal = topUp.toDoubleOrNull() ?: 0.0
+
+        var result = amount
 
         for (i in 1..monthsInt) {
-            result += topUpInt
-            result += result * (p / 100 / 12)
+            result += topUpVal
+            result += result * (p / 100.0 / 12.0)
         }
 
-        return result.toInt()
+        return result.toFloat()
     }
 
-    fun calculateEarned(): Int {
+    fun calculateEarned(): Float {
         val final = calculateFinal()
-        val start = startAmount.toIntOrNull() ?: 0
-        val topUpInt = topUp.toIntOrNull() ?: 0
+
+        val start = startAmount.toDoubleOrNull() ?: 0.0
+        val topUpVal = topUp.toDoubleOrNull() ?: 0.0
         val monthsInt = months.toIntOrNull() ?: 0
 
-        val invested = start + (topUpInt * monthsInt)
-        return final - invested
+        val invested = start + (topUpVal * monthsInt)
+
+        return (final - invested).toFloat()
     }
+
+    // ---------- DB ----------
 
     fun loadHistory() {
         viewModelScope.launch {
@@ -61,13 +67,13 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun saveCalculation(finalAmount: Int, earned: Int) {
+    fun saveCalculation(finalAmount: Float, earned: Float) {
         viewModelScope.launch {
             val entity = DepositEntity(
-                initialAmount = startAmount.toIntOrNull() ?: 0,
+                initialAmount = startAmount.toFloatOrNull() ?: 0f,
                 periodMonths = months.toIntOrNull() ?: 0,
                 interestRate = percent.toDoubleOrNull() ?: 0.0,
-                monthlyTopUp = topUp.toIntOrNull() ?: 0,
+                monthlyTopUp = topUp.toFloatOrNull() ?: 0f,
                 finalAmount = finalAmount,
                 interestEarned = earned,
                 calculationDate = System.currentTimeMillis()
