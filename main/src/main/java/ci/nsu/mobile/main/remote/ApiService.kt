@@ -15,7 +15,7 @@ class ApiService {
     }
 
     suspend fun register(request: RegisterRequest) {
-        client.post("auth/login") {
+        client.post("auth/register") {
             setBody(request)
         }
     }

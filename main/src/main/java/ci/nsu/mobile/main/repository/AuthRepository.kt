@@ -14,21 +14,6 @@ class AuthRepository {
         password: String
     ): Result<UserDto> {
 
-        if (login.trim() == "admin" && password.trim() == "1234") {
-
-            Log.e("AUTH_TEST", "TEST LOGIN WORKED")
-
-            TokenManager.token = "test_token"
-
-            return Result.success(
-                UserDto(
-                    id = 1,
-                    login = "admin",
-                    email = "admin@test.com"
-                )
-            )
-        }
-
         return try {
 
             val response = api.login(
@@ -61,25 +46,6 @@ class AuthRepository {
     }
 
     suspend fun getUsers(): Result<List<UserDto>> {
-
-        // 🔥 TEST MODE
-        if (TokenManager.token == "test_token") {
-
-            return Result.success(
-                listOf(
-                    UserDto(
-                        id = 1,
-                        login = "admin",
-                        email = "admin@test.com"
-                    ),
-                    UserDto(
-                        id = 2,
-                        login = "test",
-                        email = "test@test.com"
-                    )
-                )
-            )
-        }
 
         return try {
 

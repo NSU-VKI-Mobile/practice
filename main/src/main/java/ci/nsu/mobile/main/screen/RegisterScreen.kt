@@ -1,12 +1,18 @@
 package ci.nsu.mobile.main.screen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.Alignment
 import ci.nsu.mobile.main.viewmodel.AuthViewModel
 import ci.nsu.mobile.main.model.PersonDto
 import ci.nsu.mobile.main.model.RegisterRequest
@@ -15,7 +21,8 @@ import ci.nsu.mobile.main.model.RegisterRequest
 @Composable
 fun RegisterScreen(
     viewModel: AuthViewModel,
-    onRegisterSuccess: () -> Unit
+    onRegisterSuccess: () -> Unit,
+    onNavigateBack: () -> Unit = {}
 ) {
 
     var firstName by remember { mutableStateOf("") }
@@ -41,10 +48,26 @@ fun RegisterScreen(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .imePadding()
+            .navigationBarsPadding()
             .padding(16.dp)
     ) {
 
-        Text("Регистрация", style = MaterialTheme.typography.headlineMedium)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Назад"
+                )
+            }
+
+            Text("Регистрация", style = MaterialTheme.typography.headlineMedium)
+            Spacer(Modifier.width(48.dp))
+        }
 
         Spacer(Modifier.height(12.dp))
 
@@ -100,34 +123,35 @@ fun RegisterScreen(
 
         Button(
             onClick = {
-                if (selectedGroupId == null) return@Button
+                if (login.isBlank()) { viewModel.setError("Введите логин"); return@Button }
+                if (password.isBlank()) { viewModel.setError("Введите пароль"); return@Button }
 
                 val person = PersonDto(
-                    firstName = firstName,
-                    lastName = lastName,
-                    middleName = middleName,
-                    birthDate = birthDate,
-                    gender = gender,
-                    groupId = selectedGroupId!!
+                    firstName = firstName.ifBlank { "" },
+                    lastName = lastName.ifBlank { "" },
+                    middleName = middleName.ifBlank { "" },
+                    birthDate = birthDate.ifBlank { "" },
+                    gender = gender.ifBlank { "" },
+                    groupId = selectedGroupId ?: 0
                 )
 
-                val request = RegisterRequest(
-                    login = login,
-                    password = password,
-                    email = email,
-                    phoneNumber = phone,
-                    roleId = 1,
-                    authAllowed = true,
-                    person = person
+                viewModel.register(
+                    RegisterRequest(login, password, email.ifBlank { "" }, phone.ifBlank { "" }, 1, true, person),
+                    onRegisterSuccess
                 )
-
-                viewModel.register(request) {
-                    onRegisterSuccess()
-                }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !viewModel.isLoading
         ) {
-            Text("Зарегистрироваться")
+            if (viewModel.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            } else {
+                Text("Зарегистрироваться")
+            }
+
         }
 
         Spacer(Modifier.height(12.dp))

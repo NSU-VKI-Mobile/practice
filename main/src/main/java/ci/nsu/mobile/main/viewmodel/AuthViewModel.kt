@@ -27,22 +27,43 @@ class AuthViewModel(
     var isLoggedIn by mutableStateOf(false)
         private set
 
+    fun setError(message: String) {
+        error = message
+    }
+
     fun login(login: String, password: String, onSuccess: () -> Unit) {
+        if (login.isBlank() || password.isBlank()) {
+            error = "Заполните логин и пароль"
+            return
+        }
         viewModelScope.launch {
             isLoading = true
             error = null
-
-            var result = repository.login(login, password)
-
-            isLoading = false
-
-            result.onSuccess {
-                isLoggedIn = true
-                onSuccess()
+            try{
+                repository.login(login, password).onSuccess {
+                    isLoggedIn = true
+                    onSuccess()
+                }.onFailure {
+                    error = it.message ?: "Ошибка входа"
+                }
+            } finally {
+                isLoading = false
             }
+        }
+    }
 
-            result.onFailure {
-                error = it.message
+    fun register(request: RegisterRequest, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            isLoading = true
+            error = null
+            try {
+                repository.register(request).onSuccess {
+                    onSuccess()
+                }.onFailure {
+                    error = it.message ?: "Ошибка регистрации"
+                }
+            } finally {
+                isLoading = false
             }
         }
     }
@@ -50,44 +71,35 @@ class AuthViewModel(
     fun loadUsers() {
         viewModelScope.launch {
             isLoading = true
-
-            val result = repository.getUsers()
-
-            isLoading = false
-
-            result.onSuccess { users = it }
-            result.onFailure { error = it.message }
+            error = null
+            try {
+                repository.getUsers().onSuccess { users = it }
+                    .onFailure { error = it.message ?: "Ошибка загрузки пользователей" }
+            } finally {
+                isLoading = false
+            }
         }
     }
 
     fun loadGroups() {
         viewModelScope.launch {
-            val result = repository.getGroups()
-            result.onSuccess { groups = it }
+            isLoading = true
+            error = null
+            try {
+                repository.getGroups().onSuccess { groups = it }
+                    .onFailure { error = it.message ?: "Ошибка загрузки групп" }
+            } finally {
+                isLoading = false
+            }
         }
     }
 
     fun logout() {
         repository.logout()
         isLoggedIn = false
-    }
-
-    fun register(request: RegisterRequest, onSuccess: () -> Unit) {
-        viewModelScope.launch {
-            isLoading = true
-            error = null
-
-            val result = repository.register(request)
-
-            isLoading = false
-            result.onSuccess {
-                onSuccess()
-            }
-
-            result.onFailure {
-                error = it.message
-            }
-        }
+        users = emptyList()
+        groups = emptyList()
+        error = null
     }
 
     fun clearError() {

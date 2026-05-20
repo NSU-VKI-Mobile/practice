@@ -79,6 +79,9 @@ class MainActivity : ComponentActivity() {
 
                                 onRegisterSuccess = {
                                     navController.popBackStack()
+                                },
+                                onNavigateBack = {
+                                    navController.popBackStack()
                                 }
                             )
                         }
