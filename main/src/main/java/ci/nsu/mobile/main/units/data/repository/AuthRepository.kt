@@ -8,8 +8,11 @@ import ci.nsu.mobile.main.units.data.model.UserDto
 import ci.nsu.mobile.main.units.data.token.TokenManager
 import okio.IOException
 import retrofit2.HttpException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthRepository(
+@Singleton
+class AuthRepository @Inject constructor(
     private val apiService: ApiService,
     private val tokenManager: TokenManager
 ) {
