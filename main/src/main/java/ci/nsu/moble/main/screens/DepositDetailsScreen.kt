@@ -1,9 +1,12 @@
 package ci.nsu.moble.main.ui.screens
 
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -19,6 +22,7 @@ fun DepositDetailsScreen(
     vm: DepositViewModel,
     item: DepositEntity
 ) {
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
@@ -32,6 +36,7 @@ fun DepositDetailsScreen(
             Modifier
                 .padding(padding)
                 .padding(16.dp)
+                .verticalScroll(scrollState)
         ) {
 
             Card(
