@@ -98,7 +98,7 @@ fun Greeting(
                 depositsViewModel = depositViewModel,
                 authViewModel = authViewModel,
                 authManager = authManager,
-                onBackClick = {authViewModel.logOut(); navController.navigate(Screen.LogIn.route)}
+                onBackClick = {authManager.logout(); navController.navigate(Screen.LogIn.route)}
             )
         }
     }
