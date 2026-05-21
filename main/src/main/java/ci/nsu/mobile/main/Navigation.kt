@@ -23,7 +23,6 @@ import ci.nsu.mobile.main.ui.deposit.DepositHistoryScreen
 import ci.nsu.mobile.main.ui.users.UsersScreen
 import ci.nsu.mobile.main.viewmodel.*
 
-
 @Composable
 fun AppNavigation(viewModelFactory: androidx.lifecycle.ViewModelProvider.Factory) {
     val navController = rememberNavController()
@@ -65,11 +64,17 @@ fun AppNavigation(viewModelFactory: androidx.lifecycle.ViewModelProvider.Factory
 
         composable("users") {
             val usersViewModel: UsersViewModel = viewModel(factory = viewModelFactory)
+            // Не передаём navController, а создаём новый для вложенной навигации
             MainScreenWithBottomBar(
-                navController = navController,
                 usersViewModel = usersViewModel,
                 depositViewModel = viewModel(factory = viewModelFactory),
-                authViewModel = authViewModel
+                authViewModel = authViewModel,
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate("login") {
+                        popUpTo("users") { inclusive = true }
+                    }
+                }
             )
         }
     }
@@ -77,11 +82,14 @@ fun AppNavigation(viewModelFactory: androidx.lifecycle.ViewModelProvider.Factory
 
 @Composable
 fun MainScreenWithBottomBar(
-    navController: androidx.navigation.NavHostController,
     usersViewModel: UsersViewModel,
     depositViewModel: DepositViewModel,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    onLogout: () -> Unit
 ) {
+    // Создаём отдельный navController для вложенной навигации
+    val navController = rememberNavController()
+
     val items = listOf(
         BottomNavItem.Users,
         BottomNavItem.MyCalculations,
@@ -99,7 +107,7 @@ fun MainScreenWithBottomBar(
                         selected = currentRoute == item.route,
                         onClick = {
                             navController.navigate(item.route) {
-                                popUpTo("users") { inclusive = false }
+                                popUpTo("users_list") { inclusive = false }
                                 launchSingleTop = true
                             }
                         },
@@ -118,12 +126,7 @@ fun MainScreenWithBottomBar(
             composable("users_list") {
                 UsersScreen(
                     usersViewModel = usersViewModel,
-                    onLogout = {
-                        authViewModel.logout()
-                        navController.navigate("login") {
-                            popUpTo("users") { inclusive = true }
-                        }
-                    }
+                    onLogout = onLogout
                 )
             }
 
