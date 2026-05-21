@@ -336,9 +336,7 @@ fun DayCell(
                             modifier = Modifier
                                 .size(6.dp)
                                 .clip(RoundedCornerShape(3.dp))
-                                .background(
-                                    if (completedCount > 0) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.secondary
+                                .background(Color(0xFFFF69B4)
                                 )
                         )
                     }
