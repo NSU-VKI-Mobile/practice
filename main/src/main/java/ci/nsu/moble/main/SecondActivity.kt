@@ -5,7 +5,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
@@ -22,21 +25,34 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
-// TODO: crate sealed class with 3 routes
+// sealed class хранит маршруты экранов второго Activity
+sealed class SecondScreen(
+    val route: String,
+    val title: String
+) {
+    object Home : SecondScreen("home", "Home")
+    object ScreenOne : SecondScreen("screen_one", "Screen One")
+    object ScreenTwo : SecondScreen("screen_two", "Screen Two")
+}
 
 class SecondActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             PracticeTheme {
                 SecondActivityScreen()
@@ -48,73 +64,167 @@ class SecondActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecondActivityScreen() {
-    // todo: create nav controller
-    var selectedItem by remember { mutableStateOf(0) }
     val context = LocalContext.current
-    var receivedText by remember { mutableStateOf("") }
-    if (context is Activity) {
-        receivedText = context.intent.getStringExtra("text_data") ?: "No text received"
+    val navController = rememberNavController()
+
+// Получаем строку, которую передали из MainActivity через Intent
+    val receivedText = remember {
+        if (context is Activity) {
+            context.intent.getStringExtra("message") ?: "No text received"
+        } else {
+            "No text received"
+        }
     }
 
-    Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-        TopAppBar(
-            title = { Text(receivedText) }, navigationIcon = {
-                IconButton(onClick = {
-                    // TODO: create intent and start MainActivity
-                    if (context is Activity) {
-                        context.finish()
+    val bottomItems = listOf(
+        SecondScreen.Home,
+        SecondScreen.ScreenOne,
+        SecondScreen.ScreenTwo
+    )
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(receivedText)
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+// Возвращаемся назад в MainActivity
+                            if (context is Activity) {
+                                context.finish()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
                     }
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Blue,
+                    titleContentColor = Color.White
+                )
+            )
+        },
+
+        bottomBar = {
+            NavigationBar {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+
+                bottomItems.forEach { item ->
+                    NavigationBarItem(
+                        selected = currentRoute == item.route,
+                        onClick = {
+                            navController.navigate(item.route) {
+                                launchSingleTop = true
+                            }
+                        },
+                        icon = {
+                            when (item) {
+                                SecondScreen.Home -> {
+                                    Icon(
+                                        imageVector = Icons.Filled.Home,
+                                        contentDescription = "Home"
+                                    )
+                                }
+
+                                SecondScreen.ScreenOne -> {
+                                    Icon(
+                                        imageVector = Icons.Filled.List,
+                                        contentDescription = "Screen One"
+                                    )
+                                }
+
+                                SecondScreen.ScreenTwo -> {
+                                    Icon(
+                                        imageVector = Icons.Filled.Settings,
+                                        contentDescription = "Screen Two"
+                                    )
+                                }
+                            }
+                        },
+                        label = {
+                            Text(item.title)
+                        }
                     )
                 }
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Blue, titleContentColor = Color.White
-            )
-        )
-    }, bottomBar = {
-        NavigationBar {
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Home") },
-                label = { Text("Home") },
-                selected = selectedItem == 0,
-
-                onClick = {
-                    // TODO: navigate to home screen by navController
-                    selectedItem = 0
-                })
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.List, contentDescription = "Screen One") },
-                label = { Text("Screen One") },
-                selected = selectedItem == 1,
-
-                onClick = {
-                    // TODO: navigate to screen one
-                    selectedItem = 1
-                })
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Screen Two") },
-                label = { Text("Screen Two") },
-                selected = selectedItem == 2,
-                onClick = {
-                    // TODO: navigate to screen two
-                    selectedItem = 2
-                })
+            }
         }
-    }) { innerPadding ->
-        // TODO: create a nav graph with 3 screens
-        // NavHost() {}
-        // composable(Screen.Home.route) { HomeScreen() }
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = SecondScreen.Home.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(SecondScreen.Home.route) {
+                SecondHomeScreen(receivedText)
+            }
+
+            composable(SecondScreen.ScreenOne.route) {
+                ScreenOne()
+            }
+
+            composable(SecondScreen.ScreenTwo.route) {
+                ScreenTwo()
+            }
+        }
+    }
+}
+
+@Composable
+fun SecondHomeScreen(receivedText: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("SecondActivity")
+        Text("Полученный текст:")
+        Text(receivedText)
+    }
+}
+
+@Composable
+fun ScreenOne() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Screen One")
+        Text("Это первый экран нижнего меню")
+    }
+}
+
+@Composable
+fun ScreenTwo() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Screen Two")
+        Text("Это второй экран нижнего меню")
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+fun SecondActivityPreview() {
     PracticeTheme {
-        SecondActivityScreen()
+        SecondHomeScreen("Preview text")
     }
 }
