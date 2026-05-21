@@ -44,7 +44,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// sealed class хранит экраны нижнего меню
 sealed class BottomScreen(
     val route: String,
     val title: String
