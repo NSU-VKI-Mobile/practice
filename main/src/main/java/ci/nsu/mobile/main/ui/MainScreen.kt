@@ -1,7 +1,6 @@
 package ci.nsu.mobile.main.ui
 
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,20 +23,32 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.main.ui.data.NoteDatabase
+import ci.nsu.mobile.main.ui.data.NoteEntity
+import ci.nsu.mobile.main.ui.data.NoteRepository
+import ci.nsu.mobile.main.ui.data.NoteViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-// Модель заметки
-data class NoteItem(
-    val id: Int,
-    val text: String,
-    val isCompleted: Boolean = false
-) : java.io.Serializable
+// --------------------------------------------------------------------------
+// Фабрика для ViewModel
+// --------------------------------------------------------------------------
+@RequiresApi(Build.VERSION_CODES.O)
+fun provideNoteViewModel(context: android.content.Context): NoteViewModel {
+    val database = NoteDatabase.getDatabase(context)
+    val repository = NoteRepository(database.noteDao())
+    return NoteViewModel(repository)
+}
 
 // --------------------------------------------------------------------------
 // Главный экран с навигацией
@@ -46,17 +57,37 @@ data class NoteItem(
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    val context = LocalContext.current
 
     // Состояние календаря
     var isWeekView by remember { mutableStateOf(false) }
     var currentMonthDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
 
-    // Заметки: ключ = дата, значение = список заметок
-    val notesMap = remember { mutableStateMapOf<LocalDate, MutableList<NoteItem>>() }
-    var nextId by remember { mutableStateOf(1) }
+    // ViewModel для заметок
+    val noteViewModel = remember { provideNoteViewModel(context) }
 
-    val context = LocalContext.current
+    // Счётчики заметок для каждого дня в месяце (обновляются при загрузке)
+    var notesCountMap by remember { mutableStateOf<Map<LocalDate, Int>>(emptyMap()) }
+    var completedCountMap by remember { mutableStateOf<Map<LocalDate, Int>>(emptyMap()) }
+
+    // Загружаем счётчики для текущего месяца
+    LaunchedEffect(currentMonthDate) {
+        val firstDay = currentMonthDate.withDayOfMonth(1)
+        val lastDay = currentMonthDate.withDayOfMonth(currentMonthDate.lengthOfMonth())
+
+        val counts = mutableMapOf<LocalDate, Int>()
+        val completed = mutableMapOf<LocalDate, Int>()
+
+        var current = firstDay
+        while (current <= lastDay) {
+            counts[current] = noteViewModel.getNoteCount(current)
+            completed[current] = noteViewModel.getCompletedCount(current)
+            current = current.plusDays(1)
+        }
+        notesCountMap = counts
+        completedCountMap = completed
+    }
 
     NavHost(
         navController = navController,
@@ -78,18 +109,23 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         MonthView(
                             currentDate = currentMonthDate,
                             selectedDate = selectedDate,
-                            notesMap = notesMap,
+                            notesCountMap = notesCountMap,
+                            completedCountMap = completedCountMap,
                             onDateSelected = { date ->
                                 selectedDate = date
                                 navController.navigate("notes/${date}")
                             },
-                            onPrevMonth = { currentMonthDate = currentMonthDate.minusMonths(1) },
-                            onNextMonth = { currentMonthDate = currentMonthDate.plusMonths(1) }
+                            onPrevMonth = {
+                                currentMonthDate = currentMonthDate.minusMonths(1)
+                            },
+                            onNextMonth = {
+                                currentMonthDate = currentMonthDate.plusMonths(1)
+                            }
                         )
                     } else {
                         WeekView(
                             selectedDate = selectedDate,
-                            notesMap = notesMap,
+                            noteViewModel = noteViewModel,
                             onDateSelected = { date ->
                                 selectedDate = date
                                 navController.navigate("notes/${date}")
@@ -103,25 +139,24 @@ fun MainScreen(modifier: Modifier = Modifier) {
         composable("notes/{date}") { backStackEntry ->
             val dateStr = backStackEntry.arguments?.getString("date")
             val date = LocalDate.parse(dateStr)
-            val notes = notesMap[date] ?: mutableListOf()
 
             NoteScreen(
                 date = date,
-                notes = notes,
-                onAddNote = { text ->
-                    notesMap[date] = notesMap[date] ?: mutableListOf()
-                    notesMap[date]?.add(NoteItem(id = nextId++, text = text, isCompleted = false))
-                },
-                onToggleComplete = { noteId ->
-                    notesMap[date]?.find { it.id == noteId }?.let { note ->
-                        val index = notesMap[date]?.indexOf(note) ?: return@let
-                        notesMap[date]?.set(index, note.copy(isCompleted = !note.isCompleted))
+                viewModel = noteViewModel,
+                onBack = {
+                    // Обновляем счётчики при возврате
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val count = noteViewModel.getNoteCount(date)
+                        val completed = noteViewModel.getCompletedCount(date)
+                        notesCountMap = notesCountMap.toMutableMap().apply {
+                            this[date] = count
+                        }
+                        completedCountMap = completedCountMap.toMutableMap().apply {
+                            this[date] = completed
+                        }
                     }
-                },
-                onDeleteNote = { noteId ->
-                    notesMap[date]?.removeAll { it.id == noteId }
-                },
-                onBack = { navController.popBackStack() }
+                    navController.popBackStack()
+                }
             )
         }
     }
@@ -135,7 +170,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
 fun MonthView(
     currentDate: LocalDate,
     selectedDate: LocalDate,
-    notesMap: Map<LocalDate, List<NoteItem>>,
+    notesCountMap: Map<LocalDate, Int>,
+    completedCountMap: Map<LocalDate, Int>,
     onDateSelected: (LocalDate) -> Unit,
     onPrevMonth: () -> Unit,
     onNextMonth: () -> Unit
@@ -168,7 +204,8 @@ fun MonthView(
         MonthCalendarGrid(
             currentDate = currentDate,
             selectedDate = selectedDate,
-            notesMap = notesMap,
+            notesCountMap = notesCountMap,
+            completedCountMap = completedCountMap,
             onDateSelected = onDateSelected
         )
     }
@@ -199,7 +236,8 @@ fun WeekDaysHeader() {
 fun MonthCalendarGrid(
     currentDate: LocalDate,
     selectedDate: LocalDate,
-    notesMap: Map<LocalDate, List<NoteItem>>,
+    notesCountMap: Map<LocalDate, Int>,
+    completedCountMap: Map<LocalDate, Int>,
     onDateSelected: (LocalDate) -> Unit
 ) {
     val days = getDaysOfMonth(currentDate)
@@ -211,15 +249,15 @@ fun MonthCalendarGrid(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 week.forEach { date ->
-                    val hasNotes = notesMap[date]?.isNotEmpty() == true
-                    val hasCompletedNotes = notesMap[date]?.any { it.isCompleted } == true
+                    val noteCount = notesCountMap[date] ?: 0
+                    val completedCount = completedCountMap[date] ?: 0
 
                     DayCell(
                         date = date,
                         isSelected = date == selectedDate,
                         isCurrentMonth = date.month == currentDate.month,
-                        hasNotes = hasNotes,
-                        hasCompletedNotes = hasCompletedNotes,
+                        noteCount = noteCount,
+                        completedCount = completedCount,
                         onClick = { onDateSelected(date) },
                         modifier = Modifier.weight(1f)
                     )
@@ -240,8 +278,8 @@ fun DayCell(
     date: LocalDate,
     isSelected: Boolean,
     isCurrentMonth: Boolean,
-    hasNotes: Boolean,
-    hasCompletedNotes: Boolean,
+    noteCount: Int,
+    completedCount: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -279,28 +317,37 @@ fun DayCell(
             )
 
             // Индикаторы заметок
-            if (hasNotes) {
+            if (noteCount > 0) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 2.dp)
                 ) {
-                    if (hasCompletedNotes) {
+                    if (completedCount > 0) {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
-                            contentDescription = "Есть выполненные",
+                            contentDescription = "Выполнено",
                             modifier = Modifier.size(8.dp),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                    if (hasNotes) {
+                    if (noteCount > completedCount) {
                         Box(
                             modifier = Modifier
                                 .size(6.dp)
                                 .clip(RoundedCornerShape(3.dp))
-                                .background(Color(0xFFFF69B4)
+                                .background(
+                                    if (completedCount > 0) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.secondary
                                 )
                         )
                     }
+                    Text(
+                        text = "$noteCount",
+                        fontSize = 10.sp,
+                        color = textColor.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(start = 2.dp)
+                    )
                 }
             }
         }
@@ -315,16 +362,25 @@ fun DayCell(
 @Composable
 fun WeekView(
     selectedDate: LocalDate,
-    notesMap: Map<LocalDate, List<NoteItem>>,
+    noteViewModel: NoteViewModel,
     onDateSelected: (LocalDate) -> Unit
 ) {
     var currentWeekStart by remember { mutableStateOf(getWeekStart(selectedDate)) }
+    var notesMap by remember { mutableStateOf<Map<LocalDate, List<NoteEntity>>>(emptyMap()) }
 
-    LaunchedEffect(selectedDate) {
+    LaunchedEffect(selectedDate, currentWeekStart) {
         val newStart = getWeekStart(selectedDate)
         if (newStart != currentWeekStart) {
             currentWeekStart = newStart
         }
+
+        // Загружаем заметки для всех дней недели
+        val days = getDaysOfWeek(currentWeekStart)
+        val map = mutableMapOf<LocalDate, List<NoteEntity>>()
+        for (day in days) {
+            map[day] = noteViewModel.getNotesSync(day)
+        }
+        notesMap = map
     }
 
     val daysOfWeek = remember(currentWeekStart) { getDaysOfWeek(currentWeekStart) }
@@ -334,12 +390,16 @@ fun WeekView(
             TopAppBar(
                 title = { Text(text = formatWeekRange(currentWeekStart)) },
                 navigationIcon = {
-                    IconButton(onClick = { currentWeekStart = currentWeekStart.minusWeeks(1) }) {
+                    IconButton(onClick = {
+                        currentWeekStart = currentWeekStart.minusWeeks(1)
+                    }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Предыдущая неделя")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { currentWeekStart = currentWeekStart.plusWeeks(1) }) {
+                    IconButton(onClick = {
+                        currentWeekStart = currentWeekStart.plusWeeks(1)
+                    }) {
                         Icon(Icons.Default.ArrowForward, contentDescription = "Следующая неделя")
                     }
                 }
@@ -360,6 +420,7 @@ fun WeekView(
                 val dayNumber = date.format(DateTimeFormatter.ofPattern("dd.MM", Locale("ru")))
                 val notes = notesMap[date] ?: emptyList()
                 val notesPreview = notes.take(2).joinToString(", ") { it.text }
+                val completedCount = notes.count { it.isCompleted }
 
                 WeekDayRow(
                     date = date,
@@ -367,7 +428,7 @@ fun WeekView(
                     dayNumber = dayNumber,
                     notesPreview = notesPreview,
                     hasNotes = notes.isNotEmpty(),
-                    completedCount = notes.count { it.isCompleted },
+                    completedCount = completedCount,
                     isSelected = date == selectedDate,
                     onDayClick = { onDateSelected(date) }
                 )
@@ -460,14 +521,17 @@ fun WeekDayRow(
 @Composable
 fun NoteScreen(
     date: LocalDate,
-    notes: List<NoteItem>,
-    onAddNote: (String) -> Unit,
-    onToggleComplete: (Int) -> Unit,
-    onDeleteNote: (Int) -> Unit,
+    viewModel: NoteViewModel,
     onBack: () -> Unit
 ) {
     var newNoteText by remember { mutableStateOf("") }
+    val notes by viewModel.notes.collectAsState()
     val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale("ru"))
+
+    // Загружаем заметки при открытии
+    LaunchedEffect(date) {
+        viewModel.loadNotes(date)
+    }
 
     Scaffold(
         topBar = {
@@ -504,8 +568,10 @@ fun NoteScreen(
                     Button(
                         onClick = {
                             if (newNoteText.isNotBlank()) {
-                                onAddNote(newNoteText)
-                                newNoteText = ""
+                                viewModel.addNote(date, newNoteText) {
+                                    newNoteText = ""
+                                    viewModel.loadNotes(date)
+                                }
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -545,8 +611,16 @@ fun NoteScreen(
                     items(notes) { note ->
                         NoteItemCard(
                             note = note,
-                            onToggleComplete = { onToggleComplete(note.id) },
-                            onDelete = { onDeleteNote(note.id) }
+                            onToggleComplete = {
+                                viewModel.toggleNoteCompletion(note) {
+                                    viewModel.loadNotes(date)
+                                }
+                            },
+                            onDelete = {
+                                viewModel.deleteNote(note) {
+                                    viewModel.loadNotes(date)
+                                }
+                            }
                         )
                     }
                 }
@@ -557,7 +631,7 @@ fun NoteScreen(
 
 @Composable
 fun NoteItemCard(
-    note: NoteItem,
+    note: NoteEntity,
     onToggleComplete: () -> Unit,
     onDelete: () -> Unit
 ) {

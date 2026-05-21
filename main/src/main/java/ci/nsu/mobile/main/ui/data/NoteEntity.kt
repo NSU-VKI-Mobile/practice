@@ -2,7 +2,7 @@ package ci.nsu.mobile.main.ui.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.LocalDate
+
 
 @Entity(tableName = "notes")
 data class NoteEntity(
