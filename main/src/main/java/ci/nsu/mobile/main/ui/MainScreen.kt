@@ -19,12 +19,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -136,7 +134,6 @@ fun CalendarGrid(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top
     ) {
-        // Разбиваем список дней на недели (по 7 элементов)
         days.chunked(7).forEach { week ->
             Row(
                 modifier = Modifier
@@ -149,7 +146,8 @@ fun CalendarGrid(
                         date = date,
                         isSelected = date == selectedDate,
                         isCurrentMonth = date.month == currentDate.month,
-                        onClick = { onDateSelected(date) }
+                        onClick = { onDateSelected(date) },
+                        modifier = Modifier.weight(1f) // добавляем вес
                     )
                 }
                 // Если в последней неделе меньше 7 дней, добавляем пустые ячейки
@@ -170,8 +168,9 @@ fun DayCell(
     date: LocalDate,
     isSelected: Boolean,
     isCurrentMonth: Boolean,
-    onClick: () -> Unit
-) {
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+)  {
     val isToday = date == LocalDate.now()
     val backgroundColor = when {
         isSelected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
@@ -186,9 +185,8 @@ fun DayCell(
     }
 
     Box(
-        modifier = Modifier
-
-            .aspectRatio(1f) // квадратная ячейка
+        modifier = modifier
+            .aspectRatio(1f)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .clickable { onClick() }
