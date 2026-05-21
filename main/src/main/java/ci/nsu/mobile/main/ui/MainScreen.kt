@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -18,8 +19,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalDate
@@ -268,6 +271,7 @@ fun getDaysOfMonth(currentDate: LocalDate): List<LocalDate> {
 // --------------------------------------------------------------------------
 // РЕЖИМ НЕДЕЛИ с заметками
 // --------------------------------------------------------------------------
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeekView(
@@ -276,11 +280,8 @@ fun WeekView(
     notes: Map<LocalDate, String>,
     onNoteChange: (LocalDate, String) -> Unit
 ) {
-    // Вычисляем начало недели (понедельник) для выбранной даты
-    val weekStart = remember(selectedDate) { getWeekStart(selectedDate) }
-    var currentWeekStart by remember { mutableStateOf(weekStart) }
+    var currentWeekStart by remember { mutableStateOf(getWeekStart(selectedDate)) }
 
-    // Если selectedDate поменялась извне, корректируем отображаемую неделю
     LaunchedEffect(selectedDate) {
         val newStart = getWeekStart(selectedDate)
         if (newStart != currentWeekStart) {
@@ -288,72 +289,154 @@ fun WeekView(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Шапка недели с навигацией
+    val daysOfWeek = remember(currentWeekStart) { getDaysOfWeek(currentWeekStart) }
+
+    // Состояние для диалога заметки
+    var editingDate by remember { mutableStateOf<LocalDate?>(null) }
+    var draftText by remember { mutableStateOf("") }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = formatWeekRange(currentWeekStart)) },
+                navigationIcon = {
+                    IconButton(onClick = { currentWeekStart = currentWeekStart.minusWeeks(1) }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Предыдущая неделя")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { currentWeekStart = currentWeekStart.plusWeeks(1) }) {
+                        Icon(Icons.Default.ArrowForward, contentDescription = "Следующая неделя")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            items(daysOfWeek.size) { index ->
+                val date = daysOfWeek[index]
+                val dayName = date.format(DateTimeFormatter.ofPattern("EEEE", Locale("ru")))
+                    .replaceFirstChar { it.uppercase() }
+                val dayNumber = date.format(DateTimeFormatter.ofPattern("dd.MM", Locale("ru")))
+                val note = notes[date] ?: ""
+
+                WeekDayRow(
+                    date = date,
+                    dayName = dayName,
+                    dayNumber = dayNumber,
+                    note = note,
+                    isSelected = date == selectedDate,
+                    onDayClick = { onDateSelected(date) },
+                    onNoteClick = {
+                        editingDate = date
+                        draftText = note
+                    }
+                )
+            }
+        }
+    }
+
+    // Диалог редактирования заметки (вынесен из списка)
+    editingDate?.let { date ->
+        AlertDialog(
+            onDismissRequest = { editingDate = null },
+            title = { Text("Заметка на ${date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}") },
+            text = {
+                OutlinedTextField(
+                    value = draftText,
+                    onValueChange = { draftText = it },
+                    label = { Text("Текст заметки") },
+                    minLines = 3,
+                    maxLines = 6
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    onNoteChange(date, draftText)
+                    editingDate = null
+                }) {
+                    Text("Сохранить")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { editingDate = null }) {
+                    Text("Отмена")
+                }
+            }
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun WeekDayRow(
+    date: LocalDate,
+    dayName: String,
+    dayNumber: String,
+    note: String,
+    isSelected: Boolean,
+    onDayClick: () -> Unit,
+    onNoteClick: () -> Unit   // теперь без параметров
+) {
+    val isToday = date == LocalDate.now()
+    val backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+    else if (isToday) MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+    else Color.Transparent
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onDayClick() },
+        elevation = CardDefaults.cardElevation(2.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { currentWeekStart = currentWeekStart.minusWeeks(1) }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Предыдущая неделя")
-            }
-            Text(
-                text = formatWeekRange(currentWeekStart),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-            IconButton(onClick = { currentWeekStart = currentWeekStart.plusWeeks(1) }) {
-                Icon(Icons.Default.ArrowForward, contentDescription = "Следующая неделя")
-            }
-        }
-
-        // Строка с днями недели
-        WeekDaysHeader()
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Горизонтальные ячейки дней недели (с датами)
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            val daysOfWeek = getDaysOfWeek(currentWeekStart)
-            daysOfWeek.forEach { date ->
-                DayCell(
-                    date = date,
-                    isSelected = date == selectedDate,
-                    isCurrentMonth = true, // в неделе все дни визуально одинаковы
-                    onClick = { onDateSelected(date) },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Блок заметок для выбранного дня
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.weight(0.35f)) {
                 Text(
-                    text = "Заметки на ${selectedDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}",
+                    text = dayName,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = notes[selectedDate] ?: "",
-                    onValueChange = { onNoteChange(selectedDate, it) },
-                    placeholder = { Text("Введите заметку...") },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 3,
-                    maxLines = 5
+                Text(
+                    text = dayNumber,
+                    fontSize = 14.sp,
+                    color = Color.Gray
                 )
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(0.65f)
+                    .clickable { onNoteClick() }
+                    .padding(4.dp)
+            ) {
+                if (note.isBlank()) {
+                    Text(
+                        text = "➕ Добавить заметку",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        fontStyle = FontStyle.Italic
+                    )
+                } else {
+                    Text(
+                        text = note,
+                        fontSize = 14.sp,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }
