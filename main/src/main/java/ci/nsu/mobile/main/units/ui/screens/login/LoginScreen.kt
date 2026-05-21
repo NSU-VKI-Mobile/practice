@@ -1,9 +1,8 @@
-package ci.nsu.mobile.main.units.ui.login
+package ci.nsu.mobile.main.units.ui.screens.login
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ci.nsu.mobile.main.units.data.repository.AuthRepository
 
 @Composable
 fun LoginScreen(
