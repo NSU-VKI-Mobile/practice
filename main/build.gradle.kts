@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.navigation.navigation.compose)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.foundation.layout)
     testImplementation(libs.junit)
     implementation("androidx.room:room-runtime:2.8.4")
     implementation("androidx.room:room-ktx:2.8.4")
