@@ -12,7 +12,7 @@ class AuthRepository {
     suspend fun login(
         login: String,
         password: String
-    ): Result<UserDto> {
+    ): Result<UserDto?> {
 
         return try {
 
@@ -22,7 +22,7 @@ class AuthRepository {
 
             TokenManager.token = response.token
 
-            Result.success(response.user)
+            Result.success(null)
 
         } catch (e: Exception) {
 

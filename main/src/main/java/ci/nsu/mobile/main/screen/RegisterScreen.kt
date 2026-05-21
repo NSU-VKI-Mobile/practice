@@ -10,12 +10,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.Alignment
 import ci.nsu.mobile.main.viewmodel.AuthViewModel
 import ci.nsu.mobile.main.model.PersonDto
 import ci.nsu.mobile.main.model.RegisterRequest
+import android.util.Patterns.EMAIL_ADDRESS
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -123,22 +123,61 @@ fun RegisterScreen(
 
         Button(
             onClick = {
-                if (login.isBlank()) { viewModel.setError("Введите логин"); return@Button }
-                if (password.isBlank()) { viewModel.setError("Введите пароль"); return@Button }
+
+                val cleanLogin = login.trim()
+                val cleanEmail = email.trim()
+                val cleanPassword = password
+                when {
+                    cleanLogin.isBlank() -> {
+                        viewModel.setValidationError("Введите логин")
+                        return@Button
+                    }
+                    cleanPassword.isBlank() -> {
+                        viewModel.setValidationError("Введите пароль")
+                        return@Button
+                    }
+                    !cleanEmail.contains("@") || cleanEmail.count { it == '@' } != 1 || !cleanEmail.substringAfter("@").contains(".") -> {
+                        viewModel.setValidationError("Введите email")
+                        return@Button
+                    }
+                    firstName.isBlank() -> {
+                        viewModel.setValidationError("Введите имя")
+                        return@Button
+                    }
+                    lastName.isBlank() -> {
+                        viewModel.setValidationError("Введите фамилия")
+                        return@Button
+                    }
+                }
+
+                val formattedBirthDate = if (birthDate.matches(Regex("\\d{4}-\\d{2}-\\d{2}"))) {
+                    birthDate
+                } else {
+                    birthDate.split(".").reversed().joinToString("-").take(10)
+                }
 
                 val person = PersonDto(
-                    firstName = firstName.ifBlank { "" },
-                    lastName = lastName.ifBlank { "" },
+                    firstName = firstName.trim(),
+                    lastName = lastName.trim(),
                     middleName = middleName.ifBlank { "" },
-                    birthDate = birthDate.ifBlank { "" },
-                    gender = gender.ifBlank { "" },
-                    groupId = selectedGroupId ?: 0
+                    birthDate =formattedBirthDate,
+                    gender = gender.ifBlank { "other" },
+                    groupId = selectedGroupId ?: 1
                 )
 
-                viewModel.register(
-                    RegisterRequest(login, password, email.ifBlank { "" }, phone.ifBlank { "" }, 1, true, person),
-                    onRegisterSuccess
+                val request = RegisterRequest(
+                    login = cleanLogin.trim(),
+                    password = cleanPassword,
+                    email = cleanEmail.trim(),
+                    phoneNumber = phone.ifBlank { "" },
+                    roleId = 1,
+                    authAllowed = true,
+                    person = person
                 )
+
+                viewModel.register(request) {
+                    onRegisterSuccess()
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !viewModel.isLoading

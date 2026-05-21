@@ -27,7 +27,7 @@ class AuthViewModel(
     var isLoggedIn by mutableStateOf(false)
         private set
 
-    fun setError(message: String) {
+    fun setValidationError(message: String) {
         error = message
     }
 
