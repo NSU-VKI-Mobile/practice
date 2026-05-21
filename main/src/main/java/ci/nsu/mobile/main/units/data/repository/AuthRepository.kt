@@ -19,11 +19,8 @@ class AuthRepository @Inject constructor(
     suspend fun login(login: String, password: String): Result<UserDto>{
         return try {
             val response = apiService.login(LoginRequest(login, password))
-            if (response.isSuccessful && response.body() != null){
-                Result.success(response.body()!!)
-            } else {
-                Result.failure(Exception("Ошибка входа: ${response.code()}"))
-            }
+            tokenManager.token = response.token
+            Result.success(UserDto(id= 0, login = login, email = "", phoneNumber = ""))
         } catch (e: IOException) {
             Result.failure(Exception("Ошибка сети: ${e.message}"))
         } catch (e: HttpException) {
@@ -32,12 +29,8 @@ class AuthRepository @Inject constructor(
     }
     suspend fun register(request: RegisterRequest): Result<Unit> {
         return try {
-            val response = apiService.register(request)
-            if(response.isSuccessful) {
-                Result.success(Unit)
-            } else {
-                Result.failure(Exception("Ошибка регистрации: ${response.code()}"))
-            }
+            apiService.register(request)
+            Result.success(Unit)
         } catch (e: IOException) {
             Result.failure(Exception("Ошибка сети: ${e.message}"))
         } catch (e: HttpException) {
@@ -47,6 +40,7 @@ class AuthRepository @Inject constructor(
     suspend fun getUsers(): Result<List<UserDto>>{
         return try {
             val response = apiService.getUsers()
+            Result.success(users)
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
@@ -61,6 +55,7 @@ class AuthRepository @Inject constructor(
     suspend fun getGroups(): Result<List<GroupDto>> {
         return try {
             val response = apiService.getGroups()
+            Result.success(groups)
             if(response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
@@ -76,6 +71,6 @@ class AuthRepository @Inject constructor(
         tokenManager.token = token
     }
     fun logout() {
-        tokenManager.clear()
+        tokenManager.clearToken()
     }
 }
