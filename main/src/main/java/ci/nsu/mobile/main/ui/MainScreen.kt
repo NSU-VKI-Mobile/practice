@@ -5,19 +5,47 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,11 +55,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.WeekFields
 import java.util.Locale
-
-
-
+import java.io.Serializable
 
 
 // --------------------------------------------------------------------------
@@ -40,18 +65,16 @@ import java.util.Locale
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-    // Режим отображения: false = месяц, true = неделя
     var isWeekView by remember { mutableStateOf(false) }
-
-    // Текущая дата для месячного режима
     var currentMonthDate by remember { mutableStateOf(LocalDate.now()) }
-    // Выбранная пользователем дата (общая для обоих режимов)
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-
-    // Заметки: ключ = дата, значение = текст заметки
     val notes = remember { mutableStateMapOf<LocalDate, String>() }
-
     val context = LocalContext.current
+    data class NoteItem(
+        val id: Int,
+        val text: String,
+        val isCompleted: Boolean = false
+    ) : Serializable
 
     Scaffold(
         floatingActionButton = {
@@ -65,10 +88,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             if (!isWeekView) {
-                // -------------------- РЕЖИМ МЕСЯЦА --------------------
                 MonthView(
                     currentDate = currentMonthDate,
                     selectedDate = selectedDate,
+                    notes = notes,
                     onDateSelected = { date ->
                         selectedDate = date
                         Toast.makeText(
@@ -77,11 +100,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
                             Toast.LENGTH_SHORT
                         ).show()
                     },
+                    onNoteChange = { date, text -> notes[date] = text },
                     onPrevMonth = { currentMonthDate = currentMonthDate.minusMonths(1) },
                     onNextMonth = { currentMonthDate = currentMonthDate.plusMonths(1) }
                 )
             } else {
-                // -------------------- РЕЖИМ НЕДЕЛИ --------------------
                 WeekView(
                     selectedDate = selectedDate,
                     onDateSelected = { date ->
@@ -93,7 +116,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         ).show()
                     },
                     notes = notes,
-                    onNoteChange = { date, newText -> notes[date] = newText }
+                    onNoteChange = { date, text -> notes[date] = text }
                 )
             }
         }
@@ -108,10 +131,16 @@ fun MainScreen(modifier: Modifier = Modifier) {
 fun MonthView(
     currentDate: LocalDate,
     selectedDate: LocalDate,
+    notes: Map<LocalDate, String>,      // новый параметр
     onDateSelected: (LocalDate) -> Unit,
+    onNoteChange: (LocalDate, String) -> Unit,  // для редактирования
     onPrevMonth: () -> Unit,
     onNextMonth: () -> Unit
 ) {
+    // Состояние для диалога заметки
+    var editingDate by remember { mutableStateOf<LocalDate?>(null) }
+    var draftText by remember { mutableStateOf("") }
+
     Column(modifier = Modifier.fillMaxSize()) {
         // Шапка месяца
         Row(
@@ -134,7 +163,7 @@ fun MonthView(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Дни недели (пн-вс)
+        // Дни недели
         WeekDaysHeader()
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -143,7 +172,42 @@ fun MonthView(
         MonthCalendarGrid(
             currentDate = currentDate,
             selectedDate = selectedDate,
-            onDateSelected = onDateSelected
+            notes = notes,
+            onDateSelected = { date ->
+                editingDate = date
+                draftText = notes[date] ?: ""
+            }
+        )
+    }
+
+    // Диалог редактирования заметки
+    editingDate?.let { date ->
+        AlertDialog(
+            onDismissRequest = { editingDate = null },
+            title = { Text("Заметка на ${date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}") },
+            text = {
+                OutlinedTextField(
+                    value = draftText,
+                    onValueChange = { draftText = it },
+                    label = { Text("Текст заметки") },
+                    minLines = 5,
+                    maxLines = 10
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    onNoteChange(date, draftText)
+                    onDateSelected(date)  // обновляем выбранную дату
+                    editingDate = null
+                }) {
+                    Text("Сохранить")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { editingDate = null }) {
+                    Text("Отмена")
+                }
+            }
         )
     }
 }
@@ -173,9 +237,10 @@ fun WeekDaysHeader() {
 fun MonthCalendarGrid(
     currentDate: LocalDate,
     selectedDate: LocalDate,
+    notes: Map<LocalDate, String>,  // новый параметр
     onDateSelected: (LocalDate) -> Unit
 ) {
-    val days = getDaysOfMonth(currentDate)  // теперь это обычная функция
+    val days = getDaysOfMonth(currentDate)
 
     Column(modifier = Modifier.fillMaxSize()) {
         days.chunked(7).forEach { week ->
@@ -188,6 +253,7 @@ fun MonthCalendarGrid(
                         date = date,
                         isSelected = date == selectedDate,
                         isCurrentMonth = date.month == currentDate.month,
+                        hasNote = notes[date]?.isNotBlank() == true,  // проверяем наличие заметки
                         onClick = { onDateSelected(date) },
                         modifier = Modifier.weight(1f)
                     )
@@ -209,6 +275,7 @@ fun DayCell(
     date: LocalDate,
     isSelected: Boolean,
     isCurrentMonth: Boolean,
+    hasNote: Boolean,        // новый параметр
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -234,12 +301,26 @@ fun DayCell(
             .padding(4.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = date.dayOfMonth.toString(),
-            color = textColor,
-            fontSize = 16.sp,
-            fontWeight = if (isSelected || isToday) FontWeight.Bold else FontWeight.Normal
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = date.dayOfMonth.toString(),
+                color = textColor,
+                fontSize = 16.sp,
+                fontWeight = if (isSelected || isToday) FontWeight.Bold else FontWeight.Normal
+            )
+            // Индикатор заметки (маленькая точка или иконка)
+            if (hasNote) {
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(Color(0xFFFF69B4))
+                )
+            }
+        }
     }
 }
 
