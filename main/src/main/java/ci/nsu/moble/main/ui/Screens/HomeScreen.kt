@@ -12,7 +12,7 @@ import ci.nsu.moble.main.ui.theme.PracticeTheme
 @Composable
 fun HomeScreen() {
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("SecondActivity")
+        Text("Второй экран")
     }
 }
 @Preview(showBackground = true)

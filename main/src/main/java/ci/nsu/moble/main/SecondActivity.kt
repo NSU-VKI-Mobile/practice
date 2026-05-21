@@ -44,9 +44,9 @@ sealed class NavigationScreen(
     val title: String,
     val icon: ImageVector
 ) {
-    object Home : NavigationScreen("home", "Home", Icons.Filled.Home)
-    object ScreenOne : NavigationScreen("screen_one", "Screen One", Icons.Filled.List)
-    object ScreenTwo : NavigationScreen("screen_two", "Screen Two", Icons.Filled.Settings)
+    object Home : NavigationScreen("home", "Главная", Icons.Filled.Home)
+    object ScreenOne : NavigationScreen("screen_one", "Первый экран", Icons.Filled.List)
+    object ScreenTwo : NavigationScreen("screen_two", "Второй экран", Icons.Filled.Settings)
 
     companion object {
         val items = listOf(Home, ScreenOne, ScreenTwo)
@@ -72,8 +72,8 @@ fun SecondActivityScreen() {
     val context = LocalContext.current
     val activity = context as? Activity
     val receivedText = activity?.intent?.getStringExtra("text_data")?.ifBlank {
-        "No text received"
-    } ?: "No text received"
+        "Текст не получен"
+    } ?: "Текст не получен"
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -94,7 +94,7 @@ fun SecondActivityScreen() {
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = "Назад",
                             tint = Color.White
                         )
                     }
