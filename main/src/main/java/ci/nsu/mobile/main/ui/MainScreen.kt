@@ -5,144 +5,142 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import java.io.Serializable
 
+// Модель заметки
+data class NoteItem(
+    val id: Int,
+    val text: String,
+    val isCompleted: Boolean = false
+) : java.io.Serializable
 
 // --------------------------------------------------------------------------
-// Главный экран с переключателем режимов
+// Главный экран с навигацией
 // --------------------------------------------------------------------------
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
+    val navController = rememberNavController()
+
+    // Состояние календаря
     var isWeekView by remember { mutableStateOf(false) }
     var currentMonthDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-    val notes = remember { mutableStateMapOf<LocalDate, String>() }
+
+    // Заметки: ключ = дата, значение = список заметок
+    val notesMap = remember { mutableStateMapOf<LocalDate, MutableList<NoteItem>>() }
+    var nextId by remember { mutableStateOf(1) }
+
     val context = LocalContext.current
-    data class NoteItem(
-        val id: Int,
-        val text: String,
-        val isCompleted: Boolean = false
-    ) : Serializable
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { isWeekView = !isWeekView },
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
+    NavHost(
+        navController = navController,
+        startDestination = "calendar"
+    ) {
+        composable("calendar") {
+            Scaffold(
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = { isWeekView = !isWeekView },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
 
+                    }
+                }
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    if (!isWeekView) {
+                        MonthView(
+                            currentDate = currentMonthDate,
+                            selectedDate = selectedDate,
+                            notesMap = notesMap,
+                            onDateSelected = { date ->
+                                selectedDate = date
+                                navController.navigate("notes/${date}")
+                            },
+                            onPrevMonth = { currentMonthDate = currentMonthDate.minusMonths(1) },
+                            onNextMonth = { currentMonthDate = currentMonthDate.plusMonths(1) }
+                        )
+                    } else {
+                        WeekView(
+                            selectedDate = selectedDate,
+                            notesMap = notesMap,
+                            onDateSelected = { date ->
+                                selectedDate = date
+                                navController.navigate("notes/${date}")
+                            }
+                        )
+                    }
+                }
             }
         }
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            if (!isWeekView) {
-                MonthView(
-                    currentDate = currentMonthDate,
-                    selectedDate = selectedDate,
-                    notes = notes,
-                    onDateSelected = { date ->
-                        selectedDate = date
-                        Toast.makeText(
-                            context,
-                            "Выбрано: ${date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    },
-                    onNoteChange = { date, text -> notes[date] = text },
-                    onPrevMonth = { currentMonthDate = currentMonthDate.minusMonths(1) },
-                    onNextMonth = { currentMonthDate = currentMonthDate.plusMonths(1) }
-                )
-            } else {
-                WeekView(
-                    selectedDate = selectedDate,
-                    onDateSelected = { date ->
-                        selectedDate = date
-                        Toast.makeText(
-                            context,
-                            "Выбрано: ${date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    },
-                    notes = notes,
-                    onNoteChange = { date, text -> notes[date] = text }
-                )
-            }
+
+        composable("notes/{date}") { backStackEntry ->
+            val dateStr = backStackEntry.arguments?.getString("date")
+            val date = LocalDate.parse(dateStr)
+            val notes = notesMap[date] ?: mutableListOf()
+
+            NoteScreen(
+                date = date,
+                notes = notes,
+                onAddNote = { text ->
+                    notesMap[date] = notesMap[date] ?: mutableListOf()
+                    notesMap[date]?.add(NoteItem(id = nextId++, text = text, isCompleted = false))
+                },
+                onToggleComplete = { noteId ->
+                    notesMap[date]?.find { it.id == noteId }?.let { note ->
+                        val index = notesMap[date]?.indexOf(note) ?: return@let
+                        notesMap[date]?.set(index, note.copy(isCompleted = !note.isCompleted))
+                    }
+                },
+                onDeleteNote = { noteId ->
+                    notesMap[date]?.removeAll { it.id == noteId }
+                },
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }
 
 // --------------------------------------------------------------------------
-// РЕЖИМ МЕСЯЦА (ваш старый код, слегка адаптированный)
+// РЕЖИМ МЕСЯЦА
 // --------------------------------------------------------------------------
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MonthView(
     currentDate: LocalDate,
     selectedDate: LocalDate,
-    notes: Map<LocalDate, String>,      // новый параметр
+    notesMap: Map<LocalDate, List<NoteItem>>,
     onDateSelected: (LocalDate) -> Unit,
-    onNoteChange: (LocalDate, String) -> Unit,  // для редактирования
     onPrevMonth: () -> Unit,
     onNextMonth: () -> Unit
 ) {
-    // Состояние для диалога заметки
-    var editingDate by remember { mutableStateOf<LocalDate?>(null) }
-    var draftText by remember { mutableStateOf("") }
-
     Column(modifier = Modifier.fillMaxSize()) {
-        // Шапка месяца
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -163,51 +161,15 @@ fun MonthView(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Дни недели
         WeekDaysHeader()
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Сетка дней месяца
         MonthCalendarGrid(
             currentDate = currentDate,
             selectedDate = selectedDate,
-            notes = notes,
-            onDateSelected = { date ->
-                editingDate = date
-                draftText = notes[date] ?: ""
-            }
-        )
-    }
-
-    // Диалог редактирования заметки
-    editingDate?.let { date ->
-        AlertDialog(
-            onDismissRequest = { editingDate = null },
-            title = { Text("Заметка на ${date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}") },
-            text = {
-                OutlinedTextField(
-                    value = draftText,
-                    onValueChange = { draftText = it },
-                    label = { Text("Текст заметки") },
-                    minLines = 5,
-                    maxLines = 10
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    onNoteChange(date, draftText)
-                    onDateSelected(date)  // обновляем выбранную дату
-                    editingDate = null
-                }) {
-                    Text("Сохранить")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { editingDate = null }) {
-                    Text("Отмена")
-                }
-            }
+            notesMap = notesMap,
+            onDateSelected = onDateSelected
         )
     }
 }
@@ -237,7 +199,7 @@ fun WeekDaysHeader() {
 fun MonthCalendarGrid(
     currentDate: LocalDate,
     selectedDate: LocalDate,
-    notes: Map<LocalDate, String>,  // новый параметр
+    notesMap: Map<LocalDate, List<NoteItem>>,
     onDateSelected: (LocalDate) -> Unit
 ) {
     val days = getDaysOfMonth(currentDate)
@@ -249,11 +211,15 @@ fun MonthCalendarGrid(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 week.forEach { date ->
+                    val hasNotes = notesMap[date]?.isNotEmpty() == true
+                    val hasCompletedNotes = notesMap[date]?.any { it.isCompleted } == true
+
                     DayCell(
                         date = date,
                         isSelected = date == selectedDate,
                         isCurrentMonth = date.month == currentDate.month,
-                        hasNote = notes[date]?.isNotBlank() == true,  // проверяем наличие заметки
+                        hasNotes = hasNotes,
+                        hasCompletedNotes = hasCompletedNotes,
                         onClick = { onDateSelected(date) },
                         modifier = Modifier.weight(1f)
                     )
@@ -268,14 +234,14 @@ fun MonthCalendarGrid(
     }
 }
 
-// Ячейка дня (общая для месяца и недели)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DayCell(
     date: LocalDate,
     isSelected: Boolean,
     isCurrentMonth: Boolean,
-    hasNote: Boolean,        // новый параметр
+    hasNotes: Boolean,
+    hasCompletedNotes: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -311,55 +277,46 @@ fun DayCell(
                 fontSize = 16.sp,
                 fontWeight = if (isSelected || isToday) FontWeight.Bold else FontWeight.Normal
             )
-            // Индикатор заметки (маленькая точка или иконка)
-            if (hasNote) {
-                Box(
-                    modifier = Modifier
-                        .size(6.dp)
-                        .clip(RoundedCornerShape(3.dp))
-                        .background(Color(0xFFFF69B4))
-                )
+
+            // Индикаторы заметок
+            if (hasNotes) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (hasCompletedNotes) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = "Есть выполненные",
+                            modifier = Modifier.size(8.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    if (hasNotes) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(RoundedCornerShape(3.dp))
+                                .background(Color(0xFFFF69B4)
+                                )
+                        )
+                    }
+                }
             }
         }
     }
 }
 
-// Формирует список из 42 дней для сетки месяца (дни предыдущего/текущего/следующего месяца)
-@RequiresApi(Build.VERSION_CODES.O)
-fun getDaysOfMonth(currentDate: LocalDate): List<LocalDate> {
-    val firstDayOfMonth = currentDate.withDayOfMonth(1)
-    val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value
-    val daysFromPrevMonth = (firstDayOfWeek - 1 + 7) % 7
-
-    val result = mutableListOf<LocalDate>()
-    val prevMonth = currentDate.minusMonths(1)
-    val daysInPrevMonth = prevMonth.lengthOfMonth()
-    for (i in daysFromPrevMonth downTo 1) {
-        result.add(prevMonth.withDayOfMonth(daysInPrevMonth - i + 1))
-    }
-    val daysInCurrentMonth = currentDate.lengthOfMonth()
-    for (i in 1..daysInCurrentMonth) {
-        result.add(currentDate.withDayOfMonth(i))
-    }
-    val remainingCells = 42 - result.size
-    val nextMonth = currentDate.plusMonths(1)
-    for (i in 1..remainingCells) {
-        result.add(nextMonth.withDayOfMonth(i))
-    }
-    return result
-}
-
 // --------------------------------------------------------------------------
-// РЕЖИМ НЕДЕЛИ с заметками
+// РЕЖИМ НЕДЕЛИ
 // --------------------------------------------------------------------------
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeekView(
     selectedDate: LocalDate,
-    onDateSelected: (LocalDate) -> Unit,
-    notes: Map<LocalDate, String>,
-    onNoteChange: (LocalDate, String) -> Unit
+    notesMap: Map<LocalDate, List<NoteItem>>,
+    onDateSelected: (LocalDate) -> Unit
 ) {
     var currentWeekStart by remember { mutableStateOf(getWeekStart(selectedDate)) }
 
@@ -371,10 +328,6 @@ fun WeekView(
     }
 
     val daysOfWeek = remember(currentWeekStart) { getDaysOfWeek(currentWeekStart) }
-
-    // Состояние для диалога заметки
-    var editingDate by remember { mutableStateOf<LocalDate?>(null) }
-    var draftText by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -405,52 +358,21 @@ fun WeekView(
                 val dayName = date.format(DateTimeFormatter.ofPattern("EEEE", Locale("ru")))
                     .replaceFirstChar { it.uppercase() }
                 val dayNumber = date.format(DateTimeFormatter.ofPattern("dd.MM", Locale("ru")))
-                val note = notes[date] ?: ""
+                val notes = notesMap[date] ?: emptyList()
+                val notesPreview = notes.take(2).joinToString(", ") { it.text }
 
                 WeekDayRow(
                     date = date,
                     dayName = dayName,
                     dayNumber = dayNumber,
-                    note = note,
+                    notesPreview = notesPreview,
+                    hasNotes = notes.isNotEmpty(),
+                    completedCount = notes.count { it.isCompleted },
                     isSelected = date == selectedDate,
-                    onDayClick = { onDateSelected(date) },
-                    onNoteClick = {
-                        editingDate = date
-                        draftText = note
-                    }
+                    onDayClick = { onDateSelected(date) }
                 )
             }
         }
-    }
-
-    // Диалог редактирования заметки (вынесен из списка)
-    editingDate?.let { date ->
-        AlertDialog(
-            onDismissRequest = { editingDate = null },
-            title = { Text("Заметка на ${date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}") },
-            text = {
-                OutlinedTextField(
-                    value = draftText,
-                    onValueChange = { draftText = it },
-                    label = { Text("Текст заметки") },
-                    minLines = 3,
-                    maxLines = 6
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    onNoteChange(date, draftText)
-                    editingDate = null
-                }) {
-                    Text("Сохранить")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { editingDate = null }) {
-                    Text("Отмена")
-                }
-            }
-        )
     }
 }
 
@@ -460,10 +382,11 @@ fun WeekDayRow(
     date: LocalDate,
     dayName: String,
     dayNumber: String,
-    note: String,
+    notesPreview: String,
+    hasNotes: Boolean,
+    completedCount: Int,
     isSelected: Boolean,
-    onDayClick: () -> Unit,
-    onNoteClick: () -> Unit   // теперь без параметров
+    onDayClick: () -> Unit
 ) {
     val isToday = date == LocalDate.now()
     val backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
@@ -495,24 +418,30 @@ fun WeekDayRow(
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
+                if (completedCount > 0) {
+                    Text(
+                        text = "✓ $completedCount выполнено",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
 
             Box(
                 modifier = Modifier
                     .weight(0.65f)
-                    .clickable { onNoteClick() }
                     .padding(4.dp)
             ) {
-                if (note.isBlank()) {
+                if (!hasNotes) {
                     Text(
                         text = "➕ Добавить заметку",
                         fontSize = 14.sp,
                         color = Color.Gray,
-                        fontStyle = FontStyle.Italic
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                     )
                 } else {
                     Text(
-                        text = note,
+                        text = notesPreview,
                         fontSize = 14.sp,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis
@@ -523,11 +452,184 @@ fun WeekDayRow(
     }
 }
 
-// Вспомогательные функции для работы с неделями
+// --------------------------------------------------------------------------
+// ЭКРАН ЗАМЕТОК
+// --------------------------------------------------------------------------
+@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun NoteScreen(
+    date: LocalDate,
+    notes: List<NoteItem>,
+    onAddNote: (String) -> Unit,
+    onToggleComplete: (Int) -> Unit,
+    onDeleteNote: (Int) -> Unit,
+    onBack: () -> Unit
+) {
+    var newNoteText by remember { mutableStateOf("") }
+    val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale("ru"))
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Заметки на ${date.format(dateFormatter)}") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            // Поле добавления заметки
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(4.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    OutlinedTextField(
+                        value = newNoteText,
+                        onValueChange = { newNoteText = it },
+                        label = { Text("Новая заметка") },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 2
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            if (newNoteText.isNotBlank()) {
+                                onAddNote(newNoteText)
+                                newNoteText = ""
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Добавить")
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Список заметок
+            if (notes.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Нет заметок.\nДобавьте первую заметку!",
+                        textAlign = TextAlign.Center,
+                        color = Color.Gray
+                    )
+                }
+            } else {
+                Text(
+                    text = "Мои заметки (${notes.size})",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(notes) { note ->
+                        NoteItemCard(
+                            note = note,
+                            onToggleComplete = { onToggleComplete(note.id) },
+                            onDelete = { onDeleteNote(note.id) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NoteItemCard(
+    note: NoteItem,
+    onToggleComplete: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = note.isCompleted,
+                    onCheckedChange = { onToggleComplete() }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = note.text,
+                    fontSize = 16.sp,
+                    textDecoration = if (note.isCompleted) TextDecoration.LineThrough else null,
+                    color = if (note.isCompleted) Color.Gray else Color.Black
+                )
+            }
+
+            IconButton(onClick = onDelete) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Удалить",
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+    }
+}
+
+// --------------------------------------------------------------------------
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// --------------------------------------------------------------------------
+@RequiresApi(Build.VERSION_CODES.O)
+fun getDaysOfMonth(currentDate: LocalDate): List<LocalDate> {
+    val firstDayOfMonth = currentDate.withDayOfMonth(1)
+    val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value
+    val daysFromPrevMonth = (firstDayOfWeek - 1 + 7) % 7
+
+    val result = mutableListOf<LocalDate>()
+    val prevMonth = currentDate.minusMonths(1)
+    val daysInPrevMonth = prevMonth.lengthOfMonth()
+    for (i in daysFromPrevMonth downTo 1) {
+        result.add(prevMonth.withDayOfMonth(daysInPrevMonth - i + 1))
+    }
+    val daysInCurrentMonth = currentDate.lengthOfMonth()
+    for (i in 1..daysInCurrentMonth) {
+        result.add(currentDate.withDayOfMonth(i))
+    }
+    val remainingCells = 42 - result.size
+    val nextMonth = currentDate.plusMonths(1)
+    for (i in 1..remainingCells) {
+        result.add(nextMonth.withDayOfMonth(i))
+    }
+    return result
+}
+
 @RequiresApi(Build.VERSION_CODES.O)
 fun getWeekStart(date: LocalDate): LocalDate {
-    // Понедельник = первый день недели
-    val dayOfWeek = date.dayOfWeek.value  // 1 = понедельник, 7 = воскресенье
+    val dayOfWeek = date.dayOfWeek.value
     return date.minusDays((dayOfWeek - 1).toLong())
 }
 
