@@ -1,12 +1,19 @@
 package ci.nsu.mobile.main
 
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainScreen() {
@@ -20,11 +27,10 @@ fun MainScreen() {
     )
 
     Scaffold(
+
         bottomBar = {
 
             NavigationBar {
-
-                val currentRoute = navController.currentBackStackEntryFlow
 
                 items.forEach { item ->
 
@@ -41,6 +47,7 @@ fun MainScreen() {
                 }
             }
         }
+
     ) { padding ->
 
         NavHost(
@@ -50,7 +57,7 @@ fun MainScreen() {
         ) {
 
             composable(BottomNavItem.Home.route) {
-                ScreenContent("Home Screen")
+                HomeScreen()
             }
 
             composable(BottomNavItem.Profile.route) {
@@ -65,12 +72,66 @@ fun MainScreen() {
 }
 
 @Composable
+fun HomeScreen() {
+
+    val context = LocalContext.current
+
+    var text by remember {
+        mutableStateOf("")
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text("Home Screen")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = text,
+            onValueChange = {
+                text = it
+            },
+            label = {
+                Text("Введите текст")
+            }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+
+                val intent = Intent(
+                    context,
+                    SecondActivity::class.java
+                )
+
+                intent.putExtra(
+                    "message",
+                    text
+                )
+
+                context.startActivity(intent)
+            }
+        ) {
+
+            Text("Открыть SecondActivity")
+        }
+    }
+}
+
+@Composable
 fun ScreenContent(text: String) {
 
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = androidx.compose.ui.Alignment.Center
+        contentAlignment = Alignment.Center
     ) {
+
         Text(text)
     }
 }
