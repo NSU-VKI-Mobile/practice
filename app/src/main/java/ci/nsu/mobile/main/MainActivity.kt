@@ -77,7 +77,7 @@ fun Greeting(
         composable(Screen.LogIn.route) {
             LogInScreen(
                 onRegClick = {navController.navigate(Screen.Registry.route) },
-                onLogInClick = { authViewModel.logIn({navController.navigate(Screen.Registry.route)})},
+                onLogInClick = { authViewModel.logIn({navController.navigate(Screen.Main.route)})},
                 onExitClick = {(context as? Activity)?.finish()},
                 viewModel = authViewModel
             )
