@@ -1,3 +1,33 @@
 <resources>
-    <string name="app_name">main</string>
+    <string name="app_name">Приложение: Расчёт вкладов</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="id">ID</string>
+    <string name="text_login">Логин</string>
+    <string name="text_password">Пароль</string>
+    <string name="text_logIn">Войти</string>
+    <string name="no_account">Нет аккаунта?</string>
+    <string name="text_registry">Зарегистрироваться</string>
+    <string name="text_name">Имя</string>
+    <string name="text_lastName">Фамилия</string>
+    <string name="text_middleName">Отчество</string>
+    <string name="text_birthDay">Дата рождения</string>
+    <string name="text_sex">Пол</string>
+    <string name="text_group">Группа</string>
+    <string name="text_email">Почта</string>
+    <string name="text_phone">Телефон</string>
+    <string name="text_exit">Выход</string>
+    <string name="ok">Ок</string>
+    <string name="text_logOut">Выйти из аккаунта</string>
+    <string name="text_back">Назад</string>
+    <string name="initialAmount">Стартовый взнос</string>
+    <string name="periodMonths">Срок вклада</string>
+    <string name="interestRate">Процентная ставка</string>
+    <string name="monthlyTopUp">Ежемесячное пополнение</string>
+    <string name="finalAmount">Итоговая сумма</string>
+    <string name="interestEarned">Начисленные проценты</string>
+    <string name="save">Сохранить</string>
+    <string name="date">Дата</string>
+    <string name="user_list">Список пользователей</string>
+    <string name="history_calc">История депозитов</string>
+    <string name="add_deposit">Добавить депозит</string>
 </resources>
