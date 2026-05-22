@@ -71,23 +71,25 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
         }
     }
 
+
     private suspend fun updateToken(newToken: String?, newLogin: String? = null) {
         _token.value = newToken
         if (newToken != null) {
-            authRepository.getUsers()
-                .onSuccess { users ->
-                    TokenManager.userId = users.find { it.login == newLogin }?.id as Long?
-                    if(TokenManager.userId?.toInt() != -1)
-                        TokenManager.token = newToken
-                    else
-                        TokenManager.token = null
-                }
-                .onFailure { error ->
-                    errorMessage = "${error.message}"
-                }
+            TokenManager.token = newToken
+            updateUserId(newLogin)
         } else {
             TokenManager.clear()
         }
+    }
+
+    private suspend fun updateUserId(newLogin: String? = null){
+        authRepository.getUsers()
+            .onSuccess { users ->
+                TokenManager.userId = users.find { it.login == newLogin }?.id?.toLong() ?: -1
+            }
+            .onFailure { error ->
+                errorMessage = "${error.message}"
+            }
     }
     fun loadUsers(){
         viewModelScope.launch {
