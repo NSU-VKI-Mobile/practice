@@ -20,7 +20,7 @@ class SecondActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val message = intent.getStringExtra("message") ?: "Нет данных"
+        val message = intent.getStringExtra("message") ?: "Нет данных"//приём данных
 
         setContent {
             PracticeTheme {
