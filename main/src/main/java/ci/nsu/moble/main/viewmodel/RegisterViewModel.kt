@@ -7,12 +7,13 @@ import ci.nsu.moble.main.api.TokenManager
 import ci.nsu.moble.main.data.dto.GroupDto
 import ci.nsu.moble.main.data.dto.PersonDto
 import ci.nsu.moble.main.data.dto.RegisterRequestDto
-import ci.nsu.moble.main.data.dto.UserDto
 import ci.nsu.moble.main.data.repositories.AuthRepository
-import ci.nsu.moble.main.viewmodel.states.AuthState
 import ci.nsu.moble.main.viewmodel.states.GroupsState
+import ci.nsu.moble.main.viewmodel.states.RegisterUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
@@ -20,87 +21,81 @@ class RegisterViewModel(
     private val tokenManager: TokenManager,
     private val savedState: SavedStateHandle
 ) : ViewModel() {
-
-    // В ViewModel
-    val login: MutableStateFlow<String> = savedState.getMutableStateFlow("login_key", "user_login")
-    val password = savedState.getMutableStateFlow("password", "securePassword123")
-    val email = savedState.getMutableStateFlow("email", "test@example.com")
-    val phone = savedState.getMutableStateFlow("phone", "+1234567890")
-    val firstName = savedState.getMutableStateFlow("firstName", "Иван")
-    val lastName = savedState.getMutableStateFlow("lastName", "Иванов")
-    val middleName = savedState.getMutableStateFlow("middleName", "Иванович")
-    val birthDate = savedState.getMutableStateFlow("birthDate", "2000-01-31")
-    val gender = savedState.getMutableStateFlow("gender", "MALE")
-    val selectedGroup = savedState.getMutableStateFlow<GroupDto?>( "selectedGroup", null)
-
-    fun <T> updateField(key: String, value: T, flow: MutableStateFlow<T>) {
-        savedState[key] = value
-        flow.value = value
-    }
-
-    private val _state = MutableStateFlow(AuthState())
-    val state: StateFlow<AuthState> = _state
-
-    private val _users = MutableStateFlow<List<UserDto>>(emptyList())
-    val users: StateFlow<List<UserDto>> = _users
-
-    private val _groups = MutableStateFlow<List<GroupDto>>(emptyList())
-    val groups: StateFlow<List<GroupDto>> = _groups
-
-    private val _groupsState = MutableStateFlow<GroupsState>(GroupsState.Idle)
-    val groupsState: StateFlow<GroupsState> = _groupsState
+    private val _uiState = MutableStateFlow(RegisterUiState())
+    val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
 
     init {
+        restoreState() // restore form SavedState
         loadGroups()
+    }
+
+    fun <T> updateField(key: String, value: T, updateAction: (RegisterUiState) -> RegisterUiState) {
+        savedState[key] = value
+        _uiState.update { updateAction(it) }
     }
 
     fun loadGroups() {
         viewModelScope.launch {
-            _groupsState.value = GroupsState.Loading
+            _uiState.update { it.copy(groupsState = GroupsState.Loading) }
             repository.getGroups()
-                .onSuccess {
-                    _groupsState.value = GroupsState.Success(it)
+                .onSuccess { groups ->
+                    _uiState.update { it.copy(groupsState = GroupsState.Success(groups)) }
                 }
-                .onFailure {
-                    _groupsState.value = GroupsState.Error(it.message ?: "Unknown error")
+                .onFailure { error ->
+                    val msg = error.message ?: "Unknown error"
+                    _uiState.update { it.copy(groupsState = GroupsState.Error(msg)) }
                 }
         }
     }
 
-    fun register(
-        login: String, pass: String, email: String, phone: String,
-        fName: String, lName: String, mName: String, bDate: String, gender: String, gId: Int,
-        onSuccess: () -> Unit
-    ) {
-        // Создаем вложенный объект персоны
+    fun register(onSuccess: () -> Unit) {
+        val current = _uiState.value
+        val gId = current.selectedGroup?.id ?: return
+
         val person = PersonDto(
-            firstName = fName,
-            lastName = lName,
-            middleName = mName,
-            birthDate = bDate, // Убедись, что строка в формате "2000-01-31"
-            gender = gender,   // Должно быть строго "MALE" или "FEMALE"
+            firstName = current.firstName,
+            lastName = current.lastName,
+            middleName = current.middleName,
+            birthDate = current.birthDate,
+            gender = current.gender,
             groupId = gId
         )
 
-        // Создаем основной запрос
         val request = RegisterRequestDto(
-            login = login,
-            password = pass,
-            email = email,
-            phoneNumber = phone,
+            login = current.login,
+            password = current.password,
+            email = current.email,
+            phoneNumber = current.phone,
             person = person
         )
 
         viewModelScope.launch {
-            _state.value = AuthState(isLoading = true)
+            _uiState.update { it.copy(isLoading = true, error = null) }
             repository.register(request)
                 .onSuccess {
-                    _state.value = AuthState(isLoading = false)
+                    _uiState.update { it.copy(isLoading = false) }
                     onSuccess()
                 }
                 .onFailure { error ->
-                    _state.value = AuthState(error = "Ошибка: ${error.message}", isLoading = false)
+                    _uiState.update { it.copy(error = "Ошибка: ${error.message}", isLoading = false) }
                 }
+        }
+    }
+
+    private fun restoreState() {
+        _uiState.update {
+            RegisterUiState(
+                login = savedState.get<String>("login_key") ?: "user_login",
+                password = savedState.get<String>("password") ?: "securePassword123",
+                email = savedState.get<String>("email") ?: "test@example.com",
+                phone = savedState.get<String>("phone") ?: "+1234567890",
+                firstName = savedState.get<String>("firstName") ?: "Иван",
+                lastName = savedState.get<String>("lastName") ?: "Иванов",
+                middleName = savedState.get<String>("middleName") ?: "Иванович",
+                birthDate = savedState.get<String>("birthDate") ?: "2000-01-31",
+                gender = savedState.get<String>("gender") ?: "MALE",
+                selectedGroup = savedState.get<GroupDto>("selectedGroup")
+            )
         }
     }
 }

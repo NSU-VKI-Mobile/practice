@@ -41,21 +41,8 @@ import ci.nsu.moble.main.viewmodel.states.GroupsState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistrationScreen(viewModel: RegisterViewModel, onBack: () -> Unit) {
-    val state by viewModel.state.collectAsState()
-    val groups by viewModel.groups.collectAsState()
 
-    // Fields (and default values)
-    val login by viewModel.login.collectAsState()
-    val password by viewModel.password.collectAsState()
-    val email by viewModel.email.collectAsState()
-    val phone by viewModel.phone.collectAsState()
-    val firstName by viewModel.firstName.collectAsState()
-    val lastName by viewModel.lastName.collectAsState()
-    val middleName by viewModel.middleName.collectAsState()
-    val birthDate by viewModel.birthDate.collectAsState()
-    val gender by viewModel.gender.collectAsState()
-    val selectedGroup by viewModel.selectedGroup.collectAsState()
-    val groupsState by viewModel.groupsState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     var isExpanded by remember { mutableStateOf(false) }
     var isGenderExpanded by remember { mutableStateOf(false) }
@@ -97,12 +84,35 @@ fun RegistrationScreen(viewModel: RegisterViewModel, onBack: () -> Unit) {
                     ) {
                         Text("Личные данные", style = MaterialTheme.typography.titleMedium)
 
-                        OutlinedTextField(value = lastName, onValueChange = { viewModel.updateField("lastName", it, viewModel.lastName) }, label = { Text("Фамилия") }, modifier = Modifier.fillMaxWidth())
-                        OutlinedTextField(value = firstName, onValueChange = { viewModel.updateField("firstName", it, viewModel.firstName)  }, modifier = Modifier.fillMaxWidth())
-                        OutlinedTextField(value = middleName, onValueChange = { viewModel.updateField("middleName", it, viewModel.middleName) }, label = { Text("Отчество") }, modifier = Modifier.fillMaxWidth())
+                        // Last Name
+                        OutlinedTextField(
+                            value = uiState.lastName,
+                            onValueChange = { newValue ->
+                                viewModel.updateField("lastName", newValue) { it.copy(lastName = newValue) }
+                                            },
+                            label = { Text("Фамилия") },
+                            modifier = Modifier.fillMaxWidth())
+
+                        // First name
+                        OutlinedTextField(
+                            value = uiState.firstName,
+                            onValueChange = { newValue ->
+                                viewModel.updateField("firstName", newValue) { it.copy(firstName = newValue) }
+                            },
+                            label = { Text("Имя") },
+                            modifier = Modifier.fillMaxWidth())
+
+                        // Middle name
+                        OutlinedTextField(
+                            value = uiState.middleName,
+                            onValueChange = { newValue ->
+                                viewModel.updateField("middleName", newValue) { it.copy(middleName = newValue) }
+                            },
+                            label = { Text("Отчество") },
+                            modifier = Modifier.fillMaxWidth())
 
                         // --- Groups dropdown ---
-                        val groupsState by viewModel.groupsState.collectAsState()
+                        //val groupsState by uiState.groupsState.collectAsState()
                         ExposedDropdownMenuBox(
                             // expanded state
                             expanded = isExpanded,
@@ -111,8 +121,8 @@ fun RegistrationScreen(viewModel: RegisterViewModel, onBack: () -> Unit) {
                             // Field when not expanded
                             OutlinedTextField(
                                 // group menu states names for ui
-                                value = when (groupsState) {
-                                    is GroupsState.Success -> selectedGroup?.name ?: "Выберите группу"
+                                value = when (val groupsState = uiState.groupsState) {
+                                    is GroupsState.Success -> uiState.selectedGroup?.name ?: "Выберите группу"
                                     is GroupsState.Loading -> "Загрузка..."
                                     is GroupsState.Error -> "Ошибка загрузки"
                                     else -> "Выберите группу"
@@ -126,7 +136,7 @@ fun RegistrationScreen(viewModel: RegisterViewModel, onBack: () -> Unit) {
                             // Expanded menu
                             ExposedDropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
                                 // handling states
-                                when (val state = groupsState) {
+                                when (val state = uiState.groupsState) {
                                     is GroupsState.Loading -> {
                                         CircularProgressIndicator(modifier = Modifier.padding(16.dp))
                                     }
@@ -144,7 +154,7 @@ fun RegistrationScreen(viewModel: RegisterViewModel, onBack: () -> Unit) {
                                             DropdownMenuItem(
                                                 text = { Text(group.name) },
                                                 onClick = {
-                                                    viewModel.updateField("selectedGroup", group, viewModel.selectedGroup)
+                                                    viewModel.updateField("selectedGroup", group) { it.copy(selectedGroup = group) }
                                                     isExpanded = false
                                                 }
                                             )
@@ -155,7 +165,14 @@ fun RegistrationScreen(viewModel: RegisterViewModel, onBack: () -> Unit) {
                             }
                         }
 
-                        OutlinedTextField(value = birthDate, onValueChange = { viewModel.updateField("birthDate", it, viewModel.birthDate) }, label = { Text("Дата рождения (ГГГГ-ММ-ДД)") }, modifier = Modifier.fillMaxWidth())
+                        // Birth Date
+                        OutlinedTextField(
+                            value = uiState.birthDate,
+                            onValueChange = { newValue ->
+                                viewModel.updateField("birthDate", newValue) { it.copy(birthDate = newValue) }
+                            },
+                            label = { Text("Дата рождения (ГГГГ-ММ-ДД)") },
+                            modifier = Modifier.fillMaxWidth())
 
                         // --- Gender dropdown ---
                         ExposedDropdownMenuBox(
@@ -163,7 +180,7 @@ fun RegistrationScreen(viewModel: RegisterViewModel, onBack: () -> Unit) {
                             onExpandedChange = { isGenderExpanded = !isGenderExpanded }
                         ) {
                             OutlinedTextField(
-                                value = genderOptions.find { it.second == gender }?.first ?: "Выберите пол",
+                                value = genderOptions.find { it.second == uiState.gender }?.first ?: "Выберите пол",
                                 onValueChange = {},
                                 readOnly = true,
                                 label = { Text("Пол") },
@@ -178,7 +195,7 @@ fun RegistrationScreen(viewModel: RegisterViewModel, onBack: () -> Unit) {
                                     DropdownMenuItem(
                                         text = { Text(label) },
                                         onClick = {
-                                            viewModel.updateField("gender", value, viewModel.gender)
+                                            viewModel.updateField("gender", value) { it.copy(gender = value) }
                                             isGenderExpanded = false
                                         }
                                     )
@@ -197,12 +214,41 @@ fun RegistrationScreen(viewModel: RegisterViewModel, onBack: () -> Unit) {
                     ) {
                         Text("Данные аккаунта", style = MaterialTheme.typography.titleMedium)
 
-                        OutlinedTextField(value = email, onValueChange = { viewModel.updateField("email", it, viewModel.email) }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
-                        OutlinedTextField(value = phone, onValueChange = { viewModel.updateField("phone", it, viewModel.phone) }, label = { Text("Телефон") }, modifier = Modifier.fillMaxWidth())
-                        OutlinedTextField(value = login, onValueChange = { viewModel.updateField("login", it, viewModel.login) }, label = { Text("Логин") }, modifier = Modifier.fillMaxWidth())
+                        // Email
                         OutlinedTextField(
-                            value = password,
-                            onValueChange = { viewModel.updateField("password", it, viewModel.password) },
+                            value = uiState.email,
+                            onValueChange = { newValue ->
+                                viewModel.updateField("email", newValue) { it.copy(email = newValue) }
+                            },
+                            label = { Text("Email") },
+                            modifier = Modifier.fillMaxWidth())
+
+                        // Phone
+                        OutlinedTextField(
+                            value = uiState.phone,
+                            onValueChange = { newValue ->
+                                viewModel.updateField("phone", newValue) { it.copy(phone = newValue) }
+                            },
+                            label = { Text("Телефон") },
+                            modifier = Modifier.fillMaxWidth())
+
+                        // Login
+                        OutlinedTextField(
+                            value = uiState.login,
+                            onValueChange = { newValue ->
+                                viewModel.updateField("login", newValue) { it.copy(login = newValue) }
+                            },
+                            label = { Text("Логин") },
+                            modifier = Modifier.fillMaxWidth())
+
+                        // Password
+                        OutlinedTextField(
+                            value = uiState.password,
+                            onValueChange = { newPassword ->
+                                viewModel.updateField("password", newPassword) { state ->
+                                    state.copy(password = newPassword)
+                                }
+                            },
                             label = { Text("Пароль") },
                             visualTransformation = PasswordVisualTransformation(),
                             modifier = Modifier.fillMaxWidth()
@@ -212,25 +258,34 @@ fun RegistrationScreen(viewModel: RegisterViewModel, onBack: () -> Unit) {
             }
 
             item {
-                if (state.error != null) {
-                    Text(state.error!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(vertical = 8.dp))
+                // Show error message if it exists in the UI state
+                if (uiState.error != null) {
+                    Text(
+                        text = uiState.error!!,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 }
+
+                // Determine if the form can be submitted
+                val isGroupSelected = uiState.selectedGroup != null
 
                 Button(
                     onClick = {
-                        if (selectedGroup != null) {
-                            viewModel.register(
-                                login, password, email, phone,
-                                firstName, lastName, middleName, birthDate, gender, selectedGroup!!.id,
-                                onSuccess = onBack
-                            )
+                        if (isGroupSelected) {
+                            // Call refactored ViewModel method without passing all fields manually
+                            viewModel.register(onSuccess = onBack)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = !state.isLoading && selectedGroup != null
+                    // Disable button during network requests or if group is missing
+                    enabled = !uiState.isLoading && isGroupSelected
                 ) {
-                    if (state.isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
                     } else {
                         Text("Зарегистрироваться")
                     }
