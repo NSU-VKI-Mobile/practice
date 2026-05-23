@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
-    id("kotlin-kapt")
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -46,6 +46,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
     // AndroidX
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -81,9 +84,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.room3.common.jvm)
-    implementation(libs.androidx.room3.runtime)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // Coil
     implementation(libs.coil.compose)
@@ -97,7 +98,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
-
-kapt {
-    correctErrorTypes = true
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }

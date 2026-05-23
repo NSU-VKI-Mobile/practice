@@ -1,0 +1,76 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "fe5630447cdfcf221f8a937468c26997",
+    "entities": [
+      {
+        "tableName": "deposit_calculations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `initialAmount` REAL NOT NULL, `periodMonths` INTEGER NOT NULL, `interestRate` INTEGER NOT NULL, `monthlyTopUp` REAL, `finalAmount` REAL NOT NULL, `interestEarned` REAL NOT NULL, `calculationDate` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "initialAmount",
+            "columnName": "initialAmount",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "periodMonths",
+            "columnName": "periodMonths",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "interestRate",
+            "columnName": "interestRate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "monthlyTopUp",
+            "columnName": "monthlyTopUp",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "finalAmount",
+            "columnName": "finalAmount",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "interestEarned",
+            "columnName": "interestEarned",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "calculationDate",
+            "columnName": "calculationDate",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fe5630447cdfcf221f8a937468c26997')"
+    ]
+  }
+}

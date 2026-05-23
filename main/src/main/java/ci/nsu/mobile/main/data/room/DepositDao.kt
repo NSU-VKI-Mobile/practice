@@ -1,8 +1,9 @@
 package ci.nsu.mobile.main.data.room
 
-import androidx.room3.Dao
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import retrofit2.http.Query
 
 @Dao
 interface DepositDao {

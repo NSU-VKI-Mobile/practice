@@ -12,38 +12,35 @@ composeBom = "2024.09.00"
 navigationCompose = "2.8.9"
 kotlinxSerialization = "1.6.0"
 material-icons = "1.6.0"
+room = "2.6.1"
+ksp = "2.0.21-1.0.25"
 
-# Retrofit и OkHttp
 retrofit = "2.9.0"
 okhttp = "4.12.0"
 converterSerialization = "1.0.0"
 
-# Hilt - разделяем версии!
-hilt-android = "2.48"              # ← Для Dagger Hilt
-hilt-navigation-compose = "1.1.0"  # ← Для Hilt Navigation Compose
-hilt-compiler = "2.48"             # ← Для компилятора Hilt
+hilt-android = "2.51.1"
+hilt-navigation-compose = "1.1.0"
+hilt-compiler = "2.51.1"
 
-# Coroutines
 coroutines = "1.7.3"
 
-# DataStore
 datastore = "1.0.0"
 
-# Coil
 coil = "2.5.0"
 material3 = "1.4.0"
 room3CommonJvm = "3.0.0-alpha04"
 room3Runtime = "3.0.0-alpha04"
 
 [libraries]
-# AndroidX
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
-
-# Compose
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -54,33 +51,25 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material-icons" }
 
-# Retrofit
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-converter-serialization = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "converterSerialization" }
 
-# OkHttp
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 
-# Kotlinx Serialization
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
-# Coroutines
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 
-# DataStore
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
-# Hilt - используем правильные версии
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-compiler" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 
-# Coil
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
-# Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -94,5 +83,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-# Плагин Hilt использует версию Dagger Hilt (2.48)
+ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-android" }
