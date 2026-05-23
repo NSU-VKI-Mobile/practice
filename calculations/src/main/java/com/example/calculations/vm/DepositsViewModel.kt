@@ -2,16 +2,13 @@ package com.example.calculations.vm
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
-import com.example.calculations.data.dbo.Deposit
+import com.example.calculations.data.dba.Deposit
 import com.example.calculations.data.repository.DepositRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import java.text.SimpleDateFormat

@@ -18,7 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ci.nsu.mobile.main.sl.ServiceLocator
+import ci.nsu.mobile.main.di.ServiceLocator
 import ci.nsu.mobile.main.ui.screens.MainScreen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
 import com.example.auth.manager.AuthManagerImpl

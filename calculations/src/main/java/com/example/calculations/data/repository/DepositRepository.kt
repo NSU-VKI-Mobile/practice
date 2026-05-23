@@ -1,8 +1,8 @@
 package com.example.calculations.data.repository
 
 import androidx.lifecycle.LiveData
-import com.example.calculations.data.dbo.Deposit
-import com.example.calculations.data.dbo.DepositDao
+import com.example.calculations.data.dba.Deposit
+import com.example.calculations.data.dba.DepositDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

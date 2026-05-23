@@ -2,7 +2,7 @@ package ci.nsu.mobile.main.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ci.nsu.mobile.main.sl.ServiceLocator
+import ci.nsu.mobile.main.di.ServiceLocator
 import com.example.auth.vm.LoginAndRegViewModel
 import com.example.calculations.vm.DepositsViewModel
 

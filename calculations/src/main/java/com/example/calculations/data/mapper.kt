@@ -1,6 +1,6 @@
 package com.example.calculations.data
 
-import com.example.calculations.data.dbo.Deposit
+import com.example.calculations.data.dba.Deposit
 import com.example.domain.model.DepositCalculation
 
 fun DepositCalculation.toEntity(): Deposit {

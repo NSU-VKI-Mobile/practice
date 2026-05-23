@@ -1,11 +1,11 @@
-package com.example.calculations.data.db
+package com.example.calculations.data.dbo
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.calculations.data.dbo.Deposit
-import com.example.calculations.data.dbo.DepositDao
+import com.example.calculations.data.dba.Deposit
+import com.example.calculations.data.dba.DepositDao
 
 
 @Database(entities = [(Deposit::class)], version = 1, exportSchema = false)

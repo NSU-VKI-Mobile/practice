@@ -1,10 +1,10 @@
-package ci.nsu.mobile.main.sl
+package ci.nsu.mobile.main.di
 
 import android.app.Application
 import android.content.Context
 import ci.nsu.mobile.main.vm.ViewModelFactory
 import com.example.auth.data.repository.AuthRepository
-import com.example.calculations.data.db.AppDatabase
+import com.example.calculations.data.dbo.AppDatabase
 import com.example.calculations.data.repository.DepositRepository
 
 class ServiceLocator(private val context: Context) {

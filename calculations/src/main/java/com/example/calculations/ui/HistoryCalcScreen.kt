@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.calculations.R
-import com.example.calculations.data.dbo.Deposit
+import com.example.calculations.data.dba.Deposit
 import com.example.calculations.vm.DepositsViewModel
 
 @Composable
