@@ -12,11 +12,15 @@ class DepositRepository @Inject constructor(val depositDao: DepositDao) {
         depositDao.InsertDeposit(depositCalculation)
     }
 
-    fun getAll(): Flow<List<DepositCalculationEntity>> {
-        return depositDao.GetAll()
+    fun getAll(userId: Long): Flow<List<DepositCalculationEntity>> {
+        return depositDao.GetAll(userId)
     }
 
     suspend fun findDuplication(entity: DepositCalculationEntity) : DepositCalculationEntity? {
         return depositDao.findDuplication(entity.initialAmount, entity.periodMonths, entity.interestRate, entity.monthlyTopUp)
+    }
+
+    suspend fun deleteDeposit(deposit: DepositCalculationEntity) {
+        depositDao.deleteDeposit(deposit)
     }
 }

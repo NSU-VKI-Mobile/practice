@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ci.nsu.mobile.main.navigation.Screen
+import ci.nsu.mobile.main.navigation.Screens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,18 +30,9 @@ fun MainScreenContent(navToScreen: (String) -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Button({navToScreen(Screen.FirstScreen.route)},
+            Button({navToScreen(Screens.FirstScreen.route)},
                 modifier =  Modifier.fillMaxWidth().padding(10.dp).width(250.dp)) {
-                Text("Рассчитать")
-            }
-            Button({navToScreen(Screen.HistoryScreen.route)},
-                modifier = Modifier.fillMaxWidth().padding(10.dp).width(250.dp)) {
-                Text("История расчетов")
-//            }
-//            Button({
-//                        activity?.fi
-//                   }, modifier = Modifier.fillMaxWidth().padding(10.dp).width(250.dp)) {
-//                Text("Закрыть приложение")
+                Text("Новый расчет")
             }
         }
     }

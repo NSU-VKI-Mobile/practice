@@ -1,8 +1,9 @@
 package ci.nsu.mobile.main.viewmodel.deposit
 
 import androidx.lifecycle.ViewModel
-import ci.nsu.mobile.main.data.room.DepositCalculationEntity
+import ci.nsu.mobile.main.data.network.TokenManager
 import ci.nsu.mobile.main.data.repository.DepositRepository
+import ci.nsu.mobile.main.data.room.DepositCalculationEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +12,10 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class DepositCalculationViewModel @Inject constructor(val repository: DepositRepository) : ViewModel(){
+class DepositCalculationViewModel @Inject constructor (
+    val repository: DepositRepository,
+    private val tokenManager: TokenManager
+) : ViewModel(){
     private val _uiState = MutableStateFlow(DepositUIState())
     val uiState: StateFlow<DepositUIState> = _uiState.asStateFlow()
     private val _errorMessage = MutableStateFlow("")
@@ -112,9 +116,11 @@ class DepositCalculationViewModel @Inject constructor(val repository: DepositRep
         val totalInterest = finalAmount - totalDeposited
         return Pair(finalAmount, totalInterest)
     }
+
     suspend fun saveEntity(): Boolean {
         val state = _uiState.value
         val entity = DepositCalculationEntity(
+            userId = tokenManager.userId.toLong(),
             initialAmount = state.initialAmount.toDouble(),
             periodMonths = state.periodMonths.toInt(),
             interestRate = state.interestRate.toInt(),

@@ -34,7 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ci.nsu.mobile.main.navigation.Screen
+import ci.nsu.mobile.main.navigation.Screens
 import ci.nsu.mobile.main.viewmodel.deposit.DepositCalculationViewModel
 import kotlinx.coroutines.launch
 
@@ -126,7 +126,7 @@ fun SecondScreenContent(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button(
-                    onClick = { navToScreen(Screen.FirstScreen.route) },
+                    onClick = { navToScreen(Screens.FirstScreen.route) },
                     modifier = Modifier.padding(10.dp).width(150.dp)
                 ) {
                     Text("Назад")
@@ -147,7 +147,7 @@ fun SecondScreenContent(
                                 interestEarned,
                                 currentTimeMillis
                             )
-                            navToScreen(Screen.ResultScreen.route)
+                            navToScreen(Screens.ResultScreen.route)
                         }
                        else {
                             scope.launch {

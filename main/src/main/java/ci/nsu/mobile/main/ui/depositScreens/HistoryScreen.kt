@@ -1,7 +1,6 @@
 package ci.nsu.mobile.main.ui.depositScreens
 
 import android.icu.text.SimpleDateFormat
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,10 +12,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,8 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ci.nsu.mobile.main.data.room.DepositCalculationEntity
-import ci.nsu.mobile.main.navigation.Screen
+import ci.nsu.mobile.main.ui.components.ShortHistoryItemCard
 import ci.nsu.mobile.main.viewmodel.historyDeposits.HistoryDepositsViewModel
 import java.util.Date
 import java.util.Locale
@@ -38,7 +36,11 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
 
     val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
     val openDialog = remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        viewModel.loadHistory()
+    }
     Scaffold() { innerPadding ->
+
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
@@ -57,11 +59,6 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
                     )
                 }
             }
-
-            Button(onClick = { navToScreen(Screen.MainScreen.route) },
-                modifier = Modifier.padding(10.dp).width(150.dp)) {
-                Text("Назад")
-            }
         }
         if (openDialog.value && selectedState != null) {
             AlertDialog(
@@ -69,6 +66,10 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
                 title = { Text(text = "INFO about deposit ${selectedState!!.id}") },
                 text = {
                     Column() {
+                        Text(
+                            "UserID: ${selectedState!!.userId}₽",
+                            Modifier.padding(20.dp)
+                        )
                         Text(
                             "Стартовый взнос: ${selectedState!!.initialAmount}₽",
                             Modifier.padding(20.dp)
@@ -105,8 +106,14 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
                 confirmButton = {
                     Row(modifier = Modifier.padding(10.dp).fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center) {
-                        Button({ openDialog.value = false }, modifier = Modifier.width(150.dp)) {
+                        Button({ openDialog.value = false }) {
                             Text("OK")
+                        }
+                        Button({
+                                viewModel.deleteDeposit(selectedState)
+                                openDialog.value = false
+                               }, modifier = Modifier.width(150.dp)) {
+                            Text("Удалить")
                         }
                     }
                 }
@@ -115,19 +122,4 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
     }
 
 }
-
-@Composable
-fun ShortHistoryItemCard(deposit: DepositCalculationEntity, dateFormat: SimpleDateFormat, Click: ()-> Unit) {
-    Card(modifier = Modifier.padding(20.dp).clickable(onClick = Click).width(400.dp)) {
-        Text("DEPOSIT #${deposit.id}",
-            modifier = Modifier.padding(10.dp))
-        Text("Итоговая сумма вклада:${String.format("%.2f", deposit.finalAmount)}₽",
-            modifier = Modifier.padding(horizontal = 10.dp))
-        Text("Процентная ставка:${deposit.interestRate}%",
-            modifier = Modifier.padding(horizontal = 10.dp))
-        Text(dateFormat.format(Date(deposit.calculationDate)),
-            modifier = Modifier.padding(10.dp))
-    }
-}
-
 

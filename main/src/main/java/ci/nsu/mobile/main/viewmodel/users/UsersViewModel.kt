@@ -22,6 +22,14 @@ class UsersViewModel @Inject constructor(
         loadUsers()
     }
 
+    fun userEvent(event: UserEvents) {
+        when(event) {
+            is UserEvents.bottomItemChanged -> {
+                _state.update { it.copy(selectedBottomItem = event.newItem) }
+            }
+        }
+    }
+
     fun loadUsers() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }

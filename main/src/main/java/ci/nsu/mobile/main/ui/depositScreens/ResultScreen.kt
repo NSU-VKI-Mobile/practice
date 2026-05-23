@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ci.nsu.mobile.main.navigation.Screen
 import ci.nsu.mobile.main.viewmodel.deposit.DepositCalculationViewModel
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -82,6 +81,8 @@ fun ResultScreenContent(navToScreen: (String) -> Unit,
 
                     if (result) {
                         snackbarHostState.showSnackbar("Расчёт сохранён!")
+                        viewModel.cleanAll()
+
                     } else {
                         snackbarHostState.showSnackbar(viewModel.errorMessage.value)
                     }
@@ -89,15 +90,6 @@ fun ResultScreenContent(navToScreen: (String) -> Unit,
             }, modifier =  Modifier.padding(20.dp).width(150.dp)) {
                 Text("Сохранить")
             }
-
-            Button({
-                viewModel.cleanAll()
-                navToScreen(Screen.MainScreen.route)
-            }, modifier =  Modifier.padding(horizontal = 20.dp).width(200.dp)) {
-                Text("<- На главный экран")
-            }
-
-
         }
     }
 }

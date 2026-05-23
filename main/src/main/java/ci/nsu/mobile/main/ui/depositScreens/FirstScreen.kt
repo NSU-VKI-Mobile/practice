@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ci.nsu.mobile.main.navigation.Screen
+import ci.nsu.mobile.main.navigation.Screens
 import ci.nsu.mobile.main.viewmodel.deposit.DepositCalculationViewModel
 import kotlinx.coroutines.launch
 
@@ -76,13 +76,13 @@ fun FirstScreenContent(navToScreen: (String) -> Unit, viewModel: DepositCalculat
             horizontalArrangement = Arrangement.Center) {
             Button({
                     viewModel.cleanAll()
-                    navToScreen(Screen.MainScreen.route)
+                    navToScreen(Screens.MainScreen.route)
                    }, modifier =  Modifier.padding(10.dp).width(150.dp)) {
                 Text("<- В начало")
             }
             Button({
                 if (viewModel.validationFirstScreen()) {
-                    navToScreen(Screen.SecondScreen.route)
+                    navToScreen(Screens.SecondScreen.route)
                 }
                 else {
                     scope.launch {

@@ -31,6 +31,7 @@ coil = "2.5.0"
 material3 = "1.4.0"
 room3CommonJvm = "3.0.0-alpha04"
 room3Runtime = "3.0.0-alpha04"
+roomCommonJvm = "2.8.4"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -76,6 +77,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-room3-common-jvm = { group = "androidx.room3", name = "room3-common-jvm", version.ref = "room3CommonJvm" }
 androidx-room3-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "room3Runtime" }
+androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
