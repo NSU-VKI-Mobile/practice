@@ -30,4 +30,5 @@
     <string name="user_list">Список пользователей</string>
     <string name="history_calc">История депозитов</string>
     <string name="add_deposit">Добавить депозит</string>
+    <string name="my_profile">Мой профиль</string>
 </resources>

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -29,6 +30,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.R
+import com.example.auth.ui.MyProfileScreen
 import com.example.auth.ui.UserListScreen
 import com.example.auth.vm.LoginAndRegViewModel
 import com.example.calculations.ui.CalcScreen
@@ -44,9 +46,11 @@ sealed class Screen(val route: String) {
     object Calc : Screen("calc")
     object HistoryCalc : Screen("historyCalc")
     object UserList: Screen("userList")
+    object CurUserProfile: Screen("curUserProfile")
 }
 
 sealed class UseIcons(val icon: ImageVector){
+    object CurUserProfile : UseIcons(Icons.Default.AccountCircle)
     object UserList : UseIcons(Icons.Default.Person)
     object HistoryCalc : UseIcons(Icons.Default.Home)
     object AddCalc : UseIcons(Icons.Default.Add)
@@ -84,39 +88,51 @@ fun MainScreen(
     }, bottomBar = {
         NavigationBar {
             NavigationBarItem(
-                icon = { Icon(imageVector = UseIcons.UserList.icon, contentDescription = stringResource(R.string.user_list)) },
-                label = { Text(stringResource(R.string.user_list)) },
+                icon = { Icon(imageVector = UseIcons.CurUserProfile.icon, contentDescription = stringResource(R.string.user_list)) },
+                label = { Text(stringResource(R.string.my_profile)) },
                 selected = selectedItem == 0,
 
                 onClick = {
-                    navController.navigate(Screen.UserList.route) {
+                    navController.navigate(Screen.CurUserProfile.route) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }
                     selectedItem = 0
                 })
             NavigationBarItem(
-                icon = { Icon(imageVector = UseIcons.HistoryCalc.icon, contentDescription = stringResource(R.string.history_calc)) },
-                label = { Text(stringResource(R.string.history_calc)) },
+                icon = { Icon(imageVector = UseIcons.UserList.icon, contentDescription = stringResource(R.string.user_list)) },
+                label = { Text(stringResource(R.string.user_list)) },
                 selected = selectedItem == 1,
 
                 onClick = {
-                    navController.navigate(Screen.HistoryCalc.route) {
+                    navController.navigate(Screen.UserList.route) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }
                     selectedItem = 1
                 })
             NavigationBarItem(
+                icon = { Icon(imageVector = UseIcons.HistoryCalc.icon, contentDescription = stringResource(R.string.history_calc)) },
+                label = { Text(stringResource(R.string.history_calc)) },
+                selected = selectedItem == 2,
+
+                onClick = {
+                    navController.navigate(Screen.HistoryCalc.route) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
+                    selectedItem = 2
+                })
+            NavigationBarItem(
                 icon = { Icon(imageVector = UseIcons.AddCalc.icon, contentDescription = stringResource(R.string.add_deposit)) },
                 label = { Text(stringResource(R.string.add_deposit)) },
-                selected = selectedItem == 2,
+                selected = selectedItem == 3,
                 onClick = {
                     navController.navigate(Screen.Input1.route) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }
-                    selectedItem = 2
+                    selectedItem = 3
                 })
         }
     }) { innerPadding ->
@@ -125,6 +141,9 @@ fun MainScreen(
             startDestination = Screen.UserList.route,
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable(Screen.CurUserProfile.route) {
+                MyProfileScreen(authViewModel)
+            }
             composable(Screen.UserList.route) {
                 UserListScreen(authViewModel)
             }

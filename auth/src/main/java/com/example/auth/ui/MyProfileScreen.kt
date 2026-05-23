@@ -18,8 +18,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.auth.R
 import com.example.auth.vm.LoginAndRegViewModel
 
 @Composable
@@ -30,13 +32,12 @@ fun MyProfileScreen(
     Column(
         modifier = Modifier.padding(24.dp)
     ) {
-        Text(viewModel.getCurLogin() ?: "null")
+        Text(stringResource(R.string.text_login) + " : " + (viewModel.getCurLogin() ?: "null"))
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = {showDialog = true},
-            modifier = Modifier.weight(1f)
+            onClick = {showDialog = true}
         ) {
-            Text("Создать QR-code")
+            Text(stringResource(R.string.create_qr_code))
         }
     }
 

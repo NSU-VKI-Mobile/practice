@@ -30,4 +30,7 @@
     <string name="user_list">Список пользователей</string>
     <string name="history_calc">История депозитов</string>
     <string name="add_deposit">Добавить депозит</string>
+    <string name="qr_code">QR-код</string>
+    <string name="create_qr_code">Создать QR-код</string>
+    <string name="success_save_qr_code">QR-код успешно сохранен</string>
 </resources>

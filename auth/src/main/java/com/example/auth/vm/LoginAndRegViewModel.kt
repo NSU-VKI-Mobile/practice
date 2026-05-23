@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -27,6 +28,7 @@ import kotlinx.datetime.LocalDate
 import kotlin.String
 import androidx.core.graphics.createBitmap
 import androidx.lifecycle.application
+import com.example.auth.R
 import com.example.auth.util.CreateQrCode
 import java.io.IOException
 import java.io.OutputStream
@@ -255,6 +257,8 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
                 contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
                 contentResolver.update(uri, contentValues, null, null)
             }
+
+            Toast.makeText(application, R.string.success_save_qr_code, Toast.LENGTH_SHORT).show()
 
         } catch (e: IOException) {
             errorMessage = e.message

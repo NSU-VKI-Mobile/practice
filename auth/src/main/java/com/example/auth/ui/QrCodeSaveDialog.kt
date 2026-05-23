@@ -16,9 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.auth.R
 import com.example.auth.vm.LoginAndRegViewModel
 
 @Composable
@@ -40,7 +42,7 @@ fun QrCodeSaveDialog(
             ) {
                 Image(
                     bitmap = qrcode.asImageBitmap(),
-                    contentDescription = "Qr-code",
+                    contentDescription = stringResource(R.string.qr_code),
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Row(
@@ -51,14 +53,14 @@ fun QrCodeSaveDialog(
                         onClick = onDismiss,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Назад")
+                        Text(stringResource(R.string.text_back))
                     }
 
                     Button(
-                        onClick = { viewModel.saveQrToGallery(qrcode) },
+                        onClick = { viewModel.saveQrToGallery(qrcode)},
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Сохранить")
+                        Text(stringResource(R.string.save))
                     }
                 }
             }
