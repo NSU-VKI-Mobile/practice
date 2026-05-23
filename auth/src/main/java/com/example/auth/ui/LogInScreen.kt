@@ -16,6 +16,7 @@ import com.example.auth.vm.LoginAndRegViewModel
 fun LogInScreen(
     onRegClick: () -> Unit,
     onLogInClick: () -> Unit,
+    onQrCodeClick: () -> Unit,
     onExitClick: () -> Unit,
     viewModel: LoginAndRegViewModel = viewModel()
 ){
@@ -33,6 +34,9 @@ fun LogInScreen(
         )
         Button(onClick = onLogInClick) {
             Text(stringResource(R.string.text_logIn))
+        }
+        Button(onClick = onQrCodeClick) {
+            Text(stringResource(R.string.text_logIn_qrcode))
         }
         Button(onClick = onRegClick) {
             Text(stringResource(R.string.text_registry))

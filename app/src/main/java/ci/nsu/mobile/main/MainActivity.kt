@@ -25,6 +25,7 @@ import com.example.auth.manager.AuthManagerImpl
 import com.example.auth.ui.ErrorScreen
 import com.example.auth.ui.RegistryScreen
 import com.example.auth.ui.LogInScreen
+import com.example.auth.ui.ScannerScreen
 import com.example.auth.vm.LoginAndRegViewModel
 import com.example.calculations.vm.DepositsViewModel
 import com.example.domain.interfaces.AuthManager
@@ -32,6 +33,7 @@ import com.example.domain.interfaces.AuthManager
 sealed class Screen(val route: String) {
     object LogIn : Screen("login")
     object Registry : Screen("registry")
+    object Qrcode : Screen("qrCode")
     object Main : Screen("main")
 }
 
@@ -74,10 +76,14 @@ fun Greeting(
         navController = navController,
         startDestination = if(authManager.isLoggedIn()) Screen.Main.route else Screen.LogIn.route
     ) {
+        composable(Screen.Qrcode.route) {
+            ScannerScreen()
+        }
         composable(Screen.LogIn.route) {
             LogInScreen(
                 onRegClick = {navController.navigate(Screen.Registry.route) },
                 onLogInClick = { authViewModel.logIn({navController.navigate(Screen.Main.route)})},
+                onQrCodeClick = {navController.navigate(Screen.Qrcode.route) },
                 onExitClick = {(context as? Activity)?.finish()},
                 viewModel = authViewModel
             )
