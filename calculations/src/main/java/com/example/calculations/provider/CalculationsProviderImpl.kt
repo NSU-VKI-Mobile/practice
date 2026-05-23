@@ -1,9 +1,8 @@
 package com.example.calculations.provider
 
-import androidx.lifecycle.map
 import com.example.calculations.data.repository.DepositRepository
-import com.example.calculations.data.toDomain
-import com.example.calculations.data.toEntity
+import com.example.calculations.util.toDomain
+import com.example.calculations.util.toEntity
 import com.example.domain.interfaces.CalculationsProvider
 import com.example.domain.model.DepositCalculation
 import kotlinx.coroutines.flow.Flow

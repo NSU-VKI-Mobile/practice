@@ -7,6 +7,8 @@ object TokenManager {
     private const val PREFS = "auth_prefs"
     private const val KEY_TOKEN = "token"
     private const val KEY_USERID = "user_id"
+    private const val KEY_LOGIN = "login"
+    private const val KEY_PASSWORD = "password"
 
     private var prefs: SharedPreferences? = null
 
@@ -23,6 +25,16 @@ object TokenManager {
         get() = prefs?.getLong(KEY_USERID , -1)
         set(value) {
             prefs?.edit()?.putLong(KEY_USERID, value?:-1)?.apply()
+        }
+    var login: String?
+        get() = prefs?.getString(KEY_LOGIN , null)
+        set(value) {
+            prefs?.edit()?.putString(KEY_LOGIN, value)?.apply()
+        }
+    var password: String?
+        get() = prefs?.getString(KEY_PASSWORD , null)
+        set(value) {
+            prefs?.edit()?.putString(KEY_PASSWORD, value)?.apply()
         }
 
     fun clear() {

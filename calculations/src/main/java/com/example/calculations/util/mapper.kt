@@ -1,4 +1,4 @@
-package com.example.calculations.data
+package com.example.calculations.util
 
 import com.example.calculations.data.dba.Deposit
 import com.example.domain.model.DepositCalculation

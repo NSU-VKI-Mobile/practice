@@ -26,6 +26,7 @@ jetbrainsKotlinJvm = "2.0.21"
 room3CommonJvmVersion = "3.0.0-alpha04"
 uiToolingPreview = "1.11.1"
 playServicesCloudMessaging = "17.4.0"
+runtimeVersion = "1.11.2"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -62,6 +63,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 room3-common-jvm = { group = "androidx.room3", name = "room3-common-jvm", version.ref = "room3CommonJvmVersion" }
 play-services-cloud-messaging = { group = "com.google.android.gms", name = "play-services-cloud-messaging", version.ref = "playServicesCloudMessaging" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtimeVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

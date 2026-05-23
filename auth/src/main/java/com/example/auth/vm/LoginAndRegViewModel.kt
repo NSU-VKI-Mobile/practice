@@ -1,6 +1,12 @@
 package com.example.auth.vm
 
 import android.app.Application
+import android.content.ContentValues
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,6 +25,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlin.String
+import androidx.core.graphics.createBitmap
+import androidx.lifecycle.application
+import com.example.auth.util.CreateQrCode
+import java.io.IOException
+import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 data class LoginAndRegUiState(
@@ -71,20 +85,22 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
         }
     }
 
-    private suspend fun updateToken(newToken: String?, newLogin: String? = null) {
+    private suspend fun updateToken(newToken: String?, newLogin: String? = null, newPassword: String? = null) {
         _token.value = newToken
         if (newToken != null) {
             TokenManager.token = newToken
-            updateUserId(newLogin)
+            updateUserId(newLogin, newPassword)
         } else {
             TokenManager.clear()
         }
     }
 
-    private suspend fun updateUserId(newLogin: String? = null){
+    private suspend fun updateUserId(newLogin: String? = null, newPassword: String? = null){
         authRepository.getUsers()
             .onSuccess { users ->
                 TokenManager.userId = users.find { it.login == newLogin }?.id?.toLong() ?: -1
+                TokenManager.login = newLogin
+                TokenManager.password = newPassword
             }
             .onFailure { error ->
                 errorMessage = "${error.message}"
@@ -160,7 +176,7 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
 
             authRepository.login(currentState.login, currentState.password)
                 .onSuccess { authToken ->
-                    updateToken(authToken.token, currentState.login)
+                    updateToken(authToken.token, currentState.login, currentState.password)
                     _uiState.update {
                         it.copy(
                             login = "",
@@ -176,11 +192,80 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
         }
     }
 
+
     fun logOut(){
         viewModelScope.launch {
             updateToken(null)
             _uiState.update { LoginAndRegUiState() }
         }
+    }
+
+    fun generateQrCode() : Bitmap {
+        val login = TokenManager.login
+        val password = TokenManager.password
+        var qrBitmap = createBitmap(1, 1)
+        if (login == null || password == null) {
+            errorMessage = "Данные пользователя отсуствуют"
+        }
+        else{
+            val data = "$login:$password"
+            qrBitmap = CreateQrCode(data, 800, 800)
+        }
+        return qrBitmap
+    }
+
+    fun saveQrToGallery(bitmap: Bitmap) {
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val fileName = "QR_$timestamp.png"
+        val mimeType = "image/png"
+
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.MediaColumns.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/MyApp")
+                put(MediaStore.MediaColumns.IS_PENDING, 1)
+            }
+        }
+
+        val contentResolver = application.contentResolver
+        val collection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        var uri: Uri? = null
+        var outputStream: OutputStream? = null
+
+        try {
+            uri = contentResolver.insert(collection, contentValues)
+            if (uri == null) {
+                errorMessage = "Ошибка сохранения qr-кода"
+                return
+            }
+            outputStream = contentResolver.openOutputStream(uri)
+            if(outputStream == null){
+                errorMessage = "Ошибка сохранения qr-кода"
+                return
+            }
+            if (!bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)) {
+                errorMessage = "Ошибка сохранения qr-кода"
+                return
+            }
+            outputStream.flush()
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                contentValues.clear()
+                contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
+                contentResolver.update(uri, contentValues, null, null)
+            }
+
+        } catch (e: IOException) {
+            errorMessage = e.message
+            uri?.let { contentResolver.delete(it, null, null) }
+        } finally {
+            outputStream?.close()
+        }
+    }
+
+    fun getCurLogin() : String?{
+        return TokenManager.login
     }
 
     fun setLogin(newValue: String){
