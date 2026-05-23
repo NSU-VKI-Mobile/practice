@@ -3,8 +3,11 @@ package ci.nsu.mobile.main.data.repository
 import ci.nsu.mobile.main.data.room.DepositCalculationEntity
 import ci.nsu.mobile.main.data.room.DepositDao
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class DepositRepository(val depositDao: DepositDao) {
+@Singleton
+class DepositRepository @Inject constructor(val depositDao: DepositDao) {
     suspend fun insertDeposit(depositCalculation: DepositCalculationEntity) {
         depositDao.InsertDeposit(depositCalculation)
     }

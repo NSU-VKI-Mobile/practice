@@ -1,6 +1,5 @@
 package ci.nsu.mobile.main.ui.depositScreens
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +30,6 @@ fun MainScreenContent(navToScreen: (String) -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            val activity = LocalActivity.current
             Button({navToScreen(Screen.FirstScreen.route)},
                 modifier =  Modifier.fillMaxWidth().padding(10.dp).width(250.dp)) {
                 Text("Рассчитать")
@@ -39,13 +37,12 @@ fun MainScreenContent(navToScreen: (String) -> Unit) {
             Button({navToScreen(Screen.HistoryScreen.route)},
                 modifier = Modifier.fillMaxWidth().padding(10.dp).width(250.dp)) {
                 Text("История расчетов")
-            }
-            Button({
-                        activity?.finish()
-                   }, modifier = Modifier.fillMaxWidth().padding(10.dp).width(250.dp)) {
-                Text("Закрыть приложение")
+//            }
+//            Button({
+//                        activity?.fi
+//                   }, modifier = Modifier.fillMaxWidth().padding(10.dp).width(250.dp)) {
+//                Text("Закрыть приложение")
             }
         }
     }
-
 }

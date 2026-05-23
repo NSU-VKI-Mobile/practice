@@ -33,8 +33,8 @@ import java.util.Locale
 @Composable
 fun HistoryScreenContent(navToScreen: (String) -> Unit,
                          viewModel: HistoryDepositsViewModel) {
-    val historyState by viewModel.historyState.collectAsStateWithLifecycle()
-    val selectedState by viewModel.selectedState.collectAsStateWithLifecycle()
+    val historyState by viewModel.state.collectAsStateWithLifecycle()
+    val selectedState = historyState.selectedDeposit
 
     val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
     val openDialog = remember { mutableStateOf(false) }
@@ -46,7 +46,7 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
                 modifier = Modifier.padding(10.dp).weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                items(historyState) { deposit ->
+                items(historyState.deposits) { deposit ->
                     ShortHistoryItemCard(
                         deposit = deposit,
                         dateFormat = dateFormat,

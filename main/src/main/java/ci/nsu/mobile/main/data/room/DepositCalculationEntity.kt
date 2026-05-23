@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "deposit_calculations")
 data class DepositCalculationEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val userId: Long,
     /** стартовый взнос **/
     val initialAmount: Double,
     /** срок вклада **/
