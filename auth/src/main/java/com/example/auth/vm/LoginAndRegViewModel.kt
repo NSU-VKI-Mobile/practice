@@ -3,6 +3,7 @@ package com.example.auth.vm
 import android.app.Application
 import android.content.ContentValues
 import android.graphics.Bitmap
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -60,6 +61,8 @@ data class LoginAndRegUiState(
 
 class LoginAndRegViewModel(application: Application, private val authRepository: AuthRepository) : AndroidViewModel(application){
     val allGenders = listOf("Муж","Жен")
+    val successSound = MediaPlayer.create(application, R.raw.qr_success)
+    val failureSound = MediaPlayer.create(application, R.raw.qr_failure)
     private val _uiState = MutableStateFlow(LoginAndRegUiState())
     val uiState: StateFlow<LoginAndRegUiState> = _uiState.asStateFlow()
     private val _token = MutableStateFlow<String?>(null)
