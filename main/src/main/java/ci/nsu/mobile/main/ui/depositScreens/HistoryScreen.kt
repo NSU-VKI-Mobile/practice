@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ci.nsu.mobile.main.ui.components.CustomButton
 import ci.nsu.mobile.main.ui.components.ShortHistoryItemCard
 import ci.nsu.mobile.main.viewmodel.historyDeposits.HistoryDepositsViewModel
 import ci.nsu.mobile.main.viewmodel.historyDeposits.HistoryEvents
@@ -33,7 +34,6 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
                          viewModel: HistoryDepositsViewModel) {
     val historyState by viewModel.state.collectAsStateWithLifecycle()
     val selectedState = historyState.selectedDeposit
-
     val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
     val openDialog = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -62,26 +62,22 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
         if (openDialog.value && selectedState != null) {
             AlertDialog(
                 onDismissRequest = { openDialog.value = false },
-                title = { Text(text = "INFO about deposit ${selectedState!!.id}") },
+                title = { Text(text = "INFO about deposit") },
                 text = {
                     Column() {
                         Text(
-                            "UserID: ${selectedState!!.userId}₽",
-                            Modifier.padding(20.dp)
+                            "Стартовый взнос: ${selectedState.initialAmount}₽",
+                            Modifier.padding(vertical = 10.dp, horizontal = 20.dp)
                         )
                         Text(
-                            "Стартовый взнос: ${selectedState!!.initialAmount}₽",
-                            Modifier.padding(20.dp)
-                        )
-                        Text(
-                            "Срок вклада (в месяцах): ${selectedState!!.periodMonths}",
+                            "Срок вклада (в месяцах): ${selectedState.periodMonths}",
                             Modifier.padding(20.dp, 0.dp)
                         )
                         Text(
-                            "Процентная ставка: ${selectedState!!.interestRate}%",
+                            "Процентная ставка: ${selectedState.interestRate}%",
                             Modifier.padding(20.dp, 0.dp)
                         )
-                        val mot = selectedState!!.monthlyTopUp
+                        val mot = selectedState.monthlyTopUp
                         if (mot == null) {
                             Text("Ежемесячное пополнение: 0₽", Modifier.padding(20.dp,  0.dp))
                         }
@@ -89,32 +85,36 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
                             Text("Ежемесячное пополнение: ${mot}₽", Modifier.padding(20.dp,  0.dp))
                         }
                         Text(
-                            "Итоговая сумма: ${String.format("%.2f", selectedState!!.finalAmount)}₽",
+                            "Итоговая сумма: ${String.format("%.2f", selectedState.finalAmount)}₽",
                             Modifier.padding(20.dp, 0.dp)
                         )
                         Text(
-                            "Начисленные проценты: ${String.format("%.2f",selectedState!!.interestEarned)}₽",
+                            "Начисленные проценты: ${String.format("%.2f",selectedState.interestEarned)}₽",
                             Modifier.padding(20.dp, 0.dp)
                         )
                         Text(
-                            "Дата и время рассчета: ${dateFormat.format(Date(selectedState!!.calculationDate))}",
+                            "Дата и время рассчета: ${dateFormat.format(Date(selectedState.calculationDate))}",
                             Modifier.padding(20.dp)
                         )
                     }
                 },
                 confirmButton = {
                     Row(modifier = Modifier.padding(10.dp).fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center) {
-                        Button({
-                            viewModel.historyEvent(HistoryEvents.DeleteDeposit(selectedState))
-                            openDialog.value = false
-                        }) {
-                            Text("Удалить")
-                        }
-                        Button({ openDialog.value = false }) {
-                            Text("OK")
-                        }
-
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically) {
+                        CustomButton(
+                            onClick = {
+                                viewModel.historyEvent(HistoryEvents.DeleteDeposit(selectedState))
+                                openDialog.value = false
+                        },
+                            title = "Удалить",
+                            modifier = Modifier.width(120.dp)
+                        )
+                        CustomButton(
+                            onClick = { openDialog.value = false },
+                            title = "OK",
+                            modifier = Modifier.width(120.dp)
+                        )
                     }
                 }
             )

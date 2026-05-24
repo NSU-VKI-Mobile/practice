@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -18,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.navigation.Screens
+import ci.nsu.mobile.main.ui.components.CustomButton
 import ci.nsu.mobile.main.viewmodel.deposit.DepositCalculationViewModel
 import ci.nsu.mobile.main.viewmodel.deposit.DepositEvents
 import java.util.Date
@@ -63,13 +63,14 @@ fun ResultScreenContent(navToScreen: (String) -> Unit,
                 Text("Дата и время рассчета: ${formattedDate}",
                     Modifier.padding(20.dp))
             }
-            Button({
-                viewModel.depositCalculationEvent(DepositEvents.SaveEntity)
-                viewModel.depositCalculationEvent(DepositEvents.CleanAll)
-                navToScreen(Screens.MainScreen.route)
-            }, modifier =  Modifier.padding(20.dp).width(150.dp)) {
-                Text("Сохранить")
-            }
+            CustomButton(
+                onClick = {
+                    viewModel.depositCalculationEvent(DepositEvents.SaveEntity)
+                    viewModel.depositCalculationEvent(DepositEvents.CleanAll)
+                    navToScreen(Screens.MainScreen.route)
+            }, modifier =  Modifier.padding(20.dp).width(150.dp),
+                title = "Сохранить"
+            )
         }
     }
 }

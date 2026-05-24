@@ -10,10 +10,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CustomButton(
     onClick: () -> Unit,
-    title: String
+    title: String,
+    modifier: Modifier = Modifier
 ) {
     Button(onClick = onClick,
-        modifier = Modifier.padding(10.dp)) {
+        modifier = modifier.padding(bottom = 10.dp)) {
         Text(title)
     }
 }

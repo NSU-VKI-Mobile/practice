@@ -28,16 +28,17 @@ data class DepositUIState (
 
 sealed class DepositEvents {
     data class InitialAmountChanged(val newInitialAmount: String): DepositEvents()
-    data class PeriodMonthsChanged(val newPeriodMonth: String): DepositEvents()
+    data class PeriodMonthsChanged(val newPeriodMonths: String): DepositEvents()
     data class InterestRateChanged(val newInterestRate: String): DepositEvents()
     data class MonthlyTopUpChanged(val newMonthlyTopUp: String?): DepositEvents()
-    data class UpdateCalculationResult(val finalAmount: Double, val interestEarned: Double, val date: Long): DepositEvents()
+    data class GoToSecondScreen(val value: Boolean): DepositEvents()
+    data class GoToResultScreen(val value: Boolean): DepositEvents()
     data class SelectedRateUpdate(val newRate: Int): DepositEvents()
     data class IsMonthlyTopUpCheck(val newCheck: Boolean): DepositEvents()
     object CleanAll: DepositEvents()
     object ValidationFirstScreen: DepositEvents()
     data class ValidationSecondScreen(val isChecked: Boolean): DepositEvents()
     data class CalculationFinalAmount(val initialAmount: Double, val interestRate: Int,
-                                      val periodMonths: Int, val monthlyTopUp: Double?): DepositEvents()
+                                      val periodMonths: Int, val monthlyTopUp: Double?, val date: Long): DepositEvents()
     object SaveEntity: DepositEvents()
 }

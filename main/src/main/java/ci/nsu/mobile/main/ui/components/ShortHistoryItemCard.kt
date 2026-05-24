@@ -15,11 +15,11 @@ import java.util.Date
 @Composable
 fun ShortHistoryItemCard(deposit: DepositCalculationEntity, dateFormat: SimpleDateFormat, Click: ()-> Unit) {
     Card(modifier = Modifier.padding(20.dp).clickable(onClick = Click).width(400.dp)) {
-        Text("DEPOSIT #${deposit.id}",
+        Text("DEPOSIT",
             modifier = Modifier.padding(10.dp))
-        Text("Итоговая сумма вклада:${String.format("%.2f", deposit.finalAmount)}₽",
+        Text("Итоговая сумма вклада: ${String.format("%.2f", deposit.finalAmount)}₽",
             modifier = Modifier.padding(horizontal = 10.dp))
-        Text("Процентная ставка:${deposit.interestRate}%",
+        Text("Процентная ставка: ${deposit.interestRate}%",
             modifier = Modifier.padding(horizontal = 10.dp))
         Text(dateFormat.format(Date(deposit.calculationDate)),
             modifier = Modifier.padding(10.dp))

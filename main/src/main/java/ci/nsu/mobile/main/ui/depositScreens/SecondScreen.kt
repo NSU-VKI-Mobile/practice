@@ -12,7 +12,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -20,16 +19,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.navigation.Screens
+import ci.nsu.mobile.main.ui.components.CustomButton
+import ci.nsu.mobile.main.ui.components.TextFieldWithOptionalStar
 import ci.nsu.mobile.main.viewmodel.deposit.DepositCalculationViewModel
 import ci.nsu.mobile.main.viewmodel.deposit.DepositEvents
 
@@ -39,6 +40,12 @@ fun SecondScreenContent(
     viewModel: DepositCalculationViewModel
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val availableRates = when {
+        state.periodMonths.toIntOrNull() == null -> emptyList()
+        state.periodMonths.toInt() < 6 -> listOf(5)
+        state.periodMonths.toInt() < 12 -> listOf(10, 5)
+        else -> listOf(15, 10, 5)
+    }
 
     LaunchedEffect(state.goToResultScreen) {
         if (state.goToResultScreen) {
@@ -47,20 +54,12 @@ fun SecondScreenContent(
                 state.initialAmount.toDouble(),
                 state.interestRate.toInt(),
                 state.periodMonths.toInt(),
-                state.monthlyTopUp?.toDoubleOrNull()
+                state.monthlyTopUp?.toDoubleOrNull(),
+                currentTimeMillis
             ))
-            viewModel.depositCalculationEvent(DepositEvents.UpdateCalculationResult(state.finalAmount,
-                state.interestRate.toDouble(), currentTimeMillis))
             navToScreen(Screens.ResultScreen.route)
         }
     }
-    val availableRates = when {
-        state.periodMonths.toIntOrNull() == null -> emptyList()
-        state.periodMonths.toInt() < 6 -> listOf(15, 10, 5)
-        state.periodMonths.toInt() < 12 -> listOf(10, 5)
-        else -> listOf(5)
-    }
-
     Scaffold() { innerPadding ->
         Column(
             modifier = Modifier
@@ -107,17 +106,19 @@ fun SecondScreenContent(
                     })
                 Text("Ежемесячное пополнение")
             }
-
+            if ("interestRate" in state.errorFieldsSecondScreen) {
+                Text("Выберете процентную ставку", color = Color.Red,
+                    modifier = Modifier.padding(bottom = 10.dp))
+            }
             if (state.monthlyTopUpCheck) {
-                TextField(
+                TextFieldWithOptionalStar(
                     value = state.monthlyTopUp ?: "",
-                    label = { Text("Ежемесячное пополнение (₽)") },
+                    placeholder = "Ежемесячное пополнение (₽)",
                     onValueChange = {
                         viewModel.depositCalculationEvent(DepositEvents.MonthlyTopUpChanged(it))
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.padding(8.dp),
-                    placeholder = {Text("1000.0")},
                     trailingIcon = {
                         if (!state.monthlyTopUp.isNullOrEmpty()) {
                             IconButton(onClick = {
@@ -126,29 +127,31 @@ fun SecondScreenContent(
                                 Icon(imageVector = Icons.Default.Clear, contentDescription = "Очистить")
                             }
                         }
-                    }
+                    },
+                    isError = "monthlyTopUp" in state.errorFieldsSecondScreen
                 )
             }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
-                    onClick = { navToScreen(Screens.FirstScreen.route) },
-                    modifier = Modifier.padding(10.dp).width(150.dp)
-                ) {
-                    Text("Назад")
-                }
-
-                Button(
+                CustomButton(
+                    onClick = {
+                        navToScreen(Screens.FirstScreen.route)
+                        viewModel.depositCalculationEvent(DepositEvents.GoToSecondScreen(false))
+                    },
+                    modifier = Modifier.width(150.dp),
+                    title = "Назад"
+                )
+                CustomButton(
                     onClick = {
                         viewModel.depositCalculationEvent(DepositEvents.ValidationSecondScreen(state.monthlyTopUpCheck))
                     },
-                    modifier = Modifier.padding(10.dp).width(150.dp)
-                ) {
-                    Text("Рассчитать")
-                }
+                    modifier = Modifier.padding(10.dp).width(150.dp),
+                    title = "Рассчитать"
+                )
             }
         }
     }

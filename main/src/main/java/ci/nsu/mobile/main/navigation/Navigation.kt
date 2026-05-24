@@ -190,7 +190,9 @@ fun Navigation(
                 )
             }
             composable(Screens.MainScreen.route) {
-                MainScreenContent { navigateTo -> navController.navigate(navigateTo) }
+                MainScreenContent( { navigateTo -> navController.navigate(navigateTo) },
+                    depositCalculationViewModel
+                )
             }
             composable(Screens.FirstScreen.route) {
                 FirstScreenContent(

@@ -36,8 +36,8 @@ class DepositCalculationViewModel @Inject constructor (
                     errorFieldsSecondScreen = it.errorFieldsSecondScreen - "monthlyTopUp") }
             }
             is DepositEvents.PeriodMonthsChanged -> {
-                _state.update { it.copy(periodMonths = event.newPeriodMonth,
-                    errorFieldsFirstScreen = it.errorFieldsFirstScreen - "periodMonth") }
+                _state.update { it.copy(periodMonths = event.newPeriodMonths,
+                    errorFieldsFirstScreen = it.errorFieldsFirstScreen - "periodMonths") }
             }
             is DepositEvents.IsMonthlyTopUpCheck -> {
                 _state.update { it.copy(monthlyTopUpCheck = event.newCheck) }
@@ -45,48 +45,57 @@ class DepositCalculationViewModel @Inject constructor (
             is DepositEvents.SelectedRateUpdate -> {
                 _state.update { it.copy(selectedInterestRate = event.newRate) }
             }
-            is DepositEvents.UpdateCalculationResult -> {
-                _state.update {
-                    it.copy(
-                        finalAmount = event.finalAmount,
-                        interestEarned = event.interestEarned,
-                        calculationDate = event.date
-                    )
-                }
-            }
             is DepositEvents.CalculationFinalAmount -> calculateFinalAmount(event.initialAmount, event.interestRate,
-                event.periodMonths, event.monthlyTopUp)
+                event.periodMonths, event.monthlyTopUp, event.date)
             is DepositEvents.CleanAll -> cleanAll()
-            is DepositEvents.ValidationFirstScreen -> validationFirstScreen()
+            is DepositEvents.ValidationFirstScreen -> if (validationFirstScreen()) _state.update { it.copy(goToSecondScreen = true) }
             is DepositEvents.ValidationSecondScreen -> validationSecondScreen(event.isChecked)
             is DepositEvents.SaveEntity -> saveEntity()
+            is DepositEvents.GoToResultScreen -> {
+                _state.update { it.copy(goToResultScreen = event.value) }
+            }
+            is DepositEvents.GoToSecondScreen -> {
+                _state.update { it.copy(goToSecondScreen = event.value) }
+
+            }
         }
     }
     private fun cleanAll() {
         _state.update { DepositUIState() }
     }
 
-    private fun validationFirstScreen() {
+    private fun validationFirstScreen(): Boolean {
         val state = _state.value
         val errorFields = mutableSetOf<String>()
         if (state.initialAmount.isEmpty() || state.initialAmount.toDoubleOrNull() == null ||
-            state.initialAmount.toDouble() <= 0.0) errorFields.add("initialAmount")
+            state.initialAmount.toDouble() <= 0.0) {
+            errorFields.add("initialAmount")
+            _state.update { it.copy(goToSecondScreen = false) }
+        }
         if (state.periodMonths.isEmpty() || state.periodMonths.toDoubleOrNull() == null ||
-            state.periodMonths.toDouble() <= 0.0) errorFields.add("periodMonth")
+            state.periodMonths.toDouble() <= 0.0) {
+            errorFields.add("periodMonths")
+            _state.update { it.copy(goToSecondScreen = false) }
+        }
         _state.update { it.copy( errorFieldsFirstScreen = errorFields) }
         if (errorFields.isEmpty()) {
             _state.update { it.copy(goToSecondScreen = true) }
         }
+        return errorFields.isEmpty()
     }
     private fun validationSecondScreen(isChecked: Boolean) {
         val state = _state.value
         val errorFields = mutableSetOf<String>()
-        if (state.interestRate.isEmpty() || state.interestRate.toIntOrNull() == null)
+        if (state.interestRate.isEmpty() || state.interestRate.toIntOrNull() == null) {
+            _state.update { it.copy(goToResultScreen = false) }
             errorFields.add("interestRate")
-
+        }
         if (isChecked) {
             val topUpValue = state.monthlyTopUp?.toDoubleOrNull()
-            if (topUpValue == null || topUpValue <= 0.0) errorFields.add("monthlyTopUp")
+            if (topUpValue == null || topUpValue <= 0.0) {
+                _state.update { it.copy(goToResultScreen = false) }
+                errorFields.add("monthlyTopUp")
+            }
         }
         _state.update { it.copy( errorFieldsSecondScreen = errorFields) }
         if (errorFields.isEmpty()) {
@@ -94,8 +103,9 @@ class DepositCalculationViewModel @Inject constructor (
         }
     }
 
-    private fun calculateFinalAmount(initialAmount: Double, interestRate: Int, periodMonths: Int, monthlyTopUp: Double?
-    ): Pair<Double, Double> {
+    private fun calculateFinalAmount(initialAmount: Double, interestRate: Int, periodMonths: Int, monthlyTopUp: Double?,
+                                     date: Long
+    ) {
         val monthlyRate = interestRate / 100.0 / 12.0
         var finalAmount = initialAmount
         for (month in 1..periodMonths) {
@@ -107,7 +117,7 @@ class DepositCalculationViewModel @Inject constructor (
         }
         val totalDeposited = initialAmount + (monthlyTopUp ?: 0.0) * periodMonths
         val totalInterest = finalAmount - totalDeposited
-        return Pair(finalAmount, totalInterest)
+        _state.update { it.copy(finalAmount = finalAmount, interestEarned = totalInterest, calculationDate = date) }
     }
 
     private fun saveEntity() {
