@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -20,15 +19,11 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,30 +31,37 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.navigation.Screens
 import ci.nsu.mobile.main.viewmodel.deposit.DepositCalculationViewModel
-import kotlinx.coroutines.launch
+import ci.nsu.mobile.main.viewmodel.deposit.DepositEvents
 
 @Composable
 fun SecondScreenContent(
     navToScreen: (String) -> Unit,
     viewModel: DepositCalculationViewModel
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
+    LaunchedEffect(state.goToResultScreen) {
+        if (state.goToResultScreen) {
+            val currentTimeMillis = System.currentTimeMillis()
+            viewModel.depositCalculationEvent(DepositEvents.CalculationFinalAmount(
+                state.initialAmount.toDouble(),
+                state.interestRate.toInt(),
+                state.periodMonths.toInt(),
+                state.monthlyTopUp?.toDoubleOrNull()
+            ))
+            viewModel.depositCalculationEvent(DepositEvents.UpdateCalculationResult(state.finalAmount,
+                state.interestRate.toDouble(), currentTimeMillis))
+            navToScreen(Screens.ResultScreen.route)
+        }
+    }
     val availableRates = when {
-        uiState.periodMonths.toIntOrNull() == null -> emptyList()
-        uiState.periodMonths.toInt() < 6 -> listOf(15)
-        uiState.periodMonths.toInt() < 12 -> listOf(10)
+        state.periodMonths.toIntOrNull() == null -> emptyList()
+        state.periodMonths.toInt() < 6 -> listOf(15, 10, 5)
+        state.periodMonths.toInt() < 12 -> listOf(10, 5)
         else -> listOf(5)
     }
 
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState)
-    { data->
-        Snackbar(modifier = Modifier.padding(bottom = 700.dp),
-            snackbarData = data,
-            shape = RoundedCornerShape(20.dp))
-    }}) { innerPadding ->
+    Scaffold() { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -78,12 +80,12 @@ fun SecondScreenContent(
                 availableRates.forEach { rate ->
                     FilterChip(
                         onClick = {
-                            viewModel.updateSelectedRate(rate)
-                            viewModel.interestRateUpdate(rate.toString())
+                            viewModel.depositCalculationEvent(DepositEvents.SelectedRateUpdate(rate))
+                            viewModel.depositCalculationEvent(DepositEvents.InterestRateChanged(rate.toString()))
                         },
                         label = { Text("${rate}%") },
-                        selected = uiState.selectedInterestRate == rate,
-                        leadingIcon = if (uiState.selectedInterestRate == rate) {
+                        selected = state.selectedInterestRate == rate,
+                        leadingIcon = if (state.selectedInterestRate == rate) {
                             {
                                 Icon(
                                     imageVector = Icons.Filled.Done,
@@ -99,21 +101,28 @@ fun SecondScreenContent(
             }
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Checkbox(checked = uiState.monthlyTopUpCheck, onCheckedChange = { viewModel.updateHasMonthlyTopUp(it) })
+                Checkbox(checked = state.monthlyTopUpCheck,
+                    onCheckedChange = {
+                        viewModel.depositCalculationEvent(DepositEvents.IsMonthlyTopUpCheck(it))
+                    })
                 Text("Ежемесячное пополнение")
             }
 
-            if (uiState.monthlyTopUpCheck) {
+            if (state.monthlyTopUpCheck) {
                 TextField(
-                    value = uiState.monthlyTopUp ?: "",
+                    value = state.monthlyTopUp ?: "",
                     label = { Text("Ежемесячное пополнение (₽)") },
-                    onValueChange = { viewModel.monthlyTopUpUpdate(it) },
+                    onValueChange = {
+                        viewModel.depositCalculationEvent(DepositEvents.MonthlyTopUpChanged(it))
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.padding(8.dp),
                     placeholder = {Text("1000.0")},
                     trailingIcon = {
-                        if (!uiState.monthlyTopUp.isNullOrEmpty()) {
-                            IconButton(onClick = {viewModel.monthlyTopUpUpdate("")}) {
+                        if (!state.monthlyTopUp.isNullOrEmpty()) {
+                            IconButton(onClick = {
+                                viewModel.depositCalculationEvent(DepositEvents.MonthlyTopUpChanged(""))
+                            }) {
                                 Icon(imageVector = Icons.Default.Clear, contentDescription = "Очистить")
                             }
                         }
@@ -134,26 +143,7 @@ fun SecondScreenContent(
 
                 Button(
                     onClick = {
-                        if(viewModel.validationSecondScreen(uiState.monthlyTopUpCheck)) {
-                            val currentTimeMillis = System.currentTimeMillis()
-                            val (finalAmount, interestEarned) = viewModel.calculateFinalAmount(
-                                uiState.initialAmount.toDouble(),
-                                uiState.interestRate.toInt(),
-                                uiState.periodMonths.toInt(),
-                                uiState.monthlyTopUp?.toDoubleOrNull()
-                            )
-                            viewModel.updateCalculationResult(
-                                finalAmount,
-                                interestEarned,
-                                currentTimeMillis
-                            )
-                            navToScreen(Screens.ResultScreen.route)
-                        }
-                       else {
-                            scope.launch {
-                                snackbarHostState.showSnackbar(viewModel.errorMessage.value)
-                            }
-                        }
+                        viewModel.depositCalculationEvent(DepositEvents.ValidationSecondScreen(state.monthlyTopUpCheck))
                     },
                     modifier = Modifier.padding(10.dp).width(150.dp)
                 ) {

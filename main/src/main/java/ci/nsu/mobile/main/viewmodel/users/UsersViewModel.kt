@@ -24,7 +24,7 @@ class UsersViewModel @Inject constructor(
 
     fun userEvent(event: UserEvents) {
         when(event) {
-            is UserEvents.bottomItemChanged -> {
+            is UserEvents.BottomItemChanged -> {
                 _state.update { it.copy(selectedBottomItem = event.newItem) }
             }
         }

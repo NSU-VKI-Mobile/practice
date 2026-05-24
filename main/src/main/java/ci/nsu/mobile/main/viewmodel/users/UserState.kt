@@ -10,5 +10,5 @@ data class UserState(
 )
 
 sealed class UserEvents {
-    data class bottomItemChanged(val newItem: String) : UserEvents()
+    data class BottomItemChanged(val newItem: String) : UserEvents()
 }

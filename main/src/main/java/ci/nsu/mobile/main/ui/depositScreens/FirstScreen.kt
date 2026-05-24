@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -15,15 +14,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -31,42 +26,46 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.navigation.Screens
 import ci.nsu.mobile.main.viewmodel.deposit.DepositCalculationViewModel
-import kotlinx.coroutines.launch
+import ci.nsu.mobile.main.viewmodel.deposit.DepositEvents
 
 @Composable
 fun FirstScreenContent(navToScreen: (String) -> Unit, viewModel: DepositCalculationViewModel) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState)
-        { data->
-            Snackbar(modifier = Modifier.padding(bottom = 700.dp),
-                snackbarData = data,
-                shape = RoundedCornerShape(20.dp))
-        }}) {innerPadding ->
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(state.goToSecondScreen) {
+        if (state.goToSecondScreen) {
+            navToScreen(Screens.SecondScreen.route)
+        }
+    }
+    Scaffold() {innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center) {
-        TextField(uiState.initialAmount, label = {Text("Стартовый взнос (₽)")},
+        TextField(state.initialAmount, label = {Text("Стартовый взнос (₽)")},
             onValueChange = {
-                viewModel.initialAmountUpdate(it)}, modifier = Modifier.padding(10.dp),
+                viewModel.depositCalculationEvent(DepositEvents.InitialAmountChanged(it))
+            }, modifier = Modifier.padding(10.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             placeholder = {Text("1000.0")},
             trailingIcon = {
-                if (!uiState.initialAmount.isEmpty()) {
-                    IconButton(onClick = {viewModel.initialAmountUpdate("")}) {
+                if (!state.initialAmount.isEmpty()) {
+                    IconButton(onClick = {
+                        viewModel.depositCalculationEvent(DepositEvents.InitialAmountChanged(""))
+                    }) {
                         Icon(imageVector = Icons.Default.Clear, contentDescription = "Очистить")
                     }
                 }
             })
-        TextField(uiState.periodMonths, label = {Text("Срок вклада в месяцах")},
-            onValueChange = {viewModel.periodMonthUpdate(it)}, modifier = Modifier.padding(10.dp),
+        TextField(state.periodMonths, label = {Text("Срок вклада в месяцах")},
+            onValueChange = {
+                viewModel.depositCalculationEvent(DepositEvents.PeriodMonthsChanged(it))
+            }, modifier = Modifier.padding(10.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             placeholder = {Text("6")},
             trailingIcon = {
-                if (!uiState.periodMonths.isEmpty()) {
-                    IconButton(onClick = {viewModel.periodMonthUpdate("")}) {
+                if (!state.periodMonths.isEmpty()) {
+                    IconButton(onClick = {
+                        viewModel.depositCalculationEvent(DepositEvents.PeriodMonthsChanged(""))
+                    }) {
                         Icon(imageVector = Icons.Default.Clear, contentDescription = "Очистить")
                     }
                 }
@@ -75,21 +74,13 @@ fun FirstScreenContent(navToScreen: (String) -> Unit, viewModel: DepositCalculat
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center) {
             Button({
-                    viewModel.cleanAll()
+                    viewModel.depositCalculationEvent(DepositEvents.CleanAll)
                     navToScreen(Screens.MainScreen.route)
-                   }, modifier =  Modifier.padding(10.dp).width(150.dp)) {
+                    }, modifier =  Modifier.padding(10.dp).width(150.dp)) {
                 Text("<- В начало")
             }
             Button({
-                if (viewModel.validationFirstScreen()) {
-                    navToScreen(Screens.SecondScreen.route)
-                }
-                else {
-                    scope.launch {
-                        snackbarHostState.showSnackbar(viewModel.errorMessage.value)
-                    }
-
-                }
+                viewModel.depositCalculationEvent(DepositEvents.ValidationFirstScreen)
             }, modifier = Modifier.padding(10.dp).width(150.dp)) {
                 Text("Далее ->")
                 }

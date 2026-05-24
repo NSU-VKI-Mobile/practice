@@ -15,8 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ci.nsu.mobile.main.navigation.Screens
-import ci.nsu.mobile.main.ui.components.CustomButton
 import ci.nsu.mobile.main.viewmodel.users.UsersViewModel
 
 @Composable
@@ -60,10 +58,6 @@ fun UsersScreen(
                     modifier = Modifier.padding(10.dp)
                 )
             }
-
-            CustomButton(
-                onClick = { navTo(Screens.LoginScreen.route) }, title = "Выйти"
-            )
         }
     }
 }

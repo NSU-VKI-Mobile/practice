@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -25,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.main.ui.components.ShortHistoryItemCard
 import ci.nsu.mobile.main.viewmodel.historyDeposits.HistoryDepositsViewModel
+import ci.nsu.mobile.main.viewmodel.historyDeposits.HistoryEvents
 import java.util.Date
 import java.util.Locale
 
@@ -37,10 +37,9 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
     val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
     val openDialog = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        viewModel.loadHistory()
+        viewModel.historyEvent(HistoryEvents.LoadHistory)
     }
     Scaffold() { innerPadding ->
-
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
@@ -53,7 +52,7 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
                         deposit = deposit,
                         dateFormat = dateFormat,
                         Click = {
-                            viewModel.selectedDepositUpdate(deposit)
+                            viewModel.historyEvent(HistoryEvents.SelectedDepositUpdate(deposit))
                             openDialog.value = true
                         }
                     )
@@ -106,15 +105,16 @@ fun HistoryScreenContent(navToScreen: (String) -> Unit,
                 confirmButton = {
                     Row(modifier = Modifier.padding(10.dp).fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center) {
+                        Button({
+                            viewModel.historyEvent(HistoryEvents.DeleteDeposit(selectedState))
+                            openDialog.value = false
+                        }) {
+                            Text("Удалить")
+                        }
                         Button({ openDialog.value = false }) {
                             Text("OK")
                         }
-                        Button({
-                                viewModel.deleteDeposit(selectedState)
-                                openDialog.value = false
-                               }, modifier = Modifier.width(150.dp)) {
-                            Text("Удалить")
-                        }
+
                     }
                 }
             )
