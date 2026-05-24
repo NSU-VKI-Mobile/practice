@@ -2,7 +2,11 @@ package com.example.auth.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -49,6 +53,7 @@ import com.example.auth.vm.LoginAndRegViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.delay
 
+private const val QR_SCAN_CHANNEL_ID = "qr_scan_channel"
 @Composable
 fun ScannerScreen(
     onBack : () -> Unit,
@@ -62,6 +67,21 @@ fun ScannerScreen(
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED
         )
+    }
+
+    val notificationManager = ContextCompat.getSystemService(
+        context,
+        NotificationManager::class.java
+    ) as NotificationManager
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val channel = NotificationChannel(
+            QR_SCAN_CHANNEL_ID,
+            "Сканирование QR-кода",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Уведомления о результатах сканирования QR-кода авторизации"
+        }
+        notificationManager.createNotificationChannel(channel)
     }
 
     val launcher = rememberLauncherForActivityResult(
@@ -93,19 +113,21 @@ fun ScannerScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScannerPreview(
+private fun ScannerPreview(
     onBack : () -> Unit,
     viewModel: LoginAndRegViewModel = viewModel()
 ){
+    val context = LocalContext.current
     var curSec by remember { mutableIntStateOf(30) }
     var isScanRun by remember { mutableStateOf(true) }
 
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         while (isScanRun && curSec > 0) {
             delay(1000)
             curSec--
         }
         if (curSec == 0 && isScanRun) {
+            showFailureNotification(context)
             viewModel.failureSound.start()
             onBack()
         }
@@ -128,6 +150,7 @@ fun ScannerPreview(
             CameraPreview { str ->
                 isScanRun = false
                 viewModel.setLoginAndPasswordWithQrCode(str)
+                showSuccessNotification(context)
                 viewModel.successSound.start()
                 onBack()
             }
@@ -149,7 +172,7 @@ fun ScannerPreview(
 @SuppressLint("PermissionLaunchedDuringComposition")
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CameraPreview(
+private fun CameraPreview(
     onQrCodeDetected: (String) -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -181,4 +204,44 @@ fun CameraPreview(
             }
         },
     )
+}
+
+private fun showSuccessNotification(
+    context: Context
+) {
+    val notificationManager = ContextCompat.getSystemService(
+        context,
+        NotificationManager::class.java
+    ) as NotificationManager
+
+    val builder = NotificationCompat.Builder(context, QR_SCAN_CHANNEL_ID)
+        .setSmallIcon(android.R.drawable.ic_menu_save)
+        .setContentTitle("Авторизация готова")
+        .setContentText("Данные из QR-кода загружены. Перейдите к авторизации.")
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .setAutoCancel(true)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        builder.setTimeoutAfter(5000L)
+    }
+
+    notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
+}
+
+private fun showFailureNotification(
+    context: Context
+) {
+    val notificationManager = ContextCompat.getSystemService(
+        context,
+        NotificationManager::class.java
+    ) as NotificationManager
+
+    val builder = NotificationCompat.Builder(context, QR_SCAN_CHANNEL_ID)
+        .setSmallIcon(android.R.drawable.ic_menu_close_clear_cancel)
+        .setContentTitle("Сканирование не удалось")
+        .setContentText("QR-код не распознан или время истекло.")
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .setAutoCancel(true)
+
+    notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
 }
