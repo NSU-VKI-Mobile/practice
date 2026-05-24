@@ -77,7 +77,10 @@ fun Greeting(
         startDestination = if(authManager.isLoggedIn()) Screen.Main.route else Screen.LogIn.route
     ) {
         composable(Screen.Qrcode.route) {
-            ScannerScreen()
+            ScannerScreen(
+                onBack = {navController.popBackStack()},
+                viewModel = authViewModel
+            )
         }
         composable(Screen.LogIn.route) {
             LogInScreen(

@@ -268,6 +268,16 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
         }
     }
 
+    fun setLoginAndPasswordWithQrCode(authData : String){
+        val (login, password) = authData.split(":", limit = 2)
+        _uiState.update {currentState ->
+            currentState.copy(
+                login = login,
+                password = password
+            )
+        }
+    }
+
     fun getCurLogin() : String?{
         return TokenManager.login
     }
