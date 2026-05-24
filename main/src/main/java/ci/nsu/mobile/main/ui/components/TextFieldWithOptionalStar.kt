@@ -33,7 +33,7 @@ fun TextFieldWithOptionalStar(
         TextField(
             value = value ?: "",
             onValueChange = { onValueChange(it)},
-            Modifier.weight(1f).padding(bottom = 10.dp).padding(start = 33.dp),
+            modifier = Modifier.weight(1f).padding(bottom = 10.dp).padding(start = 33.dp),
             placeholder = { Text(placeholder)},
             keyboardOptions = keyboardOptions,
             readOnly = readOnly,

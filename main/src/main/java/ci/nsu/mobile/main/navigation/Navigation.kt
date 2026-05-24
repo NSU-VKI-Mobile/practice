@@ -163,7 +163,7 @@ fun Navigation(
             composable(Screens.LoginScreen.route) {
                 LoginScreen(
                     onLoginSuccess = {
-                        navController.navigate(Screens.UsersScreen.route) {
+                        navController.navigate(Screens.HistoryScreen.route) {
                             popUpTo(Screens.LoginScreen.route) { inclusive = true }
                         }
                     },
