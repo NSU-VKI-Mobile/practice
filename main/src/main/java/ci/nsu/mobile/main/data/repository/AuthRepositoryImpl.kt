@@ -2,6 +2,7 @@ package ci.nsu.mobile.main.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import ci.nsu.mobile.main.data.model.*
 import ci.nsu.mobile.main.data.remote.ApiService
 
@@ -18,8 +19,8 @@ class AuthRepositoryImpl(
             saveToken(response.token)
             saveUserId(response.userId)
             Result.success(response)
-        } catch (e: Exception) {
-            Result.failure(e)
+        } catch (ex: Exception) {
+            Result.failure(ex)
         }
     }
 
@@ -27,28 +28,27 @@ class AuthRepositoryImpl(
         return try {
             apiService.register(RegisterRequest(username, password, email))
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
+        } catch (ex: Exception) {
+            Result.failure(ex)
         }
     }
 
     override suspend fun getUsers(): Result<List<User>> {
         return try {
-            val users = apiService.getUsers()
-            Result.success(users)
-        } catch (e: Exception) {
-            Result.failure(e)
+            Result.success(apiService.getUsers())
+        } catch (ex: Exception) {
+            Result.failure(ex)
         }
     }
 
     override fun saveToken(token: String) {
-        prefs.edit().putString("token", token).apply()
+        prefs.edit { putString("token", token) }
     }
 
     override fun getToken(): String? = prefs.getString("token", null)
 
     override fun saveUserId(userId: Long) {
-        prefs.edit().putLong("userId", userId).apply()
+        prefs.edit { putLong("userId", userId) }
     }
 
     override fun getUserId(): Long? {
@@ -56,6 +56,6 @@ class AuthRepositoryImpl(
     }
 
     override fun logout() {
-        prefs.edit().clear().apply()
+        prefs.edit { clear() }
     }
 }

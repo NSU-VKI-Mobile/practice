@@ -20,10 +20,8 @@ class DepositViewModel(
     private val authRepo: AuthRepository
 ) : ViewModel() {
 
-    // 🟢 Реактивный источник текущего userId
     private val currentUserId = MutableStateFlow(authRepo.getUserId() ?: 0L)
 
-    // 🟢 Динамический поток расчетов: автоматически переключается при смене userId
     @OptIn(ExperimentalCoroutinesApi::class)
     val calculations: StateFlow<List<DepositCalculation>> = currentUserId
         .flatMapLatest { userId ->
@@ -34,10 +32,9 @@ class DepositViewModel(
     private val _calcResult = MutableStateFlow<DepositCalculation?>(null)
     val calcResult: StateFlow<DepositCalculation?> = _calcResult.asStateFlow()
 
-    // 🟢 Метод для обновления userId при входе/выходе
     fun refreshUserId() {
         currentUserId.value = authRepo.getUserId() ?: 0L
-        _calcResult.value = null // Сбрасываем временный результат расчета
+        _calcResult.value = null
     }
 
     fun calculateDeposit(amount: Double, months: Int, rate: Double, topUp: Double) {
@@ -53,7 +50,7 @@ class DepositViewModel(
         }
 
         val calculation = DepositCalculation(
-            userId = uid, // 🟢 Берем актуальный ID из потока
+            userId = uid,
             initialAmount = amount,
             periodMonths = months,
             interestRate = rate,
@@ -67,7 +64,6 @@ class DepositViewModel(
 
     fun saveCalculation(calc: DepositCalculation) {
         viewModelScope.launch {
-            // Гарантируем, что сохраняем с актуальным userId
             val safeCalc = calc.copy(userId = currentUserId.value)
             repo.saveCalculation(safeCalc)
             _calcResult.value = null

@@ -5,8 +5,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ci.nsu.mobile.main.data.model.DepositCalculation
@@ -15,18 +17,60 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun HistoryScreen(viewModel: DepositViewModel) {
+fun HistoryScreen(
+    viewModel: DepositViewModel,
+    currentUsername: String? = null
+) {
     val calculations by viewModel.calculations.collectAsState()
 
-    if (calculations.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-            Text("Нет сохраненных расчетов")
+    Column(modifier = Modifier.fillMaxSize()) {
+        // 🟢 Блок с именем пользователя
+        if (!currentUsername.isNullOrEmpty()) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        Text(
+                            "Текущий аккаунт:",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Text(
+                            currentUsername,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+            }
         }
-    } else {
-        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp)) {
-            items(calculations) { calc ->
-                CalculationItem(calc, onDelete = { viewModel.deleteCalculation(calc) })
-                Spacer(modifier = Modifier.height(8.dp))
+
+        if (calculations.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Нет сохраненных расчетов")
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(calculations) { calc ->
+                    CalculationItem(calc, onDelete = { viewModel.deleteCalculation(calc) })
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
@@ -36,7 +80,10 @@ fun HistoryScreen(viewModel: DepositViewModel) {
 fun CalculationItem(calc: DepositCalculation, onDelete: () -> Unit) {
     val df = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
     Card(modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Column {
                 Text("Дата: ${df.format(Date(calc.calculationDate))}", style = MaterialTheme.typography.bodySmall)
                 Text("Сумма: ${calc.initialAmount}", style = MaterialTheme.typography.titleMedium)

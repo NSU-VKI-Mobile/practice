@@ -19,9 +19,7 @@ fun LoginScreen(
     val state by viewModel.loginState.collectAsState()
 
     LaunchedEffect(state) {
-        if (state is AuthState.Success) {
-            viewModel.resetStates()
-        }
+        if (state is AuthState.Success) viewModel.resetStates()
     }
 
     Column(
@@ -31,18 +29,33 @@ fun LoginScreen(
     ) {
         Text("Вход", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(value = username, onValueChange = { username = it }, label = { Text("Логин") }, modifier = Modifier.fillMaxWidth())
+
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Логин") },
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Пароль") }, modifier = Modifier.fillMaxWidth())
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Пароль") },
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = { viewModel.login(username, password) },
-            enabled = state !is AuthState.Loading,
+            enabled = state !is AuthState.Loading && username.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (state is AuthState.Loading) CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MaterialTheme.colorScheme.onPrimary)
-            else Text("Войти")
+            if (state is AuthState.Loading) {
+                CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MaterialTheme.colorScheme.onPrimary)
+            } else {
+                Text("Войти")
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))

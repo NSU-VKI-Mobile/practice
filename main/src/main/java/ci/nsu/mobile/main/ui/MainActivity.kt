@@ -3,42 +3,49 @@ package ci.nsu.mobile.main.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import ci.nsu.mobile.main.ui.screens.*
 import ci.nsu.mobile.main.ui.viewmodel.AuthViewModel
 import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 import ci.nsu.mobile.main.ui.viewmodel.UsersViewModel
 import ci.nsu.mobile.main.di.ViewModelFactory
+import ci.nsu.mobile.main.data.model.User
 
 sealed class Screen(val route: String, val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector? = null) {
     object Users : Screen("users", "Пользователи", Icons.Filled.People)
     object History : Screen("history", "Мои расчёты", Icons.Filled.History)
     object NewCalc : Screen("new_calc", "Новый расчёт", Icons.Filled.Add)
+
+    object Profile : Screen("profile/{userId}", "Профиль", null) {
+        fun createRoute(userId: Long) = "profile/$userId"
+    }
 }
 
 class MainActivity : ComponentActivity() {
-
     private val authViewModel: AuthViewModel by lazy { ViewModelFactory().create(AuthViewModel::class.java) }
     private val depositViewModel: DepositViewModel by lazy { ViewModelFactory().create(DepositViewModel::class.java) }
     private val usersViewModel: UsersViewModel by lazy { ViewModelFactory().create(UsersViewModel::class.java) }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Проверяем статус при холодном старте
         authViewModel.checkInitialAuthState()
-
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -52,17 +59,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation(
     authViewModel: AuthViewModel,
-    depositViewModel: DepositViewModel, // <-- Убедитесь, что он передается
+    depositViewModel: DepositViewModel,
     usersViewModel: UsersViewModel
 ) {
     val navController = rememberNavController()
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
     var showRegister by remember { mutableStateOf(false) }
 
-    // 🟢 СЛЕДИМ ЗА ИЗМЕНЕНИЕМ СТАТУСА ВХОДА
+
     LaunchedEffect(isLoggedIn) {
-        // Каждый раз когда isLoggedIn меняется (вход или выход),
-        // обновляем userId в DepositViewModel
         depositViewModel.refreshUserId()
     }
 
@@ -85,17 +90,16 @@ fun MainScaffold(
     usersViewModel: UsersViewModel,
     authViewModel: AuthViewModel
 ) {
-    val screens = listOf(Screen.Users, Screen.History, Screen.NewCalc)
+    val bottomScreens = listOf(Screen.Users, Screen.History, Screen.NewCalc)
+    val username by authViewModel.currentUsername.collectAsState()
+    val allUsers by usersViewModel.users.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Расчёт вкладов") },
                 actions = {
-                    IconButton(onClick = {
-                        // 🟢 ВЫЗОВ LOGOUT
-                        authViewModel.logout()
-                    }) {
+                    IconButton(onClick = { authViewModel.logout() }) {
                         Icon(Icons.Default.ExitToApp, contentDescription = "Выйти")
                     }
                 }
@@ -104,7 +108,7 @@ fun MainScaffold(
         bottomBar = {
             NavigationBar {
                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-                screens.forEach { screen ->
+                bottomScreens.forEach { screen ->
                     NavigationBarItem(
                         icon = { screen.icon?.let { Icon(it, contentDescription = screen.title) } },
                         label = { Text(screen.title) },
@@ -123,12 +127,42 @@ fun MainScaffold(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.NewCalc.route,
+            startDestination = Screen.Users.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Users.route) { UsersScreen(viewModel = usersViewModel) }
-            composable(Screen.History.route) { HistoryScreen(viewModel = depositViewModel) }
-            composable(Screen.NewCalc.route) { NewCalculationScreen(viewModel = depositViewModel) }
+            composable(Screen.Users.route) {
+                UsersScreen(
+                    viewModel = usersViewModel, // 🟢 Передаем viewModel явно
+                    onUserSelected = { user ->
+                        navController.navigate(Screen.Profile.createRoute(user.id))
+                    }
+                )
+            }
+
+            composable(
+                route = Screen.Profile.route,
+                arguments = listOf(navArgument("userId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val userId = backStackEntry.arguments?.getLong("userId")
+                // 🟢 Ищем пользователя в реактивном списке allUsers
+                val user = allUsers.find { it.id == userId }
+
+                ProfileScreen(
+                    user = user,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable(Screen.History.route) {
+                HistoryScreen(
+                    viewModel = depositViewModel,
+                    currentUsername = username
+                )
+            }
+
+            composable(Screen.NewCalc.route) {
+                NewCalculationScreen(viewModel = depositViewModel)
+            }
         }
     }
 }
