@@ -52,35 +52,28 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation(
     authViewModel: AuthViewModel,
-    depositViewModel: DepositViewModel,
+    depositViewModel: DepositViewModel, // <-- Убедитесь, что он передается
     usersViewModel: UsersViewModel
 ) {
     val navController = rememberNavController()
-
-    // 🟢 ПОДПИСКА НА СОСТОЯНИЕ ВХОДА
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
-
     var showRegister by remember { mutableStateOf(false) }
+
+    // 🟢 СЛЕДИМ ЗА ИЗМЕНЕНИЕМ СТАТУСА ВХОДА
+    LaunchedEffect(isLoggedIn) {
+        // Каждый раз когда isLoggedIn меняется (вход или выход),
+        // обновляем userId в DepositViewModel
+        depositViewModel.refreshUserId()
+    }
 
     if (!isLoggedIn) {
         if (showRegister) {
-            RegisterScreen(
-                viewModel = authViewModel,
-                onBackToLogin = { showRegister = false }
-            )
+            RegisterScreen(viewModel = authViewModel, onBackToLogin = { showRegister = false })
         } else {
-            LoginScreen(
-                viewModel = authViewModel,
-                onNavigateToRegister = { showRegister = true }
-            )
+            LoginScreen(viewModel = authViewModel, onNavigateToRegister = { showRegister = true })
         }
     } else {
-        MainScaffold(
-            navController = navController,
-            depositViewModel = depositViewModel,
-            usersViewModel = usersViewModel,
-            authViewModel = authViewModel
-        )
+        MainScaffold(navController, depositViewModel, usersViewModel, authViewModel)
     }
 }
 
