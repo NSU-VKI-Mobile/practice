@@ -1,6 +1,6 @@
-package ci.nsu.mobile.auth.data.network
+package ci.nsu.moble.main.auth.data.network
 
-import ci.nsu.mobile.auth.utils.TokenManager
+import ci.nsu.moble.main.auth.utils.TokenManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

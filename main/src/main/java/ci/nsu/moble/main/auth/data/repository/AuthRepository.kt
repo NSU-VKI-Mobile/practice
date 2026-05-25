@@ -1,9 +1,9 @@
-package ci.nsu.mobile.auth.data.repository
+package ci.nsu.moble.main.auth.data.repository
 
 import android.content.Context
-import ci.nsu.mobile.auth.data.models.*
-import ci.nsu.mobile.auth.data.network.NetworkModule
-import ci.nsu.mobile.auth.utils.TokenManager
+import ci.nsu.moble.main.auth.data.models.*
+import ci.nsu.moble.main.auth.data.network.NetworkModule
+import ci.nsu.moble.main.auth.utils.TokenManager
 import retrofit2.HttpException
 import java.io.IOException
 

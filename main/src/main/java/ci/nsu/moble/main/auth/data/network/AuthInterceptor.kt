@@ -1,6 +1,6 @@
-package ci.nsu.mobile.auth.data.network
+package ci.nsu.moble.main.auth.data.network
 
-import ci.nsu.mobile.auth.utils.TokenManager
+import ci.nsu.moble.main.auth.utils.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
 import kotlinx.coroutines.runBlocking
@@ -16,7 +16,6 @@ class AuthInterceptor(
         if (!token.isNullOrEmpty()) {
             requestBuilder.addHeader("Authorization", "Bearer $token")
         }
-        val request = requestBuilder.build()
-        return chain.proceed(request)
+        return chain.proceed(requestBuilder.build())
     }
 }
