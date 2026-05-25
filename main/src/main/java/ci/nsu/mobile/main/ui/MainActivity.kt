@@ -29,12 +29,16 @@ sealed class Screen(val route: String, val title: String, val icon: androidx.com
 }
 
 class MainActivity : ComponentActivity() {
+
     private val authViewModel: AuthViewModel by lazy { ViewModelFactory().create(AuthViewModel::class.java) }
     private val depositViewModel: DepositViewModel by lazy { ViewModelFactory().create(DepositViewModel::class.java) }
     private val usersViewModel: UsersViewModel by lazy { ViewModelFactory().create(UsersViewModel::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Проверяем статус при холодном старте
+        authViewModel.checkInitialAuthState()
+
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -52,17 +56,31 @@ fun AppNavigation(
     usersViewModel: UsersViewModel
 ) {
     val navController = rememberNavController()
-    val isLoggedIn by remember { derivedStateOf { authViewModel.isLoggedIn() } }
+
+    // 🟢 ПОДПИСКА НА СОСТОЯНИЕ ВХОДА
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
+
     var showRegister by remember { mutableStateOf(false) }
 
     if (!isLoggedIn) {
         if (showRegister) {
-            RegisterScreen(viewModel = authViewModel, onBackToLogin = { showRegister = false })
+            RegisterScreen(
+                viewModel = authViewModel,
+                onBackToLogin = { showRegister = false }
+            )
         } else {
-            LoginScreen(viewModel = authViewModel, onNavigateToRegister = { showRegister = true })
+            LoginScreen(
+                viewModel = authViewModel,
+                onNavigateToRegister = { showRegister = true }
+            )
         }
     } else {
-        MainScaffold(navController, depositViewModel, usersViewModel, authViewModel)
+        MainScaffold(
+            navController = navController,
+            depositViewModel = depositViewModel,
+            usersViewModel = usersViewModel,
+            authViewModel = authViewModel
+        )
     }
 }
 
@@ -81,7 +99,10 @@ fun MainScaffold(
             TopAppBar(
                 title = { Text("Расчёт вкладов") },
                 actions = {
-                    IconButton(onClick = { authViewModel.logout() }) {
+                    IconButton(onClick = {
+                        // 🟢 ВЫЗОВ LOGOUT
+                        authViewModel.logout()
+                    }) {
                         Icon(Icons.Default.ExitToApp, contentDescription = "Выйти")
                     }
                 }

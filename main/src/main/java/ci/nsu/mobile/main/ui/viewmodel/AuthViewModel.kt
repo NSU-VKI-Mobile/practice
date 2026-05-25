@@ -23,11 +23,20 @@ class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
     private val _registerState = MutableStateFlow<AuthState>(AuthState.Idle)
     val registerState: StateFlow<AuthState> = _registerState.asStateFlow()
 
+    // 🟢 НОВОЕ: Реактивное состояние входа
+    private val _isLoggedIn = MutableStateFlow(repo.getToken() != null)
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
+
     fun login(username: String, password: String) {
         viewModelScope.launch {
             _loginState.value = AuthState.Loading
             val result = repo.login(username, password)
-            _loginState.value = if (result.isSuccess) AuthState.Success else AuthState.Error(result.exceptionOrNull()?.message ?: "Ошибка входа")
+            if (result.isSuccess) {
+                _loginState.value = AuthState.Success
+                _isLoggedIn.value = true // Обновляем статус
+            } else {
+                _loginState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Ошибка входа")
+            }
         }
     }
 
@@ -35,12 +44,17 @@ class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             _registerState.value = AuthState.Loading
             val result = repo.register(username, password, email)
-            _registerState.value = if (result.isSuccess) AuthState.Success else AuthState.Error(result.exceptionOrNull()?.message ?: "Ошибка регистрации")
+            if (result.isSuccess) {
+                _registerState.value = AuthState.Success
+            } else {
+                _registerState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Ошибка регистрации")
+            }
         }
     }
 
     fun logout() {
         repo.logout()
+        _isLoggedIn.value = false // 🟢 Ключевой момент: меняем статус на false
         _loginState.value = AuthState.Idle
         _registerState.value = AuthState.Idle
     }
@@ -50,5 +64,9 @@ class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
         _registerState.value = AuthState.Idle
     }
 
-    fun isLoggedIn(): Boolean = repo.getToken() != null
+    // Этот метод теперь можно использовать для первоначальной проверки,
+    // но основной поток идет через StateFlow isLoggedIn
+    fun checkInitialAuthState() {
+        _isLoggedIn.value = repo.getToken() != null
+    }
 }
