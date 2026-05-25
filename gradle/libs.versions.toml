@@ -28,6 +28,7 @@ uiToolingPreview = "1.11.1"
 playServicesCloudMessaging = "17.4.0"
 runtimeVersion = "1.11.2"
 junitKtx = "1.3.0"
+remoteCreationCompose = "1.0.0-alpha11"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -66,6 +67,7 @@ room3-common-jvm = { group = "androidx.room3", name = "room3-common-jvm", versio
 play-services-cloud-messaging = { group = "com.google.android.gms", name = "play-services-cloud-messaging", version.ref = "playServicesCloudMessaging" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtimeVersion" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+androidx-compose-remote-creation-compose = { group = "androidx.compose.remote", name = "remote-creation-compose", version.ref = "remoteCreationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
