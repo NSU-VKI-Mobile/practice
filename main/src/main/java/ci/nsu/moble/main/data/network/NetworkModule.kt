@@ -1,4 +1,4 @@
-package ci.nsu.moble.main.auth.data.network
+package ci.nsu.moble.main.data.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

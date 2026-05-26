@@ -1,4 +1,4 @@
-package ci.nsu.moble.main.auth.ui.screens
+package ci.nsu.moble.main.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,10 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ci.nsu.moble.main.auth.data.models.PersonDto
-import ci.nsu.moble.main.auth.data.models.RegisterRequest
-import ci.nsu.moble.main.auth.data.repository.AuthApiResult
-import ci.nsu.moble.main.auth.viewmodel.AuthViewModel
+import ci.nsu.moble.main.data.models.PersonDto
+import ci.nsu.moble.main.data.models.RegisterRequest
+import ci.nsu.moble.main.data.repository.AuthApiResult
+import ci.nsu.moble.main.viewmodel.AuthViewModel
 
 @Composable
 fun RegisterScreen(

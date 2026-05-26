@@ -1,4 +1,4 @@
-package ci.nsu.moble.main.auth.data.models
+package ci.nsu.moble.main.data.models
 
 import kotlinx.serialization.Serializable
 

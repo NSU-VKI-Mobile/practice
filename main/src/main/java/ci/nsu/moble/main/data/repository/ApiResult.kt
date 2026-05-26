@@ -1,4 +1,4 @@
-package ci.nsu.moble.main.auth.data.repository
+package ci.nsu.moble.main.data.repository
 
 sealed class MyAuthApiResult<out T> {
     data class Success<T>(val data: T) : MyAuthApiResult<T>()

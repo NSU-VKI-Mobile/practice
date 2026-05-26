@@ -1,11 +1,11 @@
-package ci.nsu.moble.main.auth.viewmodel
+package ci.nsu.moble.main.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.moble.main.auth.data.models.RegisterRequest
-import ci.nsu.moble.main.auth.data.models.UserDto
-import ci.nsu.moble.main.auth.data.repository.AuthApiResult
-import ci.nsu.moble.main.auth.data.repository.AuthRepository
+import ci.nsu.moble.main.data.models.RegisterRequest
+import ci.nsu.moble.main.data.models.UserDto
+import ci.nsu.moble.main.data.repository.AuthApiResult
+import ci.nsu.moble.main.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

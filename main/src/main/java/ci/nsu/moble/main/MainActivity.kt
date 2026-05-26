@@ -12,13 +12,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.platform.LocalContext
-import ci.nsu.moble.main.auth.data.repository.AuthRepository
-import ci.nsu.moble.main.auth.ui.screens.LoginScreen
-import ci.nsu.moble.main.auth.ui.screens.RegisterScreen
-import ci.nsu.moble.main.auth.ui.screens.MainScreen
-import ci.nsu.moble.main.auth.ui.theme.PracticeTheme
-import ci.nsu.moble.main.auth.viewmodel.AuthViewModel
-import ci.nsu.moble.main.auth.viewmodel.AuthViewModelFactory
+import ci.nsu.moble.main.data.repository.AuthRepository
+import ci.nsu.moble.main.ui.screens.LoginScreen
+import ci.nsu.moble.main.ui.screens.RegisterScreen
+import ci.nsu.moble.main.ui.screens.MainScreen
+import ci.nsu.moble.main.ui.theme.PracticeTheme
+import ci.nsu.moble.main.viewmodel.AuthViewModel
+import ci.nsu.moble.main.viewmodel.AuthViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,10 +1,10 @@
-package ci.nsu.moble.main.auth.data.repository
+package ci.nsu.moble.main.data.repository
 
 import android.content.Context
-import ci.nsu.moble.main.auth.data.models.*
-import ci.nsu.moble.main.auth.data.network.ApiService  // ← этот импорт был пропущен
-import ci.nsu.moble.main.auth.data.network.NetworkModule
-import ci.nsu.moble.main.auth.utils.TokenManager
+import ci.nsu.moble.main.data.models.*
+import ci.nsu.moble.main.data.network.ApiService  // ← этот импорт был пропущен
+import ci.nsu.moble.main.data.network.NetworkModule
+import ci.nsu.moble.main.utils.TokenManager
 import retrofit2.HttpException
 import java.io.IOException
 // login() — запрос на сервер, сохраняет токен

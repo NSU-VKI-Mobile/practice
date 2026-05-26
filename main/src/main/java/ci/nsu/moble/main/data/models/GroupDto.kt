@@ -1,4 +1,4 @@
-package ci.nsu.moble.main.auth.data.models
+package ci.nsu.moble.main.data.models
 
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
