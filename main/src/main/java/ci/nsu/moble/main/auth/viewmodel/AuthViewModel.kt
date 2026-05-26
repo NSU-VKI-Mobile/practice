@@ -11,6 +11,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// состояние: loginState, registerState, users, isLoading, error
+// методы: login(), register(), loadUsers(), logout()
+// сейчас login() и register() — данные наобум (задержка 1 секунда)
+// loadUsers() — данные наобум (возвращает 2 тестовых пользователя)
+
 class AuthViewModel(
     private val repository: AuthRepository
 ) : ViewModel() {
@@ -38,7 +43,7 @@ class AuthViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    // вход (сейчас мок, но можно раскомментить реальный)
+    // вход (сейчас данные для примера, тк сервер комп не видит)
     fun login(login: String, password: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -48,11 +53,12 @@ class AuthViewModel(
         }
     }
 
-    // регистрация (тоже мок)
+    // регистрация (тоже аля-данные)
     fun register(request: RegisterRequest) {
         viewModelScope.launch {
             _isLoading.value = true
             kotlinx.coroutines.delay(1000)
+           // val result = repository.()
             _registerState.value = AuthApiResult.Success(Unit)
             _isLoading.value = false
         }
@@ -64,36 +70,36 @@ class AuthViewModel(
         _registerState.value = null
     }
 
-    // загрузка пользователей (мок-данные, чтобы показывать интерфейс)
+    // загрузка пользователей (аля-данные, чтобы показывать интерфейс)
+//    fun loadUsers() {
+//        viewModelScope.launch {
+//            _usersLoading.value = true
+//            _error.value = null
+//            kotlinx.coroutines.delay(1000)
+//            _users.value = listOf(
+//                UserDto(1, "alex", "alex@mail.com", "+79123456789", null),
+//                UserDto(2, "maria", "maria@mail.com", "+79234567890", null)
+//            )
+//            _usersLoading.value = false
+//        }
+//    }
     fun loadUsers() {
         viewModelScope.launch {
             _usersLoading.value = true
             _error.value = null
-            kotlinx.coroutines.delay(1000)
-            _users.value = listOf(
-                UserDto(1, "alex", "alex@mail.com", "+79123456789", null),
-                UserDto(2, "maria", "maria@mail.com", "+79234567890", null)
-            )
+            val result = repository.getUsers()
+            when (result) {
+                is AuthApiResult.Success -> {
+                    _users.value = result.data
+                }
+                is AuthApiResult.Error -> {
+                    _error.value = result.message
+                }
+                else -> {}
+            }
             _usersLoading.value = false
         }
     }
-    //fun loadUsers() {
-    //    viewModelScope.launch {
-    //        _usersLoading.value = true
-    //        _error.value = null
-    //        val result = repository.getUsers()
-    //        when (result) {
-    //            is AuthApiResult.Success -> {
-    //                _users.value = result.data
-    //            }
-    //            is AuthApiResult.Error -> {
-    //                _error.value = result.message
-    //            }
-    //            else -> {}
-    //        }
-    //        _usersLoading.value = false
-    //    }
-    //}
 
     // выход
     fun logout() {

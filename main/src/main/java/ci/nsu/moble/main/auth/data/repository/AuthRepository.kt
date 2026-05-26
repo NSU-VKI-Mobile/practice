@@ -7,8 +7,11 @@ import ci.nsu.moble.main.auth.data.network.NetworkModule
 import ci.nsu.moble.main.auth.utils.TokenManager
 import retrofit2.HttpException
 import java.io.IOException
+// login() — запрос на сервер, сохраняет токен
+// getUsers() —  запрос за списком пользователей (требует токен)
+// logout() — забывает токен
+// результат запроса (успех, ошибка, загрузка
 
-// результат запроса (успех, ошибка, загрузка)
 sealed class AuthApiResult<out T> {
     data class Success<T>(val data: T) : AuthApiResult<T>()
     data class Error(val message: String, val code: Int? = null) : AuthApiResult<Nothing>()

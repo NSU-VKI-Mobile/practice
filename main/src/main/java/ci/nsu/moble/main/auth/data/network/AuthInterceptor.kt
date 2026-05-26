@@ -13,9 +13,9 @@ class AuthInterceptor(
 
         if (!token.isNullOrBlank()) {
             requestBuilder.addHeader("Authorization", "Bearer $token")
-            println("✅ AuthInterceptor: токен добавлен")
+            println(" AuthInterceptor: токен добавлен")
         } else {
-            println("❌ AuthInterceptor: токен отсутствует")
+            println(" AuthInterceptor: токен отсутствует")
         }
 
         return chain.proceed(requestBuilder.build())
