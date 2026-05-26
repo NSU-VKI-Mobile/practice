@@ -26,7 +26,7 @@ object RetrofitClient {
         val json = Json {
             ignoreUnknownKeys = true          // игнорировать неизвестные поля в JSON
             isLenient = true                  // допускать нестрогий синтаксис (например, комментарии)
-            coerceInputValues = true          // для работы с nullable типами
+            encodeDefaults = true          // включает поля со значениями по умолчанию
         }
 
         val retrofit = Retrofit.Builder()

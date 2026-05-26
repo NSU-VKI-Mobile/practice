@@ -37,7 +37,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ci.nsu.mobile.main.ViewModels.RegistrationViewModel
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun RegistrationScreen(
@@ -114,8 +115,8 @@ fun RegistrationScreen(
             if (showDatePicker) {
                 DatePickerDialog(
                     onDateSelected = { year, month, day ->
-                        viewModel.updateBirthDate("$year-${month + 1}-$day")
-                        showDatePicker = false
+                        val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, day)
+                        viewModel.updateBirthDate(formattedDate)
                     },
                     onDismiss = { showDatePicker = false }
                 )
