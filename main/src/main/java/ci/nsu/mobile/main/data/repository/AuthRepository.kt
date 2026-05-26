@@ -13,21 +13,12 @@ class AuthRepository(
     private val tokenManager: TokenManager
 ) {
 
-    suspend fun login(
-        login: String,
-        password: String
-
-    ): Result<AuthResponse> {
+    suspend fun login(request: LoginRequest): Result<AuthResponse> {
         return try {
-
-            val response = api.login(
-                LoginRequest(login, password)
-            )
-
+            val response = api.login(request)
             tokenManager.saveToken(response.token)
 
             Result.success(response)
-
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -35,13 +26,12 @@ class AuthRepository(
 
     suspend fun register(
         request: RegistrationRequest
-    ): Result<Unit> {
+    ): Result<AuthResponse> {
         return try {
+            val response = api.register(request)
+            tokenManager.saveToken(response.token)
 
-            api.register(request)
-
-            Result.success(Unit)
-
+            Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
         }
