@@ -1,8 +1,9 @@
 package ci.nsu.moble.domain.models
 
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
 
-@Serializable
+@InternalSerializationApi @Serializable
 data class User(
     val userId: Long,
     val login: String,
@@ -12,7 +13,7 @@ data class User(
     val authAllowed: Boolean
 )
 
-@Serializable
+@InternalSerializationApi @Serializable
 data class Person(
     val firstName: String,
     val lastName: String,
@@ -22,13 +23,13 @@ data class Person(
     val groupId: Int = 0
 )
 
-@Serializable
+@InternalSerializationApi @Serializable
 data class Group(
     val groupId: Int,
     val groupName: String
 )
 
-@Serializable
+@InternalSerializationApi @Serializable
 data class RegisterData(
     val login: String,
     val password: String,

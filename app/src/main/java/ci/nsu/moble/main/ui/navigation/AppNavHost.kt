@@ -10,37 +10,55 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.moble.auth.ui.*
+import ci.nsu.moble.auth.ui.login.LoginScreen
+import ci.nsu.moble.auth.ui.login.LoginViewModel
+import ci.nsu.moble.auth.ui.register.RegisterScreen
+import ci.nsu.moble.auth.ui.register.RegisterViewModel
+import ci.nsu.moble.auth.ui.users.UsersScreen
+import ci.nsu.moble.auth.ui.users.UsersViewModel
+import ci.nsu.moble.calculations.ui.DepositFlowScreen
+import ci.nsu.moble.calculations.ui.DepositViewModel
+import ci.nsu.moble.calculations.ui.HistoryScreen
 import ci.nsu.moble.main.R
-import ci.nsu.moble.main.dependences.DependencesInjection
-import ci.nsu.moble.main.ui.auth.LoginScreen
-import ci.nsu.moble.main.ui.auth.LoginViewModel
-import ci.nsu.moble.main.ui.register.RegisterScreen
-import ci.nsu.moble.main.ui.register.RegisterViewModel
-import ci.nsu.moble.main.ui.deposit.DepositFlowScreen
-import ci.nsu.moble.main.ui.deposit.DepositVM
-import ci.nsu.moble.main.ui.deposit.HistoryScreen
-import ci.nsu.moble.main.ui.users.UsersScreen
-import ci.nsu.moble.main.ui.users.UsersViewModel
+import ci.nsu.moble.main.di.AppModule
 
-sealed class BottomNavItem(val route: String, val titleResId: Int)
-{
+sealed class BottomNavItem(val route: String, val titleResId: Int) {
     object Users : BottomNavItem("users", R.string.screen_users)
     object History : BottomNavItem("history", R.string.screen_history)
     object NewDeposit : BottomNavItem("new_deposit", R.string.screen_new_deposit)
 }
+
 @Composable
-fun AppNavHost(dependencesInjection: DependencesInjection)
-{
+fun AppNavHost(appModule: AppModule) {
     val navController = rememberNavController()
-    val depositVM: DepositVM = viewModel(factory = dependencesInjection.viewModelFactory)
-    val isLoggedIn = dependencesInjection.tokenManager.isLoggedIn()
-    val startDestination = if (isLoggedIn)
-    {
+    val tokenManager = appModule.getTokenManager()
+    val authRepository = appModule.getAuthRepository()
+    val depositRepository = appModule.getDepositRepository()
+
+    val isLoggedIn = tokenManager.isLoggedIn()
+    val startDestination = if (isLoggedIn) {
         BottomNavItem.Users.route
-    }
-    else
-    {
+    } else {
         "auth"
+    }
+
+    // State for managing navigation after auth
+    var forceNavigateToUsers by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn && navController.currentDestination?.route == "auth") {
+            forceNavigateToUsers = true
+        }
+    }
+
+    LaunchedEffect(forceNavigateToUsers) {
+        if (forceNavigateToUsers) {
+            navController.navigate(BottomNavItem.Users.route) {
+                popUpTo("auth") { inclusive = true }
+            }
+            forceNavigateToUsers = false
+        }
     }
 
     Scaffold(
@@ -100,17 +118,13 @@ fun AppNavHost(dependencesInjection: DependencesInjection)
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("auth")
-            {
-                val loginViewModel: LoginViewModel = viewModel(factory = dependencesInjection.viewModelFactory)
+            composable("auth") {
+                val loginViewModel: LoginViewModel = viewModel {
+                    LoginViewModel(authRepository)
+                }
                 LoginScreen(
                     onLoginSuccess = {
-                        depositVM.reset()
-                        val userId = dependencesInjection.tokenManager.getUserId() ?: -1L
-                        depositVM.updateUserId(userId)
-                        navController.navigate(BottomNavItem.Users.route) {
-                            popUpTo("auth") { inclusive = true }
-                        }
+                        forceNavigateToUsers = true
                     },
                     onNavigateToRegister = {
                         navController.navigate("register")
@@ -118,9 +132,11 @@ fun AppNavHost(dependencesInjection: DependencesInjection)
                     viewModel = loginViewModel
                 )
             }
-            composable("register")
-            {
-                val registerViewModel: RegisterViewModel = viewModel(factory = dependencesInjection.viewModelFactory)
+
+            composable("register") {
+                val registerViewModel: RegisterViewModel = viewModel {
+                    RegisterViewModel(authRepository)
+                }
                 RegisterScreen(
                     onRegisterSuccess = {
                         navController.popBackStack()
@@ -128,32 +144,41 @@ fun AppNavHost(dependencesInjection: DependencesInjection)
                     viewModel = registerViewModel
                 )
             }
-            composable(BottomNavItem.Users.route)
-            {
-                val usersViewModel: UsersViewModel = viewModel(factory = dependencesInjection.viewModelFactory)
+
+            composable(BottomNavItem.Users.route) {
+                val usersViewModel: UsersViewModel = viewModel {
+                    UsersViewModel(authRepository)
+                }
                 UsersScreen(
                     viewModel = usersViewModel,
                     onLogout = {
-                        dependencesInjection.tokenManager.clearAll()
-                        depositVM.reset()
+                        tokenManager.clearAll()
                         navController.navigate("auth") {
                             popUpTo(0) { inclusive = true }
                         }
                     }
                 )
             }
-            composable(BottomNavItem.History.route)
-            {
-                val state by depositVM.uiState.collectAsState()
+
+            composable(BottomNavItem.History.route) {
+                val userId = tokenManager.getUserId() ?: -1L
+                val depositViewModel: DepositViewModel = viewModel {
+                    DepositViewModel(userId, depositRepository)
+                }
+                val state by depositViewModel.uiState.collectAsState()
                 HistoryScreen(
                     history = state.history,
-                    onDelete = { depositVM.delete(it) }
+                    onDelete = { depositViewModel.delete(it) }
                 )
             }
-            composable(BottomNavItem.NewDeposit.route)
-            {
+
+            composable(BottomNavItem.NewDeposit.route) {
+                val userId = tokenManager.getUserId() ?: -1L
+                val depositViewModel: DepositViewModel = viewModel {
+                    DepositViewModel(userId, depositRepository)
+                }
                 DepositFlowScreen(
-                    viewModel = depositVM,
+                    viewModel = depositViewModel,
                     onFinish = {
                         navController.navigate(BottomNavItem.History.route) {
                             popUpTo(0) { inclusive = true }
