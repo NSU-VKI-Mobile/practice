@@ -2,23 +2,20 @@ package ci.nsu.mobile.main.Repository
 
 import ci.nsu.mobile.main.Auth.TokenManager
 import ci.nsu.mobile.main.Data.Models.GroupDto
-import ci.nsu.mobile.main.Data.Models.PersonDto
-import ci.nsu.mobile.main.Data.Models.UserDto
-import ci.nsu.mobile.main.Network.ApiService
 import ci.nsu.mobile.main.Data.Models.LoginRequest
 import ci.nsu.mobile.main.Data.Models.RegisterRequest
+import ci.nsu.mobile.main.Data.Models.UserDto
+import ci.nsu.mobile.main.Network.ApiService
 
 class AuthRepository(
     private val apiService: ApiService,
     private val tokenManager: TokenManager
 ) {
-    suspend fun login(login: String, password: String): Result<UserDto> {
+    suspend fun login(login: String, password: String): Result<Unit> {
         return try {
             val response = apiService.login(LoginRequest(login, password))
             tokenManager.token = response.token
-            // Для получения данных пользователя нужно сделать запрос /users/me - но по заданию его нет.
-            // Можно вернуть пустой Result.success, либо сделать дополнительный вызов.
-            Result.success(UserDto(0, login, "", "", PersonDto("", "", null, "", "", 0)))
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
