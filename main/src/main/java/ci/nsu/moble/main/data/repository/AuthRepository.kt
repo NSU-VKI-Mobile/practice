@@ -51,7 +51,22 @@ class AuthRepository(private val context: Context) {
             AuthApiResult.Error("неизвестная ошибка: ${e.message}")
         }
     }
-
+    // регистрация: отправляем данные на сервер
+    suspend fun register(request: RegisterRequest): AuthApiResult<Unit> {
+        return try {
+            val apiService = getApiService(null) // без токена, регистрация открыта
+            val response = apiService.register(request)
+            if (response.isSuccessful) {
+                AuthApiResult.Success(Unit)  // успех без данных
+            } else {
+                AuthApiResult.Error("ошибка регистрации: ${response.code()}")
+            }
+        } catch (e: IOException) {
+            AuthApiResult.Error("нет соединения с сервером")
+        } catch (e: Exception) {
+            AuthApiResult.Error(e.message ?: "неизвестная ошибка")
+        }
+    }
     // получаем список пользователей (требует токен)
     suspend fun getUsers(): AuthApiResult<List<UserDto>> {
         return try {

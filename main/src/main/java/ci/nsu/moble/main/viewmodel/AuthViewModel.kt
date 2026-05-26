@@ -48,6 +48,7 @@ class AuthViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             kotlinx.coroutines.delay(1000)
+            val result = repository.login(login,password)
             _loginState.value = AuthApiResult.Success(Unit)
             _isLoading.value = false
         }
@@ -57,9 +58,17 @@ class AuthViewModel(
     fun register(request: RegisterRequest) {
         viewModelScope.launch {
             _isLoading.value = true
-            kotlinx.coroutines.delay(1000)
-           // val result = repository.()
-            _registerState.value = AuthApiResult.Success(Unit)
+            _error.value = null
+            val result = repository.register(request)
+            when (result) {
+                is AuthApiResult.Success -> {
+                    _registerState.value = AuthApiResult.Success(Unit)
+                }
+                is AuthApiResult.Error -> {
+                    _registerState.value = AuthApiResult.Error(result.message)
+                }
+                else -> {}
+            }
             _isLoading.value = false
         }
     }
