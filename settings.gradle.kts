@@ -21,6 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "practice"
 include(":main")
-include(":domain")
 include(":auth")
 include(":calculations")
+include(":domain")

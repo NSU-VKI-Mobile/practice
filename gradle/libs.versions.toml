@@ -24,6 +24,7 @@ runtime = "1.11.1"
 material3 = "1.4.0"
 jetbrainsKotlinJvm = "2.0.21"
 material = "1.13.0"
+kotlinx-coroutines = "1.10.1"
 
 [libraries]
 # СУЩЕСТВУЮЩИЕ
@@ -66,6 +67,7 @@ okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-intercepto
 # Kotlinx Serialization
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 # Lifecycle ViewModel
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
