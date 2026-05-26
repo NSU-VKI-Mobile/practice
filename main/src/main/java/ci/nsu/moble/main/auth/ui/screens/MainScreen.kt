@@ -21,6 +21,7 @@ fun MainScreen(
     val usersLoading by viewModel.usersLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
+    // при первом открытии грузим список
     LaunchedEffect(Unit) {
         viewModel.loadUsers()
     }

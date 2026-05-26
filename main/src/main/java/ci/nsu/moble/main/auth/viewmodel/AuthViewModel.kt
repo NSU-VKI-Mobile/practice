@@ -15,27 +15,30 @@ class AuthViewModel(
     private val repository: AuthRepository
 ) : ViewModel() {
 
-    // Состояние входа
+    // состояние экрана входа
     private val _loginState = MutableStateFlow<AuthApiResult<Unit>?>(null)
     val loginState: StateFlow<AuthApiResult<Unit>?> = _loginState.asStateFlow()
 
-    // Состояние регистрации
+    // состояние экрана регистрации
     private val _registerState = MutableStateFlow<AuthApiResult<Unit>?>(null)
     val registerState: StateFlow<AuthApiResult<Unit>?> = _registerState.asStateFlow()
 
+    // крутилка загрузки
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    // Состояние списка пользователей
+    // список пользователей
     private val _users = MutableStateFlow<List<UserDto>>(emptyList())
     val users: StateFlow<List<UserDto>> = _users.asStateFlow()
 
     private val _usersLoading = MutableStateFlow(false)
     val usersLoading: StateFlow<Boolean> = _usersLoading.asStateFlow()
 
+    // ошибки
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    // вход (сейчас мок, но можно раскомментить реальный)
     fun login(login: String, password: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -45,6 +48,7 @@ class AuthViewModel(
         }
     }
 
+    // регистрация (тоже мок)
     fun register(request: RegisterRequest) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -54,11 +58,13 @@ class AuthViewModel(
         }
     }
 
+    // сброс состояний
     fun clearStates() {
         _loginState.value = null
         _registerState.value = null
     }
 
+    // загрузка пользователей (мок-данные, чтобы показывать интерфейс)
     fun loadUsers() {
         viewModelScope.launch {
             _usersLoading.value = true
@@ -71,7 +77,25 @@ class AuthViewModel(
             _usersLoading.value = false
         }
     }
+    //fun loadUsers() {
+    //    viewModelScope.launch {
+    //        _usersLoading.value = true
+    //        _error.value = null
+    //        val result = repository.getUsers()
+    //        when (result) {
+    //            is AuthApiResult.Success -> {
+    //                _users.value = result.data
+    //            }
+    //            is AuthApiResult.Error -> {
+    //                _error.value = result.message
+    //            }
+    //            else -> {}
+    //        }
+    //        _usersLoading.value = false
+    //    }
+    //}
 
+    // выход
     fun logout() {
         viewModelScope.launch {
             repository.logout()

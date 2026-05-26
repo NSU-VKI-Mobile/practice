@@ -1,21 +1,23 @@
 package ci.nsu.moble.main.auth.data.network
 
-import ci.nsu.moble.main.auth.utils.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
-import kotlinx.coroutines.runBlocking
 
 class AuthInterceptor(
-    private val tokenManager: TokenManager
+    private val token: String?
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val requestBuilder = originalRequest.newBuilder()
             .addHeader("Content-Type", "application/json")
-        val token = runBlocking { tokenManager.getToken() }
-        if (!token.isNullOrEmpty()) {
+
+        if (!token.isNullOrBlank()) {
             requestBuilder.addHeader("Authorization", "Bearer $token")
+            println("✅ AuthInterceptor: токен добавлен")
+        } else {
+            println("❌ AuthInterceptor: токен отсутствует")
         }
+
         return chain.proceed(requestBuilder.build())
     }
 }

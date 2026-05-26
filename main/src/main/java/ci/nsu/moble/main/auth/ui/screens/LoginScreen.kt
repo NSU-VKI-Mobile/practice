@@ -22,6 +22,7 @@ fun LoginScreen(
     val loginState by viewModel.loginState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
+    // если вход успешен — идём дальше
     LaunchedEffect(loginState) {
         if (loginState is AuthApiResult.Success) {
             onLoginSuccess()
@@ -30,17 +31,11 @@ fun LoginScreen(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "Вход в систему",
-            fontSize = 28.sp,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
+        Text("Вход в систему", fontSize = 28.sp, modifier = Modifier.padding(bottom = 32.dp))
 
         OutlinedTextField(
             value = login,
@@ -63,6 +58,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // показываем ошибку, если она есть
         if (loginState is AuthApiResult.Error) {
             Text(
                 text = (loginState as AuthApiResult.Error).message,
@@ -76,11 +72,8 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             enabled = !isLoading && login.isNotBlank() && password.isNotBlank()
         ) {
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(24.dp))
-            } else {
-                Text("Войти")
-            }
+            if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp))
+            else Text("Войти")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
