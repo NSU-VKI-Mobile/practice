@@ -8,8 +8,11 @@ interface ApiService {
     suspend fun login(@Body request: LoginRequest): LoginResponse
 
     @POST("auth/register")
-    suspend fun register(@Body request: RegisterRequest): RegisterResponse
+    suspend fun register(@Body request: RegisterRequest): Unit
 
     @GET("users")
     suspend fun getUsers(): List<User>
+
+    @GET("users/login/{login}")
+    suspend fun getUserByLogin(@Path("login") login: String): User
 }

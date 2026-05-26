@@ -14,7 +14,7 @@ fun LoginScreen(
     viewModel: AuthViewModel,
     onNavigateToRegister: () -> Unit
 ) {
-    var username by remember { mutableStateOf("") }
+    var login by remember { mutableStateOf("") } // 🟢 Переименовали username → login
     var password by remember { mutableStateOf("") }
     val state by viewModel.loginState.collectAsState()
 
@@ -31,9 +31,9 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Логин") },
+            value = login,
+            onValueChange = { login = it },
+            label = { Text("Логин") }, // 🟢 Подпись "Логин"
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -47,8 +47,8 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { viewModel.login(username, password) },
-            enabled = state !is AuthState.Loading && username.isNotBlank(),
+            onClick = { viewModel.login(login, password) }, // 🟢 Передаём login, password
+            enabled = state !is AuthState.Loading && login.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         ) {
             if (state is AuthState.Loading) {

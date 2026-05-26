@@ -45,7 +45,7 @@ fun UsersScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(user.username, style = MaterialTheme.typography.titleMedium)
-                        Text(user.email ?: "Email не указан", style = MaterialTheme.typography.bodySmall)
+                        Text(user.email ?: "Нет email", style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }

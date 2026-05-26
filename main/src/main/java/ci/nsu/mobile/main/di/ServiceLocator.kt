@@ -6,6 +6,7 @@ import ci.nsu.mobile.main.data.remote.ApiService
 import ci.nsu.mobile.main.data.remote.AuthInterceptor
 import ci.nsu.mobile.main.data.repository.*
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -24,8 +25,13 @@ object ServiceLocator {
     private val authRepositoryLazy: Lazy<AuthRepository> by lazy { lazy { authRepository } }
 
     private val okHttpClient: OkHttpClient by lazy {
+        val logging = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
         OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor { authRepositoryLazy.value.getToken() })
+            .addInterceptor(logging)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .build()

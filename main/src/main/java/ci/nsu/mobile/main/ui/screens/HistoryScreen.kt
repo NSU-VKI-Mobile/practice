@@ -24,7 +24,6 @@ fun HistoryScreen(
     val calculations by viewModel.calculations.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // 🟢 Блок с именем пользователя
         if (!currentUsername.isNullOrEmpty()) {
             Card(
                 modifier = Modifier
@@ -49,7 +48,7 @@ fun HistoryScreen(
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            currentUsername,
+                            text = currentUsername ?: "Гость",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )

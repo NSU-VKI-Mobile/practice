@@ -13,20 +13,23 @@ class AuthRepositoryImpl(
 
     private val prefs: SharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
-    override suspend fun login(username: String, password: String): Result<LoginResponse> {
+    override suspend fun login(login: String, password: String): Result<LoginResponse> {
         return try {
-            val response = apiService.login(LoginRequest(username, password))
+            val response = apiService.login(LoginRequest(login, password))
             saveToken(response.token)
-            saveUserId(response.userId)
+
+            val userResponse = apiService.getUserByLogin(login)
+            saveUserId(userResponse.userId)
+
             Result.success(response)
         } catch (ex: Exception) {
             Result.failure(ex)
         }
     }
 
-    override suspend fun register(username: String, password: String, email: String): Result<Unit> {
+    override suspend fun register(request: RegisterRequest): Result<Unit> {
         return try {
-            apiService.register(RegisterRequest(username, password, email))
+            apiService.register(request)
             Result.success(Unit)
         } catch (ex: Exception) {
             Result.failure(ex)
@@ -36,6 +39,14 @@ class AuthRepositoryImpl(
     override suspend fun getUsers(): Result<List<User>> {
         return try {
             Result.success(apiService.getUsers())
+        } catch (ex: Exception) {
+            Result.failure(ex)
+        }
+    }
+
+    suspend fun getUserByLogin(login: String): Result<User> {
+        return try {
+            Result.success(apiService.getUserByLogin(login))
         } catch (ex: Exception) {
             Result.failure(ex)
         }
