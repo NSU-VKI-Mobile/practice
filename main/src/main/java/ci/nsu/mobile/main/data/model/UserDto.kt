@@ -8,10 +8,8 @@ data class UserDto(
 
     @SerialName("userId")
     val userId: Int,
-
     @SerialName("login")
     val login: String,
-
     @SerialName("email")
     val email: String,
 

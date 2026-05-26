@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -29,23 +30,14 @@ import androidx.navigation.NavController
 import ci.nsu.mobile.main.data.api.RetrofitClient
 import ci.nsu.mobile.main.data.local.TokenManager
 import ci.nsu.mobile.main.data.repository.AuthRepository
+import ci.nsu.mobile.main.ui.components.DatePickerField
+import ci.nsu.mobile.main.ui.components.Dropdown
 
 @Composable
 fun RegisterScreen(
-    navController: NavController,
-    retrofitClient: RetrofitClient,
-    tokenManager: TokenManager
+    viewModel: RegisterViewModel,
+    navController: NavController
 ) {
-
-    val viewModel: RegisterViewModel = viewModel {
-        RegisterViewModel(
-            (
-                    AuthRepository(
-                        api = retrofitClient.api,
-                        tokenManager = tokenManager)
-        )
-        )
-    }
 
     var expanded by remember {
         mutableStateOf(false)
@@ -54,6 +46,7 @@ fun RegisterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -97,60 +90,88 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        OutlinedTextField(
-            value = viewModel.birthDate,
-            onValueChange = {
+        DatePickerField(
+            date = viewModel.birthDate,
+            onDateSelected = {
                 viewModel.birthDate = it
             },
-            label = {
-                Text("Дата рождения")
-            },
             modifier = Modifier.fillMaxWidth()
         )
 
-        OutlinedTextField(
-            value = viewModel.gender,
-            onValueChange = {
-                viewModel.gender = it
+//        OutlinedTextField(
+//            value = viewModel.birthDate,
+//            onValueChange = {
+//                viewModel.birthDate = it
+//            },
+//            label = {
+//                Text("Дата рождения")
+//            },
+//            modifier = Modifier.fillMaxWidth()
+//        )
+
+        Dropdown (
+            label = "Пол",
+            items = viewModel.genders,
+            selected = viewModel.selectedGender,
+            onSelect = {
+                viewModel.selectedGender = it
             },
-            label = {
-                Text("Пол")
-            },
-            modifier = Modifier.fillMaxWidth()
+            itemLabel = { it }
         )
 
-        Button(
-            onClick = {
-                expanded = true
+//        OutlinedTextField(
+//            value = viewModel.gender,
+//            onValueChange = {
+//                viewModel.gender = it
+//            },
+//            label = {
+//                Text("Пол")
+//            },
+//            modifier = Modifier.fillMaxWidth()
+//        )
+
+        Dropdown (
+            label = "Группа",
+            items = viewModel.groups,
+            selected = viewModel.selectedGroup,
+            onSelect = {
+                viewModel.selectedGroup = it
             },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                viewModel.selectedGroup?.name
-                    ?: "Выберите группу"
-            )
-        }
+            itemLabel = { it.name }
+        )
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = {
-                expanded = false
-            }
-        ) {
-
-            viewModel.groups.forEach { group ->
-
-                DropdownMenuItem(
-                    text = {
-                        Text(group.name)
-                    },
-                    onClick = {
-                        viewModel.selectedGroup = group
-                        expanded = false
-                    }
-                )
-            }
-        }
+//        Button(
+//            onClick = {
+//                expanded = true
+//            },
+//            modifier = Modifier.fillMaxWidth()
+//        ) {
+//            Text(
+//                viewModel.selectedGroup?.name
+//                    ?: "Выберите группу"
+//            )
+//        }
+//
+//        DropdownMenu(
+//            expanded = expanded,
+//            onDismissRequest = {
+//                expanded = false
+//            }
+//        ) {
+//
+//            viewModel.groups.forEach { group ->
+//
+//                DropdownMenuItem(
+//                    text = {
+//                        Text(group.name)
+//                    },
+//                    onClick = {
+//                        viewModel.selectedGroup = group
+//                        expanded = false
+//                    }
+//                )
+//            }
+//        }
 
         OutlinedTextField(
             value = viewModel.login,

@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ci.nsu.mobile.main.data.model.LoginRequest
 import ci.nsu.mobile.main.data.repository.AuthRepository
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class LoginViewModel(
     private val repository: AuthRepository
@@ -18,20 +20,26 @@ class LoginViewModel(
     var isLoading by mutableStateOf(false)
     var error by mutableStateOf<String?>(null)
 
-    fun login(
-        onSuccess: () -> Unit
-    ) {
-
+    fun login(onSuccess: () -> Unit) {
         viewModelScope.launch {
-
             isLoading = true
+            val request = LoginRequest(login, password)
 
-            repository.login(login, password)
-                .onSuccess {
-                    onSuccess()
-                }
+            repository.login(request)
+                .onSuccess { onSuccess() }
                 .onFailure {
-                    error = it.message
+                    error = when (it) {
+                        is HttpException -> {
+                            when (it.code()) {
+                                401 -> "Неверный логин или пароль"
+                                else -> "Ошибка сервера"
+                            }
+                        }
+
+                        else -> {
+                            it.message ?: "Неизвестная ошибка"
+                        }
+                    }
                 }
 
             isLoading = false

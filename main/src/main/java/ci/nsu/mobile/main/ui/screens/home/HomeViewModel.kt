@@ -24,18 +24,12 @@ class HomeViewModel(
     }
 
     fun loadUsers() {
-
         viewModelScope.launch {
-
             isLoading = true
 
             repository.getUsers()
-                .onSuccess {
-                    users = it
-                }
-                .onFailure {
-                    error = it.message
-                }
+                .onSuccess { users = it }
+                .onFailure { error = it.message }
 
             isLoading = false
         }

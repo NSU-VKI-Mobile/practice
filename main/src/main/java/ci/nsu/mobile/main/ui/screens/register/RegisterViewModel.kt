@@ -10,6 +10,7 @@ import ci.nsu.mobile.main.data.model.PersonDto
 import ci.nsu.mobile.main.data.model.RegistrationRequest
 import ci.nsu.mobile.main.data.repository.AuthRepository
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class RegisterViewModel(
     private val repository: AuthRepository
@@ -31,6 +32,9 @@ class RegisterViewModel(
 
     var isLoading by mutableStateOf(false)
     var error by mutableStateOf<String?>(null)
+
+    val genders = listOf("MALE", "FEMALE")
+    var selectedGender by mutableStateOf("")
 
     init {
         loadGroups()
@@ -82,7 +86,17 @@ class RegisterViewModel(
                     onSuccess()
                 }
                 .onFailure {
-                    error = it.message
+                    error = when (it) {
+                        is HttpException -> {
+                            when (it.code()) {
+                                500 -> "Поля заполнены не верно"
+                                else -> "Ошибка сервера"
+                            }
+                        }
+                        else -> {
+                            it.message ?: "Неизвестная ошибка"
+                        }
+                    } // it.message
                 }
 
             isLoading = false

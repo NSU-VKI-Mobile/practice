@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -27,20 +28,16 @@ import ci.nsu.mobile.main.ui.navigation.Screen
 
 @Composable
 fun LoginScreen(
-    navController: NavController,
-    retrofitClient: RetrofitClient,
-    tokenManager: TokenManager
+    viewModel: LoginViewModel,
+    navController: NavController
 ) {
 
-    val viewModel: LoginViewModel = viewModel {
-        LoginViewModel(
-            AuthRepository(retrofitClient.api, tokenManager)
-        )
-    }
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally

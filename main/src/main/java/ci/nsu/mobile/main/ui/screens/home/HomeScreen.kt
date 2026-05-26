@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -27,23 +28,13 @@ import ci.nsu.mobile.main.ui.navigation.Screen
 
 @Composable
 fun HomeScreen(
-    navController: NavController,
-    retrofitClient: RetrofitClient,
-    tokenManager: TokenManager
+    viewModel: HomeViewModel,
+    navController: NavController
 ) {
-
-    val viewModel: HomeViewModel = viewModel {
-        HomeViewModel(
-            AuthRepository(
-                api = retrofitClient.api,
-                tokenManager = tokenManager),
-            tokenManager = tokenManager
-        )
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .padding(16.dp)
     ) {
 
@@ -84,9 +75,7 @@ fun HomeScreen(
         }
 
         LazyColumn {
-
             items(viewModel.users) { user ->
-
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -105,7 +94,6 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(text = user.email)
-
                         Text(text = user.phoneNumber ?: "Телефон не указан")
                     }
                 }
