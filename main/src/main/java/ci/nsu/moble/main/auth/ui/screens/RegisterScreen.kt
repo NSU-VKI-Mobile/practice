@@ -1,4 +1,4 @@
-package ci.nsu.mobile.auth.ui.screens
+package ci.nsu.moble.main.auth.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,11 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ci.nsu.mobile.auth.data.models.*
-import ci.nsu.mobile.auth.data.repository.ApiResult
-import ci.nsu.mobile.auth.viewmodel.AuthViewModel
+import ci.nsu.moble.main.auth.data.models.PersonDto
+import ci.nsu.moble.main.auth.data.models.RegisterRequest
+import ci.nsu.moble.main.auth.data.repository.AuthApiResult
+import ci.nsu.moble.main.auth.viewmodel.AuthViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
@@ -23,23 +23,17 @@ fun RegisterScreen(
     var lastName by remember { mutableStateOf("") }
     var middleName by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
-    var gender by remember { mutableStateOf("") }
-    var selectedGroupId by remember { mutableStateOf<Int?>(null) }
+    var gender by remember { mutableStateOf("MALE") }
+    var selectedGroupId by remember { mutableStateOf(1) }
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
-    val groups by viewModel.groups.collectAsState()
-    val groupsLoading by viewModel.groupsLoading.collectAsState()
     val registerState by viewModel.registerState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.loadGroups()
-    }
-
     LaunchedEffect(registerState) {
-        if (registerState is ApiResult.Success) {
+        if (registerState is AuthApiResult.Success) {
             onRegisterSuccess()
             viewModel.clearStates()
         }
@@ -51,9 +45,7 @@ fun RegisterScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        item {
-            Text("Регистрация", fontSize = 24.sp)
-        }
+        item { Text("Регистрация", fontSize = 24.sp) }
         item {
             OutlinedTextField(
                 value = lastName,
@@ -86,7 +78,6 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        // Пол и группа — пропустим для краткости
         item {
             OutlinedTextField(
                 value = login,
@@ -121,9 +112,9 @@ fun RegisterScreen(
             )
         }
         item {
-            if (registerState is ApiResult.Error) {
+            if (registerState is AuthApiResult.Error) {
                 Text(
-                    text = (registerState as ApiResult.Error).message,
+                    text = (registerState as AuthApiResult.Error).message,
                     color = MaterialTheme.colorScheme.error
                 )
             }
@@ -135,27 +126,22 @@ fun RegisterScreen(
                         middleName = middleName,
                         birthDate = birthDate,
                         gender = gender,
-                        groupId = selectedGroupId!!
+                        groupId = selectedGroupId
                     )
                     val request = RegisterRequest(
                         login = login,
                         password = password,
                         email = email,
                         phoneNumber = phoneNumber,
-                        roleId = 1,
-                        authAllowed = true,
                         person = person
                     )
                     viewModel.register(request)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading && firstName.isNotBlank() && lastName.isNotBlank()
+                enabled = !isLoading
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                } else {
-                    Text("Зарегистрироваться")
-                }
+                if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                else Text("Зарегистрироваться")
             }
         }
         item {

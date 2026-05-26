@@ -1,8 +1,8 @@
-package ci.nsu.mobile.auth.viewmodel
+package ci.nsu.moble.main.auth.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ci.nsu.mobile.auth.data.repository.AuthRepository
+import ci.nsu.moble.main.auth.data.repository.AuthRepository
 
 class AuthViewModelFactory(
     private val repository: AuthRepository

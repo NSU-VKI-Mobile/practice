@@ -1,4 +1,4 @@
-package ci.nsu.mobile.auth.ui.screens
+package ci.nsu.moble.main.auth.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -8,8 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ci.nsu.mobile.auth.data.repository.ApiResult
-import ci.nsu.mobile.auth.viewmodel.AuthViewModel
+import ci.nsu.moble.main.auth.data.repository.AuthApiResult
+import ci.nsu.moble.main.auth.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
@@ -23,7 +23,7 @@ fun LoginScreen(
     val isLoading by viewModel.isLoading.collectAsState()
 
     LaunchedEffect(loginState) {
-        if (loginState is ApiResult.Success) {
+        if (loginState is AuthApiResult.Success) {
             onLoginSuccess()
             viewModel.clearStates()
         }
@@ -63,9 +63,9 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (loginState is ApiResult.Error) {
+        if (loginState is AuthApiResult.Error) {
             Text(
-                text = (loginState as ApiResult.Error).message,
+                text = (loginState as AuthApiResult.Error).message,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
