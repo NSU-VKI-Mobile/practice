@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "ci.nsu.mobile.main"
+    namespace = "ci.nsu.mobile.OLD_SOURCE_CODE"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "ci.nsu.mobile.main"
+        applicationId = "ci.nsu.mobile.OLD_SOURCE_CODE"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
