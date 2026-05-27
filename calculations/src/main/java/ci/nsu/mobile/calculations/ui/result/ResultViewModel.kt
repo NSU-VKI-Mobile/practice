@@ -3,8 +3,7 @@ package ci.nsu.mobile.calculations.ui.result
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.calculations.data.repository.DepositRepository
-import ci.nsu.mobile.calculations.data.database.DepositCalculationEntity
+import ci.nsu.mobile.domain.calculations.CalculationsProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ResultViewModel @Inject constructor(
-    private val depositRepository: DepositRepository,
+    private val depositRepository: CalculationsProvider,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -74,7 +73,7 @@ class ResultViewModel @Inject constructor(
                 _uiState.update { it.copy(isSaving = true, errorMessage = null) }
 
                 val currentState = _uiState.value
-                depositRepository.saveDepositForCurrentUser(
+                depositRepository.saveCalculationForCurrentUser(
                     initialAmount = currentState.initialAmount,
                     periodMonths = currentState.term,
                     interestRate = currentState.rate,

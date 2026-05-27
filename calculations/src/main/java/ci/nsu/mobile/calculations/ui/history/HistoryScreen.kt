@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ci.nsu.mobile.calculations.data.database.DepositCalculationEntity
+import ci.nsu.mobile.domain.calculations.DepositCalculation
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,7 +25,7 @@ fun HistoryScreen(
     val selectedCalculation by viewModel.selectedCalculation.collectAsStateWithLifecycle()
 
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var calculationToDelete by remember { mutableStateOf<DepositCalculationEntity?>(null) }
+    var calculationToDelete by remember { mutableStateOf<DepositCalculation?>(null) }
     var showFilters by remember { mutableStateOf(false) }
 
     var amountMinText by remember { mutableStateOf("") }
@@ -233,7 +233,7 @@ fun FilterPanel(
 
 @Composable
 fun CalculationCard(
-    calculation: DepositCalculationEntity,
+    calculation: DepositCalculation,
     isExpanded: Boolean,
     onClick: () -> Unit,
     onDelete: () -> Unit

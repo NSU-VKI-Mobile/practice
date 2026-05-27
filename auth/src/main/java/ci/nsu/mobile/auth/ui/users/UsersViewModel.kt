@@ -2,10 +2,9 @@ package ci.nsu.mobile.auth.ui.users
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.auth.data.datasource.local.TokenManager
-import ci.nsu.mobile.auth.data.repository.AuthRepository
-import ci.nsu.mobile.auth.data.model.Result
 import ci.nsu.mobile.auth.data.repository.UserRepository
+import ci.nsu.mobile.auth.data.model.Result
+import ci.nsu.mobile.domain.auth.AuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,8 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UsersViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val authRepository: AuthRepository,
-    private val tokenManager: TokenManager
+    private val authManager: AuthManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UsersUiState())
@@ -26,8 +24,14 @@ class UsersViewModel @Inject constructor(
 
     fun loadUsers() {
         viewModelScope.launch {
-            _uiState.update { it.copy(usersState = UsersState.Loading,
-                currentUserId = tokenManager.userId ) }
+            val currentUser = authManager.getCurrentUser()
+
+            _uiState.update {
+                it.copy(
+                    usersState = UsersState.Loading,
+                    currentUserId = currentUser?.id
+                )
+            }
 
             val result = userRepository.getUsers()
 
@@ -49,9 +53,12 @@ class UsersViewModel @Inject constructor(
         }
     }
 
-    fun logout() {
-        authRepository.logout()
+    fun logout(onComplete: () -> Unit) {
+        viewModelScope.launch {
+            authManager.logout()
+            onComplete()
+        }
     }
 
-    fun getCurrentUserId(): Long? = tokenManager.userId
+    fun getCurrentUserId(): Long? = authManager.getCurrentUserId()
 }

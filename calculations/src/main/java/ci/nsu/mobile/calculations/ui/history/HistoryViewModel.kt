@@ -2,8 +2,8 @@ package ci.nsu.mobile.calculations.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.calculations.data.repository.DepositRepository
-import ci.nsu.mobile.calculations.data.database.DepositCalculationEntity
+import ci.nsu.mobile.domain.calculations.CalculationsProvider
+import ci.nsu.mobile.domain.calculations.DepositCalculation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -16,7 +16,8 @@ data class DateRange(val from: Long?, val to: Long?)
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    private val depositRepository: DepositRepository
+    private val calculationsProvider: CalculationsProvider,
+    //private val authManager: AuthManager
 ) : ViewModel() {
 
     // Отдельные потоки для групп фильтров
@@ -25,14 +26,14 @@ class HistoryViewModel @Inject constructor(
     private val _dateRange = MutableStateFlow(DateRange(null, null))
 
     // Все расчеты пользователя
-    private val allCalculations = depositRepository.getDepositsForCurrentUser()
+    private val allCalculations = calculationsProvider.getCalculationsForCurrentUser()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
 
-    // Объединяем все потоки (всего 4 параметра)
+    // Объединяем все потоки
     val uiState: StateFlow<HistoryUiState> = combine(
         allCalculations,
         _amountRange,
@@ -69,10 +70,10 @@ class HistoryViewModel @Inject constructor(
     )
 
     // Выбранный расчет
-    private val _selectedCalculation = MutableStateFlow<DepositCalculationEntity?>(null)
-    val selectedCalculation: StateFlow<DepositCalculationEntity?> = _selectedCalculation.asStateFlow()
+    private val _selectedCalculation = MutableStateFlow<DepositCalculation?>(null)
+    val selectedCalculation: StateFlow<DepositCalculation?> = _selectedCalculation.asStateFlow()
 
-    fun selectCalculation(calculation: DepositCalculationEntity) {
+    fun selectCalculation(calculation: DepositCalculation) {
         _selectedCalculation.value = calculation
     }
 
@@ -80,9 +81,9 @@ class HistoryViewModel @Inject constructor(
         _selectedCalculation.value = null
     }
 
-    fun deleteCalculation(calculation: DepositCalculationEntity) {
+    fun deleteCalculation(calculation: DepositCalculation) {
         viewModelScope.launch {
-            depositRepository.deleteDeposit(calculation)
+            calculationsProvider.deleteCalculation(calculation.id)
             if (_selectedCalculation.value == calculation) {
                 _selectedCalculation.value = null
             }

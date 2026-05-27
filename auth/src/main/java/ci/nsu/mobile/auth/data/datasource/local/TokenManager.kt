@@ -3,6 +3,7 @@ package ci.nsu.mobile.auth.data.datasource.local
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -11,7 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class TokenManager @Inject constructor(
-    context: Context
+    @ApplicationContext context: Context
 ) {
     private val prefs: SharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 

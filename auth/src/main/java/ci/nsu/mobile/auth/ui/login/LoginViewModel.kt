@@ -2,8 +2,8 @@ package ci.nsu.mobile.auth.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.auth.data.repository.AuthRepository
-import ci.nsu.mobile.main.auth.data.model.Result
+import ci.nsu.mobile.auth.data.repository.AuthRepository
+import ci.nsu.mobile.auth.data.model.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

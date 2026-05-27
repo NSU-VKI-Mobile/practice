@@ -1,8 +1,10 @@
 package ci.nsu.mobile.calculations.data.repository
 
-import ci.nsu.mobile.auth.datasource.local.TokenManager
 import ci.nsu.mobile.calculations.data.database.DepositCalculationEntity
 import ci.nsu.mobile.calculations.data.database.DepositDao
+import ci.nsu.mobile.domain.auth.AuthManager
+import ci.nsu.mobile.domain.calculations.CalculationsProvider
+import ci.nsu.mobile.domain.calculations.DepositCalculation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -11,14 +13,33 @@ import javax.inject.Singleton
 @Singleton
 class DepositRepository @Inject constructor(
     private val depositDao: DepositDao,
-    private val tokenManager: TokenManager
-) {
+    private val authManager: AuthManager
+) : CalculationsProvider {
 
-    suspend fun saveDeposit(deposit: DepositCalculationEntity) {
-        depositDao.insert(deposit)
+    override fun getCalculationsForUser(userId: Long): Flow<List<DepositCalculation>> {
+        return depositDao.getCalculationsForUser(userId).map { entities ->
+            entities.map { it.toDomain() }  // Entity → Domain
+        }
     }
 
-    suspend fun saveDepositForCurrentUser(
+    override suspend fun saveCalculation(calculation: DepositCalculation) {
+        val entity = DepositCalculationEntity.fromDomain(calculation)  // Domain → Entity
+        depositDao.insert(entity)
+    }
+
+    override suspend fun deleteCalculation(calculationId: Long) {
+        depositDao.deleteById(calculationId)
+    }
+
+    // для текущего пользователя
+    override fun getCalculationsForCurrentUser(): Flow<List<DepositCalculation>> {
+        val userId = authManager.getCurrentUserId()
+            ?: throw IllegalStateException("No logged in user")
+        return getCalculationsForUser(userId)
+    }
+
+    // без передачи userId
+    override suspend fun saveCalculationForCurrentUser(
         initialAmount: Double,
         periodMonths: Int,
         interestRate: Double,
@@ -26,10 +47,10 @@ class DepositRepository @Inject constructor(
         finalAmount: Double,
         interestEarned: Double
     ) {
-        val userId = tokenManager.userId
+        val userId = authManager.getCurrentUserId()
             ?: throw IllegalStateException("No logged in user")
 
-        val deposit = DepositCalculationEntity(
+        val calculation = DepositCalculation(
             userId = userId,
             initialAmount = initialAmount,
             periodMonths = periodMonths,
@@ -39,40 +60,6 @@ class DepositRepository @Inject constructor(
             interestEarned = interestEarned,
             calculationDate = System.currentTimeMillis()
         )
-        depositDao.insert(deposit)
-    }
-
-    suspend fun updateDeposit(deposit: DepositCalculationEntity) {
-        depositDao.update(deposit)
-    }
-
-    suspend fun deleteDeposit(deposit: DepositCalculationEntity) {
-        depositDao.delete(deposit)
-    }
-
-    suspend fun deleteDepositById(id: Long) {
-        depositDao.deleteById(id)
-    }
-
-    suspend fun deleteAllForUser(userId: Long) {
-        depositDao.deleteAllForUser(userId)
-    }
-
-    fun getAllDeposits(): Flow<List<DepositCalculationEntity>> {
-        return depositDao.getAllCalculations()
-    }
-
-    fun getDepositsForUser(userId: Long): Flow<List<DepositCalculationEntity>> {
-        return depositDao.getCalculationsForUser(userId)
-    }
-
-    fun getDepositsForCurrentUser(): Flow<List<DepositCalculationEntity>> {
-        val userId = tokenManager.userId
-            ?: throw IllegalStateException("No logged in user")
-        return depositDao.getCalculationsForUser(userId)
-    }
-
-    suspend fun getDepositById(id: Long): DepositCalculationEntity? {
-        return depositDao.getCalculationById(id)
+        saveCalculation(calculation)
     }
 }

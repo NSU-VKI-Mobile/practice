@@ -34,8 +34,7 @@ fun UsersScreen(
                 actions = {
                     Button(
                         onClick = {
-                            viewModel.logout()
-                            onLogout()
+                            viewModel.logout(onLogout)
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error

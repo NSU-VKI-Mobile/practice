@@ -4,6 +4,7 @@ plugins {
     //added
     alias(libs.plugins.compose.compiler)
     id("org.jetbrains.kotlin.kapt")
+    id("kotlin-kapt")
 }
 
 android {

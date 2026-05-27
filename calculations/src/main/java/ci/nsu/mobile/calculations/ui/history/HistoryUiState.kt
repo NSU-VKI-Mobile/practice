@@ -1,9 +1,9 @@
 package ci.nsu.mobile.calculations.ui.history
 
-import ci.nsu.mobile.calculations.data.database.DepositCalculationEntity
+import ci.nsu.mobile.domain.calculations.DepositCalculation
 
 data class HistoryUiState(
     val isLoading: Boolean = false,
-    val calculations: List<DepositCalculationEntity> = emptyList(),
+    val calculations: List<DepositCalculation> = emptyList(),
     val errorMessage: String? = null
 )
