@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="title_activity_login_screen">LoginScreen</string>
+    <string name="title_activity_register_screen">RegisterScreen</string>
+    <string name="title_activity_user_list_screen">UserListScreen</string>
+    <string name="title_activity_loading_dialog">LoadingDialog</string>
+    <string name="title_activity_error_dialog">ErrorDialog</string>
+    <string name="title_activity_user_card">UserCard</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>
