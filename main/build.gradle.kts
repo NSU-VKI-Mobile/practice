@@ -54,6 +54,8 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation("androidx.compose.material:material-icons-extended:1.7.5")
+
 
     // Compose integrations
     implementation(libs.androidx.activity.compose)

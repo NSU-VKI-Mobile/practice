@@ -82,15 +82,19 @@ fun MainScreen(
                                     modifier = Modifier.padding(16.dp)
                                 ) {
                                     Text(
-                                        text = "${user.person.lastName} ${user.person.firstName}",
+                                        text = user.login,
                                         style = MaterialTheme.typography.titleMedium
                                     )
                                     Text(
-                                        text = "Логин: ${user.login}",
+                                        text = user.email,
                                         style = MaterialTheme.typography.bodySmall
                                     )
                                     Text(
-                                        text = "Email: ${user.email}",
+                                        text = "ID пользователя: ${user.id}",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                    Text(
+                                        text = "Последний вход: ${user.lastLoginDate ?: "никогда"}",
                                         style = MaterialTheme.typography.bodySmall
                                     )
                                 }
