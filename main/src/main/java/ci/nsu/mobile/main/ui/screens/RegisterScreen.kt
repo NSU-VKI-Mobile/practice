@@ -60,24 +60,24 @@ fun RegisterScreen(
         return input.filter { it.isLetterOrDigit() && it.isASCII() && it != ' ' }
     }
 
-    fun formatPhoneForDisplay(raw: String): String {
-        var cleaned = raw.replace(Regex("[^\\d]"), "")
-        if (cleaned.startsWith("7") && cleaned.length > 1) cleaned = cleaned.drop(1)
-        if (cleaned.startsWith("8") && cleaned.length > 1) cleaned = cleaned.drop(1)
-        if (cleaned.length > 10) cleaned = cleaned.take(10)
+    fun filterPhoneInput(input: String): String {
+        // Оставляем только цифры
+        val digitsOnly = input.filter { it.isDigit() }
 
-        return when (cleaned.length) {
-            0 -> ""
-            1 -> "+7 $cleaned"
-            2 -> "+7 ${cleaned[0]}${cleaned[1]}"
-            3 -> "+7 ${cleaned[0]}${cleaned[1]}${cleaned[2]}"
-            4 -> "+7 ${cleaned[0]}${cleaned[1]}${cleaned[2]} ${cleaned[3]}"
-            5 -> "+7 ${cleaned[0]}${cleaned[1]}${cleaned[2]} ${cleaned[3]}${cleaned[4]}"
-            6 -> "+7 ${cleaned[0]}${cleaned[1]}${cleaned[2]} ${cleaned[3]}${cleaned[4]}${cleaned[5]}"
-            7 -> "+7 ${cleaned[0]}${cleaned[1]}${cleaned[2]} ${cleaned[3]}${cleaned[4]}${cleaned[5]} ${cleaned[6]}"
-            8 -> "+7 ${cleaned[0]}${cleaned[1]}${cleaned[2]} ${cleaned[3]}${cleaned[4]}${cleaned[5]} ${cleaned[6]}${cleaned[7]}"
-            9 -> "+7 ${cleaned[0]}${cleaned[1]}${cleaned[2]} ${cleaned[3]}${cleaned[4]}${cleaned[5]} ${cleaned[6]}${cleaned[7]}${cleaned[8]}"
-            else -> "+7 ${cleaned[0]}${cleaned[1]}${cleaned[2]} ${cleaned[3]}${cleaned[4]}${cleaned[5]} ${cleaned[6]}${cleaned[7]}${cleaned[8]}${cleaned[9]}"
+        return when {
+            digitsOnly.isEmpty() -> ""
+            digitsOnly.length == 1 -> {
+                // Первая цифра — обязательно 8
+                if (digitsOnly.first() == '8') "8" else ""
+            }
+            else -> {
+                // Проверяем, что первая цифра 8, и обрезаем до 11 цифр
+                val firstChar = digitsOnly.first()
+                if (firstChar != '8') return ""
+
+                val limited = digitsOnly.take(11)  // максимум 11 цифр (8 + 10 цифр)
+                limited
+            }
         }
     }
 
@@ -289,12 +289,12 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = {
-                    val digitsOnly = it.filter { it.isDigit() }
-                    phoneNumber = if (digitsOnly.isNotEmpty()) formatPhoneForDisplay(digitsOnly) else ""
+                    val filtered = filterPhoneInput(it)
+                    phoneNumber = filtered
                     viewModel.clearFieldError("phone")
                 },
                 label = { Text("Телефон") },
-                placeholder = { Text("+7 999 999 99 99") },
+                placeholder = { Text("8XXXXXXXXXX") },
                 isError = fieldErrors.phone != null,
                 supportingText = { fieldErrors.phone?.let { Text(it) } },
                 modifier = Modifier.fillMaxWidth(),

@@ -50,7 +50,8 @@ fun LoginScreen(
             onValueChange = { login = it },
             label = { Text("Логин") },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !uiState.isLoading
+            enabled = !uiState.isLoading,
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(8.dp))

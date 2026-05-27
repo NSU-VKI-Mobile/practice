@@ -224,23 +224,22 @@ class RegisterViewModel(
 
     // Валидация телефона
     private fun validatePhone(value: String): String? {
-        val cleaned = value.replace(Regex("[^\\d]"), "")
         return when {
             value.isBlank() -> "Телефон обязателен"
-            cleaned.length !in 10..11 -> "Должно быть 10-11 цифр"
-            cleaned.length == 11 && !cleaned.startsWith("7") && !cleaned.startsWith("8") -> "Должен начинаться с 7 или 8"
+            value.length != 11 -> "Должно быть 11 цифр"
+            !value.startsWith("8") -> "Должен начинаться с 8"
+            !value.all { it.isDigit() } -> "Только цифры"
             else -> null
         }
     }
 
     // Форматирование телефона для отправки
     private fun formatPhoneNumber(phone: String): String {
-        val cleaned = phone.replace(Regex("[^\\d]"), "")
-        return when {
-            cleaned.length == 11 && cleaned.startsWith("8") -> "+7${cleaned.drop(1)}"
-            cleaned.length == 11 && cleaned.startsWith("7") -> "+$cleaned"
-            cleaned.length == 10 -> "+7$cleaned"
-            else -> cleaned
+        // Преобразуем 8XXXXXXXXXX в +7XXXXXXXXXX
+        return if (phone.startsWith("8") && phone.length == 11) {
+            "+7${phone.drop(1)}"
+        } else {
+            phone
         }
     }
 
