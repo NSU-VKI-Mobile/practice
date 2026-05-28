@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "ci.nsu.moble.main"
+    namespace = "ci.nsu.mobile.main"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "ci.nsu.moble.main"
+        applicationId = "ci.nsu.mobile.main"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -41,6 +41,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.appcompat)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
 
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
