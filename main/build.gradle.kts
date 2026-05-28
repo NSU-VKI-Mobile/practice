@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
     id ("kotlin-kapt")
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -38,9 +39,6 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
-    }
 }
 
 dependencies {
@@ -52,6 +50,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.navigation:navigation-compose:2.9.8")
 
     // Retrofit и сети
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -75,6 +74,8 @@ dependencies {
 
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+
+    implementation("androidx.appcompat:appcompat:1.7.0")
 
 }
 
