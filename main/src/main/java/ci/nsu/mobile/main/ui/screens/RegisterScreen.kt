@@ -1,5 +1,7 @@
 package ci.nsu.mobile.main.ui.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -16,6 +18,7 @@ import ci.nsu.mobile.main.ui.viewmodel.isASCII
 import java.text.SimpleDateFormat
 import java.util.*
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
@@ -170,12 +173,18 @@ fun RegisterScreen(
         }
 
         item {
+            // Маппинг для отображения на русском
+            val genderDisplayMap = mapOf(
+                "MALE" to "Мужской",
+                "FEMALE" to "Женский"
+            )
+
             ExposedDropdownMenuBox(
                 expanded = genderExpanded,
                 onExpandedChange = { genderExpanded = it }
             ) {
                 OutlinedTextField(
-                    value = gender,
+                    value = genderDisplayMap[gender] ?: gender,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Пол") },
@@ -187,10 +196,17 @@ fun RegisterScreen(
                     expanded = genderExpanded,
                     onDismissRequest = { genderExpanded = false }
                 ) {
-                    listOf("MALE", "FEMALE").forEach { option ->
+                    // Список с русскими названиями
+                    listOf(
+                        "MALE" to "Мужчина",
+                        "FEMALE" to "Женщина"
+                    ).forEach { (value, displayName) ->
                         DropdownMenuItem(
-                            text = { Text(option) },
-                            onClick = { gender = option; genderExpanded = false }
+                            text = { Text(displayName) },
+                            onClick = {
+                                gender = value  // сохраняем MALE/FEMALE
+                                genderExpanded = false
+                            }
                         )
                     }
                 }

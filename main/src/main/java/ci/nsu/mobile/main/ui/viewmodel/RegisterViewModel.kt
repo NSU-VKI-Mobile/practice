@@ -1,5 +1,7 @@
 package ci.nsu.mobile.main.ui.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.models.GroupDto
@@ -52,6 +54,7 @@ class RegisterViewModel(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun validateAndRegister(
         firstName: String,
         lastName: String,
@@ -165,6 +168,7 @@ class RegisterViewModel(
     }
 
     // Валидация даты рождения
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun validateBirthDate(value: String): String? {
         val dateRegex = Regex("^\\d{4}-\\d{2}-\\d{2}$")
         if (value.isBlank()) return "Дата рождения обязательна"
