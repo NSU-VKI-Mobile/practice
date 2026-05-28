@@ -71,7 +71,6 @@ fun UserListScreen(
                                 Text("Логин: ${user.login}")
                                 Text("Email: ${user.email}")
                                 Text("Телефон: ${user.phoneNumber}")
-                                Text("Роль: ${user.roleId}")               // или personId
                             }
                         }
                     }
