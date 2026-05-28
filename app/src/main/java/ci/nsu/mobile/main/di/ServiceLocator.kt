@@ -1,30 +1,37 @@
 package ci.nsu.mobile.main.di
 
 import android.content.Context
-import ci.nsu.mobile.main.data.database.AppDatabase
-import ci.nsu.mobile.main.data.repositories.AuthRepository
-import ci.nsu.mobile.main.data.repositories.DepositRepository
-import ci.nsu.mobile.main.utils.UserPreferences
+import ci.nsu.mobile.auth.utils.UserPreferences
+import ci.nsu.mobile.auth.di.AuthManagerImpl
+import ci.nsu.mobile.auth.di.AuthNavigatorImpl
+import ci.nsu.mobile.calculations.data.AppDatabase
+import ci.nsu.mobile.calculations.repository.DepositRepository
+import ci.nsu.mobile.calculations.di.CalculationsProviderImpl
+import ci.nsu.mobile.calculations.di.CalculationsNavigatorImpl
+import ci.nsu.mobile.domain.interfaces.AuthManager
+import ci.nsu.mobile.domain.interfaces.CalculationsProvider
+import ci.nsu.mobile.domain.navigation.AuthNavigator
+import ci.nsu.mobile.domain.navigation.CalculationsNavigator
 
 class ServiceLocator(private val context: Context) {
 
-    val userPreferences: UserPreferences by lazy {
-        UserPreferences(context.applicationContext)
+    // Auth
+    val authManager: AuthManager by lazy {
+        AuthManagerImpl(UserPreferences(context.applicationContext))
     }
 
-    private val database: AppDatabase by lazy {
-        AppDatabase.getDatabase(context.applicationContext)
+    val authNavigator: AuthNavigator by lazy {
+        AuthNavigatorImpl()
     }
 
-    private val depositDao by lazy {
-        database.depositDao()
+    // Calculations
+    val calculationsProvider: CalculationsProvider by lazy {
+        val database = AppDatabase.getDatabase(context.applicationContext)
+        val repository = DepositRepository(database.depositDao())
+        CalculationsProviderImpl(repository)
     }
 
-    val authRepository: AuthRepository by lazy {
-        AuthRepository(userPreferences)
-    }
-
-    val depositRepository: DepositRepository by lazy {
-        DepositRepository(depositDao)
+    val calculationsNavigator: CalculationsNavigator by lazy {
+        CalculationsNavigatorImpl()
     }
 }

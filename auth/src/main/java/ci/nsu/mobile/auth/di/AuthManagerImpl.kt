@@ -17,12 +17,7 @@ class AuthManagerImpl(
 
     override suspend fun getCurrentUser(): User? {
         val userId = userPreferences.getUserId() ?: return null
-        // По идее тут должен быть запрос к API, но наш сервер не возвращает нам профиль так что...
-        return User(
-            id = userId,
-            login = "",
-            email = ""
-        )
+        return User(id = userId, login = "", email = "")
     }
 
     override suspend fun logout() {

@@ -2,16 +2,16 @@ package ci.nsu.mobile.main.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.models.UserDto
-import ci.nsu.mobile.main.data.repositories.AuthRepository
-import ci.nsu.mobile.main.data.repositories.ApiResult
+import ci.nsu.mobile.auth.data.repository.ApiResult
+import ci.nsu.mobile.auth.data.models.UserDto
+import ci.nsu.mobile.domain.interfaces.AuthManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class UsersViewModel(
-    private val authRepository: AuthRepository
+    private val authManager: AuthManager
 ) : ViewModel() {
 
     private val _users = MutableStateFlow<List<UserDto>>(emptyList())
@@ -27,17 +27,16 @@ class UsersViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
-            val result = authRepository.getUsers()
-            when (result) {
-                is ApiResult.Success -> {
-                    _users.value = result.data
-                }
-                is ApiResult.Error -> {
-                    _error.value = result.message
-                }
-                else -> {}
-            }
+            // Здесь нужен вызов API через AuthManager
+            // Пока заглушка
+            _users.value = emptyList()
             _isLoading.value = false
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            authManager.logout()
         }
     }
 }
