@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val repository: AuthRepository
-) : ViewModel(){
+) : ViewModel() {
     var firstName by mutableStateOf("")
     var lastName by mutableStateOf("")
     var middleName by mutableStateOf("")
@@ -36,13 +36,19 @@ class RegisterViewModel @Inject constructor(
     init {
         loadGroups()
     }
+
     fun loadGroups() {
         viewModelScope.launch {
             repository.getGroups()
-                .onSuccess { groups = it }
-                .onFailure { errorMessage = "Ошибка при загрузке групп" }
+                .onSuccess { groupsList: List<GroupDto> -> // <- явно указан тип
+                    groups = groupsList
+                }
+                .onFailure { error: Throwable ->           // <- явно указан тип
+                    errorMessage = error.message ?: "Ошибка при загрузке групп"
+                }
         }
     }
+
     fun register() {
         val person = PersonDto(
             firstName = firstName,
@@ -50,7 +56,7 @@ class RegisterViewModel @Inject constructor(
             middleName = middleName,
             birthDate = birthDate,
             gender = gender,
-            groupId = selectedGroupId?:0
+            groupId = selectedGroupId ?: 0
         )
         val request = RegisterRequest(
             login = login,
@@ -64,8 +70,12 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             isLoading = true
             repository.register(request)
-                .onSuccess { registrationSuccess = true }
-                .onFailure { errorMessage = it.message }
+                .onSuccess { _: Unit ->
+                    registrationSuccess = true
+                }
+                .onFailure { error: Throwable ->
+                    errorMessage = error.message ?: "Ошибка регистрации"
+                }
             isLoading = false
         }
     }
