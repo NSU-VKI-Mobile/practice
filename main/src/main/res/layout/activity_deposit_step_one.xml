@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&#1069;&#1090;&#1072;&#1087; 1"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&#1042;&#1074;&#1077;&#1076;&#1080;&#1090;&#1077; &#1086;&#1089;&#1085;&#1086;&#1074;&#1085;&#1099;&#1077; &#1087;&#1072;&#1088;&#1072;&#1084;&#1077;&#1090;&#1088;&#1099; &#1074;&#1082;&#1083;&#1072;&#1076;&#1072;"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="24dp" />
+
+    <EditText
+        android:id="@+id/etInitialAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="&#1057;&#1090;&#1072;&#1088;&#1090;&#1086;&#1074;&#1099;&#1081; &#1074;&#1079;&#1085;&#1086;&#1089;"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/etPeriodMonths"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="&#1057;&#1088;&#1086;&#1082; &#1074;&#1082;&#1083;&#1072;&#1076;&#1072; &#1074; &#1084;&#1077;&#1089;&#1103;&#1094;&#1072;&#1093;"
+        android:inputType="number"
+        android:layout_marginTop="12dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="32dp">
+
+        <Button
+            android:id="@+id/btnHome"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="&#1042; &#1085;&#1072;&#1095;&#1072;&#1083;&#1086;" />
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="&#1044;&#1072;&#1083;&#1077;&#1077;"
+            android:layout_marginStart="12dp" />
+    </LinearLayout>
+
+</LinearLayout>
