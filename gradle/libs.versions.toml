@@ -28,7 +28,7 @@ uiToolingPreview = "1.11.1"
 playServicesCloudMessaging = "17.4.0"
 runtimeVersion = "1.11.2"
 junitKtx = "1.3.0"
-remoteCreationCompose = "1.0.0-alpha11"
+remoteCreationCompose = "1.0.0-alpha01"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
