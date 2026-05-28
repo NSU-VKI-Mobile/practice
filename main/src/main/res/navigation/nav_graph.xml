@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="ci.nsu.mobile.main.ui.main.MainFragment"
+        android:label="MainFragment"
+        tools:layout="@layout/main_fragment">
+        <action
+            android:id="@+id/action_mainFragment_to_firstStepFragment"
+            app:destination="@id/firstStepFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_historyFragment"
+            app:destination="@id/historyFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/firstStepFragment"
+        android:name="ci.nsu.mobile.main.ui.firststep.FirstStepFragment"
+        android:label="FirstStepFragment"
+        tools:layout="@layout/first_step_fragment">
+        <action
+            android:id="@+id/action_firstStepFragment_to_secondStepFragment"
+            app:destination="@id/secondStepFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/secondStepFragment"
+        android:name="ci.nsu.mobile.main.ui.secondstep.SecondStepFragment"
+        android:label="SecondStepFragment"
+        tools:layout="@layout/second_step_fragment">
+        <action
+            android:id="@+id/action_secondStepFragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="ci.nsu.mobile.main.ui.result.ResultFragment"
+        android:label="ResultFragment"
+        tools:layout="@layout/result_fragment" />
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="ci.nsu.mobile.main.ui.history.HistoryFragment"
+        android:label="HistoryFragment"
+        tools:layout="@layout/history_fragment">
+        <action
+            android:id="@+id/action_historyFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="ci.nsu.mobile.main.ui.detail.DetailFragment"
+        android:label="DetailFragment"
+        tools:layout="@layout/detail_fragment" />
+</navigation>
