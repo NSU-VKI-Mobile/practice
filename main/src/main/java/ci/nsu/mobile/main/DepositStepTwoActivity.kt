@@ -2,10 +2,8 @@ package ci.nsu.mobile.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,20 +23,11 @@ class DepositStepTwoActivity : AppCompatActivity() {
         interestRate = getRateByPeriod(periodMonths)
 
         val tvRateInfo = findViewById<TextView>(R.id.tvRateInfo)
-        val spinnerRate = findViewById<Spinner>(R.id.spinnerRate)
         val etMonthlyTopUp = findViewById<EditText>(R.id.etMonthlyTopUp)
         val btnBack = findViewById<Button>(R.id.btnBack)
         val btnCalculateResult = findViewById<Button>(R.id.btnCalculateResult)
 
         tvRateInfo.text = "Срок вклада: $periodMonths мес. Доступная ставка: ${interestRate.toInt()}%"
-
-        val adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            listOf("${interestRate.toInt()}%")
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerRate.adapter = adapter
 
         btnBack.setOnClickListener {
             finish()
