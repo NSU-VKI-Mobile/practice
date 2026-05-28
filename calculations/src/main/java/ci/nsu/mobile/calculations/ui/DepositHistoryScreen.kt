@@ -87,7 +87,7 @@ fun DepositCalculationCard(
     onClick: () -> Unit
 ) {
     val format = NumberFormat.getCurrencyInstance(Locale("ru", "RU"))
-    val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale("ru", "RU"))
 
     Card(
         modifier = Modifier.fillMaxWidth(),

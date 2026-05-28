@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Practice" parent="Theme.Material3.DayNight.NoActionBar">
+    <!-- Используйте стандартную Android тему вместо Material3 -->
+    <style name="Theme.Practice" parent="android:Theme.Material.Light.NoActionBar">
         <!-- Customize your theme here. -->
     </style>
 </resources>

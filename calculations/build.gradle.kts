@@ -4,6 +4,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
     id("kotlin-kapt")
+
 }
 
 android {
@@ -15,12 +16,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "21"
     }
 
     buildFeatures {
@@ -31,9 +32,12 @@ android {
 dependencies {
     implementation(project(":domain"))
 
+
+
+
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.1")
     implementation("androidx.activity:activity-compose:1.8.0")
 
     // Compose
@@ -46,9 +50,16 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
 
     // Room
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-runtime:2.7.1")
+    implementation("androidx.room:room-ktx:2.7.1")
+    kapt("androidx.room:room-compiler:2.7.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("androidx.compose.material3:material3")
+    implementation ("androidx.compose.material:material-icons-extended")
+
+    // Icon
+    implementation("androidx.compose.material:material-icons-core")
+    implementation("androidx.compose.material:material-icons-extended")
+
 }

@@ -14,12 +14,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "21"
     }
 
     buildFeatures {
@@ -29,6 +29,16 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+
+    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation("androidx.activity:activity-compose:1.8.0")
+
+
+    implementation(platform("androidx.compose:compose-bom:2026.05.00"))
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
 
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.7.1")
@@ -50,4 +60,13 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation("androidx.compose.material3:material3")
+
+    implementation("androidx.compose.material3:material3")
+    implementation ("androidx.compose.material:material-icons-extended")
+
+    // Icon
+    implementation("androidx.compose.material:material-icons-core")
+    implementation("androidx.compose.material:material-icons-extended")
+
 }

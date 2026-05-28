@@ -1,8 +1,14 @@
 package ci.nsu.mobile.calculations.ui
 
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack  //
+import androidx.compose.material.icons.filled.Delete
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,9 +21,13 @@ import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
+import java.util.Locale
+import java.util.Date
+
+
+import androidx.compose.material3.Icon
+
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,7 +44,7 @@ fun DepositDetailScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     val format = NumberFormat.getCurrencyInstance(Locale("ru", "RU"))
-    val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale("ru", "RU"))
 
     LaunchedEffect(calculationId, userId) {
         depositViewModel.setUserId(userId)
