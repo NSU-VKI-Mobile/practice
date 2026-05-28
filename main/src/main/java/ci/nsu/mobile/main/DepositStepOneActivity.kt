@@ -1,5 +1,6 @@
 package ci.nsu.mobile.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -43,7 +44,15 @@ class DepositStepOneActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            Toast.makeText(this, "Следующий экран добавим во второй части", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, DepositStepTwoActivity::class.java)
+            intent.putExtra(EXTRA_INITIAL_AMOUNT, amount)
+            intent.putExtra(EXTRA_PERIOD_MONTHS, period)
+            startActivity(intent)
         }
+    }
+
+    companion object {
+        const val EXTRA_INITIAL_AMOUNT = "initial_amount"
+        const val EXTRA_PERIOD_MONTHS = "period_months"
     }
 }
