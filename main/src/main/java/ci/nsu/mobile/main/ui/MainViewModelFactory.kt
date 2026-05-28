@@ -1,4 +1,5 @@
-package ci.nsu.mobile.main.ui;
+package ci.nsu.mobile.main.ui
+
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

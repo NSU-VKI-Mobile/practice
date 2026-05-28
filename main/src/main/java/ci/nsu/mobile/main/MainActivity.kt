@@ -23,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +36,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.main.db.DepositDatabase
 import ci.nsu.mobile.main.ui.MainViewModel
+
 import ci.nsu.mobile.main.ui.MainViewModelFactory
+import ci.nsu.mobile.main.ui.NavigationTarget
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,12 +64,23 @@ fun DepositApp() {
         navController = navController,
         startDestination = "home"
     ) {
-        composable("home") { HomeScreen(navController) }
-        composable("step_one") { StepOneScreen(navController, viewModel) }
-        composable("step_two") { StepTwoScreen(navController, viewModel) }
-        composable("result") { ResultScreen(navController, viewModel) }
-        composable("history") { HistoryScreen(navController, viewModel) }
+        composable("home") { HomeScreen(navController = navController) }
+
+        composable("step_one") {
+            StepOneScreen(viewModel = viewModel, navController = navController)
+        }
+        composable("step_two") {
+            StepTwoScreen(viewModel = viewModel, navController = navController)
+        }
+        composable("result") {
+            ResultScreen(viewModel = viewModel, navController = navController)
+        }
+        composable("history") {
+            HistoryScreen(viewModel = viewModel, navController = navController)
+        }
     }
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -241,8 +256,23 @@ fun StepTwoScreen(navController: NavController, viewModel: MainViewModel) {
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun ResultScreen(navController: NavController, viewModel: MainViewModel) {
-
+fun ResultScreen(
+    viewModel: MainViewModel,
+    navController: NavController // Или ваш метод навигации
+) {
+    // Слушаем событие навигации из ViewModel
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { target ->
+            when (target) {
+                is NavigationTarget.NavigateToHome -> {
+                    // Очищаем стек экранов вплоть до главного, чтобы кнопка "Назад" не возвращала на результат
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                }
+            }
+        }
+    }
     val result = viewModel.result ?: return
 
     Scaffold(
@@ -268,23 +298,11 @@ fun ResultScreen(navController: NavController, viewModel: MainViewModel) {
             Text("Дата: ${result.date}")
 
             Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = { viewModel.saveDeposit() },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Сохранить")
-            }
-
-            OutlinedButton(
-                onClick = { navController.navigate("home") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("В начало")
-            }
-        }
+    // Ваша верстка экрана и кнопка:
+    Button(onClick = { viewModel.saveDeposit() }) {
+        Text("Сохранить")
     }
-}
+}}}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -7,11 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.dao.DepositDao
 import ci.nsu.mobile.main.entity.DepositEntity
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
-
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class MainViewModel(private val dao: DepositDao) : ViewModel() {
 
@@ -21,6 +22,10 @@ class MainViewModel(private val dao: DepositDao) : ViewModel() {
     var monthlyTopUp by mutableStateOf("")
 
     var result by mutableStateOf<DepositEntity?>(null)
+
+    private val _navigationEvent = Channel<NavigationTarget>()
+    val navigationEvent = _navigationEvent.receiveAsFlow()
+
     val history: StateFlow<List<DepositEntity>> = dao.getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -49,8 +54,11 @@ class MainViewModel(private val dao: DepositDao) : ViewModel() {
     }
 
     fun saveDeposit() {
-        result?.let {
-            viewModelScope.launch { dao.insert(it) }
+        result?.let { deposit ->
+            viewModelScope.launch {
+                dao.insert(deposit)
+                _navigationEvent.send(NavigationTarget.NavigateToHome)
+            }
         }
     }
 
@@ -62,4 +70,8 @@ class MainViewModel(private val dao: DepositDao) : ViewModel() {
             else -> listOf(5.0)
         }
     }
+}
+
+sealed interface NavigationTarget {
+    object NavigateToHome : NavigationTarget
 }
