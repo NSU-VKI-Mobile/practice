@@ -10,6 +10,14 @@
         android:theme="@style/Theme.Draft">
 
         <activity
+            android:name=".DepositDetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DepositHistoryActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".DepositResultActivity"
             android:exported="false" />
 
