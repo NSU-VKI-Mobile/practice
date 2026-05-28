@@ -86,4 +86,8 @@ dependencies {
     // OkHttp + Logging
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    implementation(project(":domain"))
+    implementation(project(":auth"))
+    implementation(project(":calculations"))
 }
