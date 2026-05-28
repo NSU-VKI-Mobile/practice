@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="title_activity_login_screen">LoginScreen</string>
+    <string name="title_activity_login_view_model">LoginViewModel</string>
+    <string name="title_activity_register_screen">RegisterScreen</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_register_view_model">RegisterViewModel</string>
+    <string name="title_activity_token_manager">TokenManager</string>
+    <string name="title_activity_group_dto">GroupDto</string>
+    <string name="title_activity_person_dto">PersonDto</string>
+    <string name="title_activity_register_request">RegisterRequest</string>
+    <string name="title_activity_login_request">LoginRequest</string>
+    <string name="title_activity_retrofit_client">RetrofitClient</string>
+    <string name="title_activity_main_view_model">MainViewModel</string>
+    <string name="title_activity_auth_interceptor">AuthInterceptor</string>
+    <string name="title_activity_api_service">ApiService</string>
+    <string name="title_activity_auth_repository">AuthRepository</string>
+    <string name="title_activity_login_viewmodel_factory">LoginViewmodelFactory</string>
+    <string name="title_activity_register_view_model_factory">RegisterViewModelFactory</string>
+    <string name="title_activity_user_dto">UserDto</string>
+    <string name="title_activity_main_screen_view_model">MainScreenViewModel</string>
+    <string name="title_activity_main_screen">MainScreen</string>
+    <string name="title_activity_main_screen_view_model_factory">MainScreenViewModelFactory</string>
 </resources>
