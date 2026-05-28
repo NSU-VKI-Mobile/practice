@@ -1,8 +1,9 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose") version "2.1.0"  // версия Kotlin, которая у вас используется
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"}
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
+}
 
 android {
     namespace = "ci.nsu.mobile.main"
