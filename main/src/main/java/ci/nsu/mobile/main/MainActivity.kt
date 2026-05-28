@@ -3,7 +3,6 @@ package ci.nsu.mobile.main
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -22,7 +21,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnHistory.setOnClickListener {
-            Toast.makeText(this, "Историю добавим в следующей части", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, DepositHistoryActivity::class.java)
+            startActivity(intent)
         }
 
         btnClose.setOnClickListener {
