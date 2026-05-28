@@ -1,10 +1,9 @@
-package ci.nsu.mobile.main.viewmodel
+package ci.nsu.mobile.calculations.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.database.DepositCalculation
-import ci.nsu.mobile.main.data.repositories.DepositRepository
-import ci.nsu.mobile.main.utils.UserPreferences
+import ci.nsu.mobile.calculations.data.DepositCalculation
+import ci.nsu.mobile.calculations.repository.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class DepositViewModel(
     private val repository: DepositRepository,
-    private val userPreferences: UserPreferences
+    private val userIdProvider: suspend () -> Long
 ) : ViewModel() {
 
     private val _initialAmount = MutableStateFlow("")
@@ -81,7 +80,7 @@ class DepositViewModel(
                 val months = _periodMonths.value.toIntOrNull() ?: 0
                 val rate = _interestRate.value ?: 0.0
                 val topUp = _monthlyTopUp.value.toDoubleOrNull()
-                val userId = userPreferences.getUserId() ?: 0L
+                val userId = userIdProvider()
 
                 val calculation = DepositCalculation(
                     userId = userId,

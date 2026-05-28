@@ -1,10 +1,9 @@
-package ci.nsu.mobile.main.viewmodel
+package ci.nsu.mobile.calculations.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.database.DepositCalculation
-import ci.nsu.mobile.main.data.repositories.DepositRepository
-import ci.nsu.mobile.main.utils.UserPreferences
+import ci.nsu.mobile.calculations.data.DepositCalculation
+import ci.nsu.mobile.calculations.repository.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class MyCalculationsViewModel(
     private val repository: DepositRepository,
-    private val userPreferences: UserPreferences
+    private val userIdProvider: suspend () -> Long
 ) : ViewModel() {
 
     private val _calculations = MutableStateFlow<List<DepositCalculation>>(emptyList())
@@ -32,7 +31,7 @@ class MyCalculationsViewModel(
             _isLoading.value = true
             _error.value = null
             try {
-                val userId = userPreferences.getUserId() ?: 0L
+                val userId = userIdProvider()
                 _calculations.value = repository.getCalculationsByUserId(userId)
             } catch (e: Exception) {
                 _error.value = e.message
@@ -46,7 +45,7 @@ class MyCalculationsViewModel(
         viewModelScope.launch {
             _deletingId.value = id
             try {
-                val userId = userPreferences.getUserId() ?: 0L
+                val userId = userIdProvider()
                 val success = repository.deleteCalculationById(id, userId)
                 if (success) {
                     _calculations.value = _calculations.value.filter { it.id != id }

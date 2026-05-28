@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens.deposit
+package ci.nsu.mobile.calculations.ui.screens.deposit
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

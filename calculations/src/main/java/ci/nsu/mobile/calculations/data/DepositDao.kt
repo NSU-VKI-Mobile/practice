@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.data.database
+package ci.nsu.mobile.calculations.data
 
 import androidx.room.Dao
 import androidx.room.Insert
