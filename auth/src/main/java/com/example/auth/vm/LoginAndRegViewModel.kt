@@ -208,7 +208,7 @@ class LoginAndRegViewModel(application: Application, private val authRepository:
     fun generateQrCode() : Bitmap {
         val login = TokenManager.login
         val password = TokenManager.password
-        var qrBitmap = createBitmap(1, 1)
+        var qrBitmap = createBitmap(1,1)
         if (login == null || password == null) {
             errorMessage = "Данные пользователя отсуствуют"
         }

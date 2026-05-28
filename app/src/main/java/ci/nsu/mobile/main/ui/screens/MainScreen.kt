@@ -138,7 +138,7 @@ fun MainScreen(
     }) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.UserList.route,
+            startDestination = Screen.CurUserProfile.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.CurUserProfile.route) {
