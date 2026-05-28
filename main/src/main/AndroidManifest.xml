@@ -10,6 +10,14 @@
         android:theme="@style/Theme.Draft">
 
         <activity
+            android:name=".DepositResultActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DepositStepTwoActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".DepositStepOneActivity"
             android:exported="false" />
 
