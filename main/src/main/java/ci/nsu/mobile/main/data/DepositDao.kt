@@ -13,4 +13,7 @@ interface DepositDao {
 
     @Query("SELECT * FROM deposit_calculations ORDER BY calculationDate DESC")
     fun getAllCalculations(): Flow<List<DepositCalculation>>
+
+    @Query("SELECT * FROM deposit_calculations WHERE id = :id")
+    fun getCalculationById(id: Long): Flow<DepositCalculation?>
 }
