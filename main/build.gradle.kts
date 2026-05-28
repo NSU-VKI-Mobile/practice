@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
 }
 
 android {
@@ -36,6 +37,14 @@ android {
 }
 
 dependencies {
+
+    implementation("androidx.navigation:navigation-compose:2.9.8")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
+    implementation("androidx.room:room-runtime:2.7.1")
+    implementation("androidx.room:room-ktx:2.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+
 
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
