@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.update
 
 class CounterViewModel : ViewModel() {
 
+    //можно менять данные и автоматически сообщает UI об изменениях
     private val _uiState = MutableStateFlow(CounterUiState())
     val uiState: StateFlow<CounterUiState> = _uiState.asStateFlow()
 

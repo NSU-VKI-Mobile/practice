@@ -32,8 +32,8 @@ fun CounterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
             Button(
