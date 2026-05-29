@@ -1,5 +1,9 @@
 package ci.nsu.mobile.main.presenation.viewmodels
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.presenation.repositories.DepositRepository
@@ -12,14 +16,14 @@ class DepositViewModel(
     private val repository: DepositRepository
 ) : ViewModel() {
 
-    var initialAmount = ""
-    var months = ""
-    var monthlyTopUp = ""
+    var initialAmount by mutableStateOf("")
+    var months by mutableStateOf("")
+    var monthlyTopUp by mutableStateOf("")
 
-    var selectedRate = 0.0
+    var selectedRate by mutableStateOf(0.0)
 
     val history =
-        repository.getAll()
+        repository.getAll()//получаем данные из репо
             .stateIn(
                 viewModelScope,
                 SharingStarted.Companion.WhileSubscribed(),
@@ -30,22 +34,23 @@ class DepositViewModel(
 
         val initial =
             initialAmount.toDouble()
+                //Получаем количество месяцев
 
         val period =
             months.toInt()
 
         val topUp =
             monthlyTopUp.toDoubleOrNull() ?: 0.0
-
+        //Считаем пополнения за весь срок
         val totalTopUps =
             topUp * period
-
+        //Добавляем пополнения к стартовому взносу
         val base =
             initial + totalTopUps
-
+        //Начисляем проценты
         val interest =
             base * selectedRate / 100
-
+        //Получаем итоговую сумму
         val final =
             base + interest
 
@@ -70,7 +75,6 @@ class DepositViewModel(
     fun save(calc: DepositCalculation) {
 
         viewModelScope.launch {
-
             repository.insert(calc)
         }
     }

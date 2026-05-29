@@ -84,5 +84,16 @@ fun ResultScreen(
 
             Text("В начало")
         }
+
+        Button(
+            onClick = {
+
+                nav.popBackStack()
+
+            }
+        ) {
+
+            Text("Назад")
+        }
     }
 }

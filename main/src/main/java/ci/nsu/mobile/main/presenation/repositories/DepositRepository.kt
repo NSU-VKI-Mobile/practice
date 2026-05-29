@@ -10,10 +10,8 @@ class DepositRepository(
     fun getAll() = dao.getAll()
 
     suspend fun insert(calc: DepositCalculation) {
-
         dao.insert(calc)
     }
 
-    suspend fun getById(id: Long) =
-        dao.getById(id)
+    suspend fun getById(id: Long) = dao.getById(id)
 }

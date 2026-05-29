@@ -11,7 +11,7 @@ import ci.nsu.mobile.main.data.dao.DepositDao
     entities = [DepositCalculation::class],
     version = 1
 )
-
+//Класс отвечает за создание Room.
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun depositDao(): DepositDao

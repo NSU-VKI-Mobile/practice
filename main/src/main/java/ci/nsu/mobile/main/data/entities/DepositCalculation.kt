@@ -2,7 +2,7 @@ package ci.nsu.mobile.main.data.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
+//Через Room он автоматически превращается в таблицу SQLite.
 @Entity(tableName = "deposit_calculations")
 data class DepositCalculation(
 
