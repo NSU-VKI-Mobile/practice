@@ -3,12 +3,12 @@ package ci.nsu.mobile.auth.di
 import android.content.Context
 import ci.nsu.mobile.domain.navigation.AuthNavigator
 
-class AuthNavigatorImpl : AuthNavigator {
-    override fun navigateToLogin(context: Context) {
-        // Реализация позже
+class AuthNavigatorImpl(private val context: Context) : AuthNavigator {
+    override fun navigateToLogin() {
+        // Используем context здесь для запуска Intent
     }
 
-    override fun navigateToRegister(context: Context) {
-        // Реализация позже
+    override fun navigateToRegister() {
+        // Используем context здесь для запуска Intent
     }
 }

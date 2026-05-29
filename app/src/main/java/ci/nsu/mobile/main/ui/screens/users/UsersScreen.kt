@@ -9,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ci.nsu.mobile.auth.data.models.UserDto
+import ci.nsu.mobile.domain.models.User
 import ci.nsu.mobile.main.viewmodel.UsersViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,8 +55,9 @@ fun UsersScreen(
                     CircularProgressIndicator()
                 }
                 error != null -> {
+                    val errorMessage = error
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(error!!, color = MaterialTheme.colorScheme.error)
+                        Text(errorMessage ?: "Неизвестная ошибка", color = MaterialTheme.colorScheme.error)
                         Button(onClick = { viewModel.loadUsers() }) {
                             Text("Повторить")
                         }
@@ -79,11 +82,11 @@ fun UsersScreen(
 }
 
 @Composable
-fun UserCard(user: ci.nsu.mobile.main.data.models.UserDto) {
+fun UserCard(user: User) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "${user.person?.lastName} ${user.person?.firstName}",
+                text = "${user.lastName} ${user.firstName}",
                 fontSize = 18.sp
             )
             Text("Логин: ${user.login}", fontSize = 14.sp)

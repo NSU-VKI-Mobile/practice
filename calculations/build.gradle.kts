@@ -1,8 +1,7 @@
 plugins {
-    id(libs.plugins.android.library.get().pluginId)
-    id(libs.plugins.kotlin.android.get().pluginId)
-    alias(libs.plugins.compose.compiler)
-    id("kotlin-kapt")
+    id("com.android.library")
+    alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -19,12 +18,14 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+}
 
-    kotlinOptions {
-        jvmTarget = "11"
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
 }
 
@@ -32,16 +33,17 @@ dependencies {
     implementation(project(":domain"))
 
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.compose.runtime.livedata)
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-runtime:2.8.4")
+    implementation("androidx.room:room-ktx:2.8.4")
+    ksp("androidx.room:room-compiler:2.8.4")
 }

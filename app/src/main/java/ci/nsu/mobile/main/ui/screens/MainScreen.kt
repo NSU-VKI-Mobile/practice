@@ -1,10 +1,10 @@
 package ci.nsu.mobile.main.ui.screens
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,61 +13,56 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import ci.nsu.mobile.main.ui.screens.deposit.AdditionalParamsScreen
-import ci.nsu.mobile.main.ui.screens.deposit.DepositInputScreen
-import ci.nsu.mobile.main.ui.screens.deposit.ResultScreen
-import ci.nsu.mobile.main.ui.screens.mycalculations.MyCalculationDetailScreen
-import ci.nsu.mobile.main.ui.screens.mycalculations.MyCalculationsScreen
+import ci.nsu.mobile.calculations.ui.screens.deposit.DepositInputScreen
+import ci.nsu.mobile.calculations.ui.screens.deposit.AdditionalParamsScreen
+import ci.nsu.mobile.calculations.ui.screens.deposit.ResultScreen
+import ci.nsu.mobile.calculations.ui.screens.mycalculations.MyCalculationsScreen
+import ci.nsu.mobile.calculations.ui.screens.mycalculations.MyCalculationDetailScreen
+import ci.nsu.mobile.calculations.viewmodel.DepositViewModel
+import ci.nsu.mobile.calculations.viewmodel.MyCalculationsViewModel
 import ci.nsu.mobile.main.ui.screens.users.UsersScreen
-import ci.nsu.mobile.main.viewmodel.DepositViewModel
-import ci.nsu.mobile.main.viewmodel.MyCalculationsViewModel
 import ci.nsu.mobile.main.viewmodel.UsersViewModel
+import ci.nsu.mobile.domain.navigation.CalculationsNavigator
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 
 @Composable
 fun MainScreen(
     onLogout: () -> Unit,
+    usersViewModel: UsersViewModel,
     depositViewModel: DepositViewModel,
     myCalculationsViewModel: MyCalculationsViewModel,
-    usersViewModel: UsersViewModel
+    calculationsNavigator: CalculationsNavigator
 ) {
     val navController = rememberNavController()
+    var selectedItem by remember { mutableStateOf(0) }
 
     val items = listOf(
-        ScreenItem("users", "Пользователи", android.R.drawable.ic_menu_manage),
-        ScreenItem("my_calculations", "Мои расчёты", android.R.drawable.ic_menu_edit),
-        ScreenItem("new_calculation", "Новый расчёт", android.R.drawable.ic_menu_add)
+        "Пользователи" to android.R.drawable.ic_menu_manage,
+        "Мои расчёты" to android.R.drawable.ic_menu_edit,
+        "Новый расчёт" to android.R.drawable.ic_menu_add
     )
-
-    var selectedItem by remember { mutableStateOf(items[0].route) }
-
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
 
     Scaffold(
         bottomBar = {
             BottomAppBar {
-                items.forEach { item ->
+                items.forEachIndexed { index, (title, icon) ->
                     NavigationBarItem(
-                        selected = selectedItem == item.route,
+                        selected = selectedItem == index,
                         onClick = {
-                            selectedItem = item.route
-                            navController.navigate(item.route) {
-                                popUpTo(0) { inclusive = false }
-                                launchSingleTop = true
+                            selectedItem = index
+                            when (index) {
+                                0 -> navController.navigate("users")
+                                1 -> navController.navigate("my_calculations")
+                                2 -> navController.navigate("new_calculation")
                             }
                         },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = item.iconRes),
-                                contentDescription = item.title
-                            )
-                        },
-                        label = { Text(item.title) }
+                        icon = { Icon(painterResource(id = icon), contentDescription = title) },
+                        label = { Text(title) }
                     )
                 }
             }
@@ -75,7 +70,7 @@ fun MainScreen(
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = "my_calculations",
+            startDestination = "users",
             modifier = Modifier.padding(paddingValues)
         ) {
             // Вкладка 1: Пользователи
@@ -103,10 +98,10 @@ fun MainScreen(
                 )
             }
 
-            // Вкладка 3: Новый расчёт
+            // Вкладка 3: Новый расчёт (шаг 1)
             composable("new_calculation") {
                 DepositInputScreen(
-                    onBackClick = { /* Отдельная вкладка, ничего не делаем */ },
+                    onBackClick = { /* Ничего не делаем */ },
                     onNextClick = { amount, months ->
                         depositViewModel.saveFirstScreenData(amount, months)
                         navController.navigate("additional_params_from_new")
@@ -114,7 +109,7 @@ fun MainScreen(
                 )
             }
 
-            // Доп. параметры для нового расчёта
+            // Шаг 2 нового расчёта
             composable("additional_params_from_new") {
                 AdditionalParamsScreen(
                     periodMonths = depositViewModel.getPeriodMonths(),
@@ -126,7 +121,7 @@ fun MainScreen(
                 )
             }
 
-            // Результат расчёта
+            // Шаг 3 нового расчёта (результат)
             composable("result_from_new") {
                 ResultScreen(
                     initialAmount = depositViewModel.getInitialAmount(),
@@ -165,9 +160,3 @@ fun MainScreen(
         }
     }
 }
-
-data class ScreenItem(
-    val route: String,
-    val title: String,
-    val iconRes: Int
-)

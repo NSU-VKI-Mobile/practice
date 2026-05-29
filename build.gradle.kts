@@ -2,8 +2,6 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.compose) apply false
     id("com.google.devtools.ksp") version "2.3.6" apply false
-    alias(libs.plugins.jetbrains.kotlin.jvm) apply false
-    alias(libs.plugins.android.built.in1.kotlin) apply false
-    alias(libs.plugins.compose.compiler) apply false
 }

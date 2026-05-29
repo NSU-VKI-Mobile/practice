@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface AuthManager {
     suspend fun isLoggedIn(): Boolean
     suspend fun getCurrentUser(): User?
+    suspend fun getUsers(): List<User>
     suspend fun logout()
     fun observeAuthState(): Flow<AuthState>
 }
