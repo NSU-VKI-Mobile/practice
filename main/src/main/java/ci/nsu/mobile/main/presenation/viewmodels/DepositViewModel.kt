@@ -1,8 +1,11 @@
-package ci.nsu.mobile.main
+package ci.nsu.mobile.main.presenation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.*
+import ci.nsu.mobile.main.presenation.repositories.DepositRepository
+import ci.nsu.mobile.main.data.entities.DepositCalculation
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DepositViewModel(
@@ -19,7 +22,7 @@ class DepositViewModel(
         repository.getAll()
             .stateIn(
                 viewModelScope,
-                SharingStarted.WhileSubscribed(),
+                SharingStarted.Companion.WhileSubscribed(),
                 emptyList()
             )
 

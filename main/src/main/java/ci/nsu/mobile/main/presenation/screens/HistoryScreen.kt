@@ -1,10 +1,10 @@
-package ci.nsu.mobile.main
+package ci.nsu.mobile.main.presenation.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.navigation.NavController
+import ci.nsu.mobile.main.presenation.viewmodels.DepositViewModel
 
 @Composable
 fun HistoryScreen(

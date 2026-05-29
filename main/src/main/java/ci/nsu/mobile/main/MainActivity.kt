@@ -3,9 +3,16 @@ package ci.nsu.mobile.main
 import android.os.Bundle
 import androidx.activity.*
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.*
 import androidx.navigation.compose.*
 import ci.nsu.mobile.main.data.dbo.AppDatabase
+import ci.nsu.mobile.main.presenation.navigation.Screen
+import ci.nsu.mobile.main.presenation.repositories.DepositRepository
+import ci.nsu.mobile.main.presenation.screens.HistoryScreen
+import ci.nsu.mobile.main.presenation.screens.HomeScreen
+import ci.nsu.mobile.main.presenation.screens.ResultScreen
+import ci.nsu.mobile.main.presenation.screens.StepOneScreen
+import ci.nsu.mobile.main.presenation.screens.StepTwoScreen
+import ci.nsu.mobile.main.presenation.viewmodels.DepositViewModel
 
 class MainActivity : ComponentActivity() {
 

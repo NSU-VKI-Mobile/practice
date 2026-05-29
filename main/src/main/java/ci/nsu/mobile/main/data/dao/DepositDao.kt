@@ -3,7 +3,7 @@ package ci.nsu.mobile.main.data.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import ci.nsu.mobile.main.DepositCalculation
+import ci.nsu.mobile.main.data.entities.DepositCalculation
 import kotlinx.coroutines.flow.Flow
 
 @Dao

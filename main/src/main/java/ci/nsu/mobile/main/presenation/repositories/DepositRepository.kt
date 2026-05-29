@@ -1,7 +1,7 @@
-package ci.nsu.mobile.main
+package ci.nsu.mobile.main.presenation.repositories
 
 import ci.nsu.mobile.main.data.dao.DepositDao
-
+import ci.nsu.mobile.main.data.entities.DepositCalculation
 
 class DepositRepository(
     private val dao: DepositDao

@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main
+package ci.nsu.mobile.main.presenation.navigation
 
 sealed class Screen(
     val route: String

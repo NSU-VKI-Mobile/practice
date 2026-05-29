@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ci.nsu.mobile.main.DepositCalculation
+import ci.nsu.mobile.main.data.entities.DepositCalculation
 import ci.nsu.mobile.main.data.dao.DepositDao
 
 @Database(

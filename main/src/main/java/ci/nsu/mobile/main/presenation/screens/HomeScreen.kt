@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main
+package ci.nsu.mobile.main.presenation.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ci.nsu.mobile.main.presenation.navigation.Screen
 import kotlin.system.exitProcess
 
 @Composable

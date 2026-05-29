@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.theme
+package ci.nsu.mobile.main.presenation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
