@@ -6,7 +6,6 @@ import ci.nsu.moble.main.api.TokenManager
 import ci.nsu.moble.main.data.repositories.AuthRepository
 import ci.nsu.moble.main.viewmodel.states.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
@@ -15,16 +14,16 @@ class AuthViewModel(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AuthState())
-    val state: StateFlow<AuthState> = _state
 
     fun login(login: String, pass: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             _state.value = AuthState(isLoading = true)
 
             repository.login(login, pass)
-                .onSuccess { response  ->
-                    // Сохраняем токен
-                    tokenManager.token = response.token
+                .onSuccess { response ->
+                    // Используем метод saveToken вместо сеттера
+                    tokenManager.saveToken(response.token)
+
                     _state.value = AuthState(isLoggedIn = true)
                     onSuccess()
                 }
@@ -34,9 +33,8 @@ class AuthViewModel(
         }
     }
 
-
     fun logout() {
+        // Просто очищаем менеджер токенов. Global Navigation сама всё поймет.
         tokenManager.clear()
-        _state.value = AuthState(isLoggedIn = false)
     }
 }

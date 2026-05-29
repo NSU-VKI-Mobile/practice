@@ -8,6 +8,7 @@ import ci.nsu.moble.main.data.dto.UserDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 /**
  * Works with HTTP requests
@@ -21,6 +22,9 @@ interface ApiService {
 
     @GET("users")
     suspend fun getUsers(): List<UserDto>
+
+    @GET("users/login/{login}")
+    suspend fun getUserByLogin(@Path("login") login: String): UserDto
 
     @GET("groups")
     suspend fun getGroups(): List<GroupDto>

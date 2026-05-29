@@ -39,25 +39,41 @@ class LoginScreenViewModel(
         val current = _uiState.value
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
+
             repository.login(current.login, current.pass)
-                .onSuccess {
-                    tokenManager.token = it.token
+                .onSuccess { loginResponse ->
+                    // Поправлено: используем метод saveToken вместо прямого сеттера
+                    tokenManager.saveToken(loginResponse.token)
+                }
+                .fold(
+                    onSuccess = {
+                        repository.getUserByLogin(current.login)
+                    },
+                    onFailure = { error ->
+                        Result.failure(error)
+                    }
+                )
+                .onSuccess { userDto ->
+                    // Поправлено: используем метод saveCurrentUser
+                    tokenManager.saveCurrentUser(userDto)
                     resetState()
                     onSuccess()
                 }
                 .onFailure { e ->
+                    // Если произошла ошибка на любом из этапов, полностью зачищаем сессию
+                    tokenManager.clear()
                     _uiState.update { it.copy(error = e.message, isLoading = false) }
                 }
         }
     }
 
     private fun resetState() {
-        // reset saved state
+        // Сброс сохраненного состояния
         savedState["login"] = ""
         savedState["pass"] = ""
         savedState["isLoading"] = false
         savedState["error"] = null
-        // reset ui
+        // Сброс UI состояния
         _uiState.update { it.copy(login = "", pass = "", isLoading = false, error = null) }
     }
 }

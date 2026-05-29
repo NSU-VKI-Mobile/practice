@@ -1,4 +1,4 @@
-package ci.nsu.moble.main.ui.screens
+package ci.nsu.moble.main.ui.screens.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,13 +25,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ci.nsu.moble.main.viewmodel.AuthViewModel
 import ci.nsu.moble.main.viewmodel.MainScreenViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(authVm: AuthViewModel,mainScrVm: MainScreenViewModel, onLogout: () -> Unit) {
+fun MainScreen(onLogout: () -> Unit, bottomPadding: Dp) {
+    val authVm: AuthViewModel = koinViewModel()
+    val mainScrVm: MainScreenViewModel = koinViewModel()
+
     val users by mainScrVm.users.collectAsState()
 
     Scaffold(
@@ -42,7 +47,8 @@ fun MainScreen(authVm: AuthViewModel,mainScrVm: MainScreenViewModel, onLogout: (
                     Icon(Icons.AutoMirrored.Filled.ExitToApp, "Выйти")
                 }
             })
-        }
+        },
+        modifier = Modifier.padding(bottom = bottomPadding)
     ) { padding ->
         LazyColumn(
             modifier = Modifier

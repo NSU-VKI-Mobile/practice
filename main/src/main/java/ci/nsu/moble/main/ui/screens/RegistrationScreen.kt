@@ -37,11 +37,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import ci.nsu.moble.main.viewmodel.RegisterViewModel
 import ci.nsu.moble.main.viewmodel.states.GroupsState
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen(viewModel: RegisterViewModel, onBack: () -> Unit) {
+fun RegistrationScreen(onBack: () -> Unit) {
 
+    val viewModel: RegisterViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     var isExpanded by remember { mutableStateOf(false) }

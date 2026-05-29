@@ -3,7 +3,6 @@ package ci.nsu.moble.main.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.moble.main.api.TokenManager
 import ci.nsu.moble.main.data.dto.GroupDto
 import ci.nsu.moble.main.data.dto.PersonDto
 import ci.nsu.moble.main.data.dto.RegisterRequestDto
@@ -18,7 +17,6 @@ import kotlinx.coroutines.launch
 
 class RegisterViewModel(
     private val repository: AuthRepository,
-    private val tokenManager: TokenManager,
     private val savedState: SavedStateHandle
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(RegisterUiState())

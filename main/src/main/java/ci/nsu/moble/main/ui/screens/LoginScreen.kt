@@ -25,13 +25,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ci.nsu.moble.main.viewmodel.LoginScreenViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginScreenViewModel,
     onNavToReg: () -> Unit,
     onLoginSuccess: () -> Unit
 ) {
+    val viewModel: LoginScreenViewModel = koinViewModel()
+
     // Подписываемся на единое состояние экрана
     val uiState by viewModel.uiState.collectAsState()
 
