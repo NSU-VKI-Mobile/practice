@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "ci.nsu.mobile.main"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "ci.nsu.mobile.main"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -41,6 +41,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.livedata.core.ktx)
 
     val compose_version = "1.6.3"
     implementation("androidx.activity:activity-compose:1.8.2")
