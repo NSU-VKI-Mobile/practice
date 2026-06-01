@@ -1,17 +1,19 @@
-package ci.nsu.mobile.main.ui
+package ci.nsu.mobile.app.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -20,36 +22,34 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import ci.nsu.mobile.main.ui.screens.*
-import ci.nsu.mobile.main.ui.viewmodel.AuthViewModel
-import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
-import ci.nsu.mobile.main.ui.viewmodel.UsersViewModel
-import ci.nsu.mobile.main.di.ViewModelFactory
-import ci.nsu.mobile.main.data.model.User
+import ci.nsu.mobile.app.di.ServiceLocator
+import ci.nsu.mobile.auth.ui.AuthViewModel
+import ci.nsu.mobile.auth.ui.LoginScreen
+import ci.nsu.mobile.auth.ui.ProfileScreen
+import ci.nsu.mobile.auth.ui.UsersScreen
+import ci.nsu.mobile.calculations.ui.DepositViewModel
+import ci.nsu.mobile.calculations.ui.HistoryScreen
+import ci.nsu.mobile.calculations.ui.NewCalculationScreen
+import ci.nsu.mobile.domain.model.UserDto
 
 sealed class Screen(val route: String, val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector? = null) {
     object Users : Screen("users", "Пользователи", Icons.Filled.People)
     object History : Screen("history", "Мои расчёты", Icons.Filled.History)
     object NewCalc : Screen("new_calc", "Новый расчёт", Icons.Filled.Add)
-
     object Profile : Screen("profile/{userId}", "Профиль", null) {
         fun createRoute(userId: Long) = "profile/$userId"
     }
 }
 
 class MainActivity : ComponentActivity() {
-    private val authViewModel: AuthViewModel by lazy { ViewModelFactory().create(AuthViewModel::class.java) }
-    private val depositViewModel: DepositViewModel by lazy { ViewModelFactory().create(DepositViewModel::class.java) }
-    private val usersViewModel: UsersViewModel by lazy { ViewModelFactory().create(UsersViewModel::class.java) }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        authViewModel.checkInitialAuthState()
+        ServiceLocator.init(applicationContext)
+
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    AppNavigation(authViewModel, depositViewModel, usersViewModel)
+                    AppNavigation()
                 }
             }
         }
@@ -57,28 +57,20 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppNavigation(
-    authViewModel: AuthViewModel,
-    depositViewModel: DepositViewModel,
-    usersViewModel: UsersViewModel
-) {
+fun AppNavigation() {
     val navController = rememberNavController()
-    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
-    var showRegister by remember { mutableStateOf(false) }
+    val authManager = ServiceLocator.authManager
+    val calcProvider = ServiceLocator.calculationsProvider
 
-
-    LaunchedEffect(isLoggedIn) {
-        depositViewModel.refreshUserId()
-    }
+    val isLoggedIn = authManager.isLoggedIn()
 
     if (!isLoggedIn) {
-        if (showRegister) {
-            RegisterScreen(viewModel = authViewModel, onBackToLogin = { showRegister = false })
-        } else {
-            LoginScreen(viewModel = authViewModel, onNavigateToRegister = { showRegister = true })
-        }
+        LoginScreen(
+            viewModel = viewModel { AuthViewModel(authManager) },
+            onNavigateToRegister = { /* TODO: Add Register Navigation */ }
+        )
     } else {
-        MainScaffold(navController, depositViewModel, usersViewModel, authViewModel)
+        MainScaffold(navController, authManager, calcProvider)
     }
 }
 
@@ -86,20 +78,20 @@ fun AppNavigation(
 @Composable
 fun MainScaffold(
     navController: NavHostController,
-    depositViewModel: DepositViewModel,
-    usersViewModel: UsersViewModel,
-    authViewModel: AuthViewModel
+    authManager: ci.nsu.mobile.domain.auth.AuthManager,
+    calcProvider: ci.nsu.mobile.domain.calculations.CalculationsProvider
 ) {
     val bottomScreens = listOf(Screen.Users, Screen.History, Screen.NewCalc)
-    val username by authViewModel.currentUsername.collectAsState()
-    val allUsers by usersViewModel.users.collectAsStateWithLifecycle()
+    val currentUserId = ServiceLocator.authManager.getCurrentUserLogin()?.hashCode()?.toLong() ?: 0L
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Расчёт вкладов") },
                 actions = {
-                    IconButton(onClick = { authViewModel.logout() }) {
+                    IconButton(onClick = {
+                        authManager.logout()
+                    }) {
                         Icon(Icons.Default.ExitToApp, contentDescription = "Выйти")
                     }
                 }
@@ -130,11 +122,10 @@ fun MainScaffold(
             startDestination = Screen.Users.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            // В MainScaffold
             composable(Screen.Users.route) {
                 UsersScreen(
-                    viewModel = usersViewModel,
-                    onUserSelected = { user -> // user имеет тип UserDto
+                    viewModel = viewModel { AuthViewModel(authManager) },
+                    onUserSelected = { user: UserDto ->
                         navController.navigate(Screen.Profile.createRoute(user.userId))
                     }
                 )
@@ -144,25 +135,23 @@ fun MainScaffold(
                 route = Screen.Profile.route,
                 arguments = listOf(navArgument("userId") { type = NavType.LongType })
             ) { backStackEntry ->
-                val userId = backStackEntry.arguments?.getLong("userId")
-
-                // 🟢 Ищем пользователя среди allUsers (которые теперь UserDto)
-                val user = allUsers.find { it.userId == userId }
-
                 ProfileScreen(
-                    user = user,
+                    user = null, // TODO: Pass user data
                     onBackClick = { navController.popBackStack() }
                 )
             }
+
             composable(Screen.History.route) {
                 HistoryScreen(
-                    viewModel = depositViewModel,
-                    currentUsername = username
+                    viewModel = viewModel { DepositViewModel(calcProvider, currentUserId) },
+                    currentUsername = authManager.getCurrentUserLogin()
                 )
             }
 
             composable(Screen.NewCalc.route) {
-                NewCalculationScreen(viewModel = depositViewModel)
+                NewCalculationScreen(
+                    viewModel = viewModel { DepositViewModel(calcProvider, currentUserId) }
+                )
             }
         }
     }

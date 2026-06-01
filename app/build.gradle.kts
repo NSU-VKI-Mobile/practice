@@ -40,6 +40,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+
+        isCoreLibraryDesugaringEnabled = false
     }
 
     kotlinOptions {
@@ -81,4 +83,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(project(":domain"))
+    implementation(project(":auth"))
+    implementation(project(":calculations"))
 }

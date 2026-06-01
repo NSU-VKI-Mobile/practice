@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.calculations.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -7,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 
 @Composable
 fun NewCalculationScreen(viewModel: DepositViewModel) {
@@ -22,6 +21,7 @@ fun NewCalculationScreen(viewModel: DepositViewModel) {
     ) {
         Text("Новый расчет", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(16.dp))
+
         OutlinedTextField(value = amount, onValueChange = { amount = it }, label = { Text("Сумма") }, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(value = months, onValueChange = { months = it }, label = { Text("Срок (мес)") }, modifier = Modifier.fillMaxWidth())

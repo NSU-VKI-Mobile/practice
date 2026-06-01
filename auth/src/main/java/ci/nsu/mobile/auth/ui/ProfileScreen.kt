@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.auth.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -12,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ci.nsu.mobile.main.data.model.UserDto // 🟢 Импортируем UserDto
+import ci.nsu.mobile.domain.model.UserDto
 
 @Composable
 fun ProfileScreen(
-    user: UserDto?, // 🟢 Тип UserDto?
+    user: UserDto?,
     onBackClick: () -> Unit
 ) {
     Column(
@@ -49,7 +49,7 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = user?.login ?: "Неизвестно", // 🟢 Используем .login
+            text = user?.login ?: "Неизвестно",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )

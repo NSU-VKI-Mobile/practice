@@ -18,11 +18,16 @@ class CalculationsProviderImpl(private val dao: DepositDao) : CalculationsProvid
     }
 
     override suspend fun deleteCalculation(id: Long) {
-        // Для удаления нужно найти сущность, либо изменить DAO на удаление по ID
-        // Пока оставим заглушку или добавь в DAO: @Query("DELETE FROM deposit_calculations WHERE id = :id")
+        dao.deleteById(id)
     }
 
-    override fun calculateDeposit(amount: Double, months: Int, rate: Double, topUp: Double, userId: Long): DepositCalculation {
+    override fun calculateDeposit(
+        amount: Double,
+        months: Int,
+        rate: Double,
+        topUp: Double,
+        userId: Long
+    ): DepositCalculation {
         var total = amount
         var earned = 0.0
         val monthlyRate = rate / 100 / 12

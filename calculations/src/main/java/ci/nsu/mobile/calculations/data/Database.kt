@@ -1,14 +1,11 @@
 package ci.nsu.mobile.calculations.data
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.*
-import kotlinx.coroutines.flow.Flow
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
+import ci.nsu.mobile.domain.model.DepositCalculation as DomainCalculation
+import kotlinx.coroutines.flow.Flow
 
+// 1. Сущность БД
 @Entity(tableName = "deposit_calculations")
 data class DepositCalculationEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -21,8 +18,8 @@ data class DepositCalculationEntity(
     val interestEarned: Double,
     val calculationDate: Long = System.currentTimeMillis()
 ) {
-    fun toDomainModel(): ci.nsu.mobile.domain.model.DepositCalculation {
-        return ci.nsu.mobile.domain.model.DepositCalculation(
+    fun toDomainModel(): DomainCalculation {
+        return DomainCalculation(
             id = this.id,
             userId = this.userId,
             initialAmount = this.initialAmount,
@@ -36,7 +33,8 @@ data class DepositCalculationEntity(
     }
 }
 
-fun ci.nsu.mobile.domain.model.DepositCalculation.toEntity(): DepositCalculationEntity {
+// Функция конвертации из Domain модели в Entity
+fun DomainCalculation.toEntity(): DepositCalculationEntity {
     return DepositCalculationEntity(
         id = this.id,
         userId = this.userId,
@@ -50,7 +48,7 @@ fun ci.nsu.mobile.domain.model.DepositCalculation.toEntity(): DepositCalculation
     )
 }
 
-
+// 2. Интерфейс DAO
 @Dao
 interface DepositDao {
     @Insert
@@ -61,8 +59,12 @@ interface DepositDao {
 
     @Query("SELECT * FROM deposit_calculations WHERE userId = :userId ORDER BY calculationDate DESC")
     fun getCalculationsByUser(userId: Long): Flow<List<DepositCalculationEntity>>
+
+    @Query("DELETE FROM deposit_calculations WHERE id = :id")
+    suspend fun deleteById(id: Long)
 }
 
+// 3. Класс Базы Данных
 @Database(entities = [DepositCalculationEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun depositDao(): DepositDao
