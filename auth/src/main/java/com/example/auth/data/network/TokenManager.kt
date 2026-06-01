@@ -34,10 +34,10 @@ class TokenManager @Inject constructor(
             prefs.edit { putString(USER_LOGIN_KEY, value) }
         }
 
-    var userId: Int
-        get() = prefs.getInt(USER_ID_KEY, -1)
+    var userId: Long
+        get() = prefs.getLong(USER_ID_KEY, -1)
         set(value) {
-            prefs.edit { putInt(USER_ID_KEY, value) }
+            prefs.edit { putLong(USER_ID_KEY, value) }
         }
 
     fun clear() {

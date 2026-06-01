@@ -10,7 +10,9 @@ import com.example.auth.navigation.Navigation
 import com.example.auth.ui.theme.PracticeTheme
 import com.example.auth.viewmodel.login.LoginViewModel
 import com.example.auth.viewmodel.registration.RegistrationViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AuthActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

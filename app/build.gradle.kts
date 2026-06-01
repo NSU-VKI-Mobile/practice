@@ -3,15 +3,17 @@ plugins {
     id("org.jetbrains.kotlin.android")
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+
 }
 
 android {
-    namespace = "ci.nsu.mobile.main"
+    namespace = "com.example.app"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "ci.nsu.mobile.main"
+        applicationId = "com.example.app"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -48,6 +50,7 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":auth"))
     implementation(project(":calculations"))
+    implementation(project(":ui"))
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.common.jvm)
@@ -100,7 +103,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-}
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
 }

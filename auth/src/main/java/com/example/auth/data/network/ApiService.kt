@@ -12,12 +12,12 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
-    @GET("groups")
+    @GET("/groups")
     suspend fun getGroups(): Response<List<GroupDto>>
-    @POST("auth/register")
+    @POST("/auth/register")
     suspend fun registerUser(@Body body: RegisterRequest): Response<AuthResponse>
-    @POST("auth/login")
+    @POST("/auth/login")
     suspend fun loginUser(@Body body: LoginRequest): Response<AuthResponse>
-    @GET("users")
+    @GET("/users")
     suspend fun getUsers(): Response<List<UserDto>>
 }

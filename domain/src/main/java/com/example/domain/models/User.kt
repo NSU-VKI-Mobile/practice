@@ -1,7 +1,7 @@
 package com.example.domain.models
 
 data class User(
-    val userId: Int,
+    val userId: Long,
     val login: String,
     val email: String,
     val phoneNumber: String? = null,

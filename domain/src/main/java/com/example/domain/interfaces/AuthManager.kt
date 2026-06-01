@@ -9,4 +9,5 @@ interface AuthManager {
     fun isLoggedIn(): Boolean
     fun logout()
     fun observeAuthState(): Flow<AuthState>
+    suspend fun getUsers(): List<User>
 }
