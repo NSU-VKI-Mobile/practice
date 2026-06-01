@@ -2,8 +2,11 @@ package ci.nsu.mobile.main.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.model.*
-import ci.nsu.mobile.main.data.repository.AuthRepository
+import ci.nsu.mobile.main.data.local.TokenManager
+import ci.nsu.mobile.main.data.model.GroupDto
+import ci.nsu.mobile.main.data.model.PersonDto
+import ci.nsu.mobile.main.data.model.RegisterRequest
+import ci.nsu.mobile.main.data.repository.AuthRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,19 +19,27 @@ sealed class AuthState {
     data class Error(val message: String) : AuthState()
 }
 
-class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
+class AuthViewModel(private val repo: AuthRepositoryImpl) : ViewModel() {
 
     private val _loginState = MutableStateFlow<AuthState>(AuthState.Idle)
     val loginState: StateFlow<AuthState> = _loginState.asStateFlow()
 
-    private val _isLoggedIn = MutableStateFlow(repo.getToken() != null)
+    private val _registerState = MutableStateFlow<AuthState>(AuthState.Idle)
+    val registerState: StateFlow<AuthState> = _registerState.asStateFlow()
+
+    // 🟢 Используем TokenManager.isLoggedIn()
+    private val _isLoggedIn = MutableStateFlow(TokenManager.isLoggedIn())
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
     private val _currentUsername = MutableStateFlow<String?>(null)
     val currentUsername: StateFlow<String?> = _currentUsername.asStateFlow()
 
+
+    private val _groups = MutableStateFlow<List<GroupDto>>(emptyList())
+    val groups: StateFlow<List<GroupDto>> = _groups.asStateFlow()
+
     fun checkInitialAuthState() {
-        _isLoggedIn.value = repo.getToken() != null
+        _isLoggedIn.value = TokenManager.isLoggedIn()
     }
 
     fun login(login: String, password: String) {
@@ -47,6 +58,7 @@ class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
 
     fun register(login: String, password: String, email: String, person: PersonDto) {
         viewModelScope.launch {
+            _registerState.value = AuthState.Loading
             val request = RegisterRequest(
                 login = login,
                 password = password,
@@ -54,7 +66,11 @@ class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
                 person = person
             )
             val result = repo.register(request)
-            // Обработка результата при необходимости
+            if (result.isSuccess) {
+                _registerState.value = AuthState.Success
+            } else {
+                _registerState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Ошибка регистрации")
+            }
         }
     }
 
@@ -62,6 +78,22 @@ class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
         repo.logout()
         _isLoggedIn.value = false
         _loginState.value = AuthState.Idle
+        _registerState.value = AuthState.Idle
         _currentUsername.value = null
+    }
+
+    fun resetStates() {
+        _loginState.value = AuthState.Idle
+        _registerState.value = AuthState.Idle
+    }
+
+
+    fun loadGroups() {
+        viewModelScope.launch {
+            val result = repo.getGroups()
+            if (result.isSuccess) {
+                _groups.value = result.getOrNull() ?: emptyList()
+            }
+        }
     }
 }

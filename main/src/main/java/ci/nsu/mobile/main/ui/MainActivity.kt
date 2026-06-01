@@ -130,11 +130,12 @@ fun MainScaffold(
             startDestination = Screen.Users.route,
             modifier = Modifier.padding(innerPadding)
         ) {
+            // В MainScaffold
             composable(Screen.Users.route) {
                 UsersScreen(
-                    viewModel = usersViewModel, // 🟢 Передаем viewModel явно
-                    onUserSelected = { user ->
-                        navController.navigate(Screen.Profile.createRoute(user.id))
+                    viewModel = usersViewModel,
+                    onUserSelected = { user -> // user имеет тип UserDto
+                        navController.navigate(Screen.Profile.createRoute(user.userId))
                     }
                 )
             }
@@ -144,15 +145,15 @@ fun MainScaffold(
                 arguments = listOf(navArgument("userId") { type = NavType.LongType })
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getLong("userId")
-                // 🟢 Ищем пользователя в реактивном списке allUsers
-                val user = allUsers.find { it.id == userId }
+
+                // 🟢 Ищем пользователя среди allUsers (которые теперь UserDto)
+                val user = allUsers.find { it.userId == userId }
 
                 ProfileScreen(
                     user = user,
                     onBackClick = { navController.popBackStack() }
                 )
             }
-
             composable(Screen.History.route) {
                 HistoryScreen(
                     viewModel = depositViewModel,

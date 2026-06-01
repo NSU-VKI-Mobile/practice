@@ -1,72 +1,74 @@
 package ci.nsu.mobile.main.data.repository
 
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.core.content.edit
+import ci.nsu.mobile.main.data.local.TokenManager
 import ci.nsu.mobile.main.data.model.*
 import ci.nsu.mobile.main.data.remote.ApiService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class AuthRepositoryImpl(
-    private val apiService: ApiService,
-    private val context: Context
-) : AuthRepository {
+class AuthRepositoryImpl(private val apiService: ApiService) : AuthRepository {
 
-    private val prefs: SharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-
-    override suspend fun login(login: String, password: String): Result<LoginResponse> {
+    override suspend fun login(login: String, password: String): Result<Unit> {
         return try {
-            val response = apiService.login(LoginRequest(login, password))
-            saveToken(response.token)
+            // 🟢 Явно выполняем сетевые запросы в IO потоке
+            withContext(Dispatchers.IO) {
+                val response = apiService.login(LoginRequest(login, password))
+                TokenManager.token = response.token
 
-            val userResponse = apiService.getUserByLogin(login)
-            saveUserId(userResponse.userId)
+                // Получаем ID пользователя. Если здесь ошибка, токен уже сохранен,
+                // но мы можем считать это частичным успехом или откатить токен.
+                // Для простоты оставим так, но добавим проверку на null userId
+                val user = apiService.getUserByLogin(login)
 
-            Result.success(response)
-        } catch (ex: Exception) {
-            Result.failure(ex)
+                if (user.userId > 0) {
+                    TokenManager.userId = user.userId
+                } else {
+                    // Если сервер вернул странного пользователя без ID
+                    throw IllegalStateException("Received user has invalid ID")
+                }
+            }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            // В случае ошибки очищаем токен, чтобы не осталось "битой" сессии
+            TokenManager.logout()
+            Result.failure(e)
         }
     }
 
     override suspend fun register(request: RegisterRequest): Result<Unit> {
         return try {
-            apiService.register(request)
+            withContext(Dispatchers.IO) {
+                apiService.register(request)
+            }
             Result.success(Unit)
-        } catch (ex: Exception) {
-            Result.failure(ex)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
-    override suspend fun getUsers(): Result<List<User>> {
+    override suspend fun getUsers(): Result<List<UserDto>> {
         return try {
-            Result.success(apiService.getUsers())
-        } catch (ex: Exception) {
-            Result.failure(ex)
+            val users = withContext(Dispatchers.IO) { apiService.getUsers() }
+            Result.success(users)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
-    suspend fun getUserByLogin(login: String): Result<User> {
+    override suspend fun getGroups(): Result<List<GroupDto>> {
         return try {
-            Result.success(apiService.getUserByLogin(login))
-        } catch (ex: Exception) {
-            Result.failure(ex)
+            val groups = withContext(Dispatchers.IO) { apiService.getGroups() }
+            Result.success(groups)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
-    }
-
-    override fun saveToken(token: String) {
-        prefs.edit { putString("token", token) }
-    }
-
-    override fun getToken(): String? = prefs.getString("token", null)
-
-    override fun saveUserId(userId: Long) {
-        prefs.edit { putLong("userId", userId) }
-    }
-
-    override fun getUserId(): Long? {
-        return if (prefs.contains("userId")) prefs.getLong("userId", -1) else null
     }
 
     override fun logout() {
-        prefs.edit { clear() }
+        TokenManager.logout()
     }
+
+    override fun isLoggedIn(): Boolean = TokenManager.isLoggedIn()
+
+    override fun getUserId(): Long? = TokenManager.userId
 }

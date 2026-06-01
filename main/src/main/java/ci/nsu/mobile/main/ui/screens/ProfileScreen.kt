@@ -12,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ci.nsu.mobile.main.data.model.User
+import ci.nsu.mobile.main.data.model.UserDto // 🟢 Импортируем UserDto
 
 @Composable
 fun ProfileScreen(
-    user: User?,
+    user: UserDto?, // 🟢 Тип UserDto?
     onBackClick: () -> Unit
 ) {
     Column(
@@ -49,7 +49,7 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = user?.username ?: "Неизвестно",
+            text = user?.login ?: "Неизвестно", // 🟢 Используем .login
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
@@ -66,20 +66,9 @@ fun ProfileScreen(
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Информация об аккаунте", style = MaterialTheme.typography.titleMedium)
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                InfoRow("ID пользователя", "${user?.id ?: "-"}")
-                InfoRow("Статус", "Активен")
+                Text("ID пользователя: ${user?.userId ?: "-"}", style = MaterialTheme.typography.bodyMedium)
+                Text("Статус: Активен", style = MaterialTheme.typography.bodyMedium)
             }
         }
-    }
-}
-
-@Composable
-private fun InfoRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
     }
 }

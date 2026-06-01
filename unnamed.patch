@@ -1,0 +1,653 @@
+Index: main/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main/build.gradle.kts b/main/build.gradle.kts
+--- a/main/build.gradle.kts	(revision ead2aff4b1ff75fe31f3f26d21d14f955c6197b4)
++++ b/main/build.gradle.kts	(revision 3ff00c4cbbc020234b0446fbbddfb8dead0eac3e)
+@@ -69,6 +69,7 @@
+     implementation("androidx.datastore:datastore-preferences:1.0.0")
+     implementation("androidx.compose.material:material-icons-extended")
+     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
++    implementation("com.google.code.gson:gson:2.10.1")
+ 
+     debugImplementation("androidx.compose.ui:ui-tooling")
+     debugImplementation("androidx.compose.ui:ui-test-manifest")
+Index: main/src/main/java/ci/nsu/mobile/main/data/model/User.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main/src/main/java/ci/nsu/mobile/main/data/model/User.kt b/main/src/main/java/ci/nsu/mobile/main/data/model/User.kt
+--- a/main/src/main/java/ci/nsu/mobile/main/data/model/User.kt	(revision ead2aff4b1ff75fe31f3f26d21d14f955c6197b4)
++++ b/main/src/main/java/ci/nsu/mobile/main/data/model/User.kt	(revision 3ff00c4cbbc020234b0446fbbddfb8dead0eac3e)
+@@ -6,4 +6,4 @@
+     @SerializedName("id") val id: Long,
+     @SerializedName("username") val username: String,
+     @SerializedName("email") val email: String? = null
+-)
++)
+\ No newline at end of file
+Index: main/src/main/java/ci/nsu/mobile/main/data/repository/AuthRepositoryImpl.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main/src/main/java/ci/nsu/mobile/main/data/repository/AuthRepositoryImpl.kt b/main/src/main/java/ci/nsu/mobile/main/data/repository/AuthRepositoryImpl.kt
+--- a/main/src/main/java/ci/nsu/mobile/main/data/repository/AuthRepositoryImpl.kt	(revision ead2aff4b1ff75fe31f3f26d21d14f955c6197b4)
++++ b/main/src/main/java/ci/nsu/mobile/main/data/repository/AuthRepositoryImpl.kt	(revision 3ff00c4cbbc020234b0446fbbddfb8dead0eac3e)
+@@ -2,6 +2,7 @@
+ 
+ import android.content.Context
+ import android.content.SharedPreferences
++import androidx.core.content.edit
+ import ci.nsu.mobile.main.data.model.*
+ import ci.nsu.mobile.main.data.remote.ApiService
+ 
+@@ -18,8 +19,8 @@
+             saveToken(response.token)
+             saveUserId(response.userId)
+             Result.success(response)
+-        } catch (e: Exception) {
+-            Result.failure(e)
++        } catch (ex: Exception) {
++            Result.failure(ex)
+         }
+     }
+ 
+@@ -27,28 +28,27 @@
+         return try {
+             apiService.register(RegisterRequest(username, password, email))
+             Result.success(Unit)
+-        } catch (e: Exception) {
+-            Result.failure(e)
++        } catch (ex: Exception) {
++            Result.failure(ex)
+         }
+     }
+ 
+     override suspend fun getUsers(): Result<List<User>> {
+         return try {
+-            val users = apiService.getUsers()
+-            Result.success(users)
+-        } catch (e: Exception) {
+-            Result.failure(e)
++            Result.success(apiService.getUsers())
++        } catch (ex: Exception) {
++            Result.failure(ex)
+         }
+     }
+ 
+     override fun saveToken(token: String) {
+-        prefs.edit().putString("token", token).apply()
++        prefs.edit { putString("token", token) }
+     }
+ 
+     override fun getToken(): String? = prefs.getString("token", null)
+ 
+     override fun saveUserId(userId: Long) {
+-        prefs.edit().putLong("userId", userId).apply()
++        prefs.edit { putLong("userId", userId) }
+     }
+ 
+     override fun getUserId(): Long? {
+@@ -56,6 +56,6 @@
+     }
+ 
+     override fun logout() {
+-        prefs.edit().clear().apply()
++        prefs.edit { clear() }
+     }
+ }
+\ No newline at end of file
+Index: main/src/main/java/ci/nsu/mobile/main/di/ServiceLocator.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main/src/main/java/ci/nsu/mobile/main/di/ServiceLocator.kt b/main/src/main/java/ci/nsu/mobile/main/di/ServiceLocator.kt
+--- a/main/src/main/java/ci/nsu/mobile/main/di/ServiceLocator.kt	(revision ead2aff4b1ff75fe31f3f26d21d14f955c6197b4)
++++ b/main/src/main/java/ci/nsu/mobile/main/di/ServiceLocator.kt	(revision 3ff00c4cbbc020234b0446fbbddfb8dead0eac3e)
+@@ -33,7 +33,7 @@
+ 
+     private val retrofit: Retrofit by lazy {
+         Retrofit.Builder()
+-            .baseUrl("http://10.0.2.2:8080/api/") // Адрес для эмулятора
++            .baseUrl("http://192.168.200.160:8080/api/")
+             .client(okHttpClient)
+             .addConverterFactory(GsonConverterFactory.create())
+             .build()
+Index: main/src/main/java/ci/nsu/mobile/main/ui/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main/src/main/java/ci/nsu/mobile/main/ui/MainActivity.kt b/main/src/main/java/ci/nsu/mobile/main/ui/MainActivity.kt
+--- a/main/src/main/java/ci/nsu/mobile/main/ui/MainActivity.kt	(revision ead2aff4b1ff75fe31f3f26d21d14f955c6197b4)
++++ b/main/src/main/java/ci/nsu/mobile/main/ui/MainActivity.kt	(revision 3ff00c4cbbc020234b0446fbbddfb8dead0eac3e)
+@@ -3,42 +3,49 @@
+ import android.os.Bundle
+ import androidx.activity.ComponentActivity
+ import androidx.activity.compose.setContent
+-import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.material.icons.Icons
+ import androidx.compose.material.icons.filled.*
+ import androidx.compose.material3.*
+ import androidx.compose.runtime.*
+ import androidx.compose.ui.Modifier
++
++import androidx.lifecycle.compose.collectAsStateWithLifecycle
+ import androidx.navigation.NavGraph.Companion.findStartDestination
+ import androidx.navigation.NavHostController
++import androidx.navigation.NavType
+ import androidx.navigation.compose.NavHost
+ import androidx.navigation.compose.composable
+ import androidx.navigation.compose.currentBackStackEntryAsState
+ import androidx.navigation.compose.rememberNavController
++import androidx.navigation.navArgument
+ import ci.nsu.mobile.main.ui.screens.*
+ import ci.nsu.mobile.main.ui.viewmodel.AuthViewModel
+ import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
+ import ci.nsu.mobile.main.ui.viewmodel.UsersViewModel
+ import ci.nsu.mobile.main.di.ViewModelFactory
++import ci.nsu.mobile.main.data.model.User
+ 
+ sealed class Screen(val route: String, val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector? = null) {
+     object Users : Screen("users", "Пользователи", Icons.Filled.People)
+     object History : Screen("history", "Мои расчёты", Icons.Filled.History)
+     object NewCalc : Screen("new_calc", "Новый расчёт", Icons.Filled.Add)
++
++    object Profile : Screen("profile/{userId}", "Профиль", null) {
++        fun createRoute(userId: Long) = "profile/$userId"
++    }
+ }
+ 
+ class MainActivity : ComponentActivity() {
+-
+     private val authViewModel: AuthViewModel by lazy { ViewModelFactory().create(AuthViewModel::class.java) }
+     private val depositViewModel: DepositViewModel by lazy { ViewModelFactory().create(DepositViewModel::class.java) }
+     private val usersViewModel: UsersViewModel by lazy { ViewModelFactory().create(UsersViewModel::class.java) }
+ 
++
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+-        // Проверяем статус при холодном старте
+         authViewModel.checkInitialAuthState()
+-
+         setContent {
+             MaterialTheme {
+                 Surface(modifier = Modifier.fillMaxSize()) {
+@@ -52,17 +59,15 @@
+ @Composable
+ fun AppNavigation(
+     authViewModel: AuthViewModel,
+-    depositViewModel: DepositViewModel, // <-- Убедитесь, что он передается
++    depositViewModel: DepositViewModel,
+     usersViewModel: UsersViewModel
+ ) {
+     val navController = rememberNavController()
+     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
+     var showRegister by remember { mutableStateOf(false) }
+ 
+-    // 🟢 СЛЕДИМ ЗА ИЗМЕНЕНИЕМ СТАТУСА ВХОДА
++
+     LaunchedEffect(isLoggedIn) {
+-        // Каждый раз когда isLoggedIn меняется (вход или выход),
+-        // обновляем userId в DepositViewModel
+         depositViewModel.refreshUserId()
+     }
+ 
+@@ -85,17 +90,16 @@
+     usersViewModel: UsersViewModel,
+     authViewModel: AuthViewModel
+ ) {
+-    val screens = listOf(Screen.Users, Screen.History, Screen.NewCalc)
++    val bottomScreens = listOf(Screen.Users, Screen.History, Screen.NewCalc)
++    val username by authViewModel.currentUsername.collectAsState()
++    val allUsers by usersViewModel.users.collectAsStateWithLifecycle()
+ 
+     Scaffold(
+         topBar = {
+             TopAppBar(
+                 title = { Text("Расчёт вкладов") },
+                 actions = {
+-                    IconButton(onClick = {
+-                        // 🟢 ВЫЗОВ LOGOUT
+-                        authViewModel.logout()
+-                    }) {
++                    IconButton(onClick = { authViewModel.logout() }) {
+                         Icon(Icons.Default.ExitToApp, contentDescription = "Выйти")
+                     }
+                 }
+@@ -104,7 +108,7 @@
+         bottomBar = {
+             NavigationBar {
+                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+-                screens.forEach { screen ->
++                bottomScreens.forEach { screen ->
+                     NavigationBarItem(
+                         icon = { screen.icon?.let { Icon(it, contentDescription = screen.title) } },
+                         label = { Text(screen.title) },
+@@ -123,12 +127,42 @@
+     ) { innerPadding ->
+         NavHost(
+             navController = navController,
+-            startDestination = Screen.NewCalc.route,
++            startDestination = Screen.Users.route,
+             modifier = Modifier.padding(innerPadding)
+         ) {
+-            composable(Screen.Users.route) { UsersScreen(viewModel = usersViewModel) }
+-            composable(Screen.History.route) { HistoryScreen(viewModel = depositViewModel) }
+-            composable(Screen.NewCalc.route) { NewCalculationScreen(viewModel = depositViewModel) }
++            composable(Screen.Users.route) {
++                UsersScreen(
++                    viewModel = usersViewModel, // 🟢 Передаем viewModel явно
++                    onUserSelected = { user ->
++                        navController.navigate(Screen.Profile.createRoute(user.id))
++                    }
++                )
++            }
++
++            composable(
++                route = Screen.Profile.route,
++                arguments = listOf(navArgument("userId") { type = NavType.LongType })
++            ) { backStackEntry ->
++                val userId = backStackEntry.arguments?.getLong("userId")
++                // 🟢 Ищем пользователя в реактивном списке allUsers
++                val user = allUsers.find { it.id == userId }
++
++                ProfileScreen(
++                    user = user,
++                    onBackClick = { navController.popBackStack() }
++                )
++            }
++
++            composable(Screen.History.route) {
++                HistoryScreen(
++                    viewModel = depositViewModel,
++                    currentUsername = username
++                )
++            }
++
++            composable(Screen.NewCalc.route) {
++                NewCalculationScreen(viewModel = depositViewModel)
++            }
+         }
+     }
+ }
+\ No newline at end of file
+Index: main/src/main/java/ci/nsu/mobile/main/ui/screens/HistoryScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main/src/main/java/ci/nsu/mobile/main/ui/screens/HistoryScreen.kt b/main/src/main/java/ci/nsu/mobile/main/ui/screens/HistoryScreen.kt
+--- a/main/src/main/java/ci/nsu/mobile/main/ui/screens/HistoryScreen.kt	(revision ead2aff4b1ff75fe31f3f26d21d14f955c6197b4)
++++ b/main/src/main/java/ci/nsu/mobile/main/ui/screens/HistoryScreen.kt	(revision 3ff00c4cbbc020234b0446fbbddfb8dead0eac3e)
+@@ -5,8 +5,10 @@
+ import androidx.compose.foundation.lazy.items
+ import androidx.compose.material.icons.Icons
+ import androidx.compose.material.icons.filled.Delete
++import androidx.compose.material.icons.filled.Person
+ import androidx.compose.material3.*
+ import androidx.compose.runtime.*
++import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.unit.dp
+ import ci.nsu.mobile.main.data.model.DepositCalculation
+@@ -15,18 +17,60 @@
+ import java.util.*
+ 
+ @Composable
+-fun HistoryScreen(viewModel: DepositViewModel) {
++fun HistoryScreen(
++    viewModel: DepositViewModel,
++    currentUsername: String? = null
++) {
+     val calculations by viewModel.calculations.collectAsState()
+ 
+-    if (calculations.isEmpty()) {
+-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+-            Text("Нет сохраненных расчетов")
+-        }
+-    } else {
+-        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp)) {
+-            items(calculations) { calc ->
+-                CalculationItem(calc, onDelete = { viewModel.deleteCalculation(calc) })
+-                Spacer(modifier = Modifier.height(8.dp))
++    Column(modifier = Modifier.fillMaxSize()) {
++        // 🟢 Блок с именем пользователя
++        if (!currentUsername.isNullOrEmpty()) {
++            Card(
++                modifier = Modifier
++                    .fillMaxWidth()
++                    .padding(16.dp),
++                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
++            ) {
++                Row(
++                    modifier = Modifier.padding(16.dp),
++                    verticalAlignment = Alignment.CenterVertically
++                ) {
++                    Icon(
++                        Icons.Default.Person,
++                        contentDescription = null,
++                        tint = MaterialTheme.colorScheme.onPrimaryContainer
++                    )
++                    Spacer(modifier = Modifier.width(8.dp))
++                    Column {
++                        Text(
++                            "Текущий аккаунт:",
++                            style = MaterialTheme.typography.labelSmall,
++                            color = MaterialTheme.colorScheme.onPrimaryContainer
++                        )
++                        Text(
++                            currentUsername,
++                            style = MaterialTheme.typography.titleMedium,
++                            color = MaterialTheme.colorScheme.onPrimaryContainer
++                        )
++                    }
++                }
++            }
++        }
++
++        if (calculations.isEmpty()) {
++            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
++                Text("Нет сохраненных расчетов")
++            }
++        } else {
++            LazyColumn(
++                modifier = Modifier.fillMaxSize(),
++                contentPadding = PaddingValues(16.dp)
++            ) {
++                items(calculations) { calc ->
++                    CalculationItem(calc, onDelete = { viewModel.deleteCalculation(calc) })
++                    Spacer(modifier = Modifier.height(8.dp))
++                }
+             }
+         }
+     }
+@@ -36,7 +80,10 @@
+ fun CalculationItem(calc: DepositCalculation, onDelete: () -> Unit) {
+     val df = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+     Card(modifier = Modifier.fillMaxWidth()) {
+-        Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
++        Row(
++            modifier = Modifier.padding(16.dp).fillMaxWidth(),
++            horizontalArrangement = Arrangement.SpaceBetween
++        ) {
+             Column {
+                 Text("Дата: ${df.format(Date(calc.calculationDate))}", style = MaterialTheme.typography.bodySmall)
+                 Text("Сумма: ${calc.initialAmount}", style = MaterialTheme.typography.titleMedium)
+Index: main/src/main/java/ci/nsu/mobile/main/ui/screens/LoginScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main/src/main/java/ci/nsu/mobile/main/ui/screens/LoginScreen.kt b/main/src/main/java/ci/nsu/mobile/main/ui/screens/LoginScreen.kt
+--- a/main/src/main/java/ci/nsu/mobile/main/ui/screens/LoginScreen.kt	(revision ead2aff4b1ff75fe31f3f26d21d14f955c6197b4)
++++ b/main/src/main/java/ci/nsu/mobile/main/ui/screens/LoginScreen.kt	(revision 3ff00c4cbbc020234b0446fbbddfb8dead0eac3e)
+@@ -19,9 +19,7 @@
+     val state by viewModel.loginState.collectAsState()
+ 
+     LaunchedEffect(state) {
+-        if (state is AuthState.Success) {
+-            viewModel.resetStates()
+-        }
++        if (state is AuthState.Success) viewModel.resetStates()
+     }
+ 
+     Column(
+@@ -31,18 +29,33 @@
+     ) {
+         Text("Вход", style = MaterialTheme.typography.headlineMedium)
+         Spacer(modifier = Modifier.height(16.dp))
+-        OutlinedTextField(value = username, onValueChange = { username = it }, label = { Text("Логин") }, modifier = Modifier.fillMaxWidth())
++
++        OutlinedTextField(
++            value = username,
++            onValueChange = { username = it },
++            label = { Text("Логин") },
++            modifier = Modifier.fillMaxWidth()
++        )
+         Spacer(modifier = Modifier.height(8.dp))
+-        OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Пароль") }, modifier = Modifier.fillMaxWidth())
++
++        OutlinedTextField(
++            value = password,
++            onValueChange = { password = it },
++            label = { Text("Пароль") },
++            modifier = Modifier.fillMaxWidth()
++        )
+         Spacer(modifier = Modifier.height(16.dp))
+ 
+         Button(
+             onClick = { viewModel.login(username, password) },
+-            enabled = state !is AuthState.Loading,
++            enabled = state !is AuthState.Loading && username.isNotBlank(),
+             modifier = Modifier.fillMaxWidth()
+         ) {
+-            if (state is AuthState.Loading) CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MaterialTheme.colorScheme.onPrimary)
+-            else Text("Войти")
++            if (state is AuthState.Loading) {
++                CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MaterialTheme.colorScheme.onPrimary)
++            } else {
++                Text("Войти")
++            }
+         }
+ 
+         Spacer(modifier = Modifier.height(8.dp))
+Index: main/src/main/java/ci/nsu/mobile/main/ui/screens/ProfileScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main/src/main/java/ci/nsu/mobile/main/ui/screens/ProfileScreen.kt b/main/src/main/java/ci/nsu/mobile/main/ui/screens/ProfileScreen.kt
+new file mode 100644
+--- /dev/null	(revision 3ff00c4cbbc020234b0446fbbddfb8dead0eac3e)
++++ b/main/src/main/java/ci/nsu/mobile/main/ui/screens/ProfileScreen.kt	(revision 3ff00c4cbbc020234b0446fbbddfb8dead0eac3e)
+@@ -0,0 +1,85 @@
++package ci.nsu.mobile.main.ui.screens
++
++import androidx.compose.foundation.layout.*
++import androidx.compose.foundation.shape.CircleShape
++import androidx.compose.material.icons.Icons
++import androidx.compose.material.icons.filled.ArrowBack
++import androidx.compose.material.icons.filled.Person
++import androidx.compose.material3.*
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.draw.clip
++import androidx.compose.ui.text.font.FontWeight
++import androidx.compose.ui.unit.dp
++import ci.nsu.mobile.main.data.model.User
++
++@Composable
++fun ProfileScreen(
++    user: User?,
++    onBackClick: () -> Unit
++) {
++    Column(
++        modifier = Modifier.fillMaxSize().padding(24.dp),
++        horizontalAlignment = Alignment.CenterHorizontally
++    ) {
++        Row(
++            modifier = Modifier.fillMaxWidth(),
++            horizontalArrangement = Arrangement.Start
++        ) {
++            IconButton(onClick = onBackClick) {
++                Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
++            }
++        }
++
++        Spacer(modifier = Modifier.height(16.dp))
++
++        Surface(
++            modifier = Modifier.size(100.dp).clip(CircleShape),
++            color = MaterialTheme.colorScheme.primaryContainer
++        ) {
++            Icon(
++                Icons.Default.Person,
++                contentDescription = null,
++                modifier = Modifier.padding(20.dp),
++                tint = MaterialTheme.colorScheme.onPrimaryContainer
++            )
++        }
++
++        Spacer(modifier = Modifier.height(16.dp))
++
++        Text(
++            text = user?.username ?: "Неизвестно",
++            style = MaterialTheme.typography.headlineSmall,
++            fontWeight = FontWeight.Bold
++        )
++
++        Text(
++            text = user?.email ?: "Email не указан",
++            style = MaterialTheme.typography.bodyLarge,
++            color = MaterialTheme.colorScheme.onSurfaceVariant
++        )
++
++        Spacer(modifier = Modifier.height(32.dp))
++
++        Card(modifier = Modifier.fillMaxWidth()) {
++            Column(modifier = Modifier.padding(16.dp)) {
++                Text("Информация об аккаунте", style = MaterialTheme.typography.titleMedium)
++                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
++                InfoRow("ID пользователя", "${user?.id ?: "-"}")
++                InfoRow("Статус", "Активен")
++            }
++        }
++    }
++}
++
++@Composable
++private fun InfoRow(label: String, value: String) {
++    Row(
++        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
++        horizontalArrangement = Arrangement.SpaceBetween
++    ) {
++        Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
++        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
++    }
++}
+\ No newline at end of file
+Index: main/src/main/java/ci/nsu/mobile/main/ui/viewmodel/AuthViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main/src/main/java/ci/nsu/mobile/main/ui/viewmodel/AuthViewModel.kt b/main/src/main/java/ci/nsu/mobile/main/ui/viewmodel/AuthViewModel.kt
+--- a/main/src/main/java/ci/nsu/mobile/main/ui/viewmodel/AuthViewModel.kt	(revision ead2aff4b1ff75fe31f3f26d21d14f955c6197b4)
++++ b/main/src/main/java/ci/nsu/mobile/main/ui/viewmodel/AuthViewModel.kt	(revision 3ff00c4cbbc020234b0446fbbddfb8dead0eac3e)
+@@ -23,17 +23,24 @@
+     private val _registerState = MutableStateFlow<AuthState>(AuthState.Idle)
+     val registerState: StateFlow<AuthState> = _registerState.asStateFlow()
+ 
+-    // 🟢 НОВОЕ: Реактивное состояние входа
+     private val _isLoggedIn = MutableStateFlow(repo.getToken() != null)
+     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
+ 
++    fun checkInitialAuthState() {
++        _isLoggedIn.value = repo.getToken() != null
++    }
++
++    private val _currentUsername = MutableStateFlow<String?>(null)
++    val currentUsername: StateFlow<String?> = _currentUsername.asStateFlow()
++
+     fun login(username: String, password: String) {
+         viewModelScope.launch {
+             _loginState.value = AuthState.Loading
+             val result = repo.login(username, password)
+             if (result.isSuccess) {
+                 _loginState.value = AuthState.Success
+-                _isLoggedIn.value = true // Обновляем статус
++                _isLoggedIn.value = true
++                _currentUsername.value = username // 🟢 Сохраняем имя
+             } else {
+                 _loginState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Ошибка входа")
+             }
+@@ -44,17 +51,14 @@
+         viewModelScope.launch {
+             _registerState.value = AuthState.Loading
+             val result = repo.register(username, password, email)
+-            if (result.isSuccess) {
+-                _registerState.value = AuthState.Success
+-            } else {
+-                _registerState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Ошибка регистрации")
+-            }
++            _registerState.value = if (result.isSuccess) AuthState.Success
++            else AuthState.Error(result.exceptionOrNull()?.message ?: "Ошибка регистрации")
+         }
+     }
+ 
+     fun logout() {
+         repo.logout()
+-        _isLoggedIn.value = false // 🟢 Ключевой момент: меняем статус на false
++        _isLoggedIn.value = false
+         _loginState.value = AuthState.Idle
+         _registerState.value = AuthState.Idle
+     }
+@@ -63,10 +67,4 @@
+         _loginState.value = AuthState.Idle
+         _registerState.value = AuthState.Idle
+     }
+-
+-    // Этот метод теперь можно использовать для первоначальной проверки,
+-    // но основной поток идет через StateFlow isLoggedIn
+-    fun checkInitialAuthState() {
+-        _isLoggedIn.value = repo.getToken() != null
+-    }
+ }
+\ No newline at end of file
+Index: main/src/main/java/ci/nsu/mobile/main/ui/viewmodel/DepositViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main/src/main/java/ci/nsu/mobile/main/ui/viewmodel/DepositViewModel.kt b/main/src/main/java/ci/nsu/mobile/main/ui/viewmodel/DepositViewModel.kt
+--- a/main/src/main/java/ci/nsu/mobile/main/ui/viewmodel/DepositViewModel.kt	(revision ead2aff4b1ff75fe31f3f26d21d14f955c6197b4)
++++ b/main/src/main/java/ci/nsu/mobile/main/ui/viewmodel/DepositViewModel.kt	(revision 3ff00c4cbbc020234b0446fbbddfb8dead0eac3e)
+@@ -20,10 +20,8 @@
+     private val authRepo: AuthRepository
+ ) : ViewModel() {
+ 
+-    // 🟢 Реактивный источник текущего userId
+     private val currentUserId = MutableStateFlow(authRepo.getUserId() ?: 0L)
+ 
+-    // 🟢 Динамический поток расчетов: автоматически переключается при смене userId
+     @OptIn(ExperimentalCoroutinesApi::class)
+     val calculations: StateFlow<List<DepositCalculation>> = currentUserId
+         .flatMapLatest { userId ->
+@@ -34,10 +32,9 @@
+     private val _calcResult = MutableStateFlow<DepositCalculation?>(null)
+     val calcResult: StateFlow<DepositCalculation?> = _calcResult.asStateFlow()
+ 
+-    // 🟢 Метод для обновления userId при входе/выходе
+     fun refreshUserId() {
+         currentUserId.value = authRepo.getUserId() ?: 0L
+-        _calcResult.value = null // Сбрасываем временный результат расчета
++        _calcResult.value = null
+     }
+ 
+     fun calculateDeposit(amount: Double, months: Int, rate: Double, topUp: Double) {
+@@ -53,7 +50,7 @@
+         }
+ 
+         val calculation = DepositCalculation(
+-            userId = uid, // 🟢 Берем актуальный ID из потока
++            userId = uid,
+             initialAmount = amount,
+             periodMonths = months,
+             interestRate = rate,
+@@ -67,7 +64,6 @@
+ 
+     fun saveCalculation(calc: DepositCalculation) {
+         viewModelScope.launch {
+-            // Гарантируем, что сохраняем с актуальным userId
+             val safeCalc = calc.copy(userId = currentUserId.value)
+             repo.saveCalculation(safeCalc)
+             _calcResult.value = null

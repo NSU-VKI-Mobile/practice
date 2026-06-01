@@ -11,9 +11,10 @@ class ViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(AuthViewModel::class.java) -> {
-                AuthViewModel(ServiceLocator.authRepository) as T
+                AuthViewModel(ServiceLocator.authRepository as ci.nsu.mobile.main.data.repository.AuthRepositoryImpl) as T
             }
             modelClass.isAssignableFrom(DepositViewModel::class.java) -> {
+                // 🟢 Передаем оба репозитория
                 DepositViewModel(ServiceLocator.depositRepository, ServiceLocator.authRepository) as T
             }
             modelClass.isAssignableFrom(UsersViewModel::class.java) -> {

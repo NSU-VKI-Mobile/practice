@@ -10,13 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ci.nsu.mobile.main.data.model.User
+import ci.nsu.mobile.main.data.model.UserDto // 🟢 Используем UserDto
 import ci.nsu.mobile.main.ui.viewmodel.UsersViewModel
 
 @Composable
 fun UsersScreen(
     viewModel: UsersViewModel,
-    onUserSelected: (User) -> Unit
+    onUserSelected: (UserDto) -> Unit // 🟢 Тип аргумента UserDto
 ) {
     LaunchedEffect(Unit) { viewModel.loadUsers() }
 
@@ -44,8 +44,9 @@ fun UsersScreen(
                         .clickable { onUserSelected(user) }
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(user.username, style = MaterialTheme.typography.titleMedium)
-                        Text(user.email ?: "Нет email", style = MaterialTheme.typography.bodySmall)
+                        // 🟢 Используем user.login вместо user.username
+                        Text(user.login, style = MaterialTheme.typography.titleMedium)
+                        Text(user.email ?: "Email не указан", style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
