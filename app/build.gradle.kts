@@ -2,15 +2,15 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
-    id("org.jetbrains.kotlin.plugin.compose")
+    // Плагин org.jetbrains.kotlin.plugin.compose УДАЛЕН, так как Kotlin < 2.0
 }
 
 android {
-    namespace = "ci.nsu.mobile.main"
+    namespace = "ci.nsu.mobile.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "ci.nsu.mobile.main"
+        applicationId = "ci.nsu.mobile.app"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -32,13 +32,18 @@ android {
         compose = true
     }
 
+    // 🟢 ДОБАВЛЕНО: Явная версия компилятора Compose для Kotlin 1.9.22
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10"
+    }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
@@ -54,7 +59,6 @@ dependencies {
     implementation("androidx.activity:activity-compose")
 
     implementation("androidx.navigation:navigation-compose:2.7.7")
-
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
     implementation("androidx.room:room-runtime:2.6.1")
@@ -77,5 +81,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
 }
