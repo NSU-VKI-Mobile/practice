@@ -58,7 +58,15 @@ fun LoginScreen(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        TextButton(onClick = onNavigateToRegister) { Text("Нет аккаунта? Зарегистрироваться") }
+
+        TextButton(onClick = onNavigateToRegister) {
+            Text("Нет аккаунта? Зарегистрироваться")
+        }
+
+        if (state is AuthState.Error) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text((state as AuthState.Error).message, color = MaterialTheme.colorScheme.error)
+        }
 
         if (state is AuthState.Error) {
             Spacer(modifier = Modifier.height(8.dp))

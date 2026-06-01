@@ -7,6 +7,7 @@ import ci.nsu.mobile.domain.auth.AuthState
 import ci.nsu.mobile.domain.model.GroupDto
 import ci.nsu.mobile.domain.model.PersonDto
 import ci.nsu.mobile.domain.model.RegisterRequest
+import ci.nsu.mobile.domain.model.UserDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,24 +34,44 @@ class AuthViewModel(private val manager: AuthManager) : ViewModel() {
     private val _users = MutableStateFlow<List<ci.nsu.mobile.domain.model.UserDto>>(emptyList())
     val users: StateFlow<List<ci.nsu.mobile.domain.model.UserDto>> = _users.asStateFlow()
 
+    private val _currentUser = MutableStateFlow<UserDto?>(null)
+    val currentUser: StateFlow<UserDto?> = _currentUser.asStateFlow()
+
     fun checkInitialAuthState() {
         _isLoggedIn.value = manager.isLoggedIn()
-        _currentUsername.value = manager.getCurrentUserLogin()
+        val savedLogin = manager.getCurrentUserLogin()
+        _currentUsername.value = savedLogin
+
+        if (_isLoggedIn.value && !savedLogin.isNullOrEmpty()) {
+            viewModelScope.launch {
+                val userResult = manager.getUsers().getOrNull()?.find { it.login == savedLogin }
+                _currentUser.value = userResult
+            }
+        }
     }
 
     fun login(login: String, password: String) {
         viewModelScope.launch {
             _loginState.value = AuthState.Loading
             val result = manager.login(login, password)
+
             if (result.isSuccess) {
                 _loginState.value = AuthState.Success
                 _isLoggedIn.value = true
                 _currentUsername.value = login
+
+                val userResult = manager.getUsers().getOrNull()?.find { it.login == login }
+
+                if (userResult != null) {
+                    _currentUser.value = userResult
+                }
             } else {
-                _loginState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Ошибка входа")
+                _loginState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Ошибка")
             }
         }
+
     }
+    fun getCurrentUser(): UserDto? = _currentUser.value
 
     fun register(login: String, password: String, email: String, person: PersonDto) {
         viewModelScope.launch {
@@ -71,8 +92,8 @@ class AuthViewModel(private val manager: AuthManager) : ViewModel() {
     }
 
     fun logout() {
-        manager.logout()
-        _isLoggedIn.value = false
+        manager.logout() // Очищает TokenManager
+        _isLoggedIn.value = false // 🟢 ВАЖНО: Принудительно ставим false
         _loginState.value = AuthState.Idle
         _registerState.value = AuthState.Idle
         _currentUsername.value = null

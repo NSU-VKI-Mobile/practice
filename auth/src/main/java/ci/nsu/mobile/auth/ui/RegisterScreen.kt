@@ -18,7 +18,6 @@ fun RegisterScreen(
     viewModel: AuthViewModel,
     onBackToLogin: () -> Unit
 ) {
-    // ... (переменные state остаются такими же) ...
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -32,12 +31,19 @@ fun RegisterScreen(
     var selectedGender by remember { mutableStateOf(genders[0]) }
 
     var expandedGroup by remember { mutableStateOf(false) }
+
+    // 🟢 Читаем группы напрямую из ViewModel (без заглушек)
     val groups by viewModel.groups.collectAsState()
+
     var selectedGroup by remember { mutableStateOf<GroupDto?>(null) }
 
     val state by viewModel.registerState.collectAsState()
 
-    LaunchedEffect(Unit) { viewModel.loadGroups() }
+    // 🟢 ЗАГРУЖАЕМ ГРУППЫ С СЕРВЕРА ПРИ ОТКРЫТИИ ЭКРАНА
+    LaunchedEffect(Unit) {
+        viewModel.loadGroups()
+    }
+
     LaunchedEffect(state) {
         if (state is AuthState.Success) {
             viewModel.resetStates()
@@ -46,13 +52,16 @@ fun RegisterScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp)
+            .imePadding(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Регистрация", style = MaterialTheme.typography.headlineMedium)
 
-        // ... (поля ввода такие же) ...
         OutlinedTextField(value = login, onValueChange = { login = it }, label = { Text("Логин") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Пароль") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
@@ -65,7 +74,63 @@ fun RegisterScreen(
         OutlinedTextField(value = middleName, onValueChange = { middleName = it }, label = { Text("Отчество") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = birthDate, onValueChange = { birthDate = it }, label = { Text("Дата рождения (ГГГГ-ММ-ДД)") }, modifier = Modifier.fillMaxWidth())
 
-        // Dropdowns (Пол и Группа) - код такой же, как был у тебя
+        // Dropdown Пола
+        ExposedDropdownMenuBox(
+            expanded = expandedGender,
+            onExpandedChange = { expandedGender = !expandedGender }
+        ) {
+            OutlinedTextField(
+                value = selectedGender,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Пол") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedGender) },
+                modifier = Modifier.menuAnchor().fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = expandedGender,
+                onDismissRequest = { expandedGender = false }
+            ) {
+                genders.forEach { gender ->
+                    DropdownMenuItem(
+                        text = { Text(gender) },
+                        onClick = {
+                            selectedGender = gender
+                            expandedGender = false
+                        }
+                    )
+                }
+            }
+        }
+
+        // 🟢 Dropdown Группы (теперь берет данные из server)
+        ExposedDropdownMenuBox(
+            expanded = expandedGroup,
+            onExpandedChange = { if (groups.isNotEmpty()) expandedGroup = !expandedGroup }
+        ) {
+            OutlinedTextField(
+                value = selectedGroup?.groupName ?: "Выберите группу",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Группа") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedGroup) },
+                modifier = Modifier.menuAnchor().fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = expandedGroup,
+                onDismissRequest = { expandedGroup = false }
+            ) {
+                groups.forEach { group ->
+                    DropdownMenuItem(
+                        text = { Text(group.groupName) },
+                        onClick = {
+                            selectedGroup = group
+                            expandedGroup = false
+                        }
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -83,14 +148,28 @@ fun RegisterScreen(
                     viewModel.register(login, password, email, person)
                 }
             },
-            enabled = state !is AuthState.Loading && login.isNotBlank() && selectedGroup != null,
+            enabled = state !is AuthState.Loading &&
+                    login.isNotBlank() &&
+                    password.isNotBlank() &&
+                    selectedGroup != null &&
+                    birthDate.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (state is AuthState.Loading) CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MaterialTheme.colorScheme.onPrimary)
-            else Text("Зарегистрироваться")
+            if (state is AuthState.Loading) {
+                CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MaterialTheme.colorScheme.onPrimary)
+            } else {
+                Text("Зарегистрироваться")
+            }
+        }
+
+        if (selectedGroup == null) {
+            Text("⚠️ Выберите группу выше", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
         }
 
         TextButton(onClick = onBackToLogin) { Text("Уже есть аккаунт? Войти") }
-        if (state is AuthState.Error) Text((state as AuthState.Error).message, color = MaterialTheme.colorScheme.error)
+
+        if (state is AuthState.Error) {
+            Text((state as AuthState.Error).message, color = MaterialTheme.colorScheme.error)
+        }
     }
 }
