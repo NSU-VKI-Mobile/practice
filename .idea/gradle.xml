@@ -14,7 +14,6 @@
             <option value="$PROJECT_DIR$/auth" />
             <option value="$PROJECT_DIR$/calculations" />
             <option value="$PROJECT_DIR$/domain" />
-            <option value="$PROJECT_DIR$/main" />
           </set>
         </option>
       </GradleProjectSettings>
