@@ -45,6 +45,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":domain"))
+    implementation(project(":auth"))
+    implementation(project(":calculations"))
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.common.jvm)

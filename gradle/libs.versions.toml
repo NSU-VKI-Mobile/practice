@@ -33,6 +33,7 @@ room3CommonJvm = "3.0.0-alpha04"
 room3Runtime = "3.0.0-alpha04"
 roomCommonJvm = "2.8.4"
 material = "1.13.0"
+firebaseFirestoreKtx = "26.3.0"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -80,6 +81,7 @@ androidx-room3-common-jvm = { group = "androidx.room3", name = "room3-common-jvm
 androidx-room3-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "room3Runtime" }
 androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

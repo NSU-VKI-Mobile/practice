@@ -26,3 +26,4 @@ include(
     ":calculations",
     ":domain"
 )
+include(":ui")
