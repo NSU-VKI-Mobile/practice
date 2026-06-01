@@ -1,0 +1,24 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml:2:1-5:12
+INJECTED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml:2:1-5:12
+	package
+		INJECTED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml:2:11-69
+uses-permission#android.permission.CAMERA
+ADDED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml:3:5-65
+	android:name
+		ADDED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml:3:22-62
+uses-feature#android.hardware.camera
+ADDED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml:4:5-60
+	android:name
+		ADDED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml:4:19-57
+uses-sdk
+INJECTED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml
+INJECTED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\!Projects\practice-2307A2_Bykov_10\PMD_Task10\auth\src\main\AndroidManifest.xml
