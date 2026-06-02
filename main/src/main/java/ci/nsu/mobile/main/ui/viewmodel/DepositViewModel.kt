@@ -1,44 +1,46 @@
 package ci.nsu.mobile.main.ui.viewmodel
 
-import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.local.AppDatabase
+import ci.nsu.mobile.main.data.local.DepositCalculation
+import ci.nsu.mobile.main.data.repository.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ci.nsu.mobile.main.data.repository.DepositRepository
-import ci.nsu.mobile.main.data.local.DepositCalculation
 
-class DepositViewModel(application: Application) : AndroidViewModel(application) {
-    // Input states
+class DepositViewModel(private val repository: DepositRepository) : ViewModel() {
+
+    // Входные состояния
     var initialAmount by mutableStateOf("")
     var periodMonths by mutableStateOf("")
     var monthlyTopUp by mutableStateOf("")
     var selectedRate by mutableStateOf(0.0)
 
-    // UI states
+    // UI состояния
     var validationError by mutableStateOf<String?>(null)
     var availableRates by mutableStateOf(listOf<Double>())
-    var calculationResult by mutableStateOf<Pair<Double, Double>?>(null) // (finalAmount, interestEarned)
+    var calculationResult by mutableStateOf<Pair<Double, Double>?>(null)
 
-    // History
+    // История расчетов
     private val _history = MutableStateFlow<List<DepositCalculation>>(emptyList())
     val history: StateFlow<List<DepositCalculation>> = _history.asStateFlow()
 
-    private val repository: DepositRepository
-
     init {
-        val database = AppDatabase.Companion.getDatabase(application)
-        repository = DepositRepository(database.depositDao())
         loadHistory()
     }
 
-    // Update available rates based on period
+    private fun loadHistory() {
+        viewModelScope.launch {
+            repository.getAllCalculations().collect { list ->
+                _history.value = list
+            }
+        }
+    }
+
     fun updateAvailableRates(periodMonthsStr: String) {
         val period = periodMonthsStr.toIntOrNull()
         availableRates = when {
@@ -47,13 +49,11 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
             period < 12 -> listOf(10.0)
             else -> listOf(5.0)
         }
-        // Auto-select first available rate if current selection is invalid
         if (availableRates.isNotEmpty() && selectedRate !in availableRates) {
             selectedRate = availableRates.first()
         }
     }
 
-    // Validate step 1
     fun validateStep1(): Boolean {
         return when {
             initialAmount.isBlank() -> {
@@ -79,7 +79,6 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    // Validate step 2
     fun validateStep2(): Boolean {
         val period = periodMonths.toIntOrNull()
         return when {
@@ -98,14 +97,12 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    // Calculate result
     fun calculateResult() {
         val amount = initialAmount.toDoubleOrNull() ?: return
         val months = periodMonths.toIntOrNull() ?: return
         val rate = selectedRate
         val topUp = monthlyTopUp.toDoubleOrNull() ?: 0.0
 
-        // Compound interest calculation with monthly top-ups
         val monthlyRate = rate / 100 / 12
         var finalAmount = amount
         for (i in 1..months) {
@@ -116,52 +113,34 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
         calculationResult = Pair(finalAmount, interestEarned)
     }
 
-    // Save calculation to database
     fun saveCalculation(onSuccess: () -> Unit) {
         val amount = initialAmount.toDoubleOrNull() ?: return
         val months = periodMonths.toIntOrNull() ?: return
         val rate = selectedRate
-        val topUp = monthlyTopUp.toDoubleOrNull()
-        val (finalAmount, interestEarned) = calculationResult ?: return
-
-        val calculation = DepositCalculation(
-            initialAmount = amount,
-            periodMonths = months,
-            interestRate = rate,
-            monthlyTopUp = topUp,
-            finalAmount = finalAmount,
-            interestEarned = interestEarned,
-            calculationDate = System.currentTimeMillis()
-        )
+        val topUp = monthlyTopUp.toDoubleOrNull() ?: 0.0
+        val result = calculationResult ?: return
 
         viewModelScope.launch {
+            val calculation = DepositCalculation(
+                initialAmount = amount,
+                periodMonths = months,
+                interestRate = rate,
+                monthlyTopUp = topUp,
+                finalAmount = result.first,
+                interestEarned = result.second,
+                calculationDate = System.currentTimeMillis()
+            )
             repository.saveCalculation(calculation)
-            loadHistory()
-            clearForm()  // <- добавляем очистку формы
             onSuccess()
         }
     }
 
-    // Новый метод для очистки формы
-    fun clearForm() {
-        initialAmount = ""
-        periodMonths = ""
-        monthlyTopUp = ""
-        selectedRate = 0.0
-        validationError = null
-        calculationResult = null
-        availableRates = emptyList()
-    }
-
-    private fun loadHistory() {
+    fun deleteCalculation(calculation: DepositCalculation) {
         viewModelScope.launch {
-            repository.getAllCalculations().collect { calculations ->
-                _history.value = calculations
-            }
+            repository.deleteCalculation(calculation)
         }
     }
 
-    // Reset all inputs
     fun reset() {
         initialAmount = ""
         periodMonths = ""
@@ -169,14 +148,5 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
         selectedRate = 0.0
         validationError = null
         calculationResult = null
-        availableRates = emptyList()
-    }
-
-    // Delete calculation from database
-    fun deleteCalculation(calculation: DepositCalculation) {
-        viewModelScope.launch {
-            repository.deleteCalculation(calculation)
-            // loadHistory() не нужен, потому что Flow сам обновится
-        }
     }
 }
