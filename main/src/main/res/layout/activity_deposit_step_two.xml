@@ -20,6 +20,32 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="&#1057;&#1088;&#1086;&#1082; &#1074;&#1082;&#1083;&#1072;&#1076;&#1072;"
+        android:textSize="16sp" />
+
+    <Spinner
+        android:id="@+id/spinnerPeriodMonths"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="&#1055;&#1088;&#1086;&#1094;&#1077;&#1085;&#1090;&#1085;&#1072;&#1103; &#1089;&#1090;&#1072;&#1074;&#1082;&#1072;"
+        android:textSize="16sp" />
+
+    <Spinner
+        android:id="@+id/spinnerInterestRate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp" />
+
     <EditText
         android:id="@+id/etMonthlyTopUp"
         android:layout_width="match_parent"
