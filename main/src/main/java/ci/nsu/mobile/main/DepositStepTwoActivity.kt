@@ -2,12 +2,10 @@ package ci.nsu.mobile.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -18,6 +16,7 @@ class DepositStepTwoActivity : AppCompatActivity() {
     private var initialAmount: Double = 0.0
     private var periodMonths: Int = 0
     private var interestRate: Double = 0.0
+    private var isUpdating = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,43 +27,28 @@ class DepositStepTwoActivity : AppCompatActivity() {
         interestRate = getRateByPeriod(periodMonths)
 
         val tvRateInfo = findViewById<TextView>(R.id.tvRateInfo)
+        val spinnerPeriodMonths = findViewById<Spinner>(R.id.spinnerPeriodMonths)
+        val spinnerInterestRate = findViewById<Spinner>(R.id.spinnerInterestRate)
         val etMonthlyTopUp = findViewById<EditText>(R.id.etMonthlyTopUp)
         val btnBack = findViewById<Button>(R.id.btnBack)
         val btnCalculateResult = findViewById<Button>(R.id.btnCalculateResult)
 
-        val root = (findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as LinearLayout)
-
-        val tvMonthTitle = TextView(this)
-        tvMonthTitle.text = "Срок вклада"
-        tvMonthTitle.textSize = 16f
-
-        val spinnerPeriodMonths = Spinner(this)
         val months = (1..24).toList()
         val monthTexts = months.map { month -> "$month мес." }
         val monthAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, monthTexts)
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerPeriodMonths.adapter = monthAdapter
 
-        val tvRateTitle = TextView(this)
-        tvRateTitle.text = "Процентная ставка"
-        tvRateTitle.textSize = 16f
-
-        val spinnerInterestRate = Spinner(this)
         val rates = listOf(15, 10, 5)
         val rateTexts = rates.map { rate -> "$rate%" }
         val rateAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, rateTexts)
         rateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerInterestRate.adapter = rateAdapter
 
-        root.addView(tvMonthTitle, 2)
-        root.addView(spinnerPeriodMonths, 3)
-        root.addView(tvRateTitle, 4)
-        root.addView(spinnerInterestRate, 5)
-
-        var isUpdating = false
-
-        spinnerPeriodMonths.setSelection(months.indexOf(periodMonths))
-        spinnerInterestRate.setSelection(rates.indexOf(interestRate.toInt()))
+        isUpdating = true
+        spinnerPeriodMonths.setSelection(months.indexOf(periodMonths), false)
+        spinnerInterestRate.setSelection(rates.indexOf(interestRate.toInt()), false)
+        isUpdating = false
         updateRateInfo(tvRateInfo)
 
         spinnerPeriodMonths.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -75,7 +59,7 @@ class DepositStepTwoActivity : AppCompatActivity() {
                 interestRate = getRateByPeriod(periodMonths)
 
                 isUpdating = true
-                spinnerInterestRate.setSelection(rates.indexOf(interestRate.toInt()))
+                spinnerInterestRate.setSelection(rates.indexOf(interestRate.toInt()), false)
                 isUpdating = false
 
                 updateRateInfo(tvRateInfo)
@@ -92,7 +76,7 @@ class DepositStepTwoActivity : AppCompatActivity() {
                 periodMonths = getPeriodByRate(interestRate)
 
                 isUpdating = true
-                spinnerPeriodMonths.setSelection(months.indexOf(periodMonths))
+                spinnerPeriodMonths.setSelection(months.indexOf(periodMonths), false)
                 isUpdating = false
 
                 updateRateInfo(tvRateInfo)
