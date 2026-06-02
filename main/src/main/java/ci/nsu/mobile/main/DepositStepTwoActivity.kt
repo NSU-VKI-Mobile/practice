@@ -32,23 +32,69 @@ class DepositStepTwoActivity : AppCompatActivity() {
         val btnBack = findViewById<Button>(R.id.btnBack)
         val btnCalculateResult = findViewById<Button>(R.id.btnCalculateResult)
 
+        val root = (findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as LinearLayout)
+
+        val tvMonthTitle = TextView(this)
+        tvMonthTitle.text = "Срок вклада"
+        tvMonthTitle.textSize = 16f
+
+        val spinnerPeriodMonths = Spinner(this)
+        val months = (1..24).toList()
+        val monthTexts = months.map { month -> "$month мес." }
+        val monthAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, monthTexts)
+        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerPeriodMonths.adapter = monthAdapter
+
+        val tvRateTitle = TextView(this)
+        tvRateTitle.text = "Процентная ставка"
+        tvRateTitle.textSize = 16f
+
         val spinnerInterestRate = Spinner(this)
         val rates = listOf(15, 10, 5)
         val rateTexts = rates.map { rate -> "$rate%" }
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, rateTexts)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerInterestRate.adapter = adapter
+        val rateAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, rateTexts)
+        rateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerInterestRate.adapter = rateAdapter
 
-        val root = (findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as LinearLayout)
-        root.addView(spinnerInterestRate, 2)
+        root.addView(tvMonthTitle, 2)
+        root.addView(spinnerPeriodMonths, 3)
+        root.addView(tvRateTitle, 4)
+        root.addView(spinnerInterestRate, 5)
 
+        var isUpdating = false
+
+        spinnerPeriodMonths.setSelection(months.indexOf(periodMonths))
         spinnerInterestRate.setSelection(rates.indexOf(interestRate.toInt()))
         updateRateInfo(tvRateInfo)
 
+        spinnerPeriodMonths.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+                if (isUpdating) return
+
+                periodMonths = months[position]
+                interestRate = getRateByPeriod(periodMonths)
+
+                isUpdating = true
+                spinnerInterestRate.setSelection(rates.indexOf(interestRate.toInt()))
+                isUpdating = false
+
+                updateRateInfo(tvRateInfo)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
         spinnerInterestRate.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+                if (isUpdating) return
+
                 interestRate = rates[position].toDouble()
                 periodMonths = getPeriodByRate(interestRate)
+
+                isUpdating = true
+                spinnerPeriodMonths.setSelection(months.indexOf(periodMonths))
+                isUpdating = false
+
                 updateRateInfo(tvRateInfo)
             }
 
