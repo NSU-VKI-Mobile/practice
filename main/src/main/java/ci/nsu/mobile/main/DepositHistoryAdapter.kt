@@ -38,6 +38,10 @@ class DepositHistoryAdapter(
 
     override fun getItemCount(): Int = items.size
 
+    fun getItem(position: Int): DepositCalculation {
+        return items[position]
+    }
+
     fun updateList(newItems: List<DepositCalculation>) {
         items = newItems
         notifyDataSetChanged()
