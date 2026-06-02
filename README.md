@@ -1,169 +1,123 @@
-# Лабораторная работа по Android-разработке: Интеграция с API и аутентификация
+Лабораторная работа №7: Интеграция приложения "Расчёт вкладов" с авторизацией и внедрением зависимостей
+Описание задания
+Необходимо объединить два ранее реализованных решения:
 
-## Описание задания
+Приложение для расчёта вкладов с локальной базой данных (Room)
+Приложение с авторизацией через API (JWT)
+и создать единое приложение, в котором расчёты привязаны к авторизованному пользователю. Реализация должна соответствовать архитектуре MVVM с использованием механизма внедрения зависимостей.
 
-Необходимо разработать Android-приложение для работы с REST API через безопасное соединение. Приложение должно реализовывать регистрацию, вход в систему, получение списка пользователей и групп с использованием аутентификации по токену (JWT). Реализация должна соответствовать архитектуре MVVM с использованием современных Kotlin-инструментов.
+Исходные условия
+Исходные решения находятся в отдельных ветках репозитория
+Новое решение должно быть реализовано в ветке task-7
+Использовать существующие API-методы авторизации и модели данных
+Основные требования
+1. Объединение функционала
+Объединить два приложения в одно с общей архитектурой MVVM:
 
-## Базовый URL
+Сохранить функционал авторизации (вход, регистрация)
+Сохранить функционал расчёта вкладов
+Обеспечить корректную навигацию между экранами
+2. Привязка расчётов к пользователю
+Реализовать связь между локальными расчётами и авторизованным пользователем:
 
-Для доступа к API использовать следующий базовый адрес:
-```
-var baseUrl: String = "http://192.168.200.160:8080/api/"
-```
+Модифицировать сущность DepositCalculation в Room Database, добавив поле userId: Long
+При сохранении расчёта, привязывать его к текущему пользователю (ID из токена или профиля)
+При отображении истории расчётов, показывать только расчёты текущего пользователя
+3. Навигационное меню
+Реализовать нижнее навигационное меню (BottomNavigationView) с тремя вкладками:
 
-## Требования к разрешениям
+Пользователи
 
-### Разрешение на интернет
+Отображение списка пользователей из API (GET /users)
+Возможность просмотра детальной информации о пользователе
+Мои расчёты
 
-Убедитесь, что в файле `AndroidManifest.xml` добавлено разрешение на доступ к сети:
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-```
-Это разрешение обязательно для выполнения HTTP-запросов к серверу.
+Список сохранённых расчётов текущего пользователя (из Room)
+Фильтрация по дате, сумме и другим параметрам
+Возможность просмотра деталей расчёта и его удаления
+Новый расчёт
 
-## Технические требования
+Двухэтапный ввод данных (как в оригинальном приложении)
+Расчёт прибыльности вклада
+Кнопка "Сохранить" для сохранения в локальную базу с привязкой к пользователю
+4. Внедрение зависимостей
+Реализовать механизм внедрения зависимостей одним из следующих способов:
 
-### 1. Настройка сети
+Вариант A: Service Locator (рекомендуемый базовый)
+Создать глобальный локатор сервисов:
 
-Создать файл конфигурации безопасности сети:
-- Путь: `app/src/main/res/xml/network_security_config.xml`
-- Содержание: разрешить подключение к локальному IP-адресу (192.168.200.160) по HTTP
-
-Пример содержимого:
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">192.168.200.160</domain>
-    </domain-config>
-</network-security-config>
-```
-
-Убедиться, что в `AndroidManifest.xml` добавлена ссылка на этот файл:
-```xml
-<application
-    android:networkSecurityConfig="@xml/network_security_config"
-    ... >
-```
-
-### 2. Архитектура MVVM
-
-Реализовать паттерн Model-View-ViewModel с разделением на слои:
-- **Repository** — для получения данных
-- **ViewModel** — для управления состоянием UI
-- **Compose (View)** — интерфейс пользовательский
-
-### 3. AuthRepository
-
-Создать `AuthRepository` для управления аутентификацией. Репозиторий должен предоставлять методы:
-- `login(login: String, password: String): Result<UserDto>`
-- `register(registerRequest: RegisterRequest): Result<Unit>`
-- `getUsers(): Result<List<UserDto>>`
-- `getGroups(): Result<List<GroupDto>>`
-
-### 4. AuthInterceptor
-
-Реализовать перехватчик запросов для добавления токена в заголовки:
-
-```kotlin
-class AuthInterceptor : Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val originalRequest = chain.request()
-
-        val requestBuilder = originalRequest.newBuilder()
-
-        val token = TokenManager.token
-        requestBuilder.addHeader("Content-Type", "application/json")
-        token?.let {
-            requestBuilder.addHeader("Authorization", "Bearer $it")
-        }
-
-        return chain.proceed(requestBuilder.build())
-    }
+class ServiceLocator {
+    val database: AppDatabase by lazy { AppDatabase.getDatabase(context) }
+    val authRepository: AuthRepository by lazy { AuthRepositoryImpl() }
+    val depositRepository: DepositRepository by lazy { DepositRepositoryImpl(database.depositDao()) }
+    val viewModelFactory: ViewModelFactory by lazy { ViewModelFactory(this) }
 }
-```
+Вариант B: Koin (для среднего уровня)
+Добавить зависимость Koin и настроить модули:
 
-### 5. TokenManager
+val appModule = module {
+    single { AppDatabase.getDatabase(androidApplication()) }
+    single { get<AppDatabase>().depositDao() }
+    single { AuthRepositoryImpl() }
+    single { DepositRepositoryImpl(get()) }
+    factory { DepositViewModel(get(), get()) }
+    factory { AuthViewModel(get()) }
+}
+Вариант C: Dagger Hilt (для продвинутых)
+Использовать Dagger Hilt для полной инъекции зависимостей:
 
-Создать `TokenManager` для хранения токена в `SharedPreferences`.
+Настроить компоненты и модули
+Использовать @HiltAndroidApp, @AndroidEntryPoint
+Инжектить репозитории и базу данных через @Inject
+Технические требования
+1. Модель данных
+Обновить сущность расчёта:
 
-## Доступные API-методы
-
-- `GET /groups` — получить список групп
-- `POST /auth/register` — регистрация нового пользователя
-- `POST /auth/login` — вход в систему
-- `GET /users` — получить список пользователей
-
-## Модели данных
-
-### GroupDto
-
-```kotlin
-@Serializable
-data class GroupDto(
-    @SerializedName("groupId")
-    val id: Int,
-    @SerializedName("groupName")
-    val name: String
+@Entity(tableName = "deposit_calculations")
+data class DepositCalculation(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val userId: Long,
+    val initialAmount: Double,
+    val periodMonths: Int,
+    val interestRate: Double,
+    val monthlyTopUp: Double?,
+    val finalAmount: Double,
+    val interestEarned: Double,
+    val calculationDate: Long
 )
-```
+2. Хранение состояния пользователя
+После успешной авторизации сохранять userId в SharedPreferences или DataStore
+Использовать этот ID при создании новых расчётов
+3. Безопасность
+Сохранить реализацию AuthInterceptor для авторизации API-запросов
+Сохранить network_security_config.xml и разрешение на интернет
+Экраны приложения
+После авторизации
+Главная активность с BottomNavigationView и ViewPager2 (или NavHostFragment):
 
-### PersonDto и RegisterRequest
-
-Пример регистрации пользователя:
-
-```kotlin
-val person = PersonDto(
-    firstName = firstName,
-    lastName = lastName,
-    middleName = patronymic,
-    birthDate = dateOfBirth,
-    gender = gender,
-    groupId = groupId
-)
-val request = RegisterRequest(
-    login = login,
-    password = password,
-    email = email,
-    phoneNumber = phoneNumber,
-    roleId = 1, // Always 1, not changeable
-    authAllowed = true,
-    person = person
-)
-```
-
-## Экраны приложения
-
-### 1. Экран входа
-- Поля: логин, пароль
-- Кнопка: "Войти"
-- Ссылка: "Нет аккаунта? Зарегистрироваться"
-
-### 2. Экран регистрации
-- Поля: имя, фамилия, отчество, дата рождения, пол, группа (выпадающий список), логин, пароль, email, телефон
-- Кнопка: "Зарегистрироваться"
-- Выбор группы из доступных (получить через `getGroups`)
-
-### 3. Главный экран (после входа)
-- Отображение списка пользователей (получить через `getUsers`)
-- Кнопка: "Выйти"
-
-## Реализационные требования
-
-- Использовать **Kotlin Serialization** для парсинга JSON
-- Использовать **OkHttp** с `AuthInterceptor` для запросов
-- Использовать **Ktor** или **Retrofit** для работы с API
-- Хранить токен в `SharedPreferences` через `TokenManager`
-- Обеспечить корректную обработку ошибок (сеть, валидация, авторизация)
-- Обеспечить сохранение состояния при повороте экрана
-
-## Дополнительно
-
-- Добавить прогресс-бар при выполнении запросов
-- Реализовать валидацию полей формы
-- Использовать Material Design компоненты
-- Обеспечить устойчивость к ошибкам сети
-
----
-
-*Примечание: данное задание направлено на отработку навыков работы с сетью, аутентификацией, безопасным хранением данных и архитектурными паттернами в Android-приложениях.*
++-------------------------------------------------+
+|                    AppBar                       |
+|  Приложение: Расчёт вкладов                     |
++-------------------------------------------------+
+|                                                 |
+|               Контент экрана                    |
+|                                                 |
+|                                                 |
+|                                                 |
+|                                                 |
++-------------------------------------------------+
+| Пользователи | Мои расчёты | Новый расчёт       |
++-------------------------------------------------+
+Реализационные требования
+Использовать Room Database для локального хранения расчётов
+Использовать MVVM архитектуру
+Реализовать внедрение зависимостей (один из трёх вариантов)
+Обеспечить сохранение состояния при повороте экрана
+Обеспечить корректную обработку ошибок
+Использовать Material Design компоненты
+Дополнительно (если вам нравится заниматься мобильной разработкой)
+Добавить прогресс-бар при загрузке данных
+Реализовать pull-to-refresh в списках
+Добавить анимации переходов между экранами
+Реализовать unit- и instrumented-тесты для ключевых компонентов
+Примечание: данное задание направлено на отработку навыков интеграции различных модулей приложения, работы с зависимостями и построения сложной архитектуры в Android-приложениях.
