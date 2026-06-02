@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="title_activity_deposit_calculation">DepositCalculation</string>
+    <string name="title_activity_deposit_calculation_entity">DepositCalculationEntity</string>
 </resources>
