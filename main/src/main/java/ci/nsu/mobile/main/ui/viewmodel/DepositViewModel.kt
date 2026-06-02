@@ -1,9 +1,7 @@
-package ci.nsu.mobile.main.viewmodel
+package ci.nsu.mobile.main.ui.viewmodel
 
 import android.app.Application
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.AppDatabase
@@ -13,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlin.math.pow
 
 class DepositViewModel(application: Application) : AndroidViewModel(application) {
     // Input states
@@ -34,7 +31,7 @@ class DepositViewModel(application: Application) : AndroidViewModel(application)
     private val repository: DepositRepository
 
     init {
-        val database = AppDatabase.getDatabase(application)
+        val database = AppDatabase.Companion.getDatabase(application)
         repository = DepositRepository(database.depositDao())
         loadHistory()
     }

@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ci.nsu.mobile.main.viewmodel.DepositViewModel
+import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

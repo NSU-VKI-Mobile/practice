@@ -17,7 +17,7 @@ import ci.nsu.mobile.main.screens.ResultScreen
 import ci.nsu.mobile.main.screens.Step1Screen
 import ci.nsu.mobile.main.screens.Step2Screen
 import ci.nsu.mobile.main.ui.theme.PracticeTheme
-import ci.nsu.mobile.main.viewmodel.DepositViewModel
+import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
