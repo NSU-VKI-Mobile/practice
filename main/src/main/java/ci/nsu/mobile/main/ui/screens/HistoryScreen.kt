@@ -30,10 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import ci.nsu.mobile.main.data.local.DepositCalculation
-import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
