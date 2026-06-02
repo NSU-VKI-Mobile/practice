@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.AppDatabase
-import ci.nsu.mobile.main.data.DepositCalculation
-import ci.nsu.mobile.main.data.DepositRepository
+import ci.nsu.mobile.main.data.local.AppDatabase
+import ci.nsu.mobile.main.data.local.DepositCalculation
+import ci.nsu.mobile.main.data.repository.DepositRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
