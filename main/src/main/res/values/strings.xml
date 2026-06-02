@@ -4,4 +4,5 @@
     <string name="title_activity_main_input">MainInputActivity</string>
     <string name="title_activity_second_input">SecondInputActivity</string>
     <string name="title_activity_result">ResultActivity</string>
+    <string name="title_activity_registration">RegistrationActivity</string>
 </resources>
