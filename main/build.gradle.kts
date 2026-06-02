@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
     alias(libs.plugins.kotlin.compose)
 }
@@ -41,11 +42,13 @@ android {
     buildFeatures {
         compose = true
     }
+    kapt {
+        correctErrorTypes = true
+    }
 }
 
 dependencies {
-    // ❌ УДАЛИ ЭТУ СТРОКУ (старая support библиотека)
-    // implementation("com.android.support:appcompat-v7:28.0.0")
+
 
     // Compose
     implementation(libs.androidx.activity.compose)
@@ -83,6 +86,11 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 
     // Debug
     debugImplementation(libs.androidx.ui.tooling)
