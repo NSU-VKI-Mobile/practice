@@ -23,6 +23,7 @@ class DepositHistoryActivity : AppCompatActivity() {
 
         val tvEmptyHistory = findViewById<TextView>(R.id.tvEmptyHistory)
         val rvDepositHistory = findViewById<RecyclerView>(R.id.rvDepositHistory)
+        val btnClearHistory = findViewById<Button>(R.id.btnClearHistory)
         val btnHistoryBack = findViewById<Button>(R.id.btnHistoryBack)
 
         val database = AppDatabase.getDatabase(applicationContext)
@@ -35,11 +36,6 @@ class DepositHistoryActivity : AppCompatActivity() {
             startActivity(intent)
         }
         rvDepositHistory.adapter = adapter
-
-        val btnClearHistory = Button(this)
-        btnClearHistory.text = "Очистить историю"
-        val root = findViewById<android.widget.LinearLayout>(android.R.id.content).getChildAt(0) as android.widget.LinearLayout
-        root.addView(btnClearHistory, 1)
 
         btnClearHistory.setOnClickListener {
             viewModel.clearHistory()
