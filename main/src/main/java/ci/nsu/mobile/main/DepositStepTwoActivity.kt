@@ -2,8 +2,13 @@ package ci.nsu.mobile.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +24,7 @@ class DepositStepTwoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_deposit_step_two)
 
         initialAmount = intent.getDoubleExtra(DepositStepOneActivity.EXTRA_INITIAL_AMOUNT, 0.0)
-        periodMonths = intent.getIntExtra(DepositStepOneActivity.EXTRA_PERIOD_MONTHS, 0)
+        periodMonths = intent.getIntExtra(DepositStepOneActivity.EXTRA_PERIOD_MONTHS, 1)
         interestRate = getRateByPeriod(periodMonths)
 
         val tvRateInfo = findViewById<TextView>(R.id.tvRateInfo)
@@ -27,7 +32,28 @@ class DepositStepTwoActivity : AppCompatActivity() {
         val btnBack = findViewById<Button>(R.id.btnBack)
         val btnCalculateResult = findViewById<Button>(R.id.btnCalculateResult)
 
-        tvRateInfo.text = "Срок вклада: $periodMonths мес. Доступная ставка: ${interestRate.toInt()}%"
+        val spinnerInterestRate = Spinner(this)
+        val rates = listOf(15, 10, 5)
+        val rateTexts = rates.map { rate -> "$rate%" }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, rateTexts)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerInterestRate.adapter = adapter
+
+        val root = (findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as LinearLayout)
+        root.addView(spinnerInterestRate, 2)
+
+        spinnerInterestRate.setSelection(rates.indexOf(interestRate.toInt()))
+        updateRateInfo(tvRateInfo)
+
+        spinnerInterestRate.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+                interestRate = rates[position].toDouble()
+                periodMonths = getPeriodByRate(interestRate)
+                updateRateInfo(tvRateInfo)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
 
         btnBack.setOnClickListener {
             finish()
@@ -53,10 +79,22 @@ class DepositStepTwoActivity : AppCompatActivity() {
 
     private fun getRateByPeriod(period: Int): Double {
         return when {
-            period < 6 -> 15.0
-            period < 12 -> 10.0
+            period <= 6 -> 15.0
+            period <= 11 -> 10.0
             else -> 5.0
         }
+    }
+
+    private fun getPeriodByRate(rate: Double): Int {
+        return when (rate.toInt()) {
+            15 -> 6
+            10 -> 7
+            else -> 12
+        }
+    }
+
+    private fun updateRateInfo(tvRateInfo: TextView) {
+        tvRateInfo.text = "Срок вклада: $periodMonths мес. Ставка: ${interestRate.toInt()}%"
     }
 
     companion object {
