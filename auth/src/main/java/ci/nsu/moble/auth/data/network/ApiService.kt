@@ -1,5 +1,6 @@
 package ci.nsu.moble.auth.data.network
 
+import ci.nsu.moble.auth.data.models.AuthResponse
 import ci.nsu.moble.domain.models.Group
 import ci.nsu.moble.domain.models.RegisterData
 import ci.nsu.moble.domain.models.User
@@ -27,8 +28,3 @@ interface ApiService {
     @GET("groups")
     suspend fun getGroups(): Response<List<Group>>
 }
-
-@kotlinx.serialization.Serializable
-data class AuthResponse(
-    val token: String
-)

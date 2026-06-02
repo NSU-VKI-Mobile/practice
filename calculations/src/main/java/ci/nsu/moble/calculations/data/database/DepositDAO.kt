@@ -8,7 +8,8 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface DepositDao {
+interface DepositDao
+{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(deposit: DepositEntity)
 
@@ -17,4 +18,7 @@ interface DepositDao {
 
     @Delete
     suspend fun delete(deposit: DepositEntity)
+
+    @Query("DELETE FROM deposits WHERE id = :id")
+    suspend fun deleteById(id: Long)
 }

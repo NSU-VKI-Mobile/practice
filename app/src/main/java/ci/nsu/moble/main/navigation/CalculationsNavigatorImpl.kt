@@ -2,39 +2,26 @@ package ci.nsu.moble.main.navigation
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
+import androidx.navigation.NavController
 import ci.nsu.moble.domain.interfaces.CalculationsNavigator
-import ci.nsu.moble.main.MainActivity
 
-class CalculationsNavigatorImpl : CalculationsNavigator {
+class CalculationsNavigatorImpl(
+    private val navController: NavController
+) : CalculationsNavigator {
+
     override fun navigateToNewCalculation(context: Context, userId: Long) {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            putExtra("destination", "new_deposit")
-            putExtra("userId", userId)
-        }
-        context.startActivity(intent)
+        navController.navigate("new_deposit")
     }
 
     override fun navigateToMyCalculations(context: Context, userId: Long) {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            putExtra("destination", "history")
-            putExtra("userId", userId)
-        }
-        context.startActivity(intent)
+        navController.navigate("history")
     }
 
     override fun openCalculationFlow(activity: Activity, userId: Long) {
-        val intent = Intent(activity, MainActivity::class.java).apply {
-            putExtra("destination", "new_deposit")
-            putExtra("userId", userId)
-        }
-        activity.startActivityForResult(intent, 100)
+        navController.navigate("new_deposit")
     }
 
     override fun navigateToHistory(context: Context) {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            putExtra("destination", "history")
-        }
-        context.startActivity(intent)
+        navController.navigate("history")
     }
 }

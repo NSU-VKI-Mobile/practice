@@ -10,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import ci.nsu.moble.auth.ui.*
 import ci.nsu.moble.auth.ui.login.LoginScreen
 import ci.nsu.moble.auth.ui.login.LoginViewModel
 import ci.nsu.moble.auth.ui.register.RegisterScreen
@@ -21,7 +20,12 @@ import ci.nsu.moble.calculations.ui.DepositFlowScreen
 import ci.nsu.moble.calculations.ui.DepositViewModel
 import ci.nsu.moble.calculations.ui.HistoryScreen
 import ci.nsu.moble.main.R
-import ci.nsu.moble.main.di.AppModule
+import ci.nsu.moble.main.navigation.AuthNavigatorImpl
+import ci.nsu.moble.main.navigation.CalculationsNavigatorImpl
+import org.koin.androidx.compose.getViewModel
+import org.koin.compose.KoinContext
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
 sealed class BottomNavItem(val route: String, val titleResId: Int) {
     object Users : BottomNavItem("users", R.string.screen_users)
@@ -30,20 +34,19 @@ sealed class BottomNavItem(val route: String, val titleResId: Int) {
 }
 
 @Composable
-fun AppNavHost(appModule: AppModule) {
+fun AppNavHost() {
     val navController = rememberNavController()
-    val tokenManager = appModule.getTokenManager()
-    val authRepository = appModule.getAuthRepository()
-    val depositRepository = appModule.getDepositRepository()
+    val tokenManager = koinInject<ci.nsu.moble.auth.data.storage.TokenManager>()
+    val authRepository = koinInject<ci.nsu.moble.auth.data.repository.AuthRepository>()
+    val depositRepository = koinInject<ci.nsu.moble.calculations.data.repository.DepositRepository>()
+    val authNavigator = remember(navController) { AuthNavigatorImpl(navController) }
+    val calculationsNavigator = remember(navController) { CalculationsNavigatorImpl(navController) }
 
     val isLoggedIn = tokenManager.isLoggedIn()
     val startDestination = if (isLoggedIn) {
         BottomNavItem.Users.route
-    } else {
+    } else
         "auth"
-    }
-
-    // State for managing navigation after auth
     var forceNavigateToUsers by remember { mutableStateOf(false) }
 
     LaunchedEffect(isLoggedIn) {
@@ -119,9 +122,7 @@ fun AppNavHost(appModule: AppModule) {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("auth") {
-                val loginViewModel: LoginViewModel = viewModel {
-                    LoginViewModel(authRepository)
-                }
+                val loginViewModel: LoginViewModel = getViewModel()
                 LoginScreen(
                     onLoginSuccess = {
                         forceNavigateToUsers = true
@@ -134,9 +135,7 @@ fun AppNavHost(appModule: AppModule) {
             }
 
             composable("register") {
-                val registerViewModel: RegisterViewModel = viewModel {
-                    RegisterViewModel(authRepository)
-                }
+                val registerViewModel: RegisterViewModel = getViewModel()
                 RegisterScreen(
                     onRegisterSuccess = {
                         navController.popBackStack()
@@ -146,9 +145,7 @@ fun AppNavHost(appModule: AppModule) {
             }
 
             composable(BottomNavItem.Users.route) {
-                val usersViewModel: UsersViewModel = viewModel {
-                    UsersViewModel(authRepository)
-                }
+                val usersViewModel: UsersViewModel = getViewModel()
                 UsersScreen(
                     viewModel = usersViewModel,
                     onLogout = {
@@ -162,9 +159,8 @@ fun AppNavHost(appModule: AppModule) {
 
             composable(BottomNavItem.History.route) {
                 val userId = tokenManager.getUserId() ?: -1L
-                val depositViewModel: DepositViewModel = viewModel {
-                    DepositViewModel(userId, depositRepository)
-                }
+                // Передаем userId как параметр в ViewModel
+                val depositViewModel: DepositViewModel = getViewModel(parameters = { parametersOf(userId) })
                 val state by depositViewModel.uiState.collectAsState()
                 HistoryScreen(
                     history = state.history,
@@ -174,9 +170,7 @@ fun AppNavHost(appModule: AppModule) {
 
             composable(BottomNavItem.NewDeposit.route) {
                 val userId = tokenManager.getUserId() ?: -1L
-                val depositViewModel: DepositViewModel = viewModel {
-                    DepositViewModel(userId, depositRepository)
-                }
+                val depositViewModel: DepositViewModel = getViewModel(parameters = { parametersOf(userId) })
                 DepositFlowScreen(
                     viewModel = depositViewModel,
                     onFinish = {

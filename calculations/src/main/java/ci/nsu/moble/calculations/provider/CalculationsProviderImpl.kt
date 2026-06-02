@@ -1,4 +1,4 @@
-package ci.nsu.moble.main.provider
+package ci.nsu.moble.calculations.provider
 
 import ci.nsu.moble.calculations.data.repository.DepositRepository
 import ci.nsu.moble.domain.interfaces.CalculationsProvider

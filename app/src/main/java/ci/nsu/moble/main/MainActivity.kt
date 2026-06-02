@@ -7,20 +7,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import ci.nsu.moble.main.di.AppModule
+import ci.nsu.moble.auth.data.storage.TokenManager
 import ci.nsu.moble.main.ui.navigation.AppNavHost
+import org.koin.android.ext.android.inject
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+class MainActivity : ComponentActivity()
+{
+    private val tokenManager: TokenManager by inject()
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
-
-        val appModule = AppModule(applicationContext)
-        appModule.getTokenManager().clearAll()
-
+        tokenManager.clearAll()
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    AppNavHost(appModule = appModule)
+                    AppNavHost()
                 }
             }
         }

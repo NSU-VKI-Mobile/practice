@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "ci.nsu.moble.domain"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -20,10 +20,6 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-
-    /*buildFeatures {
-        compose = true
-    }*/
 }
 
 java {
