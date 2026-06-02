@@ -60,10 +60,20 @@ class MainActivity : ComponentActivity() {
             }
         )
 
+        // --- ИНИЦИАЛИЗАЦИЯ ДЕПОЗИТНОЙ ВЬЮМОДЕЛИ ---
+        val depositViewModel: DepositViewModel = viewModel(
+            factory = object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return DepositViewModel(appModule.depositRepository) as T
+                }
+            }
+        )
+
         NavGraph(
             loginViewModel = loginViewModel,
             registerViewModel = registerViewModel,
             mainViewModel = mainViewModel
+            // Сюда мы передадим depositViewModel чуть позже, когда займёмся файлом NavGraph.kt
         )
     }
 }
