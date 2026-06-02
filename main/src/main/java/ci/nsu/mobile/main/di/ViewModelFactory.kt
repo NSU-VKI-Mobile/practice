@@ -14,7 +14,7 @@ class ViewModelFactory : ViewModelProvider.Factory {
                 AuthViewModel(ServiceLocator.authRepository as ci.nsu.mobile.main.data.repository.AuthRepositoryImpl) as T
             }
             modelClass.isAssignableFrom(DepositViewModel::class.java) -> {
-                // 🟢 Передаем оба репозитория
+
                 DepositViewModel(ServiceLocator.depositRepository, ServiceLocator.authRepository) as T
             }
             modelClass.isAssignableFrom(UsersViewModel::class.java) -> {

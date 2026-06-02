@@ -10,10 +10,14 @@ class AuthRepositoryImpl(private val apiService: ApiService) : AuthRepository {
 
     override suspend fun login(login: String, password: String): Result<Unit> {
         return try {
-            // 🟢 Явно выполняем сетевые запросы в IO потоке
             withContext(Dispatchers.IO) {
                 val response = apiService.login(LoginRequest(login, password))
+
+                // 🟢 ЛОГИРУЕМ ПОЛУЧЕННЫЙ ТОКЕН
+                println("🔥 [LOGIN] Received token: '${response.token.take(10)}...'")
+
                 TokenManager.token = response.token
+                println("🔥 [LOGIN] Token saved to manager. isLoggedIn = ${TokenManager.isLoggedIn()}")
 
                 // Получаем ID пользователя. Если здесь ошибка, токен уже сохранен,
                 // но мы можем считать это частичным успехом или откатить токен.
@@ -29,8 +33,7 @@ class AuthRepositoryImpl(private val apiService: ApiService) : AuthRepository {
             }
             Result.success(Unit)
         } catch (e: Exception) {
-            // В случае ошибки очищаем токен, чтобы не осталось "битой" сессии
-            TokenManager.logout()
+            println("❌ [LOGIN] Error: ${e.message}")
             Result.failure(e)
         }
     }
