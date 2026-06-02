@@ -49,7 +49,7 @@ fun HomeScreen(
                         items(users) { user ->
                             Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                                 Column(Modifier.padding(16.dp)) {
-                                    Text("ID: ${user.id}")
+                                    Text("ID: ${user.userId}")
                                     Text("Login: ${user.login}")
                                     Text("Email: ${user.email}")
                                 }

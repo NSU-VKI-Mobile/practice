@@ -1,6 +1,8 @@
 package ci.nsu.mobile.main.data.model
 
 
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -32,14 +34,12 @@ data class RegisterRequest(
 
 @Serializable
 data class LoginResponse(
-    val token: String,
-    val userId: Int,
-    val login: String
+    val token: String
 )
 
 @Serializable
 data class UserDto(
-    val id: Int,
+    @SerialName("userId") val userId: Long,
     val login: String,
     val email: String
 )
