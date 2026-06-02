@@ -27,13 +27,18 @@
         android:hint="&#1057;&#1090;&#1072;&#1088;&#1090;&#1086;&#1074;&#1099;&#1081; &#1074;&#1079;&#1085;&#1086;&#1089;"
         android:inputType="numberDecimal" />
 
-    <EditText
-        android:id="@+id/etPeriodMonths"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="&#1057;&#1088;&#1086;&#1082; &#1074;&#1082;&#1083;&#1072;&#1076;&#1072; &#1074; &#1084;&#1077;&#1089;&#1103;&#1094;&#1072;&#1093;"
-        android:inputType="number"
-        android:layout_marginTop="12dp" />
+        android:text="&#1057;&#1088;&#1086;&#1082; &#1074;&#1082;&#1083;&#1072;&#1076;&#1072;"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp" />
+
+    <Spinner
+        android:id="@+id/spinnerPeriodMonths"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
