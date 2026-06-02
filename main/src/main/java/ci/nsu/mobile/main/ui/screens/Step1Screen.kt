@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.screens
+package ci.nsu.mobile.main.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
@@ -77,7 +78,7 @@ fun Step1Screen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = validationError!!,
-                    color = androidx.compose.ui.graphics.Color.Red
+                    color = Color.Red
                 )
             }
 

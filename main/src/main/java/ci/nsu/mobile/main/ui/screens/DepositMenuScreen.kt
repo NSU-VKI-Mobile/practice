@@ -1,5 +1,6 @@
-package ci.nsu.mobile.main.screens
+package ci.nsu.mobile.main.ui.screens
 
+import android.os.Process
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +20,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavController) {
+fun DepositMenuScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -52,7 +53,7 @@ fun MainScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { android.os.Process.killProcess(android.os.Process.myPid()) }
+                onClick = { Process.killProcess(Process.myPid()) }
             ) {
                 Text("Закрыть приложение")
             }
