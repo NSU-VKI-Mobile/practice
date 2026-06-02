@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+    id("kotlin-kapt")
 }
 
 android {
@@ -73,6 +74,11 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+
+    // --- ЗАВИСИМОСТИ ДЛЯ ROOM DATABASE ---
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    "kapt"("androidx.room:room-compiler:2.6.1")
 
     // Old dependencies
     implementation(libs.androidx.appcompat)
