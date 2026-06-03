@@ -4,10 +4,11 @@ plugins {
     alias(libs.plugins.compose.compiler)
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
-    namespace = "ci.nsu.mobile.main"
+    namespace = "ci.nsu.mobile.main.units"
     compileSdk = 36
 
     defaultConfig {
