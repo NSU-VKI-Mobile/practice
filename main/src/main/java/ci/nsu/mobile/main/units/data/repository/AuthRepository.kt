@@ -16,7 +16,17 @@ class AuthRepository @Inject constructor(
         return try {
             val response: LoginResponse = apiService.login(LoginRequest(login, password))
             tokenManager.token = response.token
-            Result.success(UserDto(id = 0, login = login, email = "", phoneNumber = "", roleId = 1))
+            Result.success(UserDto(
+                id = 0,
+                login = login,
+                email = "",
+                phoneNumber = null,
+                roleId = 0,
+                authAllowed = true,
+                personId = 0,
+                createdDate = null,
+                lastLoginDate = null
+            ))
         } catch (e: Exception) {
             Result.failure(e)
         }
