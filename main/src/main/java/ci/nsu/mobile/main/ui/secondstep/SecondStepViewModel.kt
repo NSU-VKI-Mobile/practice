@@ -1,11 +1,13 @@
 package ci.nsu.mobile.main.ui.secondstep
 
 import androidx.lifecycle.ViewModel
-import ci.nsu.mobile.mai.database.DepositData
 
 class SecondStepViewModel : ViewModel() {
 
-    private var depositData: DepositData? = null
+    private var initialAmount: Double = 0.0
+    private var periodMonths: Int = 0
+    private var interestRate: Double = 0.0
+    private var monthlyTopUp: Double? = null
     private var finalAmount: Double = 0.0
     private var interestEarned: Double = 0.0
 
@@ -17,12 +19,20 @@ class SecondStepViewModel : ViewModel() {
         finalAmount: Double,
         interestEarned: Double
     ) {
-        depositData = DepositData(initialAmount, periodMonths, interestRate, monthlyTopUp)
+        this.initialAmount = initialAmount
+        this.periodMonths = periodMonths
+        this.interestRate = interestRate
+        this.monthlyTopUp = monthlyTopUp
         this.finalAmount = finalAmount
         this.interestEarned = interestEarned
+
+        android.util.Log.d("SecondStepViewModel", "Saved: initialAmount=$initialAmount, periodMonths=$periodMonths, interestRate=$interestRate, finalAmount=$finalAmount")
     }
 
-    fun getDepositData(): DepositData? = depositData
+    fun getInitialAmount(): Double = initialAmount
+    fun getPeriodMonths(): Int = periodMonths
+    fun getInterestRate(): Double = interestRate
+    fun getMonthlyTopUp(): Double? = monthlyTopUp
     fun getFinalAmount(): Double = finalAmount
     fun getInterestEarned(): Double = interestEarned
 }
