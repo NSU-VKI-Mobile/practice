@@ -42,7 +42,7 @@ class SecondStepFragment : Fragment() {
         // Настройка выпадающего списка
         val rates = listOf("$availableRate%")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, rates)
-        (binding.interestRateSpinner as? android.widget.AutoCompleteTextView)?.setAdapter(adapter)
+        binding.interestRateSpinner.setAdapter(adapter)
         binding.interestRateSpinner.setText("$availableRate%", false)
 
         binding.backButton.setOnClickListener {
@@ -61,12 +61,21 @@ class SecondStepFragment : Fragment() {
                 val interestRate = availableRate
                 val monthlyTopUpValue = (topUpResult as Validator.Result.Success).data
 
+                // ЛОГИРОВАНИЕ для проверки
+                android.util.Log.d("SecondStep", "initialAmount: $initialAmount")
+                android.util.Log.d("SecondStep", "periodMonths: $periodMonths")
+                android.util.Log.d("SecondStep", "interestRate: $interestRate")
+                android.util.Log.d("SecondStep", "monthlyTopUpValue: $monthlyTopUpValue")
+
                 val result = Validator.calculateDeposit(
                     initialAmount,
                     periodMonths,
                     interestRate,
                     monthlyTopUpValue
                 )
+
+                android.util.Log.d("SecondStep", "finalAmount: ${result.finalAmount}")
+                android.util.Log.d("SecondStep", "interestEarned: ${result.interestEarned}")
 
                 viewModel.saveResult(
                     initialAmount,
@@ -77,7 +86,6 @@ class SecondStepFragment : Fragment() {
                     result.interestEarned
                 )
 
-                // ИСПРАВЛЕНО: используем R.id вместо Directions
                 view.findNavController().navigate(R.id.action_secondStepFragment_to_resultFragment)
             }
         }
