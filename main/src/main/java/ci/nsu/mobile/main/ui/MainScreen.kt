@@ -23,8 +23,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -71,8 +69,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
     var notesCountMap by remember { mutableStateOf<Map<LocalDate, Int>>(emptyMap()) }
     var completedCountMap by remember { mutableStateOf<Map<LocalDate, Int>>(emptyMap()) }
 
+    // Флаг для отслеживания необходимости обновления
+    var needsRefresh by remember { mutableStateOf(false) }
+
     // Загружаем счётчики для текущего месяца
-    LaunchedEffect(currentMonthDate) {
+    LaunchedEffect(currentMonthDate, needsRefresh) {
         val firstDay = currentMonthDate.withDayOfMonth(1)
         val lastDay = currentMonthDate.withDayOfMonth(currentMonthDate.lengthOfMonth())
 
@@ -87,6 +88,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         }
         notesCountMap = counts
         completedCountMap = completed
+        needsRefresh = false
     }
 
     NavHost(
@@ -100,7 +102,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         onClick = { isWeekView = !isWeekView },
                         containerColor = MaterialTheme.colorScheme.primary
                     ) {
-
+                        Icon(
+                            imageVector = if (isWeekView) Icons.Default.DateRange else Icons.Default.List,
+                            contentDescription = if (isWeekView) "Переключить на месяц" else "Переключить на неделю"
+                        )
                     }
                 }
             ) { paddingValues ->
@@ -146,14 +151,25 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 onBack = {
                     // Обновляем счётчики при возврате
                     CoroutineScope(Dispatchers.Main).launch {
-                        val count = noteViewModel.getNoteCount(date)
-                        val completed = noteViewModel.getCompletedCount(date)
-                        notesCountMap = notesCountMap.toMutableMap().apply {
-                            this[date] = count
+                        // Обновляем счетчик для конкретной даты
+                        val newCount = noteViewModel.getNoteCount(date)
+                        val newCompleted = noteViewModel.getCompletedCount(date)
+
+                        // Обновляем карту для текущего месяца
+                        if (date.month == currentMonthDate.month && date.year == currentMonthDate.year) {
+                            notesCountMap = notesCountMap.toMutableMap().apply {
+                                this[date] = newCount
+                            }
+                            completedCountMap = completedCountMap.toMutableMap().apply {
+                                this[date] = newCompleted
+                            }
+                        } else {
+                            // Если дата из другого месяца, просто помечаем что нужно обновление
+                            needsRefresh = true
                         }
-                        completedCountMap = completedCountMap.toMutableMap().apply {
-                            this[date] = completed
-                        }
+
+                        // Принудительно обновляем NotesViewModel для этой даты
+                        noteViewModel.refreshNotes(date)
                     }
                     navController.popBackStack()
                 }
@@ -177,6 +193,7 @@ fun MonthView(
     onNextMonth: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
+        // Заголовок с навигацией по месяцам
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -197,10 +214,12 @@ fun MonthView(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Заголовки дней недели
         WeekDaysHeader()
 
         Spacer(modifier = Modifier.height(4.dp))
 
+        // Сетка календаря
         MonthCalendarGrid(
             currentDate = currentDate,
             selectedDate = selectedDate,
@@ -327,24 +346,25 @@ fun DayCell(
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = "Выполнено",
-                            modifier = Modifier.size(8.dp),
+                            modifier = Modifier.size(12.dp),
                             tint = MaterialTheme.colorScheme.primary
                         )
+                        Spacer(modifier = Modifier.width(2.dp))
                     }
                     if (noteCount > completedCount) {
                         Box(
                             modifier = Modifier
-                                .size(6.dp)
-                                .clip(RoundedCornerShape(3.dp))
-                                .background(Color(0xFFFF69B4)
-                                )
+                                .size(8.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Color(0xFFFF69B4))
                         )
+                        Spacer(modifier = Modifier.width(2.dp))
                     }
                     Text(
                         text = "$noteCount",
-                        fontSize = 10.sp,
+                        fontSize = 11.sp,
                         color = textColor.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(start = 2.dp)
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
@@ -365,20 +385,21 @@ fun WeekView(
 ) {
     var currentWeekStart by remember { mutableStateOf(getWeekStart(selectedDate)) }
     var notesMap by remember { mutableStateOf<Map<LocalDate, List<NoteEntity>>>(emptyMap()) }
+    var isLoading by remember { mutableStateOf(false) }
 
-    LaunchedEffect(selectedDate, currentWeekStart) {
-        val newStart = getWeekStart(selectedDate)
-        if (newStart != currentWeekStart) {
-            currentWeekStart = newStart
-        }
-
-        // Загружаем заметки для всех дней недели
+    // Эффект для загрузки данных недели
+    LaunchedEffect(currentWeekStart) {
+        isLoading = true
         val days = getDaysOfWeek(currentWeekStart)
         val map = mutableMapOf<LocalDate, List<NoteEntity>>()
+
         for (day in days) {
-            map[day] = noteViewModel.getNotesSync(day)
+            val notes = noteViewModel.getNotesSync(day)
+            // Дополнительная фильтрация для безопасности
+            map[day] = notes.filter { it.date == day.toString() }
         }
         notesMap = map
+        isLoading = false
     }
 
     val daysOfWeek = remember(currentWeekStart) { getDaysOfWeek(currentWeekStart) }
@@ -404,32 +425,47 @@ fun WeekView(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(daysOfWeek.size) { index ->
-                val date = daysOfWeek[index]
-                val dayName = date.format(DateTimeFormatter.ofPattern("EEEE", Locale("ru")))
-                    .replaceFirstChar { it.uppercase() }
-                val dayNumber = date.format(DateTimeFormatter.ofPattern("dd.MM", Locale("ru")))
-                val notes = notesMap[date] ?: emptyList()
-                val notesPreview = notes.take(2).joinToString(", ") { it.text }
-                val completedCount = notes.count { it.isCompleted }
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(daysOfWeek.size) { index ->
+                    val date = daysOfWeek[index]
+                    val dayName = date.format(DateTimeFormatter.ofPattern("EEEE", Locale("ru")))
+                        .replaceFirstChar { it.uppercase() }
+                    val dayNumber = date.format(DateTimeFormatter.ofPattern("dd.MM", Locale("ru")))
+                    val notes = notesMap[date] ?: emptyList()
+                    val notesPreview = if (notes.isNotEmpty()) {
+                        notes.take(2).joinToString(", ") { it.text.take(30) + if (it.text.length > 30) "..." else "" }
+                    } else {
+                        ""
+                    }
+                    val completedCount = notes.count { it.isCompleted }
 
-                WeekDayRow(
-                    date = date,
-                    dayName = dayName,
-                    dayNumber = dayNumber,
-                    notesPreview = notesPreview,
-                    hasNotes = notes.isNotEmpty(),
-                    completedCount = completedCount,
-                    isSelected = date == selectedDate,
-                    onDayClick = { onDateSelected(date) }
-                )
+                    WeekDayRow(
+                        date = date,
+                        dayName = dayName,
+                        dayNumber = dayNumber,
+                        notesPreview = notesPreview,
+                        hasNotes = notes.isNotEmpty(),
+                        completedCount = completedCount,
+                        isSelected = date == selectedDate,
+                        onDayClick = { onDateSelected(date) }
+                    )
+                }
             }
         }
     }
@@ -478,11 +514,21 @@ fun WeekDayRow(
                     color = Color.Gray
                 )
                 if (completedCount > 0) {
-                    Text(
-                        text = "✓ $completedCount выполнено",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = "Выполнено",
+                            modifier = Modifier.size(14.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "$completedCount выполнено",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
 
@@ -526,9 +572,14 @@ fun NoteScreen(
     val notes by viewModel.notes.collectAsState()
     val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale("ru"))
 
-    // Загружаем заметки при открытии
+    // Фильтруем заметки на экране для дополнительной безопасности
+    val filteredNotes = remember(notes, date) {
+        notes.filter { it.date == date.toString() }
+    }
+
+    // Загружаем заметки при открытии с принудительным обновлением
     LaunchedEffect(date) {
-        viewModel.loadNotes(date)
+        viewModel.refreshNotes(date)
     }
 
     Scaffold(
@@ -538,6 +589,12 @@ fun NoteScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                    }
+                },
+                actions = {
+                    // Кнопка для принудительного обновления
+                    IconButton(onClick = { viewModel.refreshNotes(date) }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Обновить")
                     }
                 }
             )
@@ -560,7 +617,8 @@ fun NoteScreen(
                         onValueChange = { newNoteText = it },
                         label = { Text("Новая заметка") },
                         modifier = Modifier.fillMaxWidth(),
-                        minLines = 2
+                        minLines = 2,
+                        maxLines = 4
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
@@ -568,11 +626,13 @@ fun NoteScreen(
                             if (newNoteText.isNotBlank()) {
                                 viewModel.addNote(date, newNoteText) {
                                     newNoteText = ""
-                                    viewModel.loadNotes(date)
+                                    // Принудительно обновляем после добавления
+                                    viewModel.refreshNotes(date)
                                 }
                             }
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = newNoteText.isNotBlank()
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
@@ -584,20 +644,34 @@ fun NoteScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Список заметок
-            if (notes.isEmpty()) {
+            if (filteredNotes.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Нет заметок.\nДобавьте первую заметку!",
-                        textAlign = TextAlign.Center,
-                        color = Color.Gray
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            tint = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Нет заметок на этот день",
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        )
+                        Text(
+                            text = "Добавьте первую заметку!",
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                    }
                 }
             } else {
                 Text(
-                    text = "Мои заметки (${notes.size})",
+                    text = "Мои заметки (${filteredNotes.size})",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
@@ -606,17 +680,17 @@ fun NoteScreen(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(notes) { note ->
+                    items(filteredNotes) { note ->
                         NoteItemCard(
                             note = note,
                             onToggleComplete = {
                                 viewModel.toggleNoteCompletion(note) {
-                                    viewModel.loadNotes(date)
+                                    viewModel.refreshNotes(date)
                                 }
                             },
                             onDelete = {
                                 viewModel.deleteNote(note) {
-                                    viewModel.loadNotes(date)
+                                    viewModel.refreshNotes(date)
                                 }
                             }
                         )
@@ -657,7 +731,9 @@ fun NoteItemCard(
                     text = note.text,
                     fontSize = 16.sp,
                     textDecoration = if (note.isCompleted) TextDecoration.LineThrough else null,
-                    color = if (note.isCompleted) Color.Gray else Color.Black
+                    color = if (note.isCompleted) Color.Gray else Color.Black,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 

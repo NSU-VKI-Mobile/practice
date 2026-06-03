@@ -2,8 +2,6 @@ package ci.nsu.mobile.main.ui.data
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.ui.data.NoteEntity
-import ci.nsu.mobile.main.ui.data.NoteRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,16 +15,35 @@ class NoteViewModel(
     private val _notes = MutableStateFlow<List<NoteEntity>>(emptyList())
     val notes: StateFlow<List<NoteEntity>> = _notes.asStateFlow()
 
+    // Добавляем текущую дату для отслеживания
+    private var currentDate: LocalDate? = null
+
     fun loadNotes(date: LocalDate) {
+        // Проверяем, не загружаем ли мы ту же дату
+        if (currentDate == date && _notes.value.isNotEmpty()) {
+            return
+        }
+        currentDate = date
+
         viewModelScope.launch {
             repository.getNotesByDate(date).collect { notesList ->
-                _notes.value = notesList
+                // Фильтруем заметки по дате на всякий случай
+                val filteredNotes = notesList.filter { it.date == date.toString() }
+                _notes.value = filteredNotes
             }
         }
     }
 
+    // Метод для принудительной перезагрузки
+    fun refreshNotes(date: LocalDate) {
+        currentDate = null
+        loadNotes(date)
+    }
+
     suspend fun getNotesSync(date: LocalDate): List<NoteEntity> {
-        return repository.getNotesByDateSync(date)
+        val notes = repository.getNotesByDateSync(date)
+        // Фильтруем на уровне репозитория
+        return notes.filter { it.date == date.toString() }
     }
 
     fun addNote(date: LocalDate, text: String, onComplete: () -> Unit) {
@@ -37,6 +54,8 @@ class NoteViewModel(
                 isCompleted = false
             )
             repository.insertNote(note)
+            // Обновляем список после добавления
+            loadNotes(date)
             onComplete()
         }
     }
@@ -44,6 +63,8 @@ class NoteViewModel(
     fun updateNote(note: NoteEntity, onComplete: () -> Unit) {
         viewModelScope.launch {
             repository.updateNote(note)
+            // Обновляем текущую дату если есть
+            currentDate?.let { loadNotes(it) }
             onComplete()
         }
     }
@@ -51,6 +72,7 @@ class NoteViewModel(
     fun deleteNote(note: NoteEntity, onComplete: () -> Unit) {
         viewModelScope.launch {
             repository.deleteNote(note)
+            currentDate?.let { loadNotes(it) }
             onComplete()
         }
     }
@@ -58,6 +80,7 @@ class NoteViewModel(
     fun deleteNoteById(noteId: Int, onComplete: () -> Unit) {
         viewModelScope.launch {
             repository.deleteNoteById(noteId)
+            currentDate?.let { loadNotes(it) }
             onComplete()
         }
     }
@@ -66,6 +89,7 @@ class NoteViewModel(
         viewModelScope.launch {
             val updatedNote = note.copy(isCompleted = !note.isCompleted)
             repository.updateNote(updatedNote)
+            currentDate?.let { loadNotes(it) }
             onComplete()
         }
     }

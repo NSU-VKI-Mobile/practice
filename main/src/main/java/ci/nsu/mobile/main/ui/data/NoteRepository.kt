@@ -1,24 +1,34 @@
 package ci.nsu.mobile.main.ui.data
 
 import kotlinx.coroutines.flow.Flow
-
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 
 class NoteRepository(private val noteDao: NoteDao) {
 
     fun getNotesByDate(date: LocalDate): Flow<List<NoteEntity>> {
-        return noteDao.getNotesByDate(date.toString())
+        return noteDao.getNotesByDate(date.toString()).map { notes ->
+            // Фильтруем на уровне потока для безопасности
+            notes.filter { it.date == date.toString() }
+        }
     }
 
     suspend fun getNotesByDateSync(date: LocalDate): List<NoteEntity> {
-        return noteDao.getNotesByDateSync(date.toString())
+        val notes = noteDao.getNotesByDateSync(date.toString())
+        // Фильтруем синхронные запросы
+        return notes.filter { it.date == date.toString() }
     }
 
     suspend fun insertNote(note: NoteEntity) {
+        // Валидация перед вставкой
+        require(note.date.isNotBlank()) { "Date cannot be blank" }
+        require(note.text.isNotBlank()) { "Note text cannot be blank" }
         noteDao.insertNote(note)
     }
 
     suspend fun updateNote(note: NoteEntity) {
+        require(note.date.isNotBlank()) { "Date cannot be blank" }
+        require(note.text.isNotBlank()) { "Note text cannot be blank" }
         noteDao.updateNote(note)
     }
 
