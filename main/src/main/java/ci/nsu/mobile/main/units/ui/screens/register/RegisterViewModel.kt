@@ -21,7 +21,7 @@ class RegisterViewModel @Inject constructor(
     var lastName by mutableStateOf("")
     var middleName by mutableStateOf("")
     var birthDate by mutableStateOf("")
-    var gender by mutableStateOf("")
+    var selectedGender by mutableStateOf("")
     var login by mutableStateOf("")
     var password by mutableStateOf("")
     var email by mutableStateOf("")
@@ -40,22 +40,34 @@ class RegisterViewModel @Inject constructor(
     fun loadGroups() {
         viewModelScope.launch {
             repository.getGroups()
-                .onSuccess { groupsList: List<GroupDto> -> // <- явно указан тип
+                .onSuccess { groupsList: List<GroupDto> ->
                     groups = groupsList
                 }
-                .onFailure { error: Throwable ->           // <- явно указан тип
+                .onFailure { error: Throwable ->
                     errorMessage = error.message ?: "Ошибка при загрузке групп"
                 }
         }
     }
 
     fun register() {
+        if(selectedGroupId == null){
+            errorMessage = "Пожалуйста, выберите группу"
+            return
+        }
+        if(selectedGender.isBlank()){
+            errorMessage = "Пожалуйста, выберите пол"
+            return
+        }
+        if(birthDate.isBlank()){
+            errorMessage = "Пожалуйста, выберите дату рождения"
+            return
+        }
         val person = PersonDto(
             firstName = firstName,
             lastName = lastName,
             middleName = middleName,
             birthDate = birthDate,
-            gender = gender,
+            gender = selectedGender,
             groupId = selectedGroupId ?: 0
         )
         val request = RegisterRequest(
