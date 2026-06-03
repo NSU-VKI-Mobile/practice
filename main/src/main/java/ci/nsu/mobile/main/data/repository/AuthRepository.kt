@@ -11,14 +11,24 @@ class AuthRepository {
 
     private val api = ApiClient.apiService
 
-    suspend fun login(login: String, password: String): Result<Unit> {
+    suspend fun login(login: String, password: String): Result<UserDto> {
         return try {
             val response = api.login(LoginRequest(login, password))
             if (response.isSuccessful) {
                 val token = response.body()?.token
                 if (token != null) {
                     TokenManager.token = token
-                    Result.success(Unit)
+                    // После получения токена загружаем текущего пользователя
+                    val userResponse = api.getCurrentUser()
+                    if (userResponse.isSuccessful && userResponse.body() != null) {
+                        Result.success(userResponse.body()!!)
+                    } else {
+                        // Если /users/me недоступен — ищем по логину в списке
+                        val usersResponse = api.getUsers()
+                        val user = usersResponse.body()?.find { it.login == login }
+                        if (user != null) Result.success(user)
+                        else Result.failure(Exception("Пользователь не найден"))
+                    }
                 } else {
                     Result.failure(Exception("Токен не получен"))
                 }
