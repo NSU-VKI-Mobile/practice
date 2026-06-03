@@ -9,10 +9,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Draft">
 
-        <!-- Главная активность -->
+        <!-- ГЛАВНАЯ АКТИВНОСТЬ -->
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name="ci.nsu.mobile.main.ui.main.MainActivity"
             android:exported="true">
+            <!-- ЭТОТ INTENT-FILTER ДЕЛАЕТ АКТИВНОСТЬ ГЛАВНОЙ -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
