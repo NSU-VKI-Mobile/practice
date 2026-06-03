@@ -345,6 +345,19 @@ fun RegisterScreen(
                 }
             }
         }
+        item {
+            Button(
+                onClick = { navController.navigate("login") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !uiState.isLoading
+            ) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                } else {
+                    Text("Назад")
+                }
+            }
+        }
 
         item {
             uiState.errorMessage?.let {
