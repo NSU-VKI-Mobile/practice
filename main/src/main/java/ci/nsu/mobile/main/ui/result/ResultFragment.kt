@@ -6,14 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import ci.nsu.mobile.mai.database.DepositCalculation
 import ci.nsu.mobile.main.R
 
 import ci.nsu.mobile.main.databinding.FragmentResultBinding
 import ci.nsu.mobile.main.repository.DepositRepository
-import ci.nsu.mobile.main.ui.secondstep.SecondStepViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,8 +20,15 @@ class ResultFragment : Fragment() {
 
     private var _binding: FragmentResultBinding? = null
     private val binding get() = _binding!!
-    private lateinit var secondStepViewModel: SecondStepViewModel
     private lateinit var repository: DepositRepository
+
+    // Переменные для хранения данных
+    private var initialAmount: Double = 0.0
+    private var periodMonths: Int = 0
+    private var interestRate: Double = 0.0
+    private var monthlyTopUp: Double? = null
+    private var finalAmount: Double = 0.0
+    private var interestEarned: Double = 0.0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,8 +42,28 @@ class ResultFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        secondStepViewModel = ViewModelProvider(requireActivity())[SecondStepViewModel::class.java]
         repository = DepositRepository.getInstance(requireContext())
+
+        // ПОЛУЧАЕМ ДАННЫЕ СО ВТОРОГО ЭКРАНА
+        arguments?.let {
+            initialAmount = it.getDouble("initialAmount", 0.0)
+            periodMonths = it.getInt("periodMonths", 0)
+            interestRate = it.getDouble("interestRate", 0.0)
+            if (it.containsKey("monthlyTopUp")) {
+                monthlyTopUp = it.getDouble("monthlyTopUp")
+            }
+            finalAmount = it.getDouble("finalAmount", 0.0)
+            interestEarned = it.getDouble("interestEarned", 0.0)
+        }
+
+        android.util.Log.d("ResultFragment", "Получено: initialAmount=$initialAmount, periodMonths=$periodMonths, finalAmount=$finalAmount")
+
+        // Проверка получения данных
+        if (initialAmount <= 0 || finalAmount <= 0) {
+            Toast.makeText(requireContext(), "Ошибка: сначала выполните расчёт на предыдущем экране", Toast.LENGTH_LONG).show()
+            binding.initialAmountText.text = "Ошибка: нет данных для расчёта"
+            return
+        }
 
         displayResult()
 
@@ -52,29 +77,11 @@ class ResultFragment : Fragment() {
     }
 
     private fun displayResult() {
-        val initialAmount = secondStepViewModel.getInitialAmount()
-        val periodMonths = secondStepViewModel.getPeriodMonths()
-        val interestRate = secondStepViewModel.getInterestRate()
-        val monthlyTopUp = secondStepViewModel.getMonthlyTopUp()
-        val finalAmount = secondStepViewModel.getFinalAmount()
-        val interestEarned = secondStepViewModel.getInterestEarned()
-
-        android.util.Log.d("ResultFragment", "initialAmount: $initialAmount")
-        android.util.Log.d("ResultFragment", "periodMonths: $periodMonths")
-        android.util.Log.d("ResultFragment", "interestRate: $interestRate")
-        android.util.Log.d("ResultFragment", "finalAmount: $finalAmount")
-
-        if (initialAmount <= 0) {
-            binding.initialAmountText.text = "Ошибка: нет данных для расчёта"
-            Toast.makeText(requireContext(), "Сначала выполните расчёт на предыдущем экране", Toast.LENGTH_LONG).show()
-            return
-        }
-
         binding.initialAmountText.text = "Стартовый взнос: ${String.format("%.2f", initialAmount)} ₽"
         binding.periodText.text = "Срок: $periodMonths месяцев"
         binding.interestRateText.text = "Процентная ставка: ${String.format("%.1f", interestRate)}%"
 
-        val monthlyTopUpText = if (monthlyTopUp != null && monthlyTopUp > 0) {
+        val monthlyTopUpText = if (monthlyTopUp != null && monthlyTopUp!! > 0) {
             "${String.format("%.2f", monthlyTopUp)} ₽"
         } else {
             "Не указано"
@@ -86,13 +93,6 @@ class ResultFragment : Fragment() {
     }
 
     private fun saveCalculation() {
-        val initialAmount = secondStepViewModel.getInitialAmount()
-        val periodMonths = secondStepViewModel.getPeriodMonths()
-        val interestRate = secondStepViewModel.getInterestRate()
-        val monthlyTopUp = secondStepViewModel.getMonthlyTopUp()
-        val finalAmount = secondStepViewModel.getFinalAmount()
-        val interestEarned = secondStepViewModel.getInterestEarned()
-
         if (initialAmount <= 0) {
             Toast.makeText(requireContext(), "Нет данных для сохранения", Toast.LENGTH_SHORT).show()
             return

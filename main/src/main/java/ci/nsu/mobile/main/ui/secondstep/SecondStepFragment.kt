@@ -7,19 +7,19 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import ci.nsu.mobile.main.R
 import ci.nsu.mobile.main.databinding.FragmentSecondStepBinding
-import ci.nsu.mobile.main.ui.firststep.FirstStepViewModel
 import ci.nsu.mobile.main.utils.Validator
 
 class SecondStepFragment : Fragment() {
 
     private var _binding: FragmentSecondStepBinding? = null
     private val binding get() = _binding!!
-    private lateinit var viewModel: SecondStepViewModel
-    private lateinit var firstStepViewModel: FirstStepViewModel
+
+    // Переменные для хранения данных с первого экрана
+    private var initialAmount: Double = 0.0
+    private var periodMonths: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,50 +33,34 @@ class SecondStepFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Инициализация ViewModels
-        viewModel = ViewModelProvider(this)[SecondStepViewModel::class.java]
-        firstStepViewModel = ViewModelProvider(requireActivity())[FirstStepViewModel::class.java]
-
-        // Получаем данные с первого экрана
-        val periodMonths = firstStepViewModel.getPeriodMonths()
-        val initialAmount = firstStepViewModel.getInitialAmount()
-
-        // Логирование для проверки
-        android.util.Log.d("SecondStepFragment", "=== ПОЛУЧЕННЫЕ ДАННЫЕ ===")
-        android.util.Log.d("SecondStepFragment", "Стартовый взнос: $initialAmount")
-        android.util.Log.d("SecondStepFragment", "Срок в месяцах: $periodMonths")
-
-        // Проверка: если данные не переданы, показываем ошибку
-        if (initialAmount <= 0) {
-            Toast.makeText(requireContext(), "Ошибка: не передан стартовый взнос. Вернитесь на первый экран.", Toast.LENGTH_LONG).show()
+        // ПОЛУЧАЕМ ДАННЫЕ С ПЕРВОГО ЭКРАНА
+        arguments?.let {
+            initialAmount = it.getDouble("initialAmount", 0.0)
+            periodMonths = it.getInt("periodMonths", 0)
         }
 
-        if (periodMonths <= 0) {
-            Toast.makeText(requireContext(), "Ошибка: не передан срок вклада. Вернитесь на первый экран.", Toast.LENGTH_LONG).show()
+        android.util.Log.d("SecondStepFragment", "Получено: initialAmount=$initialAmount, periodMonths=$periodMonths")
+
+        // Проверка получения данных
+        if (initialAmount <= 0 || periodMonths <= 0) {
+            Toast.makeText(requireContext(), "Ошибка: не переданы данные. Вернитесь на первый экран.", Toast.LENGTH_LONG).show()
+            return
         }
 
-        // Расчёт доступной процентной ставки
-        val availableRate = if (periodMonths > 0) {
-            Validator.calculateInterestRate(periodMonths)
-        } else {
-            0.0
-        }
+        // Расчёт процентной ставки
+        val availableRate = Validator.calculateInterestRate(periodMonths)
 
-        android.util.Log.d("SecondStepFragment", "Доступная ставка: $availableRate%")
-
-        // Настройка выпадающего списка для процентной ставки
+        // Настройка выпадающего списка
         val rates = listOf("$availableRate%")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, rates)
         binding.interestRateSpinner.setAdapter(adapter)
         binding.interestRateSpinner.setText("$availableRate%", false)
-        binding.interestRateSpinner.isEnabled = false  // Блокируем выбор, так как ставка автоматическая
+        binding.interestRateSpinner.isEnabled = false
 
-        // Кнопка "Назад" - возврат к первому этапу
         binding.backButton.setOnClickListener {
             view.findNavController().navigate(R.id.action_secondStepFragment_to_firstStepFragment)
         }
 
-        // Кнопка "Рассчитать"
         binding.calculateButton.setOnClickListener {
             val monthlyTopUp = binding.monthlyTopUpInput.text.toString()
             val topUpResult = Validator.validateMonthlyTopUp(monthlyTopUp)
@@ -85,52 +69,31 @@ class SecondStepFragment : Fragment() {
                 showError(topUpResult.message)
             } else {
                 val monthlyTopUpValue = (topUpResult as Validator.Result.Success).data
-
-                // Повторно получаем данные (на случай если они обновились)
-                val finalInitialAmount = firstStepViewModel.getInitialAmount()
-                val finalPeriodMonths = firstStepViewModel.getPeriodMonths()
-                val finalInterestRate = Validator.calculateInterestRate(finalPeriodMonths)
-
-                android.util.Log.d("SecondStepFragment", "=== ДАННЫЕ ДЛЯ РАСЧЁТА ===")
-                android.util.Log.d("SecondStepFragment", "Стартовый взнос: $finalInitialAmount")
-                android.util.Log.d("SecondStepFragment", "Срок: $finalPeriodMonths")
-                android.util.Log.d("SecondStepFragment", "Ставка: $finalInterestRate")
-                android.util.Log.d("SecondStepFragment", "Пополнение: $monthlyTopUpValue")
-
-                if (finalInitialAmount <= 0) {
-                    showError("Ошибка: не указан стартовый взнос")
-                    return@setOnClickListener
-                }
-
-                if (finalPeriodMonths <= 0) {
-                    showError("Ошибка: не указан срок вклада")
-                    return@setOnClickListener
-                }
+                val interestRate = Validator.calculateInterestRate(periodMonths)
 
                 // Выполняем расчёт
                 val result = Validator.calculateDeposit(
-                    finalInitialAmount,
-                    finalPeriodMonths,
-                    finalInterestRate,
+                    initialAmount,
+                    periodMonths,
+                    interestRate,
                     monthlyTopUpValue
                 )
 
-                android.util.Log.d("SecondStepFragment", "=== РЕЗУЛЬТАТ РАСЧЁТА ===")
-                android.util.Log.d("SecondStepFragment", "Итоговая сумма: ${result.finalAmount}")
-                android.util.Log.d("SecondStepFragment", "Начисленные проценты: ${result.interestEarned}")
+                android.util.Log.d("SecondStepFragment", "Результат: finalAmount=${result.finalAmount}, interestEarned=${result.interestEarned}")
 
-                // Сохраняем результат в ViewModel
-                viewModel.saveResult(
-                    finalInitialAmount,
-                    finalPeriodMonths,
-                    finalInterestRate,
-                    monthlyTopUpValue,
-                    result.finalAmount,
-                    result.interestEarned
-                )
+                // ПЕРЕДАЁМ ДАННЫЕ НА ЭКРАН РЕЗУЛЬТАТА
+                val bundle = Bundle().apply {
+                    putDouble("initialAmount", initialAmount)
+                    putInt("periodMonths", periodMonths)
+                    putDouble("interestRate", interestRate)
+                    if (monthlyTopUpValue != null) {
+                        putDouble("monthlyTopUp", monthlyTopUpValue)
+                    }
+                    putDouble("finalAmount", result.finalAmount)
+                    putDouble("interestEarned", result.interestEarned)
+                }
 
-                // Переход на экран результата
-                view.findNavController().navigate(R.id.action_secondStepFragment_to_resultFragment)
+                view.findNavController().navigate(R.id.action_secondStepFragment_to_resultFragment, bundle)
             }
         }
     }

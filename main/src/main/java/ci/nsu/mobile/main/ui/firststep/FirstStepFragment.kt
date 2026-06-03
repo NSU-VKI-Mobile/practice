@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import ci.nsu.mobile.main.R
 import ci.nsu.mobile.main.databinding.FragmentFirstStepBinding
@@ -16,7 +15,6 @@ class FirstStepFragment : Fragment() {
 
     private var _binding: FragmentFirstStepBinding? = null
     private val binding get() = _binding!!
-    private lateinit var viewModel: FirstStepViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,8 +27,6 @@ class FirstStepFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel = ViewModelProvider(this)[FirstStepViewModel::class.java]
 
         binding.backButton.setOnClickListener {
             view.findNavController().navigate(R.id.action_firstStepFragment_to_mainFragment)
@@ -51,8 +47,12 @@ class FirstStepFragment : Fragment() {
                     showError(periodResult.message)
                 }
                 amountResult is Validator.Result.Success && periodResult is Validator.Result.Success -> {
-                    viewModel.saveInitialData(amountResult.data, periodResult.data)
-                    view.findNavController().navigate(R.id.action_firstStepFragment_to_secondStepFragment)
+                    // ПЕРЕДАЁМ ДАННЫЕ ЧЕРЕЗ BUNDLE
+                    val bundle = Bundle().apply {
+                        putDouble("initialAmount", amountResult.data)
+                        putInt("periodMonths", periodResult.data)
+                    }
+                    view.findNavController().navigate(R.id.action_firstStepFragment_to_secondStepFragment, bundle)
                 }
             }
         }
