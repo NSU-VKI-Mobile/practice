@@ -17,67 +17,65 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 1. Инициализируем базу данных и репозиторий
         val database = AppDatabase.getDatabase(this)
         val repository = DepositRepository(database.depositDao())
-
-        // 2. Создаем ViewModel, которая будет хранить данные между экранами
         val depositViewModel = DepositViewModel(repository)
 
         setContent {
-            // Настраиваем тему оформления
             MaterialTheme {
                 Surface {
-                    // Создаем контроллер навигации
                     val navController = rememberNavController()
 
-                    // Описываем все экраны приложения и правила перехода между ними
                     NavHost(navController = navController, startDestination = "home") {
-
-                        // Главный экран
                         composable("home") {
                             HomeScreen(
                                 onCalculateClick = { navController.navigate("input") },
-                                onHistoryClick = { /* Здесь будет переход в историю */ },
-                                onExitClick = { finish() } // Закрыть приложение
+                                onHistoryClick = { navController.navigate("history") },
+                                onExitClick = { finish() }
                             )
                         }
 
-                        // Первый этап: Ввод суммы и срока
                         composable("input") {
                             DepositInputScreen(
-                                amount = depositViewModel.initialAmountStr,
-                                onAmountChange = { depositViewModel.initialAmountStr = it },
-                                period = depositViewModel.periodMonthsStr,
-                                onPeriodChange = { depositViewModel.periodMonthsStr = it },
+                                amount = depositViewModel.initialAmount.value,
+                                onAmountChange = {
+                                    depositViewModel.saveFirstScreenData(it, depositViewModel.periodMonths.value)
+                                },
+                                period = depositViewModel.periodMonths.value,
+                                onPeriodChange = {
+                                    depositViewModel.saveFirstScreenData(depositViewModel.initialAmount.value, it)
+                                },
                                 onNextClick = { navController.navigate("additional") },
                                 onHomeClick = { navController.popBackStack("home", false) }
                             )
                         }
 
-                        // Второй этап: Выбор ставки и пополнение
                         composable("additional") {
                             AdditionalParamsScreen(
-                                periodMonths = depositViewModel.periodMonthsStr,
+                                periodMonths = depositViewModel.periodMonths.value,
                                 onBackClick = { navController.popBackStack() },
                                 onCalculateClick = { rate, topUp ->
-                                    depositViewModel.interestRate = rate
-                                    depositViewModel.monthlyTopUpStr = topUp
-                                    depositViewModel.calculate() // Считаем результат
+                                    depositViewModel.saveSecondScreenData(rate, topUp)
                                     navController.navigate("result")
                                 }
                             )
                         }
 
-                        // Третий экран: Итоги расчёта
                         composable("result") {
                             ResultScreen(
                                 viewModel = depositViewModel,
                                 onSaveClick = {
-                                    depositViewModel.saveResult() // Сохраняем в БД
-                                    navController.popBackStack("home", false) // Возврат на главную
+                                    depositViewModel.saveCalculation()
+                                    navController.popBackStack("home", false)
                                 },
                                 onHomeClick = { navController.popBackStack("home", false) }
+                            )
+                        }
+
+                        composable("history") {
+                            HistoryScreen(
+                                viewModel = depositViewModel,
+                                onBackClick = { navController.popBackStack() }
                             )
                         }
                     }

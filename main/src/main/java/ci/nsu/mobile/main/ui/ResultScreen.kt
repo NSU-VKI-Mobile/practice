@@ -5,6 +5,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -17,6 +19,14 @@ fun ResultScreen(
     onSaveClick: () -> Unit,
     onHomeClick: () -> Unit
 ) {
+    // Используем collectAsState для наблюдения за StateFlow
+    val initialAmount by viewModel.initialAmount.collectAsState()
+    val periodMonths by viewModel.periodMonths.collectAsState()
+    val interestRate by viewModel.interestRate.collectAsState()
+    val monthlyTopUp by viewModel.monthlyTopUp.collectAsState()
+    val finalAmount by viewModel.finalAmount.collectAsState()
+    val interestEarned by viewModel.interestEarned.collectAsState()
+
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -25,13 +35,13 @@ fun ResultScreen(
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("Стартовый взнос: ${viewModel.initialAmountStr} руб.")
-                Text("Срок: ${viewModel.periodMonthsStr} мес.")
-                Text("Ставка: ${viewModel.interestRate}%")
-                Text("Пополнение: ${viewModel.monthlyTopUpStr.ifBlank { "0" }} руб/мес")
+                Text("Стартовый взнос: $initialAmount руб.")
+                Text("Срок: $periodMonths мес.")
+                Text("Ставка: ${interestRate ?: 0}%")
+                Text("Пополнение: ${if (monthlyTopUp.isBlank()) "0" else monthlyTopUp} руб/мес")
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Итоговая сумма: ${String.format("%.2f", viewModel.finalAmount)} руб.")
-                Text("Начисленные проценты: ${String.format("%.2f", viewModel.interestEarned)} руб.")
+                Text("Итоговая сумма: ${String.format("%.2f", finalAmount)} руб.")
+                Text("Начисленные проценты: ${String.format("%.2f", interestEarned)} руб.")
             }
         }
         Spacer(modifier = Modifier.height(32.dp))

@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -15,9 +16,9 @@ fun AdditionalParamsScreen(
     onBackClick: () -> Unit,
     onCalculateClick: (Double, String) -> Unit
 ) {
-    var monthlyTopUp = remember { mutableStateOf("") }
-    var selectedRate = remember { mutableStateOf<Double?>(null) }
-    var expanded = remember { mutableStateOf(false) }
+    var monthlyTopUp by remember { mutableStateOf("") }
+    var selectedRate by remember { mutableStateOf<Double?>(null) }
+    var expanded by remember { mutableStateOf(false) }
 
     val period = periodMonths.toIntOrNull()
     val availableRates = when {
@@ -27,78 +28,97 @@ fun AdditionalParamsScreen(
         else -> listOf(5.0)
     }
 
-    val canCalculate = selectedRate.value != null
+    val canCalculate = selectedRate != null
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Экран 2: Дополнительные параметры", fontSize = 20.sp, modifier = Modifier.padding(top = 32.dp))
+        Text(
+            text = "Дополнительные параметры",
+            fontSize = 24.sp,
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = "Срок вклада: $periodMonths месяцев",
+            fontSize = 18.sp,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
 
-        Text(text = "Срок вклада: $periodMonths месяцев", fontSize = 16.sp, modifier = Modifier.padding(8.dp))
-
-        Spacer(modifier = Modifier.height(32.dp))
-
+        // Выбор ставки
         ExposedDropdownMenuBox(
-            expanded = expanded.value,
-            onExpandedChange = { expanded.value = it }
+            expanded = expanded,
+            onExpandedChange = { expanded = it }
         ) {
             OutlinedTextField(
-                value = selectedRate.value?.let { "$it%" } ?: "",
+                value = selectedRate?.let { "$it%" } ?: "",
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Выберите процентную ставку") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded.value) },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).menuAnchor()
+                label = { Text("Процентная ставка") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor()
             )
 
             ExposedDropdownMenu(
-                expanded = expanded.value,
-                onDismissRequest = { expanded.value = false }
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
             ) {
                 availableRates.forEach { rate ->
                     DropdownMenuItem(
                         text = { Text("$rate%") },
                         onClick = {
-                            selectedRate.value = rate
-                            expanded.value = false
+                            selectedRate = rate
+                            expanded = false
                         }
                     )
                 }
             }
         }
 
-        if (period == null) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "Укажите корректный срок на предыдущем экране", color = androidx.compose.ui.graphics.Color.Red, fontSize = 14.sp)
-        } else if (availableRates.isEmpty()) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "Нет доступных ставок для указанного срока", color = androidx.compose.ui.graphics.Color.Red, fontSize = 14.sp)
-        }
-
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Поле для пополнения
         OutlinedTextField(
-            value = monthlyTopUp.value,
-            onValueChange = { monthlyTopUp.value = it },
-            label = { Text("Ежемесячное пополнение (руб) (необязательно)") },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            value = monthlyTopUp,
+            onValueChange = { monthlyTopUp = it },
+            label = { Text("Ежемесячное пополнение (руб)") },
+            placeholder = { Text("необязательно") },
+            modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = onBackClick, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) { Text("Назад") }
-        Spacer(modifier = Modifier.height(16.dp))
+        // Сообщения об ошибках
+        if (period == null) {
+            Text(
+                text = "Укажите корректный срок на предыдущем экране",
+                color = Color.Red,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
+
+        // Кнопки
+        Button(
+            onClick = onBackClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Назад")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Button(
             onClick = {
                 if (canCalculate) {
-                    onCalculateClick(selectedRate.value!!, monthlyTopUp.value)
+                    onCalculateClick(selectedRate!!, monthlyTopUp)
                 }
             },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             enabled = canCalculate
         ) {
             Text("Рассчитать")

@@ -1,60 +1,121 @@
 package ci.nsu.mobile.main.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.DepositCalculation
 import ci.nsu.mobile.main.data.DepositRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class DepositViewModel(private val repository: DepositRepository) : ViewModel() {
-    var initialAmountStr by mutableStateOf("")
-    var periodMonthsStr by mutableStateOf("")
-    var interestRate by mutableStateOf(0.0)
-    var monthlyTopUpStr by mutableStateOf("")
-    var finalAmount by mutableStateOf(0.0)
-    var interestEarned by mutableStateOf(0.0)
+class DepositViewModel(
+    private val repository: DepositRepository
+) : ViewModel() {
 
-    fun calculate() {
-        val amount = initialAmountStr.toDoubleOrNull() ?: 0.0
-        val months = periodMonthsStr.toIntOrNull() ?: 0
-        val topUp = monthlyTopUpStr.toDoubleOrNull() ?: 0.0
+    private val _initialAmount = MutableStateFlow("")
+    val initialAmount: StateFlow<String> = _initialAmount.asStateFlow()
 
-        var currentTotal = amount
-        val monthlyRate = (interestRate / 100) / 12.0
+    private val _periodMonths = MutableStateFlow("")
+    val periodMonths: StateFlow<String> = _periodMonths.asStateFlow()
 
-        for (i in 1..months) {
-            currentTotal += currentTotal * monthlyRate
-            currentTotal += topUp
-        }
-
-        finalAmount = currentTotal
-        val totalInvested = amount + (topUp * months)
-        interestEarned = finalAmount - totalInvested
+    fun saveFirstScreenData(amount: String, months: String) {
+        _initialAmount.value = amount
+        _periodMonths.value = months
     }
 
-    fun saveResult() {
-        val currentAmount = initialAmountStr.toDoubleOrNull() ?: 0.0
-        val currentMonths = periodMonthsStr.toIntOrNull() ?: 0
-        val currentRate = interestRate
-        val currentTopUp = monthlyTopUpStr.toDoubleOrNull() ?: 0.0
-        val currentFinalAmount = finalAmount
-        val currentInterestEarned = interestEarned
-        val currentDate = System.currentTimeMillis()
+    private val _interestRate = MutableStateFlow<Double?>(null)
+    val interestRate: StateFlow<Double?> = _interestRate.asStateFlow()
 
+    private val _monthlyTopUp = MutableStateFlow<String>("")
+    val monthlyTopUp: StateFlow<String> = _monthlyTopUp.asStateFlow()
+
+    private val _finalAmount = MutableStateFlow(0.0)
+    val finalAmount: StateFlow<Double> = _finalAmount.asStateFlow()
+
+    private val _interestEarned = MutableStateFlow(0.0)
+    val interestEarned: StateFlow<Double> = _interestEarned.asStateFlow()
+
+    private val _isSaving = MutableStateFlow(false)
+    val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
+
+    private val _saveError = MutableStateFlow<String?>(null)
+    val saveError: StateFlow<String?> = _saveError.asStateFlow()
+
+    val history: Flow<List<DepositCalculation>> = repository.history
+
+    fun saveSecondScreenData(rate: Double, topUp: String) {
+        _interestRate.value = rate
+        _monthlyTopUp.value = topUp
+        calculateResult()
+    }
+
+    private fun calculateResult() {
+        val initial = _initialAmount.value.toDoubleOrNull() ?: return
+        val months = _periodMonths.value.toIntOrNull() ?: return
+        val rate = _interestRate.value ?: return
+        val topUp = _monthlyTopUp.value.toDoubleOrNull() ?: 0.0
+
+        val monthlyRate = rate / 100 / 12
+        var finalAmount = initial
+        var totalInterest = 0.0
+
+        for (month in 1..months) {
+            val interest = finalAmount * monthlyRate
+            finalAmount += interest
+            totalInterest += interest
+            finalAmount += topUp
+        }
+
+        _finalAmount.value = finalAmount
+        _interestEarned.value = totalInterest
+    }
+
+    fun saveCalculation() {
         viewModelScope.launch {
-            val calc = DepositCalculation(
-                initialAmount = currentAmount,
-                periodMonths = currentMonths,
-                interestRate = currentRate,
-                monthlyTopUp = currentTopUp,
-                finalAmount = currentFinalAmount,
-                interestEarned = currentInterestEarned,
-                calculationDate = currentDate
-            )
-            repository.saveResult(calc)
+            _isSaving.value = true
+            _saveError.value = null
+
+            try {
+                val initial = _initialAmount.value.toDoubleOrNull() ?: 0.0
+                val months = _periodMonths.value.toIntOrNull() ?: 0
+                val rate = _interestRate.value ?: 0.0
+                val topUp = _monthlyTopUp.value.toDoubleOrNull() ?: 0.0  // ← КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ
+
+                val calculation = DepositCalculation(
+                    initialAmount = initial,
+                    periodMonths = months,
+                    interestRate = rate,
+                    monthlyTopUp = topUp,
+                    finalAmount = _finalAmount.value,
+                    interestEarned = _interestEarned.value,
+                    calculationDate = System.currentTimeMillis()
+                )
+
+                repository.saveCalculation(calculation)
+            } catch (e: Exception) {
+                _saveError.value = "Ошибка сохранения: ${e.message}"
+            } finally {
+                _isSaving.value = false
+            }
         }
     }
+
+    fun resetCalculation() {
+        _initialAmount.value = ""
+        _periodMonths.value = ""
+        _interestRate.value = null
+        _monthlyTopUp.value = ""
+        _finalAmount.value = 0.0
+        _interestEarned.value = 0.0
+        _saveError.value = null
+    }
+
+    fun getInitialAmount(): String = _initialAmount.value
+    fun getPeriodMonths(): String = _periodMonths.value
+    fun getInterestRate(): Double? = _interestRate.value
+    fun getMonthlyTopUp(): String = _monthlyTopUp.value
+    fun getFinalAmount(): Double = _finalAmount.value
+    fun getInterestEarned(): Double = _interestEarned.value
 }
