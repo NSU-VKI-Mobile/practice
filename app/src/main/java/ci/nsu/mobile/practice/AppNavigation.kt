@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -32,7 +33,8 @@ import ci.nsu.mobile.practice.di.ServiceLocator
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    val serviceLocator = ServiceLocator.getInstance()
+    val context = LocalContext.current                         // <-- получаем контекст
+    val serviceLocator = ServiceLocator.getInstance(context)  // <-- передаём контекст
     val viewModelFactory = serviceLocator.viewModelFactory
 
     val isAuthenticated = TokenManager.token != null
@@ -87,9 +89,10 @@ fun AppNavigation() {
 @Composable
 fun MainFlowScreen(onLogout: () -> Unit) {
     val navController = rememberNavController()
-    val serviceLocator = ServiceLocator.getInstance()
+    val context = LocalContext.current
+    val serviceLocator = ServiceLocator.getInstance(context)  // <-- снова передаём контекст
     val viewModelFactory = serviceLocator.viewModelFactory
-    
+
     val userId = TokenManager.userId ?: 0L
 
     val items = listOf(
