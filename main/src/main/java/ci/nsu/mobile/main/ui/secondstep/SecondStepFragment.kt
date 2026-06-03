@@ -33,22 +33,50 @@ class SecondStepFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Инициализация ViewModels
         viewModel = ViewModelProvider(this)[SecondStepViewModel::class.java]
         firstStepViewModel = ViewModelProvider(requireActivity())[FirstStepViewModel::class.java]
 
+        // Получаем данные с первого экрана
         val periodMonths = firstStepViewModel.getPeriodMonths()
-        val availableRate = Validator.calculateInterestRate(periodMonths)
+        val initialAmount = firstStepViewModel.getInitialAmount()
 
-        // Настройка выпадающего списка
+        // Логирование для проверки
+        android.util.Log.d("SecondStepFragment", "=== ПОЛУЧЕННЫЕ ДАННЫЕ ===")
+        android.util.Log.d("SecondStepFragment", "Стартовый взнос: $initialAmount")
+        android.util.Log.d("SecondStepFragment", "Срок в месяцах: $periodMonths")
+
+        // Проверка: если данные не переданы, показываем ошибку
+        if (initialAmount <= 0) {
+            Toast.makeText(requireContext(), "Ошибка: не передан стартовый взнос. Вернитесь на первый экран.", Toast.LENGTH_LONG).show()
+        }
+
+        if (periodMonths <= 0) {
+            Toast.makeText(requireContext(), "Ошибка: не передан срок вклада. Вернитесь на первый экран.", Toast.LENGTH_LONG).show()
+        }
+
+        // Расчёт доступной процентной ставки
+        val availableRate = if (periodMonths > 0) {
+            Validator.calculateInterestRate(periodMonths)
+        } else {
+            0.0
+        }
+
+        android.util.Log.d("SecondStepFragment", "Доступная ставка: $availableRate%")
+
+        // Настройка выпадающего списка для процентной ставки
         val rates = listOf("$availableRate%")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, rates)
         binding.interestRateSpinner.setAdapter(adapter)
         binding.interestRateSpinner.setText("$availableRate%", false)
+        binding.interestRateSpinner.isEnabled = false  // Блокируем выбор, так как ставка автоматическая
 
+        // Кнопка "Назад" - возврат к первому этапу
         binding.backButton.setOnClickListener {
             view.findNavController().navigate(R.id.action_secondStepFragment_to_firstStepFragment)
         }
 
+        // Кнопка "Рассчитать"
         binding.calculateButton.setOnClickListener {
             val monthlyTopUp = binding.monthlyTopUpInput.text.toString()
             val topUpResult = Validator.validateMonthlyTopUp(monthlyTopUp)
@@ -56,36 +84,52 @@ class SecondStepFragment : Fragment() {
             if (topUpResult is Validator.Result.Error) {
                 showError(topUpResult.message)
             } else {
-                val initialAmount = firstStepViewModel.getInitialAmount()
-                val periodMonths = firstStepViewModel.getPeriodMonths()
-                val interestRate = availableRate
                 val monthlyTopUpValue = (topUpResult as Validator.Result.Success).data
 
-                // ЛОГИРОВАНИЕ для проверки
-                android.util.Log.d("SecondStep", "initialAmount: $initialAmount")
-                android.util.Log.d("SecondStep", "periodMonths: $periodMonths")
-                android.util.Log.d("SecondStep", "interestRate: $interestRate")
-                android.util.Log.d("SecondStep", "monthlyTopUpValue: $monthlyTopUpValue")
+                // Повторно получаем данные (на случай если они обновились)
+                val finalInitialAmount = firstStepViewModel.getInitialAmount()
+                val finalPeriodMonths = firstStepViewModel.getPeriodMonths()
+                val finalInterestRate = Validator.calculateInterestRate(finalPeriodMonths)
 
+                android.util.Log.d("SecondStepFragment", "=== ДАННЫЕ ДЛЯ РАСЧЁТА ===")
+                android.util.Log.d("SecondStepFragment", "Стартовый взнос: $finalInitialAmount")
+                android.util.Log.d("SecondStepFragment", "Срок: $finalPeriodMonths")
+                android.util.Log.d("SecondStepFragment", "Ставка: $finalInterestRate")
+                android.util.Log.d("SecondStepFragment", "Пополнение: $monthlyTopUpValue")
+
+                if (finalInitialAmount <= 0) {
+                    showError("Ошибка: не указан стартовый взнос")
+                    return@setOnClickListener
+                }
+
+                if (finalPeriodMonths <= 0) {
+                    showError("Ошибка: не указан срок вклада")
+                    return@setOnClickListener
+                }
+
+                // Выполняем расчёт
                 val result = Validator.calculateDeposit(
-                    initialAmount,
-                    periodMonths,
-                    interestRate,
+                    finalInitialAmount,
+                    finalPeriodMonths,
+                    finalInterestRate,
                     monthlyTopUpValue
                 )
 
-                android.util.Log.d("SecondStep", "finalAmount: ${result.finalAmount}")
-                android.util.Log.d("SecondStep", "interestEarned: ${result.interestEarned}")
+                android.util.Log.d("SecondStepFragment", "=== РЕЗУЛЬТАТ РАСЧЁТА ===")
+                android.util.Log.d("SecondStepFragment", "Итоговая сумма: ${result.finalAmount}")
+                android.util.Log.d("SecondStepFragment", "Начисленные проценты: ${result.interestEarned}")
 
+                // Сохраняем результат в ViewModel
                 viewModel.saveResult(
-                    initialAmount,
-                    periodMonths,
-                    interestRate,
+                    finalInitialAmount,
+                    finalPeriodMonths,
+                    finalInterestRate,
                     monthlyTopUpValue,
                     result.finalAmount,
                     result.interestEarned
                 )
 
+                // Переход на экран результата
                 view.findNavController().navigate(R.id.action_secondStepFragment_to_resultFragment)
             }
         }

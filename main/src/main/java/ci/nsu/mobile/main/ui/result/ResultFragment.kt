@@ -52,46 +52,59 @@ class ResultFragment : Fragment() {
     }
 
     private fun displayResult() {
-        val depositData = secondStepViewModel.getDepositData()
+        val initialAmount = secondStepViewModel.getInitialAmount()
+        val periodMonths = secondStepViewModel.getPeriodMonths()
+        val interestRate = secondStepViewModel.getInterestRate()
+        val monthlyTopUp = secondStepViewModel.getMonthlyTopUp()
+        val finalAmount = secondStepViewModel.getFinalAmount()
+        val interestEarned = secondStepViewModel.getInterestEarned()
 
-        android.util.Log.d("ResultFragment", "depositData: $depositData")
+        android.util.Log.d("ResultFragment", "initialAmount: $initialAmount")
+        android.util.Log.d("ResultFragment", "periodMonths: $periodMonths")
+        android.util.Log.d("ResultFragment", "interestRate: $interestRate")
+        android.util.Log.d("ResultFragment", "finalAmount: $finalAmount")
 
-        depositData?.let { data ->
-            binding.initialAmountText.text = "Стартовый взнос: ${String.format("%.2f", data.initialAmount)} ₽"
-            binding.periodText.text = "Срок: ${data.periodMonths} месяцев"
-            binding.interestRateText.text = "Процентная ставка: ${String.format("%.1f", data.interestRate)}%"
-
-            val monthlyTopUpText = if (data.monthlyTopUp != null) {
-                "${String.format("%.2f", data.monthlyTopUp)} ₽"
-            } else {
-                "Не указано"
-            }
-            binding.monthlyTopUpText.text = "Ежемесячное пополнение: $monthlyTopUpText"
-
-            binding.finalAmountText.text = "Итоговая сумма: ${String.format("%.2f", secondStepViewModel.getFinalAmount())} ₽"
-            binding.interestEarnedText.text = "Начисленные проценты: ${String.format("%.2f", secondStepViewModel.getInterestEarned())} ₽"
-        } ?: run {
-            // Если данных нет - показываем ошибку
+        if (initialAmount <= 0) {
             binding.initialAmountText.text = "Ошибка: нет данных для расчёта"
-            Toast.makeText(requireContext(), "Ошибка: сначала выполните расчёт", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "Сначала выполните расчёт на предыдущем экране", Toast.LENGTH_LONG).show()
+            return
         }
+
+        binding.initialAmountText.text = "Стартовый взнос: ${String.format("%.2f", initialAmount)} ₽"
+        binding.periodText.text = "Срок: $periodMonths месяцев"
+        binding.interestRateText.text = "Процентная ставка: ${String.format("%.1f", interestRate)}%"
+
+        val monthlyTopUpText = if (monthlyTopUp != null && monthlyTopUp > 0) {
+            "${String.format("%.2f", monthlyTopUp)} ₽"
+        } else {
+            "Не указано"
+        }
+        binding.monthlyTopUpText.text = "Ежемесячное пополнение: $monthlyTopUpText"
+
+        binding.finalAmountText.text = "Итоговая сумма: ${String.format("%.2f", finalAmount)} ₽"
+        binding.interestEarnedText.text = "Начисленные проценты: ${String.format("%.2f", interestEarned)} ₽"
     }
 
     private fun saveCalculation() {
-        val depositData = secondStepViewModel.getDepositData()
+        val initialAmount = secondStepViewModel.getInitialAmount()
+        val periodMonths = secondStepViewModel.getPeriodMonths()
+        val interestRate = secondStepViewModel.getInterestRate()
+        val monthlyTopUp = secondStepViewModel.getMonthlyTopUp()
+        val finalAmount = secondStepViewModel.getFinalAmount()
+        val interestEarned = secondStepViewModel.getInterestEarned()
 
-        if (depositData == null) {
+        if (initialAmount <= 0) {
             Toast.makeText(requireContext(), "Нет данных для сохранения", Toast.LENGTH_SHORT).show()
             return
         }
 
         val calculation = DepositCalculation(
-            initialAmount = depositData.initialAmount,
-            periodMonths = depositData.periodMonths,
-            interestRate = depositData.interestRate,
-            monthlyTopUp = depositData.monthlyTopUp,
-            finalAmount = secondStepViewModel.getFinalAmount(),
-            interestEarned = secondStepViewModel.getInterestEarned(),
+            initialAmount = initialAmount,
+            periodMonths = periodMonths,
+            interestRate = interestRate,
+            monthlyTopUp = monthlyTopUp,
+            finalAmount = finalAmount,
+            interestEarned = interestEarned,
             calculationDate = System.currentTimeMillis()
         )
 
