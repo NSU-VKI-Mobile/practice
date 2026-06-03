@@ -77,6 +77,7 @@ fun RegisterScreen(
         OutlinedTextField(viewModel.firstName, {viewModel.firstName = it}, label = {Text("Имя")})
         OutlinedTextField(viewModel.lastName, {viewModel.lastName = it}, label = {Text("Фамилия")})
         OutlinedTextField(viewModel.middleName, {viewModel.middleName = it}, label = {Text("Отчество")})
+        OutlinedTextField(viewModel.birthDate, {viewModel.birthDate = it}, label = {Text("Дата рождения")})
         OutlinedTextField(viewModel.selectedGender, {viewModel.selectedGender = it}, label = {Text("Пол")})
 
         ExposedDropdownMenuBox(
