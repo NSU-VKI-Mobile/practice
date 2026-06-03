@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Notifier" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">#FF6200EE</item>
+        <item name="android:colorPrimaryDark">#FF3700B3</item>
+        <item name="android:colorAccent">#FF03DAC5</item>
+        <item name="android:textColorPrimary">#FF000000</item>
+        <item name="android:textColorSecondary">#FF000000</item>
+    </style>
+</resources>
