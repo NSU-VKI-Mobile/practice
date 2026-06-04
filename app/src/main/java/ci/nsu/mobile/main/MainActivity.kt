@@ -19,9 +19,11 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.auth.di.AuthNavigatorImpl
 import ci.nsu.mobile.auth.ui.screens.LoginScreen
 import ci.nsu.mobile.auth.ui.screens.RegisterScreen
 import ci.nsu.mobile.auth.viewmodel.AuthViewModel
+import ci.nsu.mobile.calculations.di.CalculationsNavigatorImpl
 import ci.nsu.mobile.calculations.viewmodel.DepositViewModel
 import ci.nsu.mobile.calculations.viewmodel.MyCalculationsViewModel
 import ci.nsu.mobile.main.di.ServiceLocator
@@ -59,7 +61,6 @@ fun AppNavigation() {
     val authRepository = serviceLocator.authRepository
     val depositRepository = serviceLocator.depositRepository
     val userPreferences = serviceLocator.userPreferences
-    val calculationsNavigator = serviceLocator.calculationsNavigator
 
     val authViewModel: AuthViewModel = viewModel(
         factory = viewModelFactory {
@@ -109,6 +110,9 @@ fun AppNavigation() {
         }
     }
 
+    val authNavigator = AuthNavigatorImpl(navController)
+    val calculationsNavigator = CalculationsNavigatorImpl(navController)
+
     NavHost(
         navController = navController,
         startDestination = "splash"
@@ -151,11 +155,9 @@ fun AppNavigation() {
 
         composable("main") {
             MainScreen(
-                onLogout = { shouldLogout = true },
                 usersViewModel = usersViewModel,
                 depositViewModel = depositViewModel,
-                myCalculationsViewModel = myCalculationsViewModel,
-                calculationsNavigator = calculationsNavigator
+                myCalculationsViewModel = myCalculationsViewModel
             )
         }
     }

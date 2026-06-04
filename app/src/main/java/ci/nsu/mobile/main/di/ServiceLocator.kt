@@ -33,10 +33,6 @@ class ServiceLocator(private val context: Context) {
         AuthManagerImpl(userPreferences, authRepository)
     }
 
-    val authNavigator: AuthNavigator by lazy {
-        AuthNavigatorImpl(context)
-    }
-
     val userRepository: UserRepository by lazy {
         UserRepositoryImpl(authRepository)
     }
@@ -62,7 +58,4 @@ class ServiceLocator(private val context: Context) {
         CalculationsProviderImpl(depositRepository)
     }
 
-    val calculationsNavigator: CalculationsNavigator by lazy {
-        CalculationsNavigatorImpl(context)
-    }
 }

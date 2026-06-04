@@ -1,14 +1,16 @@
 package ci.nsu.mobile.calculations.di
 
-import android.content.Context
+import androidx.navigation.NavController
 import ci.nsu.mobile.domain.navigation.CalculationsNavigator
 
-class CalculationsNavigatorImpl(private val context: Context) : CalculationsNavigator {
-    override fun navigateToNewCalculation() {
-        // Реализация позже
+class CalculationsNavigatorImpl(
+    private val navController: NavController
+) : CalculationsNavigator {
+    override fun navigateToMyCalculations() {
+        navController.navigate("my_calculations")
     }
 
-    override fun navigateToMyCalculations() {
-        // Реализация позже
+    override fun navigateToNewCalculation() {
+        navController.navigate("new_calculation")
     }
 }

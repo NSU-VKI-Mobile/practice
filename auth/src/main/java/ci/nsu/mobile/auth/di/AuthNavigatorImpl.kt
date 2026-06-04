@@ -1,14 +1,16 @@
 package ci.nsu.mobile.auth.di
 
-import android.content.Context
+import androidx.navigation.NavController
 import ci.nsu.mobile.domain.navigation.AuthNavigator
 
-class AuthNavigatorImpl(private val context: Context) : AuthNavigator {
+class AuthNavigatorImpl(
+    private val navController: NavController
+) : AuthNavigator {
     override fun navigateToLogin() {
-        // Используем context здесь для запуска Intent
+        navController.navigate("login")
     }
 
     override fun navigateToRegister() {
-        // Используем context здесь для запуска Intent
+        navController.navigate("register")
     }
 }

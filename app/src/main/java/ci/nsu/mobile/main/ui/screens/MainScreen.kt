@@ -26,20 +26,21 @@ import ci.nsu.mobile.calculations.viewmodel.DepositViewModel
 import ci.nsu.mobile.calculations.viewmodel.MyCalculationsViewModel
 import ci.nsu.mobile.main.ui.screens.users.UsersScreen
 import ci.nsu.mobile.main.viewmodel.UsersViewModel
-import ci.nsu.mobile.domain.navigation.CalculationsNavigator
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import ci.nsu.mobile.auth.di.AuthNavigatorImpl
+import ci.nsu.mobile.calculations.di.CalculationsNavigatorImpl
 
 @Composable
 fun MainScreen(
-    onLogout: () -> Unit,
     usersViewModel: UsersViewModel,
     depositViewModel: DepositViewModel,
-    myCalculationsViewModel: MyCalculationsViewModel,
-    calculationsNavigator: CalculationsNavigator
+    myCalculationsViewModel: MyCalculationsViewModel
 ) {
     val navController = rememberNavController()
     var selectedItem by remember { mutableStateOf(0) }
+
+    val authNavigator = AuthNavigatorImpl(navController)
+    val calculationsNavigator = CalculationsNavigatorImpl(navController)
 
     val items = listOf(
         "Пользователи" to android.R.drawable.ic_menu_manage,
@@ -57,8 +58,8 @@ fun MainScreen(
                             selectedItem = index
                             when (index) {
                                 0 -> navController.navigate("users")
-                                1 -> navController.navigate("my_calculations")
-                                2 -> navController.navigate("new_calculation")
+                                1 -> calculationsNavigator.navigateToMyCalculations()
+                                2 -> calculationsNavigator.navigateToNewCalculation()
                             }
                         },
                         icon = { Icon(painterResource(id = icon), contentDescription = title) },
@@ -76,7 +77,7 @@ fun MainScreen(
             // Вкладка 1: Пользователи
             composable("users") {
                 UsersScreen(
-                    onLogout = onLogout,
+                    onLogout = { authNavigator.navigateToLogin() },
                     viewModel = usersViewModel
                 )
             }
