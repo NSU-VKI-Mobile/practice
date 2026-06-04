@@ -13,8 +13,8 @@ import retrofit2.http.POST
  * Works with HTTP requests
  */
 interface ApiService {
-    @POST("auth/login")
-    suspend fun login(@Body request: LoginRequestDto): LoginResponseDto
+    @POST("auth/login")//Retrofit сам создает HTTP запрос
+    suspend fun login(@Body request: LoginRequestDto): LoginResponseDto//suspend позволяет выполнять запрос асинхронно
 
     @POST("auth/register")
     suspend fun register(@Body request: RegisterRequestDto)

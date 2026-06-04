@@ -37,9 +37,11 @@ class MainActivity : ComponentActivity() {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(tokenManager))
             .build()
-        val json = Json { ignoreUnknownKeys = true }
+        val json = Json { ignoreUnknownKeys = true
+            coerceInputValues = true
+        }
         val apiService = Retrofit.Builder()
-            .baseUrl("http://10.0.0.2:8080")
+            .baseUrl("http://192.168.200.160:8080/api/")
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
