@@ -40,7 +40,7 @@ val appModule = module {
         val json: Json = get()
 
         Retrofit.Builder()
-            .baseUrl("http://10.0.0.2:8080")
+            .baseUrl("http://192.168.0.240:8080")
             .client(get()) // get() подставит OkHttpClient
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
