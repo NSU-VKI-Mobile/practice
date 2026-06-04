@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/main" />
           </set>
         </option>
+        <option name="resolveExternalAnnotations" value="true" />
       </GradleProjectSettings>
     </option>
     <option name="parallelModelFetch" value="true" />
