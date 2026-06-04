@@ -46,11 +46,19 @@ fun DepositDetailScreen(
     val format = NumberFormat.getCurrencyInstance(Locale("ru", "RU"))
     val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale("ru", "RU"))
 
+
+
+
+
     LaunchedEffect(calculationId, userId) {
         depositViewModel.setUserId(userId)
         scope.launch {
             isLoading = true
-            calculation = depositViewModel.getCalculationById(calculationId)
+            try {
+                calculation = depositViewModel.getCalculationById(calculationId)
+            } catch (e: Exception) {
+                calculation = null
+            }
             isLoading = false
         }
     }

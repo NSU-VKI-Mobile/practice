@@ -151,7 +151,8 @@ fun MainFlowScreen(onLogout: () -> Unit) {
                 val depositViewModel: DepositViewModel = viewModel(factory = viewModelFactory)
                 DepositCalculatorScreen(
                     depositViewModel = depositViewModel,
-                    userId = userId
+                    userId = userId,
+                    onSaveSuccess = { navController.popBackStack() }
                 )
             }
 

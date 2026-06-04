@@ -22,7 +22,8 @@ import java.util.Locale
 @Composable
 fun DepositCalculatorScreen(
     depositViewModel: DepositViewModel,
-    userId: Long
+    userId: Long,
+    onSaveSuccess: () -> Unit
 ) {
     var step by remember { mutableStateOf(1) }
     var initialAmount by remember { mutableStateOf("") }
@@ -41,6 +42,7 @@ fun DepositCalculatorScreen(
     LaunchedEffect(Unit) {
         depositViewModel.saveSuccess.collectLatest {
             isSaving = false
+            onSaveSuccess()
         }
         depositViewModel.error.collectLatest { error ->
             isSaving = false
@@ -120,6 +122,8 @@ fun DepositCalculatorScreen(
         }
     }
 }
+
+
 
 @Composable
 fun Step1Input(

@@ -8,13 +8,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class AuthManagerImpl(private val repository: AuthRepository) : AuthManager {
-    
-    private val _authState = MutableStateFlow<AuthState>(if (isLoggedIn()) AuthState.Authenticated(getCurrentUser()!!) else AuthState.Unauthenticated)
+class AuthManagerImpl(
+    private val repository: AuthRepository
+) : AuthManager {
+
+    private val _authState = MutableStateFlow<AuthState>(
+        if (repository.isAuthenticated()) {
+            val user = getCurrentUser()
+            if (user != null) AuthState.Authenticated(user)
+            else AuthState.Unauthenticated
+        } else AuthState.Unauthenticated
+    )
 
     override fun getCurrentUser(): User? {
-        val id = TokenManager.userId ?: return null
-        return User(id, "User", "") // We might need to store/fetch more details
+        val userId = TokenManager.userId ?: return null
+        // В реальном приложении здесь можно загрузить пользователя из репозитория
+        return User(userId, "User", "")
     }
 
     override fun isLoggedIn(): Boolean = repository.isAuthenticated()
@@ -25,4 +34,9 @@ class AuthManagerImpl(private val repository: AuthRepository) : AuthManager {
     }
 
     override fun observeAuthState(): Flow<AuthState> = _authState.asStateFlow()
+
+    // Вспомогательный метод для обновления состояния после логина
+    fun updateAuthState(user: User) {
+        _authState.value = AuthState.Authenticated(user)
+    }
 }
