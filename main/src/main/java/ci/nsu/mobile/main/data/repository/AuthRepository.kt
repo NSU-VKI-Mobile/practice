@@ -18,12 +18,10 @@ class AuthRepository {
                 val token = response.body()?.token
                 if (token != null) {
                     TokenManager.token = token
-                    // После получения токена загружаем текущего пользователя
                     val userResponse = api.getCurrentUser()
                     if (userResponse.isSuccessful && userResponse.body() != null) {
                         Result.success(userResponse.body()!!)
                     } else {
-                        // Если /users/me недоступен — ищем по логину в списке
                         val usersResponse = api.getUsers()
                         val user = usersResponse.body()?.find { it.login == login }
                         if (user != null) Result.success(user)

@@ -10,7 +10,6 @@ object TokenManager {
 
     private lateinit var prefs: SharedPreferences
 
-    // Вызвать один раз в MainActivity
     fun init(context: Context) {
         prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
