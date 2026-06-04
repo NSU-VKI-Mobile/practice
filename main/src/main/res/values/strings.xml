@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">main</string>
+    <string name="app_name">Кото-приложение</string>
+    <string name="get_next_cat">Следующий кот</string>
+    <string name="see_history">Моя история</string>
+    <string name="no_cat_loaded">Кот не загружен</string>
+    <string name="history_title">История просмотров</string>
+    <string name="cute_cat">Милый кот</string>
+    <string name="share">Поделиться</string>
+    <string name="delete">Удалить</string>
+    <string name="back">Назад</string>
 </resources>
