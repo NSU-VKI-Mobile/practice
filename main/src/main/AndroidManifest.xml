@@ -7,6 +7,37 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Draft" />
+        android:theme="@style/Theme.Draft">
+
+        <activity
+            android:name=".DepositDetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DepositHistoryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DepositResultActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DepositStepTwoActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DepositStepOneActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
 
 </manifest>
