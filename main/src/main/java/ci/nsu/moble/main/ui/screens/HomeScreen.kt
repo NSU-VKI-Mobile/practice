@@ -1,4 +1,4 @@
-package ci.nsu.moble.main.ui.Screens
+package ci.nsu.moble.main.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -10,15 +10,15 @@ import androidx.compose.ui.unit.dp
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 
 @Composable
-fun ScreenTwoContent() {
+fun HomeScreen() {
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("This is Screen Two")
+        Text("SecondActivity")
     }
 }
 @Preview(showBackground = true)
 @Composable
-fun ScreenTwoContentPreview() {
+fun HomeScreenPreview() {
     PracticeTheme {
-        ScreenTwoContent()
+        HomeScreen()
     }
 }
