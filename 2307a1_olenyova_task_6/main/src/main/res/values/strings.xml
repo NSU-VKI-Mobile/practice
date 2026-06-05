@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">main</string>
+    <string name="error1">Заполните все поля</string>
+</resources>
