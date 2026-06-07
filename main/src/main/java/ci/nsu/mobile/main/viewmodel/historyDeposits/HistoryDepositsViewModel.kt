@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.network.TokenManager
 import ci.nsu.mobile.main.data.repository.DepositFilter
 import ci.nsu.mobile.main.data.repository.DepositRepository
-import ci.nsu.mobile.main.data.room.DepositCalculationEntity
+import ci.nsu.mobile.main.data.room.DepositCalculation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -100,7 +100,7 @@ class HistoryDepositsViewModel @Inject constructor(
             rate = values.selectedRate)
         _state.update { it.copy(filter = filter) }
     }
-    private fun deleteDeposit(deposit: DepositCalculationEntity) {
+    private fun deleteDeposit(deposit: DepositCalculation) {
         viewModelScope.launch {
             repository.deleteDeposit(deposit)
         }

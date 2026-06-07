@@ -9,14 +9,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DepositDao {
     @Insert
-    suspend fun InsertDeposit(deposit: DepositCalculationEntity)
+    suspend fun InsertDeposit(deposit: DepositCalculation)
 
     @Query("select * from deposit_calculations where userId=:userId order by calculationDate desc")
-    fun GetAll(userId: Long): Flow<List<DepositCalculationEntity>>
+    fun GetAll(userId: Long): Flow<List<DepositCalculation>>
 
     @Query("select * from deposit_calculations where initialAmount=:initialAmount and periodMonths=:periodMonths and interestRate=:interestRate  AND ((monthlyTopUp IS NULL AND :monthlyTopUp IS NULL) OR monthlyTopUp = :monthlyTopUp) LIMIT 1")
-    suspend fun findDuplication(initialAmount: Double, periodMonths: Int, interestRate: Int, monthlyTopUp: Double?): DepositCalculationEntity?
+    suspend fun findDuplication(initialAmount: Double, periodMonths: Int, interestRate: Int, monthlyTopUp: Double?): DepositCalculation?
 
     @Delete
-    suspend fun deleteDeposit(deposit: DepositCalculationEntity)
+    suspend fun deleteDeposit(deposit: DepositCalculation)
 }

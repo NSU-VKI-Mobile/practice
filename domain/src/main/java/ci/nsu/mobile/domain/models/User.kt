@@ -1,9 +1,9 @@
-package ci.nsu.mobile.main.data.network.model
+package ci.nsu.mobile.domain.models
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserDto(
+data class User(
     val userId: Int,
     val login: String,
     val email: String,

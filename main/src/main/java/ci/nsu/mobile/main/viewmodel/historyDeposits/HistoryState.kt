@@ -1,11 +1,11 @@
 package ci.nsu.mobile.main.viewmodel.historyDeposits
 
 import ci.nsu.mobile.main.data.repository.DepositFilter
-import ci.nsu.mobile.main.data.room.DepositCalculationEntity
+import ci.nsu.mobile.main.data.room.DepositCalculation
 
 data class HistoryState (
-    val deposits: List<DepositCalculationEntity> = emptyList(),
-    val selectedDeposit: DepositCalculationEntity? = null,
+    val deposits: List<DepositCalculation> = emptyList(),
+    val selectedDeposit: DepositCalculation? = null,
     val filter: DepositFilter = DepositFilter(),
     val startAmount: String = "",
     val endAmount: String = "",
@@ -20,8 +20,8 @@ data class HistoryState (
 )
 
 sealed class HistoryEvents {
-    data class SelectedDepositUpdate(val newDeposit: DepositCalculationEntity): HistoryEvents()
-    data class DeleteDeposit(val deposit: DepositCalculationEntity): HistoryEvents()
+    data class SelectedDepositUpdate(val newDeposit: DepositCalculation): HistoryEvents()
+    data class DeleteDeposit(val deposit: DepositCalculation): HistoryEvents()
     data class IsFilterOpenUpdate(val newValue: Boolean): HistoryEvents()
     data class SelectedRateChanged(val newRate: Int?): HistoryEvents()
     object FilterUp: HistoryEvents()

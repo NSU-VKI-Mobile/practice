@@ -3,7 +3,7 @@ package ci.nsu.mobile.main.data.room
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-@Database(entities = [DepositCalculationEntity::class],
+@Database(entities = [DepositCalculation::class],
     version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun depositDao(): DepositDao

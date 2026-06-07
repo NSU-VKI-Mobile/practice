@@ -10,10 +10,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import ci.nsu.mobile.main.data.network.model.UserDto
+import ci.nsu.mobile.main.data.network.model.User
 
 @Composable
-fun UserCard(user: UserDto) {
+fun UserCard(user: User) {
     Card(
         modifier = Modifier
             .fillMaxWidth()

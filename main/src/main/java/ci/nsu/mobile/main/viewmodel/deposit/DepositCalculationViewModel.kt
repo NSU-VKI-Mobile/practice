@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.network.TokenManager
 import ci.nsu.mobile.main.data.repository.DepositRepository
-import ci.nsu.mobile.main.data.room.DepositCalculationEntity
+import ci.nsu.mobile.main.data.room.DepositCalculation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -123,7 +123,7 @@ class DepositCalculationViewModel @Inject constructor (
     private fun saveEntity() {
         viewModelScope.launch {
             val state = _state.value
-            val entity = DepositCalculationEntity(
+            val entity = DepositCalculation(
                 userId = tokenManager.userId.toLong(),
                 initialAmount = state.initialAmount.toDouble(),
                 periodMonths = state.periodMonths.toInt(),

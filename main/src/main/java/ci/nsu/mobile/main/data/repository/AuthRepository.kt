@@ -5,7 +5,7 @@ import ci.nsu.mobile.main.data.network.TokenManager
 import ci.nsu.mobile.main.data.network.model.GroupDto
 import ci.nsu.mobile.main.data.network.model.LoginRequest
 import ci.nsu.mobile.main.data.network.model.RegisterRequest
-import ci.nsu.mobile.main.data.network.model.UserDto
+import ci.nsu.mobile.main.data.network.model.User
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,7 +14,7 @@ class AuthRepository @Inject constructor(
     private val service: ApiService,
     private val tokenManager: TokenManager
 ) {
-    suspend fun login(login: String, password: String): Result<UserDto> {
+    suspend fun login(login: String, password: String): Result<User> {
         return try {
             val response = service.loginUser(LoginRequest(login = login, password = password))
             if (!response.isSuccessful || response.body() == null) {
@@ -40,7 +40,7 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun register(registerRequest: RegisterRequest): Result<UserDto> {
+    suspend fun register(registerRequest: RegisterRequest): Result<User> {
         return try {
             val response = service.registerUser(registerRequest)
             if (!response.isSuccessful || response.body() == null) {
@@ -66,7 +66,7 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun getUsers(): Result<List<UserDto>> {
+    suspend fun getUsers(): Result<List<User>> {
         return try {
             val response = service.getUsers()
             if (response.isSuccessful && response.body() != null) {

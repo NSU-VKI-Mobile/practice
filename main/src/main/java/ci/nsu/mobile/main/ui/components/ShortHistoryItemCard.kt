@@ -9,11 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ci.nsu.mobile.main.data.room.DepositCalculationEntity
+import ci.nsu.mobile.main.data.room.DepositCalculation
 import java.util.Date
 
 @Composable
-fun ShortHistoryItemCard(deposit: DepositCalculationEntity, dateFormat: SimpleDateFormat, Click: ()-> Unit) {
+fun ShortHistoryItemCard(deposit: DepositCalculation, dateFormat: SimpleDateFormat, Click: ()-> Unit) {
     Card(modifier = Modifier.padding(20.dp).clickable(onClick = Click).width(400.dp)) {
         Text("DEPOSIT",
             modifier = Modifier.padding(10.dp))

@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "deposit_calculations")
-data class DepositCalculationEntity(
+data class DepositCalculation(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val userId: Long,
     /** стартовый взнос **/
