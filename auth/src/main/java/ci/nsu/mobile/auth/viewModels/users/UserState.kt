@@ -1,9 +1,9 @@
 package ci.nsu.mobile.auth.viewModels.users
 
-import ci.nsu.mobile.auth.data.network.models.UserDto
+import ci.nsu.mobile.domain.models.User
 
 data class UserState(
-    val users: List<UserDto> = emptyList(),
+    val users: List<User> = emptyList(),
     val errorMessage: String? = null,
     val isLoading: Boolean = false,
     val selectedBottomItem: String = "users"

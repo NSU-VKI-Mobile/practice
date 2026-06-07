@@ -1,20 +1,20 @@
 package ci.nsu.mobile.auth.data.repository
 
 import ci.nsu.mobile.auth.data.network.ApiService
-import ci.nsu.mobile.auth.data.network.TokenManager
 import ci.nsu.mobile.auth.data.network.models.GroupDto
 import ci.nsu.mobile.auth.data.network.models.LoginRequest
 import ci.nsu.mobile.auth.data.network.models.RegisterRequest
-import ci.nsu.mobile.auth.data.network.models.UserDto
+import ci.nsu.mobile.domain.models.User
+import ci.nsu.mobile.domain.token.ITokenManager
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AuthRepository @Inject constructor(
     private val service: ApiService,
-    private val tokenManager: TokenManager
+    private val tokenManager: ITokenManager
 ) {
-    suspend fun login(login: String, password: String): Result<UserDto> {
+    suspend fun login(login: String, password: String): Result<User> {
         return try {
             val response = service.loginUser(LoginRequest(login = login, password = password))
             if (!response.isSuccessful || response.body() == null) {
@@ -40,7 +40,7 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun register(registerRequest: RegisterRequest): Result<UserDto> {
+    suspend fun register(registerRequest: RegisterRequest): Result<User> {
         return try {
             val response = service.registerUser(registerRequest)
             if (!response.isSuccessful || response.body() == null) {
@@ -66,7 +66,7 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun getUsers(): Result<List<UserDto>> {
+    suspend fun getUsers(): Result<List<User>> {
         return try {
             val response = service.getUsers()
             if (response.isSuccessful && response.body() != null) {

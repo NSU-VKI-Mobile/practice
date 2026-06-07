@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
@@ -8,14 +8,17 @@ plugins {
 }
 
 android {
-    namespace = "ci.nsu.mobile.auth"
+    namespace = "ci.nsu.mobile.main"
     compileSdk = 36
 
     defaultConfig {
+        applicationId = "ci.nsu.mobile.app"
         minSdk = 24
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -27,24 +30,36 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
+    }
+
+    buildFeatures {
+        compose = true
     }
 }
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":auth"))
+    implementation(project(":calculations"))
     implementation(project(":ui"))
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.common.jvm)
+    ksp(libs.androidx.room.compiler)
     // AndroidX
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
-
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -88,4 +103,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }

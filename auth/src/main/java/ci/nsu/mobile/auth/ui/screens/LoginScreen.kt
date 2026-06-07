@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ci.nsu.mobile.auth.viewModels.login.LoginEvents
 import ci.nsu.mobile.auth.viewModels.login.LoginViewModel
+import ci.nsu.mobile.domain.navigation.Screens
 import ci.nsu.mobile.ui.components.CustomButton
 import ci.nsu.mobile.ui.components.TextFieldWithOptionalStar
 

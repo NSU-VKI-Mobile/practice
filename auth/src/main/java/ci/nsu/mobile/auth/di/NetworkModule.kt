@@ -2,7 +2,7 @@ package ci.nsu.mobile.auth.di
 
 import ci.nsu.mobile.auth.data.network.ApiService
 import ci.nsu.mobile.auth.data.network.AuthInterceptor
-import ci.nsu.mobile.auth.data.network.TokenManager
+import ci.nsu.mobile.domain.token.ITokenManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -15,7 +15,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
-import kotlin.jvm.java
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -34,7 +33,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideAuthInterceptor(tokenManager: TokenManager): AuthInterceptor {
+    fun provideAuthInterceptor(tokenManager: ITokenManager): AuthInterceptor {
         return AuthInterceptor(tokenManager)
     }
 

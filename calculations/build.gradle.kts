@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "ci.nsu.mobile.auth"
+    namespace = "ci.nsu.mobile.calculations"
     compileSdk = 36
 
     defaultConfig {
@@ -16,6 +16,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        // Добавьте это для Room
+
     }
 
     buildTypes {
@@ -36,15 +39,25 @@ android {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
     implementation(project(":domain"))
     implementation(project(":ui"))
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.common.jvm)
+    ksp(libs.androidx.room.compiler)
+
     // AndroidX
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
-
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -74,7 +87,6 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
-    implementation(libs.androidx.compose.material3)
     ksp(libs.hilt.compiler)
 
     // Coil
