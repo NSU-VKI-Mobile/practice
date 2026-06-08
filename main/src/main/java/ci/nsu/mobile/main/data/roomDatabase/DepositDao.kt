@@ -15,4 +15,9 @@ interface DepositDao {
     @Query("DELETE FROM deposits")
     suspend fun deleteAll()
 
+    @Query("SELECT * FROM deposits WHERE userId = :userId")
+    fun getDepositsByUserId(userId: Int): Flow<List<DepositEntity>>
+
+    @Query("DELETE FROM deposits WHERE userId = :userId")
+    suspend fun deleteDepositsByUserId(userId: Int)
 }

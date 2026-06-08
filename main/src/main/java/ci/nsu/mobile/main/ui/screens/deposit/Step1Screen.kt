@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.main.ui.screens.deposit
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,12 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.navigation.NavController
-import ci.nsu.mobile.main.ui.navigation.Screen
-import ci.nsu.mobile.main.viewModel.DepositViewModel
+
 
 @Composable
-fun Step1Screen(navController: NavController, vm: DepositViewModel) {
+fun Step1Screen(
+    vm: DepositViewModel,
+    onNext: () -> Unit
+) {
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -44,15 +45,7 @@ fun Step1Screen(navController: NavController, vm: DepositViewModel) {
         )
 
         Row {
-            Button(onClick = { navController.popBackStack() }) {
-                Text("В начало")
-            }
-
-            Button(onClick = {
-                if (vm.amount.isNotEmpty() && vm.months.isNotEmpty()) {
-                    navController.navigate(Screen.Step2.route)
-                }
-            }) {
+            Button(onClick = onNext) {
                 Text("Далее")
             }
         }

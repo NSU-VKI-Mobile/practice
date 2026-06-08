@@ -158,7 +158,7 @@ fun RegisterScreen(
         )
 
         Button(
-            onClick = onRegister,
+            onClick = {viewModel.register { onRegister() } },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Зарегистрироваться")

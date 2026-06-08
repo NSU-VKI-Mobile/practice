@@ -1,20 +1,32 @@
-package ci.nsu.mobile.main.viewModel
+package ci.nsu.mobile.main.ui.screens.deposit
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ci.nsu.mobile.main.data.local.SessionManager
 import ci.nsu.mobile.main.data.repository.DepositRepository
 import ci.nsu.mobile.main.data.roomDatabase.DepositEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import javax.inject.Inject
 
-
-class DepositViewModel(
-    private val repository: DepositRepository
+@HiltViewModel
+class DepositViewModel @Inject constructor(
+    private val repository: DepositRepository,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
+
+    init {
+        Log.d("LOCAL", sessionManager.getUserId()!!)
+    }
 
     var amount by mutableStateOf("")
     var months by mutableStateOf("")
@@ -23,10 +35,12 @@ class DepositViewModel(
 
     var result by mutableStateOf<DepositEntity?>(null)
 
-    val history = repository.getAll().stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        emptyList()
+    val userId = sessionManager.getUserId()?.toInt()!!
+    val history = repository.getDepositsByUserId(userId)
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
     )
 
     fun calculate() {
@@ -46,6 +60,7 @@ class DepositViewModel(
 
         result = DepositEntity(
             amount = a,
+            userId = sessionManager.getUserId()?.toInt()!!,
             months = m,
             rate = rate,
             monthlyTopUp = topUp,
@@ -81,8 +96,8 @@ class DepositViewModel(
     }
 
     fun formatDate(timestamp: Long): String {
-        val sdf = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm", java.util.Locale.getDefault())
-        return sdf.format(java.util.Date(timestamp))
+        val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+        return sdf.format(Date(timestamp))
     }
 
     fun formatDouble(value: Double): String {
@@ -91,7 +106,7 @@ class DepositViewModel(
 
     fun clearAll() {
         viewModelScope.launch {
-            repository.deleteAll()
+            repository.deleteDepositsByUserId(userId)
         }
     }
 

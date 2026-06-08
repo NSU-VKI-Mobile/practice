@@ -9,9 +9,10 @@ object AppRoutes {
     object Main {
         const val Users = "main_users"
         const val Deposits = "main_deposits"
-
-        object Calculation {
+        object Deposit {
             const val Step1 = "main_calculation_step1"
+            const val Step2 = "main_calculation_step2"
+            const val Result = "main_calculation_result"
         }
     }
 }

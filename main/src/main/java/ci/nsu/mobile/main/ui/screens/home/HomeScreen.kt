@@ -24,8 +24,7 @@ import ci.nsu.mobile.main.navigation.AppRoutes
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel,
-    onLogout: () -> Unit
+    viewModel: HomeViewModel
 ) {
     Column(
         modifier = Modifier
@@ -43,15 +42,6 @@ fun HomeScreen(
                 text = "Пользователи",
                 style = MaterialTheme.typography.headlineSmall
             )
-
-            Button(
-                onClick = {
-                    viewModel.logout()
-                    onLogout()
-                }
-            ) {
-                Text("Выйти")
-            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))

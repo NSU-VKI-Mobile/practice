@@ -1,5 +1,6 @@
 package ci.nsu.mobile.main.data.repository
 
+import android.util.Log
 import ci.nsu.mobile.main.data.api.AuthApiService
 import ci.nsu.mobile.main.data.local.SessionManager
 import ci.nsu.mobile.main.data.model.AuthResponse
@@ -20,7 +21,9 @@ class AuthRepository @Inject constructor(
             val response = api.login(request)
             sessionManager.saveToken(response.token)
             val userResponse = api.getUserByLogin(request.login)
-            sessionManager.saveUserId(userResponse.userId.toString())
+            val res = sessionManager.saveUserId(userResponse.userId.toString())
+            Log.d("LOCAL", sessionManager.getUserId()!!)
+            res
         }.onFailure { exception ->
             if (exception is CancellationException) throw exception
             sessionManager.clearSession()
@@ -34,7 +37,10 @@ class AuthRepository @Inject constructor(
             val response = api.register(request)
             sessionManager.saveToken(response.token)
             val userResponse = api.getUserByLogin(request.login)
-            sessionManager.saveUserId(userResponse.userId.toString())
+            val res = sessionManager.saveUserId(userResponse.userId.toString())
+            Log.d("LOCAL", sessionManager.getUserId()!!)
+            res
+
 
         }.onFailure { exception ->
             if (exception is CancellationException) throw exception

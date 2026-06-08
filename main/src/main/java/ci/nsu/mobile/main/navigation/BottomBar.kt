@@ -22,8 +22,8 @@ enum class BottomNavTab(
     val label: String
 ) {
     Users(AppRoutes.Main.Users, Icons.Default.Person, "Пользователи"),
-    Deposits(AppRoutes.Main.Users, Icons.Default.List, "Расчеты"),
-    Calculation(AppRoutes.Main.Calculation.Step1, Icons.Default.Create, "Расчет")
+    Deposits(AppRoutes.Main.Deposits, Icons.Default.List, "Расчеты"),
+    Calculation(AppRoutes.Main.Deposit.Step1, Icons.Default.Create, "Расчет")
 }
 
 @Composable

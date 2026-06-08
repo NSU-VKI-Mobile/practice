@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.main.ui.screens.deposit
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -25,10 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ci.nsu.mobile.main.data.roomDatabase.DepositEntity
-import ci.nsu.mobile.main.viewModel.DepositViewModel
 
 @Composable
-fun HistoryScreen(navController: NavController, vm: DepositViewModel) {
+fun HistoryScreen(
+    vm: DepositViewModel
+) {
 
     val history by vm.history.collectAsState()
 
@@ -52,6 +53,7 @@ fun HistoryScreen(navController: NavController, vm: DepositViewModel) {
                         }
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
+                        Text("User ID: ${item.userId}")
                         Text("Сумма: ${vm.formatDouble(item.amount)}")
                         Text("Итог: ${vm.formatDouble(item.finalAmount)}")
                     }
@@ -64,10 +66,6 @@ fun HistoryScreen(navController: NavController, vm: DepositViewModel) {
             modifier = Modifier.padding(8.dp)
         ) {
             Text("Очистить историю")
-        }
-
-        Button(onClick = { navController.popBackStack() }) {
-            Text("В начало")
         }
     }
 

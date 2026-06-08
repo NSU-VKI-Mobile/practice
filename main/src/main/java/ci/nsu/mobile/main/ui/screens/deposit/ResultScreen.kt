@@ -1,4 +1,4 @@
-package ci.nsu.mobile.main.ui.screens
+package ci.nsu.mobile.main.ui.screens.deposit
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,15 +12,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import ci.nsu.mobile.main.ui.navigation.Screen
-import ci.nsu.mobile.main.viewModel.DepositViewModel
+
 
 @Composable
-fun ResultScreen(navController: NavController, vm: DepositViewModel) {
+fun ResultScreen(
+    vm: DepositViewModel,
+    onSave: () -> Unit
+) {
 
     val result = vm.result ?: return
 
@@ -55,11 +55,7 @@ fun ResultScreen(navController: NavController, vm: DepositViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { vm.save()
-                navController.navigate(Screen.Main.route) {
-                popUpTo(Screen.Main.route) { inclusive = true }
-            }
-                vm.reset() },
+            onClick = onSave,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Сохранить")
