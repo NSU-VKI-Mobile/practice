@@ -1,7 +1,7 @@
 package ci.nsu.mobile.auth.di
 
-import ci.nsu.mobile.auth.data.TokenManagerImpl
 import ci.nsu.mobile.domain.token.ITokenManager
+import ci.nsu.mobile.domain.token.TokenManagerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

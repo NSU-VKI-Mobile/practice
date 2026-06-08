@@ -70,6 +70,7 @@ class LoginViewModel @Inject constructor(val repository: AuthRepository) : ViewM
                 _state.update { it.copy(isSuccess = false, isLoading = false ,errorMessage = "Ошибка входа. Проверьте введенные данные")}
             }
         }
+
     }
 
     private fun resetState() {

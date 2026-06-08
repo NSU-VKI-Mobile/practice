@@ -9,23 +9,26 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ci.nsu.mobile.auth.viewModels.userOwn.UserOwnEvents
 import ci.nsu.mobile.auth.viewModels.userOwn.UserOwnViewModel
 import ci.nsu.mobile.domain.models.User
 import ci.nsu.mobile.ui.components.CustomButton
 
 @Composable
 fun UserOwnScreen(
-    viewModel: UserOwnViewModel
+    viewModel: UserOwnViewModel,
+    openGenerateQR: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
+    LaunchedEffect(Unit) {
+        viewModel.loadCurrentUser()
+    }
     Scaffold() { innerPadding ->
         Column(
             modifier = Modifier
@@ -77,7 +80,7 @@ fun UserOwnScreen(
                     )
 
                     CustomButton(
-                        onClick = { viewModel.onEvent(UserOwnEvents.GetQR) },
+                        onClick = { openGenerateQR() },
                         "Создать QR-код авторизации",
                         modifier = Modifier.width(200.dp)
                     )

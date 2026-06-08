@@ -12,7 +12,9 @@ data class CodeState(
     val timerSeconds: Int = 30,
     val isTimerRunning: Boolean = false,
     val errorMessage: String? = null,
-    val showSaveDialog: Boolean = false
+    val showSaveDialog: Boolean = false,
+    val hasCameraPermission: Boolean = false,
+    val showPermissionDeniedDialog: Boolean = false
 )
 
 sealed class CodeEvents {
@@ -21,10 +23,14 @@ sealed class CodeEvents {
     object StopScan : CodeEvents()
     object SaveToGallery : CodeEvents()
     object DismissSaveDialog : CodeEvents()
+    object DismissError : CodeEvents()
+    object DismissPermissionDeniedDialog : CodeEvents()
     data class UpdateLogin(val login: String) : CodeEvents()
     data class UpdatePassword(val password: String) : CodeEvents()
     data class QrScanned(val data: String) : CodeEvents()
     data class TimerTick(val seconds: Int) : CodeEvents()
     object TimerFinished : CodeEvents()
+    object RequestCameraPermission : CodeEvents()
+    data class CameraPermissionResult(val granted: Boolean) : CodeEvents()
 }
 

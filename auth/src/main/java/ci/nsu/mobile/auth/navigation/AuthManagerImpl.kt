@@ -16,8 +16,13 @@ class AuthManagerImpl @Inject constructor(
 
     override fun getCurrentUser(): User? {
         return if (isLoggedIn()) {
-            val userId = tokenManager.userId ?: return null
-            val login = tokenManager.userLogin ?: return null
+            val userId = tokenManager.userId ?: run {
+                return null
+            }
+            val login = tokenManager.userLogin ?: run {
+                return null
+            }
+            android.util.Log.d("AUTH_MANAGER", "getCurrentUser - userId: $userId, login: $login")
             User(
                 userId = userId,
                 login = login,

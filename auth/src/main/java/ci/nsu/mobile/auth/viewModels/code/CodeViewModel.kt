@@ -1,22 +1,24 @@
 package ci.nsu.mobile.auth.viewModels.code
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.domain.interfaces.AuthManager
 import ci.nsu.mobile.domain.models.QrCodeData
-import ci.nsu.mobile.domain.models.User
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
@@ -48,7 +50,8 @@ class CodeViewModel @Inject constructor(
 
     companion object {
         private const val QR_SCAN_CHANNEL_ID = "qr_scan_channel"
-        private const val NOTIFICATION_ID = 1001
+        private const val NOTIFICATION_SUCCESS_ID = 1001
+        private const val NOTIFICATION_FAILURE_ID = 1002
     }
 
     init {
@@ -63,17 +66,21 @@ class CodeViewModel @Inject constructor(
             is CodeEvents.StopScan -> stopScan()
             is CodeEvents.SaveToGallery -> saveToGallery()
             is CodeEvents.DismissSaveDialog -> _state.update { it.copy(showSaveDialog = false) }
+            is CodeEvents.DismissError -> _state.update { it.copy(errorMessage = null) }
+            is CodeEvents.DismissPermissionDeniedDialog -> _state.update { it.copy(showPermissionDeniedDialog = false) }
             is CodeEvents.UpdateLogin -> _state.update { it.copy(login = event.login) }
             is CodeEvents.UpdatePassword -> _state.update { it.copy(password = event.password) }
             is CodeEvents.QrScanned -> onQrScanned(event.data)
             is CodeEvents.TimerTick -> _state.update { it.copy(timerSeconds = event.seconds) }
             is CodeEvents.TimerFinished -> onTimerFinished()
+            is CodeEvents.RequestCameraPermission -> requestCameraPermission()
+            is CodeEvents.CameraPermissionResult -> onCameraPermissionResult(event.granted)
         }
     }
 
-    private fun generateQr() {
+    fun generateQr() {
         viewModelScope.launch {
-            _state.update { it.copy(isGenerating = true) }
+            _state.update { it.copy(isGenerating = true, errorMessage = null) }
 
             val user = authManager.getCurrentUser()
             if (user == null) {
@@ -84,9 +91,9 @@ class CodeViewModel @Inject constructor(
             try {
                 val qrData = QrCodeData(
                     login = user.login,
-                    password = ""
+                    password = _state.value.password
                 )
-                val qrCode = generateQrCode(qrData)
+                val qrCode = generateQrCodeBitmap(qrData.toQrString())
                 _state.update {
                     it.copy(
                         qrCode = qrCode,
@@ -96,12 +103,12 @@ class CodeViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                _state.update { it.copy(isGenerating = false, errorMessage = "Ошибка генерации QR-кода") }
+                _state.update { it.copy(isGenerating = false, errorMessage = "Ошибка генерации QR-кода: ${e.message}") }
             }
         }
     }
 
-    private fun generateQrCode(data: QrCodeData): Bitmap {
+    private fun generateQrCodeBitmap(content: String): Bitmap {
         val hints = EnumMap<EncodeHintType, Any>(EncodeHintType::class.java).apply {
             put(EncodeHintType.CHARACTER_SET, "UTF-8")
             put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M)
@@ -109,13 +116,7 @@ class CodeViewModel @Inject constructor(
         }
 
         val qrWriter = QRCodeWriter()
-        val bitMatrix = qrWriter.encode(
-            "${data.login}:${data.password}",
-            BarcodeFormat.QR_CODE,
-            512,
-            512,
-            hints
-        )
+        val bitMatrix = qrWriter.encode(content, BarcodeFormat.QR_CODE, 512, 512, hints)
 
         val width = bitMatrix.width
         val height = bitMatrix.height
@@ -123,14 +124,35 @@ class CodeViewModel @Inject constructor(
 
         for (x in 0 until width) {
             for (y in 0 until height) {
-                bitmap.setPixel(x, y, if (bitMatrix.get(x, y)) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
+                bitmap.setPixel(x, y, if (bitMatrix.get(x, y)) Color.BLACK else Color.WHITE)
             }
         }
         return bitmap
     }
 
+    fun requestCameraPermission() {
+        _state.update { it.copy(hasCameraPermission = false) }
+    }
+
+    private fun onCameraPermissionResult(granted: Boolean) {
+        if (granted) {
+            _state.update { it.copy(hasCameraPermission = true) }
+            startScan()
+        } else {
+            _state.update { it.copy(showPermissionDeniedDialog = true) }
+        }
+    }
+
     private fun startScan() {
-        _state.update { it.copy(isScanning = true, timerSeconds = 30, isTimerRunning = true) }
+        _state.update {
+            it.copy(
+                isScanning = true,
+                timerSeconds = 30,
+                isTimerRunning = true,
+                errorMessage = null,
+                scannedData = null
+            )
+        }
         startTimer()
     }
 
@@ -155,21 +177,27 @@ class CodeViewModel @Inject constructor(
 
     private fun onQrScanned(data: String) {
         stopScan()
-        playSound(successSound)
-        showSuccessNotification()
 
-        val parts = data.split(":")
-        if (parts.size == 2) {
+        val qrData = QrCodeData.fromQrString(data)
+        if (qrData != null) {
+            playSound(successSound)
+            showSuccessNotification()
             _state.update {
                 it.copy(
-                    login = parts[0],
-                    password = parts[1],
+                    login = qrData.login,
+                    password = qrData.password,
                     scannedData = data,
                     isScanning = false
                 )
             }
         } else {
-            _state.update { it.copy(errorMessage = "Неверный формат QR-кода") }
+            playSound(failureSound)
+            _state.update {
+                it.copy(
+                    errorMessage = "Неверный формат QR-кода. Ожидается login:password",
+                    isScanning = false
+                )
+            }
         }
     }
 
@@ -177,7 +205,7 @@ class CodeViewModel @Inject constructor(
         stopScan()
         playSound(failureSound)
         showFailureNotification()
-        _state.update { it.copy(errorMessage = "Время сканирования истекло") }
+        _state.update { it.copy(errorMessage = "Время сканирования истекло", isScanning = false) }
     }
 
     private fun saveToGallery() {
@@ -189,12 +217,15 @@ class CodeViewModel @Inject constructor(
             } else {
                 saveToExternalStorage(bitmap)
             }
-            _state.update { it.copy(showSaveDialog = false) }
+            _state.update { it.copy(showSaveDialog = false, errorMessage = null) }
+        } catch (e: SecurityException) {
+            _state.update { it.copy(errorMessage = "Нет разрешения на запись в галерею") }
         } catch (e: Exception) {
             _state.update { it.copy(errorMessage = "Ошибка сохранения: ${e.message}") }
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun saveToMediaStore(bitmap: Bitmap) {
         val contentValues = android.content.ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, "QR_Code_${System.currentTimeMillis()}.png")
@@ -215,10 +246,14 @@ class CodeViewModel @Inject constructor(
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun saveToExternalStorage(bitmap: Bitmap) {
-        val directory = android.os.Environment.getExternalStoragePublicDirectory(
-            Environment.DIRECTORY_PICTURES
-        )
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            throw SecurityException("Нет разрешения на запись")
+        }
+
+        val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
         val appDirectory = java.io.File(directory, "QR_Codes")
         if (!appDirectory.exists()) appDirectory.mkdirs()
 
@@ -230,18 +265,20 @@ class CodeViewModel @Inject constructor(
     }
 
     private fun initSounds() {
-        try {
-            successSound = MediaPlayer.create(context, R.raw.qr_success)
-            failureSound = MediaPlayer.create(context, R.raw.qr_failure)
-        } catch (e: Exception) {
-            // Звуки не найдены
-        }
+        successSound = null
+        failureSound = null
+    }
+
+    private fun getRawResourceId(resName: String): Int {
+        return context.resources.getIdentifier(resName, "raw", context.packageName)
     }
 
     private fun playSound(mediaPlayer: MediaPlayer?) {
         try {
+            mediaPlayer?.seekTo(0)
             mediaPlayer?.start()
         } catch (e: Exception) {
+            // Ошибка воспроизведения
         }
     }
 
@@ -260,35 +297,55 @@ class CodeViewModel @Inject constructor(
     }
 
     private fun showSuccessNotification() {
-        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
-        val pendingIntent = PendingIntent.getActivity(
-            context, 0, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        if (!hasNotificationPermission()) return
 
-        val notification = NotificationCompat.Builder(context, QR_SCAN_CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentTitle("Авторизация готова")
-            .setContentText("Данные из QR-кода загружены. Перейдите к авторизации.")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .setTimeoutAfter(5000)
-            .build()
+        try {
+            val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            val pendingIntent = PendingIntent.getActivity(
+                context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
 
-        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+            val notification = NotificationCompat.Builder(context, QR_SCAN_CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle("Авторизация готова")
+                .setContentText("Данные из QR-кода загружены. Перейдите к авторизации.")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setTimeoutAfter(5000)
+                .build()
+
+            NotificationManagerCompat.from(context).notify(NOTIFICATION_SUCCESS_ID, notification)
+        } catch (e: SecurityException) {
+            // Разрешение не дано
+        }
     }
 
     private fun showFailureNotification() {
-        val notification = NotificationCompat.Builder(context, QR_SCAN_CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_alert)
-            .setContentTitle("Сканирование не удалось")
-            .setContentText("QR-код не распознан или время истекло.")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setAutoCancel(true)
-            .build()
+        if (!hasNotificationPermission()) return
 
-        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+        try {
+            val notification = NotificationCompat.Builder(context, QR_SCAN_CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                .setContentTitle("Сканирование не удалось")
+                .setContentText("QR-код не распознан или время истекло.")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .build()
+
+            NotificationManagerCompat.from(context).notify(NOTIFICATION_FAILURE_ID, notification)
+        } catch (e: SecurityException) {
+            // Разрешение не дано
+        }
+    }
+
+    private fun hasNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
     }
 
     override fun onCleared() {

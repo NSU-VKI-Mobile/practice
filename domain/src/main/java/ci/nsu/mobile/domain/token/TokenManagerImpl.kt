@@ -1,12 +1,10 @@
-// :auth/src/main/java/ci/nsu/mobile/auth/data/TokenManagerImpl.kt
-package ci.nsu.mobile.auth.data
+package ci.nsu.mobile.domain.token
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import ci.nsu.mobile.domain.token.ITokenManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -45,7 +43,6 @@ class TokenManagerImpl @Inject constructor(
                 }
             }
         }
-
     override var token: String?
         get() = runBlocking { getAccessToken() }
         set(value) {

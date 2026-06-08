@@ -11,7 +11,3 @@ data class UserOwnState(
     val isLoading: Boolean = true,
     val errorMessage: String? = null
 )
-
-sealed class UserOwnEvents {
-    object GetQR: UserOwnEvents()
-}

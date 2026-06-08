@@ -7,7 +7,8 @@ data class LoginState (
     val isSuccess: Boolean = false,
     val passwordState: Boolean = false,
     val isLoading: Boolean = false,
-    val errorFields: Set<String> = emptySet()
+    val errorFields: Set<String> = emptySet(),
+
 )
 
 sealed class LoginEvents {

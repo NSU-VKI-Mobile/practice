@@ -11,7 +11,8 @@ sealed class Screens(val route: String) {
     object ResultScreen: Screens("ResultScreen")
     object HistoryScreen: Screens("HistoryScreen")
     object UserOwnScreen: Screens("UserOwnScreen")
-    object QRCodeScreen: Screens("QRCodeScreen")
+    object QRScanScreen: Screens("QRScanScreen")
+    object QRGenerateScreen: Screens("QRGenerateScreen")
 
     companion object {
         val bottomBarScreens = listOf(
@@ -21,7 +22,8 @@ sealed class Screens(val route: String) {
             FirstScreen.route,
             SecondScreen.route,
             ResultScreen.route,
-            UserOwnScreen.route
+            UserOwnScreen.route,
+            QRGenerateScreen.route
         )
         val logoutScreens = listOf(UsersScreen.route, UserOwnScreen.route)
     }

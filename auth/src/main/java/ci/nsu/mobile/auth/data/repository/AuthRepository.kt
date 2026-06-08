@@ -16,36 +16,54 @@ class AuthRepository @Inject constructor(
 ) {
     suspend fun login(login: String, password: String): Result<User> {
         return try {
+            tokenManager.clear()
+            android.util.Log.d("AUTH", "After clear - userId: ${tokenManager.userId}")
             val response = service.loginUser(LoginRequest(login = login, password = password))
             if (!response.isSuccessful || response.body() == null) {
                 return Result.failure(Exception("Ошибка входа: ${response.code()} ${response.message()}"))
             }
             val authResponse = response.body()!!
             tokenManager.token = authResponse.token
-            tokenManager.userLogin = login
+
             val usersResponse = service.getUsers()
             if (!usersResponse.isSuccessful || usersResponse.body() == null) {
+                tokenManager.clear()
                 return Result.failure(Exception("Ошибка получения пользователей"))
             }
-            val currentUser = usersResponse.body()!!.find { it.login == login }
-            if (currentUser != null) {
-                tokenManager.userId = currentUser.userId
-                tokenManager.userLogin = currentUser.login
-                tokenManager.userEmail = currentUser.email
-                tokenManager.userPersonId = currentUser.personId
-                tokenManager.userCreatedDate = currentUser.createdDate
-                tokenManager.userPhone = currentUser.phoneNumber
-                tokenManager.userRoleId = currentUser.roleId
-                tokenManager.userLastLoginDate = currentUser.lastLoginDate
+
+            val currentUserDto = usersResponse.body()!!.find { it.login == login }
+            if (currentUserDto != null) {
+                tokenManager.userId = currentUserDto.userId
+                tokenManager.userLogin = currentUserDto.login
+                tokenManager.userEmail = currentUserDto.email
+                tokenManager.userPersonId = currentUserDto.personId
+                tokenManager.userCreatedDate = currentUserDto.createdDate
+                tokenManager.userPhone = currentUserDto.phoneNumber
+                tokenManager.userRoleId = currentUserDto.roleId
+                tokenManager.userLastLoginDate = currentUserDto.lastLoginDate
+
+                val currentUser = User(
+                    userId = currentUserDto.userId,
+                    login = currentUserDto.login,
+                    email = currentUserDto.email,
+                    phoneNumber = currentUserDto.phoneNumber,
+                    roleId = currentUserDto.roleId,
+                    authAllowed = currentUserDto.authAllowed,
+                    personId = currentUserDto.personId,
+                    createdDate = currentUserDto.createdDate,
+                    lastLoginDate = currentUserDto.lastLoginDate
+                )
                 Result.success(currentUser)
 
             } else {
                 tokenManager.clear()
                 Result.failure(Exception("Пользователь не найден в системе"))
             }
+
         } catch (e: Exception) {
             Result.failure(Exception("Сетевая ошибка: ${e.message}", e))
         }
+        android.util.Log.d("AUTH", "After save - userId: ${tokenManager.userId}, login: ${tokenManager.userLogin}")
     }
 
     suspend fun register(registerRequest: RegisterRequest): Result<User> {

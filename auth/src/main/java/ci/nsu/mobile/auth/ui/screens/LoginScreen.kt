@@ -43,13 +43,23 @@ import ci.nsu.mobile.ui.components.TextFieldWithOptionalStar
 fun LoginScreen(onLoginSuccess: () -> Unit,
                 navTo: (String) -> Unit,
                 viewModel: LoginViewModel,
-                openQRScreen: () -> Unit
+                openQRScreen: () -> Unit,
+                qrLogin: String = "",      // ← Добавить
+                qrPassword: String = ""
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
             viewModel.loginEvent(LoginEvents.CleanAll)
             onLoginSuccess()
+        }
+    }
+    LaunchedEffect(qrLogin, qrPassword) {
+        if (qrLogin.isNotEmpty()) {
+            viewModel.loginEvent(LoginEvents.LoginChanged(qrLogin))
+        }
+        if (qrPassword.isNotEmpty()) {
+            viewModel.loginEvent(LoginEvents.PasswordChanged(qrPassword))
         }
     }
     Scaffold() { innerPadding ->

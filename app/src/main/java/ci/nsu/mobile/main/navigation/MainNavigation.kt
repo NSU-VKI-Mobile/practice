@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.auth.navigation.authNavGraph
+import ci.nsu.mobile.auth.viewModels.code.CodeViewModel
 import ci.nsu.mobile.auth.viewModels.login.LoginViewModel
 import ci.nsu.mobile.auth.viewModels.registration.RegistrationViewModel
 import ci.nsu.mobile.auth.viewModels.userOwn.UserOwnViewModel
@@ -50,6 +51,7 @@ fun MainNavigation(
     val historyDepositsViewModel: HistoryDepositsViewModel = hiltViewModel()
     val depositCalculationViewModel: DepositCalculationViewModel = hiltViewModel()
     val userOwnViewModel: UserOwnViewModel = hiltViewModel()
+    val qrCodeViewModel: CodeViewModel = hiltViewModel()
 
     val bottomNavManager = remember { BottomNavManagerImpl() }
     val showBottomBar = bottomNavManager.isBottomBarVisible(currentRoute)
@@ -81,7 +83,9 @@ fun MainNavigation(
                             IconButton(
                                 onClick = {
                                     authManager.logout()
-                                    authNavigator.navigateToLogin(navController)
+                                    navController.navigate(Screens.LoginScreen.route) {
+                                        popUpTo(navController.graph.id) { inclusive = true }
+                                    }
                                 }
                             ) {
                                 Icon(
@@ -106,6 +110,7 @@ fun MainNavigation(
                 registerViewModel = registerViewModel,
                 usersViewModel = usersViewModel,
                 userOwnViewModel = userOwnViewModel,
+                qrCodeViewModel = qrCodeViewModel,
                 onNavigateToHistory = {
                     navController.navigate(Screens.HistoryScreen.route) {
                         popUpTo(Screens.LoginScreen.route) { inclusive = true }
