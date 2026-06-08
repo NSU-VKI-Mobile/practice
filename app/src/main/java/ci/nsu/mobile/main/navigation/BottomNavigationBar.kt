@@ -4,7 +4,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCard
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.People
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import ci.nsu.mobile.domain.interfaces.AuthManager
@@ -21,7 +25,6 @@ fun BottomNavigationBar(
     NavigationBar {
         NavigationBarItem(
             icon = { Icon(Icons.Filled.People, contentDescription = "Пользователи") },
-            label = { Text("Пользователи") },
             selected = currentRoute == Screens.UsersScreen.route,
             onClick = {
                 if (currentRoute != Screens.UsersScreen.route) {
@@ -35,7 +38,6 @@ fun BottomNavigationBar(
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Money, contentDescription = "Мои расчеты") },
-            label = { Text("Мои расчеты") },
             selected = currentRoute == Screens.HistoryScreen.route,
             onClick = {
                 if (currentRoute != Screens.HistoryScreen.route) {
@@ -47,7 +49,6 @@ fun BottomNavigationBar(
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.AddCard, contentDescription = "Новый расчет") },
-            label = { Text("Новый расчет") },
             selected = currentRoute in listOf(
                 Screens.MainScreen.route,
                 Screens.FirstScreen.route,
@@ -59,6 +60,15 @@ fun BottomNavigationBar(
                     authManager.getCurrentUser()?.userId?.toLong()?.let { userId ->
                         calculationsNavigator.navigateToNewCalculation(navController, userId)
                     }
+                }
+            }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Filled.Person, contentDescription = "Мой профиль") },
+            selected = currentRoute == Screens.UserOwnScreen.route,
+            onClick = {
+                if (currentRoute != Screens.UserOwnScreen.route) {
+                    navController.navigate(Screens.UserOwnScreen.route)
                 }
             }
         )

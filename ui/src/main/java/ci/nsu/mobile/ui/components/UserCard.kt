@@ -23,13 +23,19 @@ fun UserCard(user: User) {
             Text(
                 buildAnnotatedString {
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("ID: ") }
-                    append("${user.userId}")
+                    append(user.userId.toString())
                 }
             )
             Text(
                 buildAnnotatedString {
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("LOGIN: ") }
                     append(user.login)
+                }
+            )
+            Text(
+                buildAnnotatedString {
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("PHONE: ") }
+                    append(user.phoneNumber?: "no phone")
                 }
             )
             Text(

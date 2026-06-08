@@ -22,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import ci.nsu.mobile.auth.navigation.authNavGraph
 import ci.nsu.mobile.auth.viewModels.login.LoginViewModel
 import ci.nsu.mobile.auth.viewModels.registration.RegistrationViewModel
+import ci.nsu.mobile.auth.viewModels.userOwn.UserOwnViewModel
 import ci.nsu.mobile.auth.viewModels.users.UsersViewModel
 import ci.nsu.mobile.calculations.navigation.calculationsNavGraph
 import ci.nsu.mobile.calculations.viewModels.deposit.DepositCalculationViewModel
@@ -48,6 +49,7 @@ fun MainNavigation(
     val usersViewModel: UsersViewModel = hiltViewModel()
     val historyDepositsViewModel: HistoryDepositsViewModel = hiltViewModel()
     val depositCalculationViewModel: DepositCalculationViewModel = hiltViewModel()
+    val userOwnViewModel: UserOwnViewModel = hiltViewModel()
 
     val bottomNavManager = remember { BottomNavManagerImpl() }
     val showBottomBar = bottomNavManager.isBottomBarVisible(currentRoute)
@@ -103,6 +105,7 @@ fun MainNavigation(
                 loginViewModel = loginViewModel,
                 registerViewModel = registerViewModel,
                 usersViewModel = usersViewModel,
+                userOwnViewModel = userOwnViewModel,
                 onNavigateToHistory = {
                     navController.navigate(Screens.HistoryScreen.route) {
                         popUpTo(Screens.LoginScreen.route) { inclusive = true }

@@ -21,13 +21,13 @@ class AuthManagerImpl @Inject constructor(
             User(
                 userId = userId,
                 login = login,
-                email = tokenManager.userEmail ?: "",    // Из TokenManager
-                personId = tokenManager.userPersonId ?: 0, // Из TokenManager
-                createdDate = tokenManager.userCreatedDate ?: "", // Из TokenManager
-                phoneNumber = tokenManager.userPhone,     // Если есть
-                roleId = tokenManager.userRoleId ?: 1,   // Если есть
+                email = tokenManager.userEmail ?: "",
+                personId = tokenManager.userPersonId ?: 0,
+                createdDate = tokenManager.userCreatedDate ?: "",
+                phoneNumber = tokenManager.userPhone,
+                roleId = tokenManager.userRoleId ?: 1,
                 authAllowed = true,
-                lastLoginDate = null
+                lastLoginDate = tokenManager.userLastLoginDate
             )
         } else null
     }

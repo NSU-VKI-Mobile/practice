@@ -32,7 +32,19 @@ class TokenManagerImpl @Inject constructor(
         private val USER_CREATED_DATE_KEY = stringPreferencesKey("user_created_date")
         private val USER_PHONE_KEY = stringPreferencesKey("user_phone")
         private val USER_ROLE_ID_KEY = intPreferencesKey("user_role_id")
+        private val USER_LAST_LOGIN_DATE_KEY = stringPreferencesKey("user_last_login_date")
     }
+
+    override var userLastLoginDate: String?
+        get() = runBlocking { context.dataStore.data.first()[USER_LAST_LOGIN_DATE_KEY] }
+        set(value) {
+            runBlocking {
+                context.dataStore.edit { prefs ->
+                    value?.let { prefs[USER_LAST_LOGIN_DATE_KEY] = it }
+                    if (value == null) prefs.remove(USER_LAST_LOGIN_DATE_KEY)
+                }
+            }
+        }
 
     override var token: String?
         get() = runBlocking { getAccessToken() }

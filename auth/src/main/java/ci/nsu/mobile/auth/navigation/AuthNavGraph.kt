@@ -6,8 +6,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import ci.nsu.mobile.auth.ui.screens.LoginScreen
 import ci.nsu.mobile.auth.ui.screens.RegistrationScreen
+import ci.nsu.mobile.auth.ui.screens.UserOwnScreen
 import ci.nsu.mobile.auth.viewModels.login.LoginViewModel
 import ci.nsu.mobile.auth.viewModels.registration.RegistrationViewModel
+import ci.nsu.mobile.auth.viewModels.userOwn.UserOwnViewModel
 import ci.nsu.mobile.auth.viewModels.users.UsersViewModel
 import ci.nsu.mobile.domain.navigation.Screens
 
@@ -16,13 +18,15 @@ fun NavGraphBuilder.authNavGraph(
     loginViewModel: LoginViewModel,
     registerViewModel: RegistrationViewModel,
     usersViewModel: UsersViewModel,
+    userOwnViewModel: UserOwnViewModel,
     onNavigateToHistory: () -> Unit
 ) {
     composable(Screens.LoginScreen.route) {
         LoginScreen(
             onLoginSuccess = onNavigateToHistory,
             navTo = { navigateTo -> navController.navigate(navigateTo) },
-            viewModel = loginViewModel
+            viewModel = loginViewModel,
+            openQRScreen = {}
         )
     }
 
@@ -40,6 +44,12 @@ fun NavGraphBuilder.authNavGraph(
     composable(Screens.UsersScreen.route) {
         UsersScreen(
             viewModel = usersViewModel
+        )
+    }
+
+    composable(Screens.UserOwnScreen.route) {
+        UserOwnScreen(
+            viewModel = userOwnViewModel
         )
     }
 }

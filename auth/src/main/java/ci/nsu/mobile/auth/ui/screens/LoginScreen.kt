@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -41,7 +42,8 @@ import ci.nsu.mobile.ui.components.TextFieldWithOptionalStar
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit,
                 navTo: (String) -> Unit,
-                viewModel: LoginViewModel
+                viewModel: LoginViewModel,
+                openQRScreen: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.isSuccess) {
@@ -88,7 +90,14 @@ fun LoginScreen(onLoginSuccess: () -> Unit,
             )
             CustomButton({
                 viewModel.loginEvent(LoginEvents.SubmitLogin)
-            }, "Войти")
+            }, "Войти",
+                Modifier.width(200.dp))
+            Spacer(Modifier.padding((10.dp)))
+
+            CustomButton({
+                openQRScreen()
+            }, "Авторизация через QR-code",
+                Modifier.width(200.dp))
             Spacer(Modifier.padding((20.dp)))
 
             Text(

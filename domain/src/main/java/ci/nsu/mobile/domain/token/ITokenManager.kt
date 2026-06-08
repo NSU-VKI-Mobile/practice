@@ -11,6 +11,7 @@ interface ITokenManager {
     var userCreatedDate: String?
     var userPhone: String?
     var userRoleId: Int?
+    var userLastLoginDate: String?
     suspend fun getAccessToken(): String?
     suspend fun getRefreshToken(): String?
     suspend fun saveTokens(accessToken: String, refreshToken: String)

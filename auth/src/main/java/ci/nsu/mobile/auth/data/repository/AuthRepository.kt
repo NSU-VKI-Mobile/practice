@@ -30,7 +30,15 @@ class AuthRepository @Inject constructor(
             val currentUser = usersResponse.body()!!.find { it.login == login }
             if (currentUser != null) {
                 tokenManager.userId = currentUser.userId
+                tokenManager.userLogin = currentUser.login
+                tokenManager.userEmail = currentUser.email
+                tokenManager.userPersonId = currentUser.personId
+                tokenManager.userCreatedDate = currentUser.createdDate
+                tokenManager.userPhone = currentUser.phoneNumber
+                tokenManager.userRoleId = currentUser.roleId
+                tokenManager.userLastLoginDate = currentUser.lastLoginDate
                 Result.success(currentUser)
+
             } else {
                 tokenManager.clear()
                 Result.failure(Exception("Пользователь не найден в системе"))
