@@ -9,10 +9,13 @@ import ci.nsu.mobile.main.data.model.GroupDto
 import ci.nsu.mobile.main.data.model.PersonDto
 import ci.nsu.mobile.main.data.model.RegistrationRequest
 import ci.nsu.mobile.main.data.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import javax.inject.Inject
 
-class RegisterViewModel(
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : ViewModel() {
 

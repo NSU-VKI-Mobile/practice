@@ -5,14 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.local.TokenManager
+import ci.nsu.mobile.main.data.local.SessionManager
 import ci.nsu.mobile.main.data.model.UserDto
 import ci.nsu.mobile.main.data.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel(
+
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val repository: AuthRepository,
-    private val tokenManager: TokenManager
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     var users by mutableStateOf<List<UserDto>>(emptyList())
@@ -36,6 +40,6 @@ class HomeViewModel(
     }
 
     fun logout() {
-        tokenManager.clearToken()
+        sessionManager.clearSession()
     }
 }

@@ -20,12 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ci.nsu.mobile.main.ui.navigation.Screen
+import ci.nsu.mobile.main.navigation.AppRoutes
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    navController: NavController
+    onLogout: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -47,10 +47,7 @@ fun HomeScreen(
             Button(
                 onClick = {
                     viewModel.logout()
-
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(0)
-                    }
+                    onLogout()
                 }
             ) {
                 Text("Выйти")

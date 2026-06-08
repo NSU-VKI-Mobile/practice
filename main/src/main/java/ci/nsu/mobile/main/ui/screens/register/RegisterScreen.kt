@@ -28,12 +28,9 @@ import ci.nsu.mobile.main.ui.components.Dropdown
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel,
-    navController: NavController
+    onRegister: () -> Unit,
+    onToLogin: () -> Unit,
 ) {
-
-    var expanded by remember {
-        mutableStateOf(false)
-    }
 
     Column(
         modifier = Modifier
@@ -90,16 +87,7 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-//        OutlinedTextField(
-//            value = viewModel.birthDate,
-//            onValueChange = {
-//                viewModel.birthDate = it
-//            },
-//            label = {
-//                Text("Дата рождения")
-//            },
-//            modifier = Modifier.fillMaxWidth()
-//        )
+
 
         Dropdown (
             label = "Пол",
@@ -111,16 +99,7 @@ fun RegisterScreen(
             itemLabel = { it }
         )
 
-//        OutlinedTextField(
-//            value = viewModel.gender,
-//            onValueChange = {
-//                viewModel.gender = it
-//            },
-//            label = {
-//                Text("Пол")
-//            },
-//            modifier = Modifier.fillMaxWidth()
-//        )
+
 
         Dropdown (
             label = "Группа",
@@ -132,38 +111,6 @@ fun RegisterScreen(
             itemLabel = { it.name }
         )
 
-//        Button(
-//            onClick = {
-//                expanded = true
-//            },
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            Text(
-//                viewModel.selectedGroup?.name
-//                    ?: "Выберите группу"
-//            )
-//        }
-//
-//        DropdownMenu(
-//            expanded = expanded,
-//            onDismissRequest = {
-//                expanded = false
-//            }
-//        ) {
-//
-//            viewModel.groups.forEach { group ->
-//
-//                DropdownMenuItem(
-//                    text = {
-//                        Text(group.name)
-//                    },
-//                    onClick = {
-//                        viewModel.selectedGroup = group
-//                        expanded = false
-//                    }
-//                )
-//            }
-//        }
 
         OutlinedTextField(
             value = viewModel.login,
@@ -211,11 +158,7 @@ fun RegisterScreen(
         )
 
         Button(
-            onClick = {
-                viewModel.register {
-                    navController.popBackStack()
-                }
-            },
+            onClick = onRegister,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Зарегистрироваться")
@@ -229,9 +172,7 @@ fun RegisterScreen(
         }
 
         TextButton(
-            onClick = {
-                navController.popBackStack()
-            }
+            onClick = onToLogin
         ) {
             Text("Назад")
         }

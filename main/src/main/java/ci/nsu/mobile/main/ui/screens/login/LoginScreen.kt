@@ -20,16 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ci.nsu.mobile.main.ui.navigation.Screen
+import ci.nsu.mobile.main.navigation.AppRoutes
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    navController: NavController
+    onLogin: () -> Unit,
+    onToRegister: () -> Unit,
 ) {
-
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -76,7 +74,7 @@ fun LoginScreen(
         Button(
             onClick = {
                 viewModel.login {
-                    navController.navigate(Screen.Home.route)
+                    onLogin()
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -87,9 +85,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         TextButton(
-            onClick = {
-                navController.navigate(Screen.Register.route)
-            }
+            onClick = onToRegister
         ) {
             Text("Нет аккаунта? Зарегистрироваться")
         }

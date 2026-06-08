@@ -1,11 +1,12 @@
 package ci.nsu.mobile.main.network.api.interceptors
 
-import ci.nsu.mobile.main.data.local.TokenManager
+import ci.nsu.mobile.main.data.local.SessionManager
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
 
-class AuthInterceptor(
-    private val tokenManager: TokenManager
+class AuthInterceptor @Inject constructor(
+    private val tokenManager: SessionManager
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
