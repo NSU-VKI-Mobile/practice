@@ -1,8 +1,9 @@
-package ci.nsu.mobile.main.data.api
+package ci.nsu.mobile.main.network.api.interceptors
 
 import ci.nsu.mobile.main.data.local.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
+
 class AuthInterceptor(
     private val tokenManager: TokenManager
 ) : Interceptor {

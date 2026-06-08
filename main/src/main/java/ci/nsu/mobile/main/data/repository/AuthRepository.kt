@@ -1,6 +1,6 @@
 package ci.nsu.mobile.main.data.repository
 
-import ci.nsu.mobile.main.data.api.ApiService
+import ci.nsu.mobile.main.network.api.ApiService
 import ci.nsu.mobile.main.data.local.TokenManager
 import ci.nsu.mobile.main.data.model.AuthResponse
 import ci.nsu.mobile.main.data.model.GroupDto

@@ -1,15 +1,16 @@
-package ci.nsu.mobile.main.data.api
+package ci.nsu.mobile.main.auth.api
 
-import ci.nsu.mobile.main.data.model.AuthResponse
-import ci.nsu.mobile.main.data.model.GroupDto
-import ci.nsu.mobile.main.data.model.LoginRequest
-import ci.nsu.mobile.main.data.model.RegistrationRequest
-import ci.nsu.mobile.main.data.model.UserDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
-interface ApiService {
+import ci.nsu.mobile.main.data.model.GroupDto
+import ci.nsu.mobile.main.data.model.LoginRequest
+import ci.nsu.mobile.main.data.model.RegistrationRequest
+import ci.nsu.mobile.main.data.model.AuthResponse
+
+
+interface AuthApiService {
 
     @POST("/auth/login")
     suspend fun login(
@@ -20,9 +21,6 @@ interface ApiService {
     suspend fun register(
         @Body request: RegistrationRequest
     ): AuthResponse
-
-    @GET("/users")
-    suspend fun getUsers(): List<UserDto>
 
     @GET("/groups")
     suspend fun getGroups(): List<GroupDto>

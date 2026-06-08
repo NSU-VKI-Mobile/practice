@@ -19,11 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import ci.nsu.mobile.main.data.api.RetrofitClient
-import ci.nsu.mobile.main.data.local.TokenManager
-import ci.nsu.mobile.main.data.repository.AuthRepository
 import ci.nsu.mobile.main.ui.navigation.Screen
 
 @Composable
