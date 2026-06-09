@@ -15,6 +15,10 @@ class DepositRepository(
         depositDao.insert(calculation)
     }
 
+    suspend fun getCalculationById(id: Long): DepositCalculation? {
+        return depositDao.getCalculationById(id)
+    }
+
     suspend fun deleteCalculation(calculation: DepositCalculation) {
         depositDao.delete(calculation)
     }

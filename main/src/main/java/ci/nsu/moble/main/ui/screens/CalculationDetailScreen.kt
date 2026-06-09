@@ -12,7 +12,8 @@ import java.text.DecimalFormat
 @Composable
 fun CalculationDetailScreen(
     calculation: DepositCalculation,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onDelete: () -> Unit
 ) {
     val decimalFormat = DecimalFormat("#,##0.00")
 
@@ -23,10 +24,7 @@ fun CalculationDetailScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "Детали расчёта",
-            style = MaterialTheme.typography.headlineMedium
-        )
+        Text("Детали расчёта", style = MaterialTheme.typography.headlineMedium)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -61,8 +59,21 @@ fun CalculationDetailScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = onBack) {
-            Text("Назад")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(onClick = onBack) {
+                Text("Назад")
+            }
+            Button(
+                onClick = onDelete,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("Удалить")
+            }
         }
     }
 }

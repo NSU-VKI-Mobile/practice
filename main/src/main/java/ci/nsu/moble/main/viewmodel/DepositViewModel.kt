@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.math.pow
 
 sealed class DepositUiState {
     object Loading : DepositUiState()
@@ -36,6 +37,17 @@ class DepositViewModel(
         }
     }
 
+    suspend fun getCalculationById(id: Long): DepositCalculation? {
+        return repository.getCalculationById(id)
+    }
+
+    fun deleteCalculation(calculation: DepositCalculation) {
+        viewModelScope.launch {
+            repository.deleteCalculation(calculation)
+            loadCalculations()
+        }
+    }
+
     fun saveCalculation(initialAmount: Double, periodMonths: Int, interestRate: Double, monthlyTopUp: Double?) {
         viewModelScope.launch {
             val monthlyRate = interestRate / 100 / 12
@@ -46,7 +58,7 @@ class DepositViewModel(
                 }
                 total
             } else {
-                initialAmount * Math.pow(1 + monthlyRate, periodMonths.toDouble())
+                initialAmount * (1 + monthlyRate).pow(periodMonths.toDouble())
             }
             val totalTopUp = (monthlyTopUp ?: 0.0) * periodMonths
             val interestEarned = finalAmount - initialAmount - totalTopUp
@@ -61,13 +73,6 @@ class DepositViewModel(
                 interestEarned = interestEarned
             )
             repository.saveCalculation(calculation)
-            loadCalculations()
-        }
-    }
-
-    fun deleteCalculation(calculation: DepositCalculation) {
-        viewModelScope.launch {
-            repository.deleteCalculation(calculation)
             loadCalculations()
         }
     }

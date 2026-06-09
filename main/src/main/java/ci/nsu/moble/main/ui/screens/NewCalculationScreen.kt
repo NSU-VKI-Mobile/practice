@@ -41,9 +41,26 @@ fun NewCalculationScreen(
     repository: DepositRepository,
     onSaveSuccess: () -> Unit
 ) {
+    // генерируем уникальный ключ для принудительного пересоздания
+    val key = remember { System.currentTimeMillis() }
+
+    androidx.compose.runtime.key(key) {
+        NewCalculationScreenContent(
+            userId = userId,
+            repository = repository,
+            onSaveSuccess = onSaveSuccess
+        )
+    }
+}
+
+@Composable
+private fun NewCalculationScreenContent(
+    userId: Long,
+    repository: DepositRepository,
+    onSaveSuccess: () -> Unit
+) {
     val scope = rememberCoroutineScope()
 
-    // поля для ввода
     var initialAmount by remember { mutableStateOf("") }
     var periodMonths by remember { mutableStateOf("") }
     var interestRate by remember { mutableStateOf("") }
@@ -52,9 +69,24 @@ fun NewCalculationScreen(
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // результат расчёта
     var finalAmount by remember { mutableStateOf<Double?>(null) }
     var interestEarned by remember { mutableStateOf<Double?>(null) }
+
+    // функция сброса всех полей
+    fun resetForm() {
+        initialAmount = ""
+        periodMonths = ""
+        interestRate = ""
+        monthlyTopUp = ""
+        finalAmount = null
+        interestEarned = null
+        errorMessage = null
+    }
+
+    // сброс при первом входе на экран
+    LaunchedEffect(Unit) {
+        resetForm()
+    }
 
     Column(
         modifier = Modifier
@@ -65,7 +97,6 @@ fun NewCalculationScreen(
     ) {
         Text("Новый расчёт", fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp))
 
-        // Стартовый взнос
         OutlinedTextField(
             value = initialAmount,
             onValueChange = { initialAmount = it },
@@ -76,7 +107,6 @@ fun NewCalculationScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Срок
         OutlinedTextField(
             value = periodMonths,
             onValueChange = { periodMonths = it },
@@ -87,7 +117,6 @@ fun NewCalculationScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Процентная ставка
         OutlinedTextField(
             value = interestRate,
             onValueChange = { interestRate = it },
@@ -98,7 +127,6 @@ fun NewCalculationScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Ежемесячное пополнение (необязательно)
         OutlinedTextField(
             value = monthlyTopUp,
             onValueChange = { monthlyTopUp = it },
@@ -109,12 +137,12 @@ fun NewCalculationScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Кнопка "Рассчитать"
         Button(
             onClick = {
                 val amount = initialAmount.toDoubleOrNull()
                 val months = periodMonths.toIntOrNull()
                 val rate = interestRate.toDoubleOrNull()
+                val topUp = monthlyTopUp.toDoubleOrNull()
 
                 if (amount == null || months == null || rate == null || amount <= 0 || months <= 0 || rate <= 0) {
                     errorMessage = "Заполните все обязательные поля корректно"
@@ -123,9 +151,7 @@ fun NewCalculationScreen(
                     return@Button
                 }
 
-                val topUp = monthlyTopUp.toDoubleOrNull()
                 val (final, earned) = calculateFinal(amount, months, rate, topUp)
-
                 finalAmount = final
                 interestEarned = earned
                 errorMessage = null
@@ -137,7 +163,6 @@ fun NewCalculationScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Результат расчёта
         if (finalAmount != null && interestEarned != null) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -162,7 +187,6 @@ fun NewCalculationScreen(
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        // Сообщение об ошибке
         if (errorMessage != null) {
             Text(
                 text = errorMessage!!,
@@ -172,7 +196,6 @@ fun NewCalculationScreen(
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        // Кнопка "Сохранить" (активна только после расчёта)
         Button(
             onClick = {
                 val amount = initialAmount.toDoubleOrNull()
@@ -196,6 +219,9 @@ fun NewCalculationScreen(
                                 interestEarned = earned
                             )
                             repository.saveCalculation(calculation)
+
+                            resetForm()
+
                             onSaveSuccess()
                         } catch (e: Exception) {
                             errorMessage = e.message ?: "Ошибка сохранения"
@@ -215,6 +241,19 @@ fun NewCalculationScreen(
             } else {
                 Text("Сохранить")
             }
+        }
+
+        // Кнопка "Очистить" - для принудительного сброса
+        Button(
+            onClick = {
+                resetForm()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary
+            )
+        ) {
+            Text("Очистить")
         }
     }
 }

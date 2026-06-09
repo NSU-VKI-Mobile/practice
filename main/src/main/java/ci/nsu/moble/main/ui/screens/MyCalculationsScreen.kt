@@ -11,19 +11,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ci.nsu.moble.main.data.repository.DepositRepository
-import ci.nsu.moble.main.viewmodel.DepositViewModelFactory
 import ci.nsu.moble.main.data.models.DepositCalculation
 import ci.nsu.moble.main.viewmodel.DepositUiState
 import ci.nsu.moble.main.viewmodel.DepositViewModel
+import ci.nsu.moble.main.viewmodel.DepositViewModelFactory
 import java.text.DecimalFormat
 
 @Composable
 fun MyCalculationsScreen(
     userId: Long,
-    repository: DepositRepository,                    // ← добавили параметр
+    repository: DepositRepository,
     onItemClick: (DepositCalculation) -> Unit
 ) {
-    // создаём ViewModel с правильными параметрами
     val viewModel: DepositViewModel = viewModel(
         factory = DepositViewModelFactory(repository, userId)
     )
@@ -55,44 +54,29 @@ fun MyCalculationsScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(calculations) { calculation ->
-                        CalculationItem(
-                            calculation = calculation,
-                            onItemClick = { onItemClick(calculation) },
-                            decimalFormat = decimalFormat
-                        )
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onItemClick(calculation) }
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = calculation.getFormattedDate(),
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                                Text(
+                                    text = "💰 ${decimalFormat.format(calculation.initialAmount)} руб → ${decimalFormat.format(calculation.finalAmount)} руб",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = "📅 ${calculation.periodMonths} мес, ${calculation.interestRate}%",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun CalculationItem(
-    calculation: DepositCalculation,
-    onItemClick: () -> Unit,
-    decimalFormat: DecimalFormat
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onItemClick() }
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = calculation.getFormattedDate(),
-                style = MaterialTheme.typography.labelSmall
-            )
-            Text(
-                text = "💰 ${decimalFormat.format(calculation.initialAmount)} руб → ${decimalFormat.format(calculation.finalAmount)} руб",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = "📅 ${calculation.periodMonths} мес, ${calculation.interestRate}%",
-                style = MaterialTheme.typography.bodySmall
-            )
         }
     }
 }

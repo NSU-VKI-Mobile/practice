@@ -12,6 +12,9 @@ interface DepositDao {
     @Query("SELECT * FROM deposit_calculations WHERE userId = :userId ORDER BY calculationDate DESC")
     fun getCalculationsForUser(userId: Long): Flow<List<DepositCalculation>>
 
+    @Query("SELECT * FROM deposit_calculations WHERE id = :id")
+    suspend fun getCalculationById(id: Long): DepositCalculation?
+
     @Delete
     suspend fun delete(calculation: DepositCalculation)
 }
