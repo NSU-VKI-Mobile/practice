@@ -2,15 +2,11 @@ package ci.nsu.moble.main.data.repository
 
 import android.content.Context
 import ci.nsu.moble.main.data.models.*
-import ci.nsu.moble.main.data.network.ApiService  // ← этот импорт был пропущен
+import ci.nsu.moble.main.data.network.ApiService
 import ci.nsu.moble.main.data.network.NetworkModule
-import ci.nsu.moble.main.utils.TokenManager
+import ci.nsu.moble.main.TokenManager
 import retrofit2.HttpException
 import java.io.IOException
-// login() — запрос на сервер, сохраняет токен
-// getUsers() —  запрос за списком пользователей (требует токен)
-// logout() — забывает токен
-// результат запроса (успех, ошибка, загрузка
 
 sealed class AuthApiResult<out T> {
     data class Success<T>(val data: T) : AuthApiResult<T>()
@@ -21,11 +17,9 @@ sealed class AuthApiResult<out T> {
 class AuthRepository(private val context: Context) {
 
     private val tokenManager = TokenManager(context)
-    private var currentToken: String? = null
 
-    // создаём клиент с токеном (или без)
-    private fun getApiService(token: String? = currentToken): ApiService {
-        val client = NetworkModule.provideOkHttpClient(token)
+    private fun getApiService(): ApiService {
+        val client = NetworkModule.provideOkHttpClient(tokenManager)
         val retrofit = NetworkModule.provideRetrofit(client)
         return NetworkModule.provideApiService(retrofit)
     }
@@ -33,11 +27,10 @@ class AuthRepository(private val context: Context) {
     // вход: получаем токен от сервера
     suspend fun login(login: String, password: String): AuthApiResult<AuthResponse> {
         return try {
-            val apiService = getApiService(null)
+            val apiService = getApiService()
             val response = apiService.login(LoginRequest(login, password))
             if (response.isSuccessful && response.body() != null) {
                 val authResponse = response.body()!!
-                currentToken = authResponse.token
                 tokenManager.saveToken(authResponse.token)
                 AuthApiResult.Success(authResponse)
             } else {
@@ -51,13 +44,14 @@ class AuthRepository(private val context: Context) {
             AuthApiResult.Error("неизвестная ошибка: ${e.message}")
         }
     }
+
     // регистрация: отправляем данные на сервер
     suspend fun register(request: RegisterRequest): AuthApiResult<Unit> {
         return try {
-            val apiService = getApiService(null) // без токена, регистрация открыта
+            val apiService = getApiService()
             val response = apiService.register(request)
             if (response.isSuccessful) {
-                AuthApiResult.Success(Unit)  // успех без данных
+                AuthApiResult.Success(Unit)
             } else {
                 AuthApiResult.Error("ошибка регистрации: ${response.code()}")
             }
@@ -67,6 +61,7 @@ class AuthRepository(private val context: Context) {
             AuthApiResult.Error(e.message ?: "неизвестная ошибка")
         }
     }
+
     // получаем список пользователей (требует токен)
     suspend fun getUsers(): AuthApiResult<List<UserDto>> {
         return try {
@@ -88,7 +83,6 @@ class AuthRepository(private val context: Context) {
 
     // выход: забываем токен
     suspend fun logout() {
-        currentToken = null
         tokenManager.clearToken()
     }
 }

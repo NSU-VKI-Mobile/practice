@@ -1,7 +1,7 @@
 package ci.nsu.moble.main.di
 
 import android.content.Context
-import ci.nsu.moble.main.utils.TokenManager
+import ci.nsu.moble.main.TokenManager
 import ci.nsu.moble.main.data.database.AppDatabase
 import ci.nsu.moble.main.data.repository.AuthRepository
 import ci.nsu.moble.main.data.repository.DepositRepository

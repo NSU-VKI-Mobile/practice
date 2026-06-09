@@ -1,5 +1,7 @@
 package ci.nsu.moble.main.data.network
 
+import ci.nsu.moble.main.TokenManager
+import ci.nsu.moble.main.auth.data.network.AuthInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -10,9 +12,9 @@ object NetworkModule {
 
     private const val BASE_URL = "http://192.168.200.160:8080/api/"
 
-    fun provideOkHttpClient(token: String?): OkHttpClient {
+    fun provideOkHttpClient(tokenManager: TokenManager): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(token))
+            .addInterceptor(AuthInterceptor(tokenManager))
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })

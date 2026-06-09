@@ -1,4 +1,4 @@
-package ci.nsu.moble.main.utils
+package ci.nsu.moble.main
 
 import android.content.Context
 import androidx.datastore.core.DataStore

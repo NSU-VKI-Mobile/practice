@@ -1,6 +1,7 @@
 package ci.nsu.moble.main.data.database
 
 import androidx.room.*
+import ci.nsu.moble.main.data.models.DepositCalculation
 import kotlinx.coroutines.flow.Flow
 
 @Dao
