@@ -12,8 +12,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.lint.kotlin.metadata.Visibility
+//import androidx.compose.material.icons.filled.Visibility
+//import androidx.compose.material.icons.filled.VisibilityOff
 import ci.nsu.mobile.main.viewmodel.AuthViewModel
 import ci.nsu.mobile.main.ui.components.LoadingDialog
 import ci.nsu.mobile.main.ui.components.ErrorDialog
