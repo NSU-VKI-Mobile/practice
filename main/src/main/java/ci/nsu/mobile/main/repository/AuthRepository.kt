@@ -1,6 +1,6 @@
 package ci.nsu.mobile.main.repository
 
-import ci.nsu.mobile.main.data.models.*
+import ci.nsu.mobile.main.data.*
 import ci.nsu.mobile.main.network.ApiService
 import ci.nsu.mobile.main.utils.TokenManager
 import kotlinx.coroutines.flow.MutableStateFlow

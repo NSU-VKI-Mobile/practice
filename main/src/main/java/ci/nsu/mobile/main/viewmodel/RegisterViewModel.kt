@@ -197,7 +197,7 @@ class RegisterViewModel(
     )
 
     data class GroupsUiState(
-        val groups: List<ci.nsu.mobile.main.data.models.GroupDto> = emptyList(),
+        val groups: List<ci.nsu.mobile.main.data.GroupDto> = emptyList(),
         val isLoading: Boolean = false,
         val error: String? = null
     )

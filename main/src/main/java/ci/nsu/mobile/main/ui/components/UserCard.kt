@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ci.nsu.mobile.main.data.UserDto
 
+
 @Composable
 fun UserCard(user: UserDto) {
     Card(

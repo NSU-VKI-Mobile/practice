@@ -1,5 +1,8 @@
 package ci.nsu.mobile.main.utils
 
+import android.content.Context
+import android.content.SharedPreferences
+
 class TokenManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
