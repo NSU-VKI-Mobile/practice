@@ -1,3 +1,32 @@
 <resources>
     <string name="app_name">main</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_stage1">Stage1</string>
+    <string name="title_activity_stage01">Stage01Activity</string>
+    <string name="title_activity_stage02">Stage02Activity</string>
+    <string name="title_activity_stage03">Stage03Activity</string>
+    <string name="title_activity_deposit_calculation">DepositCalculation</string>
+    <string name="title_activity_deposit_dao">DepositDao</string>
+    <string name="title_activity_database">Database</string>
+    <string name="title_activity_deposit_repository">DepositRepository</string>
+    <string name="title_activity_history">HistoryActivity</string>
+    <string name="title_activity_stage01_view_model">Stage01ViewModel</string>
+    <string name="title_activity_stage02_view_model">Stage02ViewModel</string>
+    <string name="title_activity_stage03_view_model">Stage03ViewModel</string>
+    <string name="title_activity_history_view_model">HistoryViewModel</string>
+    <string name="title_activity_login_screen">LoginScreen</string>
+    <string name="title_activity_login_view_model">LoginViewModel</string>
+    <string name="title_activity_register_screen">RegisterScreen</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_register_view_model">RegisterViewModel</string>
+    <string name="title_activity_token_manager">TokenManager</string>
+    <string name="title_activity_group_dto">GroupDto</string>
+    <string name="title_activity_person_dto">PersonDto</string>
+    <string name="title_activity_register_request">RegisterRequest</string>
+    <string name="title_activity_login_request">LoginRequest</string>
+    <string name="title_activity_retrofit_client">RetrofitClient</string>
+    <string name="title_activity_main_view_model">MainViewModel</string>
+    <string name="title_activity_auth_interceptor">AuthInterceptor</string>
+    <string name="title_activity_api_service">ApiService</string>
+    <string name="title_activity_auth_repository">AuthRepository</string>
 </resources>

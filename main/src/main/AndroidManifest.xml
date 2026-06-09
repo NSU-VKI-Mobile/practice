@@ -7,6 +7,146 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Draft" />
+        android:theme="@style/Theme.Draft">
+        <activity
+            android:name=".HistoryViewModel"
+            android:exported="false"
+            android:label="@string/title_activity_history_view_model"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".Stage03ViewModel"
+            android:exported="false"
+            android:label="@string/title_activity_stage03_view_model"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".Stage02ViewModel"
+            android:exported="false"
+            android:label="@string/title_activity_stage02_view_model"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".Stage01ViewModel"
+            android:exported="false"
+            android:label="@string/title_activity_stage01_view_model"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_history"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".data.DepositRepository"
+            android:exported="false"
+            android:label="@string/title_activity_deposit_repository"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".data.Database"
+            android:exported="false"
+            android:label="@string/title_activity_database"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".data.DepositDao"
+            android:exported="false"
+            android:label="@string/title_activity_deposit_dao"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".data.DepositCalculation"
+            android:exported="false"
+            android:label="@string/title_activity_deposit_calculation"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".Stage03Activity"
+            android:exported="false"
+            android:label="@string/title_activity_stage03"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".Stage02Activity"
+            android:exported="false"
+            android:label="@string/title_activity_stage02"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".Stage01Activity"
+            android:exported="false"
+            android:label="@string/title_activity_stage01"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".Stage1"
+            android:exported="false"
+            android:label="@string/title_activity_stage1"
+            android:name=".data.AuthRepository"
+            android:exported="false"
+            android:label="@string/title_activity_auth_repository"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".network.ApiService"
+            android:exported="false"
+            android:label="@string/title_activity_api_service"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".network.AuthInterceptor"
+            android:exported="false"
+            android:label="@string/title_activity_auth_interceptor"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".data.network.RetrofitClient"
+            android:exported="false"
+            android:label="@string/title_activity_retrofit_client"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".data.models.LoginRequest"
+            android:exported="false"
+            android:label="@string/title_activity_login_request"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".data.models.RegisterRequest"
+            android:exported="false"
+            android:label="@string/title_activity_register_request"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".data.models.PersonDto"
+            android:exported="false"
+            android:label="@string/title_activity_person_dto"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".data.models.GroupDto"
+            android:exported="false"
+            android:label="@string/title_activity_group_dto"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".data.TokenManager"
+            android:exported="false"
+            android:label="@string/title_activity_token_manager"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".RegisterViewModel"
+            android:exported="false"
+            android:label="@string/title_activity_register_view_model"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".RegisterScreen"
+            android:exported="false"
+            android:label="@string/title_activity_register_screen"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.Draft">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".LoginViewModel"
+            android:exported="false"
+            android:label="@string/title_activity_login_view_model"
+            android:theme="@style/Theme.Draft" />
+        <activity
+            android:name=".LoginScreen"
+            android:exported="true"
+            android:label="@string/title_activity_login_screen"
+            android:theme="@style/Theme.Draft" />
+    </application>
 
 </manifest>
