@@ -2,6 +2,7 @@ package ci.nsu.mobile.main.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ci.nsu.mobile.main.data.local.TokenManager
 import ci.nsu.mobile.main.data.model.GroupDto
 import ci.nsu.mobile.main.data.model.RegisterRequest
 import ci.nsu.mobile.main.data.model.UserDto
@@ -16,6 +17,12 @@ class AuthViewModel : ViewModel() {
 
     val loading = MutableStateFlow(false)
     val error = MutableStateFlow<String?>(null)
+
+    private val _currentUser =
+        MutableStateFlow<UserDto?>(null)
+
+    val currentUser: StateFlow<UserDto?>
+        get() = _currentUser
 
     private val _users =
         MutableStateFlow<List<UserDto>>(emptyList())
@@ -41,12 +48,14 @@ class AuthViewModel : ViewModel() {
             error.value = null
 
             repository.login(login, password)
-                .onSuccess {
+                .onSuccess { user ->
+
+                    _currentUser.value = user
+
                     onSuccess()
                 }
                 .onFailure {
                     error.value = it.message
-                    println(it.message)
                 }
 
             loading.value = false
@@ -69,11 +78,18 @@ class AuthViewModel : ViewModel() {
                 }
                 .onFailure {
                     error.value = it.message
-                    println(it.message)
                 }
 
             loading.value = false
         }
+    }
+
+    fun logout() {
+
+        TokenManager.clear()
+
+        _currentUser.value = null
+        _users.value = emptyList()
     }
 
     fun loadGroups() {
@@ -97,4 +113,6 @@ class AuthViewModel : ViewModel() {
                 }
         }
     }
+
+
 }
