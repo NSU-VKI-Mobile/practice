@@ -70,7 +70,7 @@ class RegisterViewModel(
         val fieldErrors = FieldErrors(
             firstName = validateName(firstName, "Имя"),
             lastName = validateName(lastName, "Фамилия"),
-            middleName = if (middleName.isNotBlank()) validateName(middleName, "Отчество") else null,
+            middleName = validateName(middleName, "Отчество"),
             birthDate = validateBirthDate(birthDate),
             login = validateLogin(login),
             password = validatePassword(password),

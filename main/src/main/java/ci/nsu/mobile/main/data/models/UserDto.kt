@@ -10,7 +10,7 @@ data class UserDto(
     val login: String,
     val email: String,
     @SerialName("phoneNumber")
-    val phoneNumber: String,
+    val phoneNumber: String = "",
     @SerialName("roleId")
     val roleId: Int,
     @SerialName("authAllowed")

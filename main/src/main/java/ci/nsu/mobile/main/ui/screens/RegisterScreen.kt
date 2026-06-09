@@ -136,7 +136,7 @@ fun RegisterScreen(
                     middleName = filterNameInput(it)
                     viewModel.clearFieldError("middleName")
                 },
-                label = { Text("Отчество (необязательно)") },
+                label = { Text("Отчество") },
                 isError = fieldErrors.middleName != null,
                 supportingText = { fieldErrors.middleName?.let { Text(it) } },
                 modifier = Modifier.fillMaxWidth(),
