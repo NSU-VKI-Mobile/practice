@@ -2,14 +2,20 @@ package ci.nsu.mobile.main.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import ci.nsu.mobile.main.data.model.*
+import androidx.compose.ui.unit.dp
+import ci.nsu.mobile.main.data.model.PersonDto
+import ci.nsu.mobile.main.data.model.RegisterRequest
 import ci.nsu.mobile.main.viewmodel.AuthViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -17,12 +23,15 @@ fun RegisterScreen(
     vm: AuthViewModel,
     onSuccess: () -> Unit
 ) {
-
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var middleName by remember { mutableStateOf("") }
+
     var birthDate by remember { mutableStateOf("") }
-    var gender by remember { mutableStateOf("M") }
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    var gender by remember { mutableStateOf("MALE") }
+    var genderExpanded by remember { mutableStateOf(false) }
 
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -31,8 +40,7 @@ fun RegisterScreen(
 
     var groupId by remember { mutableStateOf(0) }
     var groupName by remember { mutableStateOf("") }
-
-    var expanded by remember { mutableStateOf(false) }
+    var groupsExpanded by remember { mutableStateOf(false) }
 
     val groups by vm.groups.collectAsState()
     val loading by vm.loading.collectAsState()
@@ -40,6 +48,50 @@ fun RegisterScreen(
 
     LaunchedEffect(Unit) {
         vm.loadGroups()
+    }
+
+    if (showDatePicker) {
+
+        val datePickerState = rememberDatePickerState()
+
+        DatePickerDialog(
+            onDismissRequest = {
+                showDatePicker = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+
+                        datePickerState.selectedDateMillis?.let { millis ->
+
+                            val formatter = SimpleDateFormat(
+                                "yyyy-MM-dd",
+                                Locale.getDefault()
+                            )
+
+                            birthDate = formatter.format(Date(millis))
+                        }
+
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("Отмена")
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState
+            )
+        }
     }
 
     Column(
@@ -50,60 +102,185 @@ fun RegisterScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
-        Text("Регистрация", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = "Регистрация",
+            style = MaterialTheme.typography.headlineMedium
+        )
 
-        OutlinedTextField(firstName, { firstName = it }, label = { Text("Имя") }, enabled = !loading)
-        OutlinedTextField(lastName, { lastName = it }, label = { Text("Фамилия") }, enabled = !loading)
-        OutlinedTextField(middleName, { middleName = it }, label = { Text("Отчество") }, enabled = !loading)
-        OutlinedTextField(birthDate, { birthDate = it }, label = { Text("Дата рождения") }, enabled = !loading)
-        OutlinedTextField(gender, { gender = it }, label = { Text("Пол") }, enabled = !loading)
+        OutlinedTextField(
+            value = firstName,
+            onValueChange = { firstName = it },
+            label = { Text("Имя") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !loading
+        )
+
+        OutlinedTextField(
+            value = lastName,
+            onValueChange = { lastName = it },
+            label = { Text("Фамилия") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !loading
+        )
+
+        OutlinedTextField(
+            value = middleName,
+            onValueChange = { middleName = it },
+            label = { Text("Отчество") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !loading
+        )
+
+        OutlinedTextField(
+            value = birthDate,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Дата рождения") },
+            placeholder = { Text("Выберите дату") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !loading
+        )
+
+        Button(
+            onClick = {
+                showDatePicker = true
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !loading
+        ) {
+            Text("Выбрать дату")
+        }
 
         ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { if (!loading) expanded = !expanded }
+            expanded = genderExpanded,
+            onExpandedChange = {
+                if (!loading) {
+                    genderExpanded = !genderExpanded
+                }
+            }
         ) {
+            OutlinedTextField(
+                value = when (gender) {
+                    "MALE" -> "Мужской"
+                    "FEMALE" -> "Женский"
+                    else -> gender
+                },
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Пол") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                enabled = !loading
+            )
 
+            ExposedDropdownMenu(
+                expanded = genderExpanded,
+                onDismissRequest = {
+                    genderExpanded = false
+                }
+            ) {
+
+                DropdownMenuItem(
+                    text = { Text("Мужской") },
+                    onClick = {
+                        gender = "MALE"
+                        genderExpanded = false
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Женский") },
+                    onClick = {
+                        gender = "FEMALE"
+                        genderExpanded = false
+                    }
+                )
+            }
+        }
+
+        ExposedDropdownMenuBox(
+            expanded = groupsExpanded,
+            onExpandedChange = {
+                if (!loading) {
+                    groupsExpanded = !groupsExpanded
+                }
+            }
+        ) {
             OutlinedTextField(
                 value = groupName,
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Группа") },
-                modifier = Modifier.menuAnchor(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
                 enabled = !loading
             )
 
             ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
+                expanded = groupsExpanded,
+                onDismissRequest = {
+                    groupsExpanded = false
+                }
             ) {
 
-                groups.forEach { g ->
+                groups.forEach { group ->
+
                     DropdownMenuItem(
-                        text = { Text(g.name) },
+                        text = { Text(group.name) },
                         onClick = {
-                            groupId = g.id
-                            groupName = g.name
-                            expanded = false
+                            groupId = group.id
+                            groupName = group.name
+                            groupsExpanded = false
                         }
                     )
                 }
             }
         }
 
-        OutlinedTextField(login, { login = it }, label = { Text("Логин") }, enabled = !loading)
+        OutlinedTextField(
+            value = login,
+            onValueChange = { login = it },
+            label = { Text("Логин") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !loading
+        )
+
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
             label = { Text("Пароль") },
-            enabled = !loading,
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !loading
         )
-        OutlinedTextField(email, { email = it }, label = { Text("Email") }, enabled = !loading)
-        OutlinedTextField(phone, { phone = it }, label = { Text("Телефон") }, enabled = !loading)
 
-        if (error != null) {
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !loading
+        )
+
+        OutlinedTextField(
+            value = phone,
+            onValueChange = { phone = it },
+            label = { Text("Телефон") },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !loading
+        )
+
+        error?.let {
             Text(
-                text = error!!,
+                text = it,
                 color = MaterialTheme.colorScheme.error
             )
         }
@@ -128,19 +305,34 @@ fun RegisterScreen(
                     )
                 )
 
-                vm.register(request, onSuccess)
+                vm.register(
+                    request = request,
+                    onSuccess = onSuccess
+                )
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !loading && login.isNotEmpty() && password.isNotEmpty() && groupId != 0
+            enabled =
+                !loading &&
+                        login.isNotBlank() &&
+                        password.isNotBlank() &&
+                        firstName.isNotBlank() &&
+                        lastName.isNotBlank() &&
+                        birthDate.isNotBlank() &&
+                        groupId != 0
         ) {
+
             if (loading) {
+
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
                     color = MaterialTheme.colorScheme.onPrimary
                 )
+
             } else {
+
                 Text("Зарегистрироваться")
             }
         }
     }
+
 }
