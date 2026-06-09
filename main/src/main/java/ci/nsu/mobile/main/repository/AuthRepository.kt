@@ -27,10 +27,16 @@ class AuthRepository {
                 Result.success(body.user)
 
             } else {
-                Result.failure(Exception("Login failed"))
+
+                Result.failure(
+                    Exception(
+                        "LOGIN ERROR HTTP ${response.code()} : ${response.errorBody()?.string()}"
+                    )
+                )
             }
 
         } catch (e: Exception) {
+
             Result.failure(e)
         }
     }
@@ -44,23 +50,75 @@ class AuthRepository {
             val response =
                 RetrofitInstance.api.register(request)
 
-            if (response.isSuccessful)
+            if (response.isSuccessful) {
+
                 Result.success(Unit)
-            else
-                Result.failure(Exception())
+
+            } else {
+
+                val error =
+                    response.errorBody()?.string()
+
+                Result.failure(
+                    Exception(
+                        "REGISTER ERROR HTTP ${response.code()} : $error"
+                    )
+                )
+            }
 
         } catch (e: Exception) {
+
             Result.failure(e)
         }
     }
 
-    suspend fun getUsers() =
-        Result.success(
-            RetrofitInstance.api.getUsers().body() ?: emptyList()
-        )
+    suspend fun getUsers(): Result<List<UserDto>> {
 
-    suspend fun getGroups() =
-        Result.success(
-            RetrofitInstance.api.getGroups().body() ?: emptyList()
-        )
+        return try {
+
+            val response = RetrofitInstance.api.getUsers()
+
+            if (response.isSuccessful) {
+
+                Result.success(response.body() ?: emptyList())
+
+            } else {
+
+                Result.failure(
+                    Exception(
+                        "GET USERS ERROR HTTP ${response.code()} : ${response.errorBody()?.string()}"
+                    )
+                )
+            }
+
+        } catch (e: Exception) {
+
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getGroups(): Result<List<GroupDto>> {
+
+        return try {
+
+            val response = RetrofitInstance.api.getGroups()
+
+            if (response.isSuccessful) {
+
+                Result.success(response.body() ?: emptyList())
+
+            } else {
+
+                Result.failure(
+                    Exception(
+                        "GET GROUPS ERROR HTTP ${response.code()} : ${response.errorBody()?.string()}"
+                    )
+                )
+            }
+
+        } catch (e: Exception) {
+
+            Result.failure(e)
+        }
+    }
 }

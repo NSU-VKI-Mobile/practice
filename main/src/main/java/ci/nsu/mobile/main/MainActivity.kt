@@ -12,9 +12,7 @@ import ci.nsu.mobile.main.viewmodel.AuthViewModel
 
 class MainActivity : ComponentActivity() {
 
-    override fun onCreate(
-        savedInstanceState: Bundle?
-    ) {
+    override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
 
@@ -22,47 +20,37 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            val navController =
-                rememberNavController()
-
-            val vm: AuthViewModel =
-                viewModel()
+            val navController = rememberNavController()
+            val vm: AuthViewModel = viewModel()
 
             NavHost(
-                navController,
-                startDestination =
-                    Screen.Login.route
+                navController = navController,
+                startDestination = Screen.Login.route
             ) {
 
-                composable(
-                    Screen.Login.route
-                ) {
-
+                composable(Screen.Login.route) {
                     LoginScreen(
-                        vm,
-                        {
-                            navController.navigate(
-                                Screen.Register.route
-                            )
+                        vm = vm,
+                        openRegister = {
+                            navController.navigate(Screen.Register.route)
                         },
-                        {
-                            navController.navigate(
-                                Screen.Home.route
-                            )
+                        openHome = {
+                            navController.navigate(Screen.Home.route)
                         }
                     )
                 }
 
-                composable(
-                    Screen.Register.route
-                ) {
-                    RegisterScreen()
+                composable(Screen.Register.route) {
+                    RegisterScreen(
+                        vm = vm,
+                        onSuccess = {
+                            navController.navigate(Screen.Home.route)
+                        }
+                    )
                 }
 
-                composable(
-                    Screen.Home.route
-                ) {
-                    HomeScreen(vm)
+                composable(Screen.Home.route) {
+                    HomeScreen(vm = vm)
                 }
             }
         }

@@ -2,7 +2,9 @@ package ci.nsu.mobile.main.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ci.nsu.mobile.main.data.model.*
+import ci.nsu.mobile.main.data.model.GroupDto
+import ci.nsu.mobile.main.data.model.RegisterRequest
+import ci.nsu.mobile.main.data.model.UserDto
 import ci.nsu.mobile.main.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,6 +13,9 @@ import kotlinx.coroutines.launch
 class AuthViewModel : ViewModel() {
 
     private val repository = AuthRepository()
+
+    val loading = MutableStateFlow(false)
+    val error = MutableStateFlow<String?>(null)
 
     private val _users =
         MutableStateFlow<List<UserDto>>(emptyList())
@@ -24,9 +29,6 @@ class AuthViewModel : ViewModel() {
     val groups: StateFlow<List<GroupDto>>
         get() = _groups
 
-    var loading =
-        MutableStateFlow(false)
-
     fun login(
         login: String,
         password: String,
@@ -36,24 +38,41 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
 
             loading.value = true
+            error.value = null
 
             repository.login(login, password)
                 .onSuccess {
                     onSuccess()
+                }
+                .onFailure {
+                    error.value = it.message
+                    println(it.message)
                 }
 
             loading.value = false
         }
     }
 
-    fun loadUsers() {
+    fun register(
+        request: RegisterRequest,
+        onSuccess: () -> Unit
+    ) {
 
         viewModelScope.launch {
 
-            repository.getUsers()
+            loading.value = true
+            error.value = null
+
+            repository.register(request)
                 .onSuccess {
-                    _users.value = it
+                    onSuccess()
                 }
+                .onFailure {
+                    error.value = it.message
+                    println(it.message)
+                }
+
+            loading.value = false
         }
     }
 
@@ -64,6 +83,17 @@ class AuthViewModel : ViewModel() {
             repository.getGroups()
                 .onSuccess {
                     _groups.value = it
+                }
+        }
+    }
+
+    fun loadUsers() {
+
+        viewModelScope.launch {
+
+            repository.getUsers()
+                .onSuccess {
+                    _users.value = it
                 }
         }
     }
