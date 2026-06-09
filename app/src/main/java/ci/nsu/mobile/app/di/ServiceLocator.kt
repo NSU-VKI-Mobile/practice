@@ -36,7 +36,7 @@ object ServiceLocator {
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:5000/api/")
+            .baseUrl("http://192.168.200.160:8080/api/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

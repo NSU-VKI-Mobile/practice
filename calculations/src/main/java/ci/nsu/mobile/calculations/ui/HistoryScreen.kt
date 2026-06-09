@@ -59,6 +59,7 @@ fun CalculationItem(calc: DepositCalculation, onDelete: () -> Unit) {
             Column {
                 Text("Дата: ${df.format(Date(calc.calculationDate))}", style = MaterialTheme.typography.bodySmall)
                 Text("Сумма: ${calc.initialAmount}", style = MaterialTheme.typography.titleMedium)
+                Text("Ставка: ${calc.interestRate}%", style = MaterialTheme.typography.bodyMedium)
                 Text("Итог: ${String.format("%.2f", calc.finalAmount)}", style = MaterialTheme.typography.bodyLarge)
             }
             IconButton(onClick = onDelete) {
