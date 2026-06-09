@@ -10,6 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ci.nsu.moble.main.data.repository.DepositRepository
+import ci.nsu.moble.main.viewmodel.DepositViewModelFactory
 import ci.nsu.moble.main.data.models.DepositCalculation
 import ci.nsu.moble.main.viewmodel.DepositUiState
 import ci.nsu.moble.main.viewmodel.DepositViewModel
@@ -18,11 +20,14 @@ import java.text.DecimalFormat
 @Composable
 fun MyCalculationsScreen(
     userId: Long,
-    onItemClick: (DepositCalculation) -> Unit,
-    viewModel: DepositViewModel = viewModel(
-        factory = DepositViewModelFactory(userId)
-    )
+    repository: DepositRepository,                    // ← добавили параметр
+    onItemClick: (DepositCalculation) -> Unit
 ) {
+    // создаём ViewModel с правильными параметрами
+    val viewModel: DepositViewModel = viewModel(
+        factory = DepositViewModelFactory(repository, userId)
+    )
+
     val state by viewModel.state.collectAsState()
     val decimalFormat = DecimalFormat("#,##0.00")
 
