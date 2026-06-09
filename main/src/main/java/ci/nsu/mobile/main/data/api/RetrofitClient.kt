@@ -9,7 +9,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 
 object RetrofitClient {
-    private const val BASE_URL = "http://127.0.0.1:8080/"
+    private const val BASE_URL = "http://192.168.200.160:8080/api/"
 
     fun getApiService(tokenManager: TokenManager): ApiService {
         val loggingInterceptor = HttpLoggingInterceptor().apply {

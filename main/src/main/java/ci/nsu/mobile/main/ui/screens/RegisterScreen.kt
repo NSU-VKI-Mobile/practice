@@ -136,7 +136,7 @@ fun RegisterScreen(
                     middleName = filterNameInput(it)
                     viewModel.clearFieldError("middleName")
                 },
-                label = { Text("Отчество (необязательно)") },
+                label = { Text("Отчество") },
                 isError = fieldErrors.middleName != null,
                 supportingText = { fieldErrors.middleName?.let { Text(it) } },
                 modifier = Modifier.fillMaxWidth(),
@@ -342,6 +342,19 @@ fun RegisterScreen(
                     CircularProgressIndicator(modifier = Modifier.size(20.dp))
                 } else {
                     Text("Зарегистрироваться")
+                }
+            }
+        }
+        item {
+            Button(
+                onClick = { navController.navigate("login") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !uiState.isLoading
+            ) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                } else {
+                    Text("Назад")
                 }
             }
         }
