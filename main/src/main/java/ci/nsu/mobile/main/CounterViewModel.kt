@@ -6,13 +6,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-// Состояние экрана (данные)
 data class CounterUiState(
     val count: Int = 0,
     val history: List<String> = emptyList()
 )
 
-// Бизнес-логика счетчика
 class CounterViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(CounterUiState())
     val uiState: StateFlow<CounterUiState> = _uiState.asStateFlow()
