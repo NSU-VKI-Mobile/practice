@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultScreen(
@@ -34,6 +33,7 @@ fun ResultScreen(
     val monthlyTopUp by viewModel::monthlyTopUp
     val calculationResult by viewModel::calculationResult
 
+    // Защита от null — если расчёта нет, показываем ошибку
     val finalAmount = calculationResult?.first ?: 0.0
     val interestEarned = calculationResult?.second ?: 0.0
 

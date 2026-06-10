@@ -95,8 +95,17 @@ class DepositViewModel(
         return true
     }
 
-    fun validateStep2(): Boolean = true
-    fun validateStep2(any: Any?): Boolean = true
+    fun validateStep2(): Boolean {
+        return if (selectedRate <= 0.0) {
+            validationError = "Выберите процентную ставку"
+            false
+        } else {
+            validationError = null
+            true
+        }
+    }
+
+    fun validateStep2(any: Any?): Boolean = validateStep2()
 
     fun calculate() {
         val startAmount = initialAmount.toDoubleOrNull() ?: 0.0
@@ -138,6 +147,7 @@ class DepositViewModel(
                 calculationDate = System.currentTimeMillis()
             )
             repository.saveCalculation(calculation)
+            reset()
             onSuccess()
         }
     }
