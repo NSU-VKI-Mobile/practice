@@ -271,6 +271,7 @@ fun RegisterScreen(
                 )
             }
 
+
             item { Spacer(modifier = Modifier.height(16.dp)) }
             item { Text("Учетные данные", style = MaterialTheme.typography.titleLarge) }
 
