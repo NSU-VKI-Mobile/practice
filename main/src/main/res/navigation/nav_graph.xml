@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <!-- Главный экран -->
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="ci.nsu.mobile.main.ui.main.MainFragment"
+        android:label="Расчёт вкладов">
+        <action
+            android:id="@+id/action_main_to_step1"
+            app:destination="@id/step1Fragment" />
+        <action
+            android:id="@+id/action_main_to_history"
+            app:destination="@id/historyFragment" />
+    </fragment>
+
+    <!-- Этап 1 -->
+    <fragment
+        android:id="@+id/step1Fragment"
+        android:name="ci.nsu.mobile.main.ui.step1.Step1Fragment"
+        android:label="Этап 1">
+        <action
+            android:id="@+id/action_step1_to_step2"
+            app:destination="@id/step2Fragment" />
+    </fragment>
+
+    <!-- Этап 2 -->
+    <fragment
+        android:id="@+id/step2Fragment"
+        android:name="ci.nsu.mobile.main.ui.step2.Step2Fragment"
+        android:label="Этап 2">
+        <action
+            android:id="@+id/action_step2_to_result"
+            app:destination="@id/resultFragment" />
+        <argument
+            android:name="depositData"
+            app:argType="ci.nsu.mobile.main.data.model.DepositInputData" />
+    </fragment>
+
+    <!-- Экран результата -->
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="ci.nsu.mobile.main.ui.result.ResultFragment"
+        android:label="Результат расчёта">
+        <argument
+            android:name="resultData"
+            app:argType="ci.nsu.mobile.main.data.model.DepositResultData" />
+    </fragment>
+
+    <!-- История расчётов -->
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="ci.nsu.mobile.main.ui.history.HistoryFragment"
+        android:label="История расчётов">
+        <action
+            android:id="@+id/action_history_to_detail"
+            app:destination="@id/detailFragment" />
+    </fragment>
+
+    <!-- Детали расчёта -->
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="ci.nsu.mobile.main.ui.history.DetailFragment"
+        android:label="Детали расчёта" />
+
+</navigation>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Детали расчёта"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:id="@+id/tvInitialAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Стартовый взнос: " />
+
+    <TextView
+        android:id="@+id/tvPeriodMonths"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Срок: " />
+
+    <TextView
+        android:id="@+id/tvInterestRate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ставка: " />
+
+    <TextView
+        android:id="@+id/tvMonthlyTopUp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Пополнение: " />
+
+    <TextView
+        android:id="@+id/tvFinalAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Итоговая сумма: " />
+
+    <TextView
+        android:id="@+id/tvInterestEarned"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Начисленные проценты: " />
+
+    <Button
+        android:id="@+id/buttonBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Назад"
+        android:layout_marginTop="32dp" />
+</LinearLayout>
