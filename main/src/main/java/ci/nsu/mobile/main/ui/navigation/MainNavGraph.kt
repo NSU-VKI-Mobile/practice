@@ -72,7 +72,14 @@ fun MainNavGraph (modifier: Modifier = Modifier) {
             }
 
             composable(AppRoutes.Main.Users) {
-                HomeScreen(vm = vm)
+                HomeScreen(
+                    vm = vm,
+                    onLogout = {
+                        navController.navigate(AppRoutes.Auth.Login) {
+                            popUpTo(0)
+                        }
+                    }
+                )
             }
 
             composable(AppRoutes.Main.Deposit.Step1) { Step1Screen(navController, Deposit_vm) }

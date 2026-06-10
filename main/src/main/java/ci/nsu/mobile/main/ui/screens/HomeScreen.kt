@@ -12,7 +12,7 @@ import ci.nsu.mobile.main.viewmodel.AuthViewModel
 @Composable
 fun HomeScreen(
     vm: AuthViewModel,
-    openLogin: (() -> Unit)? = null
+    onLogout: () -> Unit
 ) {
 
     val currentUser by vm.currentUser.collectAsState()
@@ -70,7 +70,7 @@ fun HomeScreen(
 
                 vm.logout()
 
-                openLogin?.invoke()
+                onLogout()
             },
             modifier = Modifier.fillMaxWidth()
         ) {
