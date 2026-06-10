@@ -5,14 +5,15 @@ import ci.nsu.mobile.main.data.models.DepositCalculation
 import kotlinx.coroutines.flow.Flow
 
 class DepositRepository(private val dao: DepositDao) {
+
     suspend fun saveCalculation(calculation: DepositCalculation) {
         dao.insertCalculation(calculation)
     }
 
-//    fun getAllCalculations(): Flow<List<DepositCalculation>> = dao.getCalculationsForUser()
-//
-//    suspend fun getCalculationById(id: Long): DepositCalculation? = dao.getCalculationById(id)
-//
+    fun getCalculationsForUser(userId: Long): Flow<List<DepositCalculation>> {
+        return dao.getCalculationsForUser(userId)
+    }
+
     suspend fun deleteCalculation(calculation: DepositCalculation) {
         dao.deleteCalculation(calculation)
     }
