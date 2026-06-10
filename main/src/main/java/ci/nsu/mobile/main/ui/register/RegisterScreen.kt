@@ -8,6 +8,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import java.text.SimpleDateFormat
+import java.util.*
 import ci.nsu.mobile.main.data.dto.GroupDto
 import ci.nsu.mobile.main.viewmodel.RegisterViewModel
 
@@ -30,6 +35,20 @@ fun RegisterScreen(
 
     var expanded by remember { mutableStateOf(false) }
     var selectedGroup by remember { mutableStateOf<GroupDto?>(null) }
+
+    // Состояние для диалога выбора даты
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = System.currentTimeMillis()
+    )
+
+    // Форматирование выбранной даты
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        datePickerState.selectedDateMillis?.let { millis ->
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            birthDate = formatter.format(Date(millis))
+        }
+    }
 
     if (viewModel.loading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -65,12 +84,24 @@ fun RegisterScreen(
             label = { Text("Отчество") },
             modifier = Modifier.fillMaxWidth()
         )
+
+        // Поле даты рождения с календарём
         OutlinedTextField(
             value = birthDate,
-            onValueChange = { birthDate = it },
-            label = { Text("Дата рождения (ГГГГ-ММ-ДД)") },
-            modifier = Modifier.fillMaxWidth()
+            onValueChange = { /* Не разрешаем ручной ввод */ },
+            label = { Text("Дата рождения") },
+            modifier = Modifier.fillMaxWidth(),
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = { showDatePicker = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.DateRange,
+                        contentDescription = "Выбрать дату"
+                    )
+                }
+            }
         )
+
         OutlinedTextField(
             value = gender,
             onValueChange = { gender = it },
@@ -169,6 +200,36 @@ fun RegisterScreen(
             enabled = !viewModel.loading
         ) {
             Text("Зарегистрироваться")
+        }
+    }
+
+    // Диалог выбора даты
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("Отмена")
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+                showModeToggle = false
+            )
         }
     }
 }
