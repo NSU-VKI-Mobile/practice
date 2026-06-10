@@ -7,7 +7,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
+import ci.nsu.mobile.main.ui.navigation.AppRoutes
+import ci.nsu.mobile.main.viewmodel.DepositViewModel
 
 @Composable
 fun Step1Screen(navController: NavController, vm: DepositViewModel) {
@@ -57,9 +58,6 @@ fun Step1Screen(navController: NavController, vm: DepositViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            Button(onClick = { navController.navigate("main") }) {
-                Text("В начало")
-            }
 
             Button(onClick = {
                 when {
@@ -73,7 +71,7 @@ fun Step1Screen(navController: NavController, vm: DepositViewModel) {
 
                     else -> {
                         vm.calculateRate()
-                        navController.navigate("step2")
+                        navController.navigate(AppRoutes.Main.Deposit.Step2)
                     }
                 }
             }) {

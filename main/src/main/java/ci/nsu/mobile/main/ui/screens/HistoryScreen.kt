@@ -6,12 +6,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.room.util.TableInfo
-import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
-import java.text.SimpleDateFormat
-import java.util.*
+import ci.nsu.mobile.main.viewmodel.DepositViewModel
 
 @Composable
 fun HistoryScreen(vm: DepositViewModel) {

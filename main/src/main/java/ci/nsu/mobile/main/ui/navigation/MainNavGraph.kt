@@ -10,15 +10,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.main.ui.screens.HistoryScreen
 import ci.nsu.mobile.main.ui.screens.HomeScreen
 import ci.nsu.mobile.main.ui.screens.LoginScreen
+import ci.nsu.mobile.main.ui.screens.MainScreen
 import ci.nsu.mobile.main.ui.screens.RegisterScreen
+import ci.nsu.mobile.main.ui.screens.ResultScreen
+import ci.nsu.mobile.main.ui.screens.Step1Screen
+import ci.nsu.mobile.main.ui.screens.Step2Screen
 import ci.nsu.mobile.main.viewmodel.AuthViewModel
+import ci.nsu.mobile.main.viewmodel.DepositViewModel
 
 @Composable
 fun MainNavGraph (modifier: Modifier = Modifier) {
 
     val vm : AuthViewModel = hiltViewModel()
+    val Deposit_vm : DepositViewModel = hiltViewModel()
     val navController = rememberNavController()
     val bottomBarRoutes = setOf(
         AppRoutes.Main.Users,
@@ -67,6 +74,16 @@ fun MainNavGraph (modifier: Modifier = Modifier) {
             composable(AppRoutes.Main.Users) {
                 HomeScreen(vm = vm)
             }
+
+            composable(AppRoutes.Main.Deposit.Step1) { Step1Screen(navController, Deposit_vm) }
+
+            composable(AppRoutes.Main.Deposit.Step2) { Step2Screen(navController, Deposit_vm) }
+
+            composable(AppRoutes.Main.Deposit.Result) { ResultScreen(navController, Deposit_vm) }
+
+            composable(AppRoutes.Main.Deposits) { HistoryScreen(Deposit_vm) }
         }
+
+
     }
 }

@@ -8,7 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
+import ci.nsu.mobile.main.ui.navigation.AppRoutes
+import ci.nsu.mobile.main.viewmodel.DepositViewModel
 
 @Composable
 fun Step2Screen(navController: NavController, vm: DepositViewModel) {
@@ -94,7 +95,7 @@ fun Step2Screen(navController: NavController, vm: DepositViewModel) {
                     selectedRate.isEmpty() -> error = "Выберите ставку"
                     topUp.isNotEmpty() && topUp.toDoubleOrNull() == null ->
                         error = "Пополнение число"
-                    else -> navController.navigate("result")
+                    else -> navController.navigate(AppRoutes.Main.Deposit.Result)
                 }
             }) {
                 Text("Рассчитать")

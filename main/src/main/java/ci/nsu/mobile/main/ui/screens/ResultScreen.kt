@@ -7,7 +7,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
+import ci.nsu.mobile.main.ui.navigation.AppRoutes
+import ci.nsu.mobile.main.viewmodel.DepositViewModel
 
 @Composable
 fun ResultScreen(navController: NavController, vm: DepositViewModel) {
@@ -46,7 +47,7 @@ fun ResultScreen(navController: NavController, vm: DepositViewModel) {
 
             Button(onClick = {
                 vm.save()
-                navController.navigate("main")
+                navController.navigate(AppRoutes.Main.Deposit.Step1)
             }) {
                 Text("В начало")
             }

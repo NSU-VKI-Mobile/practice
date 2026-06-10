@@ -1,14 +1,23 @@
-package ci.nsu.mobile.main.ui.viewmodel
+package ci.nsu.mobile.main.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.local.DepositEntity
+import ci.nsu.mobile.main.data.local.TokenManager
 import ci.nsu.mobile.main.data.repository.DepositRepository
-import kotlinx.coroutines.flow.*
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DepositViewModel(
-    private val repository: DepositRepository
+@HiltViewModel
+class DepositViewModel  @Inject constructor (
+    private val repository: DepositRepository, private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _initialAmount = MutableStateFlow("")
@@ -23,7 +32,13 @@ class DepositViewModel(
     private val _rate = MutableStateFlow(0.0)
     val rate: StateFlow<Double> = _rate
 
-    val history = repository.getAll()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val history: Flow<List<DepositEntity>> = flowOf(tokenManager.getUserId()?.toIntOrNull())
+        .flatMapLatest { userId ->
+            userId?.let {
+                repository.getDepositsByUserId(it)
+            } ?: flowOf(emptyList())
+        }
 
     fun setInitialAmount(value: String) {
         _initialAmount.value = value
@@ -52,7 +67,9 @@ class DepositViewModel(
     }
     fun deleteAll(){
         viewModelScope.launch {
-            repository.deleteAll()
+            tokenManager.getUserId()?.toIntOrNull()?.let {
+                repository.deleteDepositsByUserId(it)
+            }
         }
     }
     fun calculateResult(): Pair<Double, Double> {
@@ -75,14 +92,16 @@ class DepositViewModel(
 
     fun save() {
         val (total, interest) = calculateResult()
+        val uId = tokenManager.getUserId()?.toIntOrNull() ?: return
 
         val entity = DepositEntity(
-            initialAmount = _initialAmount.value.toDouble(),
-            months = _months.value.toInt(),
+            initialAmount = _initialAmount.value.toDoubleOrNull() ?: 0.0,
+            months = _months.value.toIntOrNull() ?: 0,
             rate = _rate.value,
             topUp = _topUp.value.toDoubleOrNull() ?: 0.0,
             finalAmount = total,
             interest = interest,
+            userId = uId,
             date = System.currentTimeMillis()
         )
 
