@@ -1,124 +1,64 @@
 package ci.nsu.mobile.main.repository
 
+import android.util.Log
 import ci.nsu.mobile.main.data.local.TokenManager
-import ci.nsu.mobile.main.data.model.*
-import ci.nsu.mobile.main.network.RetrofitInstance
+import ci.nsu.mobile.main.data.model.GroupDto
+import ci.nsu.mobile.main.data.model.LoginRequest
+import ci.nsu.mobile.main.data.model.RegisterRequest
+import ci.nsu.mobile.main.data.model.UserDto
+import ci.nsu.mobile.main.network.AuthApi
+import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
-class AuthRepository {
 
-    suspend fun login(
-        login: String,
-        password: String
-    ): Result<UserDto> {
+class AuthRepository @Inject constructor(
+    private val api: AuthApi,
+    private val sessionManager: TokenManager
+) {
 
-        return try {
-
-            val response =
-                RetrofitInstance.api.login(
-                    LoginRequest(login, password)
-                )
-
-            if (response.isSuccessful) {
-
-                val body = response.body()!!
-
-                TokenManager.token = body.token
-
-                Result.success(body.user)
-
-            } else {
-
-                Result.failure(
-                    Exception(
-                        "LOGIN ERROR HTTP ${response.code()} : ${response.errorBody()?.string()}"
-                    )
-                )
-            }
-
-        } catch (e: Exception) {
-
-            Result.failure(e)
+    suspend fun login(request: LoginRequest): Result<Unit> {
+        return runCatching {
+            val response = api.login(request)
+            sessionManager.saveToken(response.token)
+            val userResponse = api.getUserByLogin(request.login)
+            val res = sessionManager.saveUserId(userResponse.userId.toString())
+            Log.d("LOCAL", sessionManager.getUserId()!!)
+            res
+        }.onFailure { exception ->
+            if (exception is CancellationException) throw exception
+            sessionManager.clearSession()
         }
     }
 
     suspend fun register(
         request: RegisterRequest
     ): Result<Unit> {
+        return runCatching {
+            val response = api.register(request)
+            sessionManager.saveToken(response.token)
+            val userResponse = api.getUserByLogin(request.login)
+            val res = sessionManager.saveUserId(userResponse.userId.toString())
+            Log.d("LOCAL", sessionManager.getUserId()!!)
+            res
 
+
+        }.onFailure { exception ->
+            if (exception is CancellationException) throw exception
+            sessionManager.clearSession()
+        }
+    }
+
+    suspend fun getGroups(): Result<List<GroupDto>> {
         return try {
-
-            val response =
-                RetrofitInstance.api.register(request)
-
-            if (response.isSuccessful) {
-
-                Result.success(Unit)
-
-            } else {
-
-                val error =
-                    response.errorBody()?.string()
-
-                Result.failure(
-                    Exception(
-                        "REGISTER ERROR HTTP ${response.code()} : $error"
-                    )
-                )
-            }
-
+            Result.success(api.getGroups())
         } catch (e: Exception) {
-
             Result.failure(e)
         }
     }
 
     suspend fun getUsers(): Result<List<UserDto>> {
-
-        return try {
-
-            val response = RetrofitInstance.api.getUsers()
-
-            if (response.isSuccessful) {
-
-                Result.success(response.body() ?: emptyList())
-
-            } else {
-
-                Result.failure(
-                    Exception(
-                        "GET USERS ERROR HTTP ${response.code()} : ${response.errorBody()?.string()}"
-                    )
-                )
-            }
-
-        } catch (e: Exception) {
-
-            Result.failure(e)
-        }
-    }
-
-    suspend fun getGroups(): Result<List<GroupDto>> {
-
-        return try {
-
-            val response = RetrofitInstance.api.getGroups()
-
-            if (response.isSuccessful) {
-
-                Result.success(response.body() ?: emptyList())
-
-            } else {
-
-                Result.failure(
-                    Exception(
-                        "GET GROUPS ERROR HTTP ${response.code()} : ${response.errorBody()?.string()}"
-                    )
-                )
-            }
-
-        } catch (e: Exception) {
-
-            Result.failure(e)
+        return runCatching {
+            api.getUsers()
         }
     }
 }

@@ -4,16 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.local.TokenManager
 import ci.nsu.mobile.main.data.model.GroupDto
+import ci.nsu.mobile.main.data.model.LoginRequest
 import ci.nsu.mobile.main.data.model.RegisterRequest
 import ci.nsu.mobile.main.data.model.UserDto
 import ci.nsu.mobile.main.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel : ViewModel() {
+@HiltViewModel
+class AuthViewModel @Inject constructor( private val repository : AuthRepository, private val sessionManager: TokenManager) : ViewModel() {
 
-    private val repository = AuthRepository()
 
     val loading = MutableStateFlow(false)
     val error = MutableStateFlow<String?>(null)
@@ -46,11 +49,10 @@ class AuthViewModel : ViewModel() {
 
             loading.value = true
             error.value = null
-
-            repository.login(login, password)
+            val request = LoginRequest(login, password)
+            repository.login(request)
                 .onSuccess { user ->
 
-                    _currentUser.value = user
 
                     onSuccess()
                 }
@@ -86,7 +88,7 @@ class AuthViewModel : ViewModel() {
 
     fun logout() {
 
-        TokenManager.clear()
+        sessionManager.clearSession()
 
         _currentUser.value = null
         _users.value = emptyList()

@@ -1,6 +1,10 @@
 package ci.nsu.mobile.main.data.model
 
-data class LoginResponse(
-    val token: String,
-    val user: UserDto
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class AuthResponse(
+    @SerialName("token")
+    val token: String
 )

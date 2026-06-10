@@ -1,33 +1,20 @@
 package ci.nsu.mobile.main.data.local
 
 import android.content.Context
+import androidx.core.content.edit
 
-object TokenManager {
 
-    private const val PREF_NAME = "auth_pref"
-    private const val TOKEN_KEY = "jwt"
-
-    private var prefs =
-        null as android.content.SharedPreferences?
-
-    fun init(context: Context) {
-
-        prefs = context.getSharedPreferences(
-            PREF_NAME,
-            Context.MODE_PRIVATE
-        )
+class TokenManager(context: Context) {
+    private val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+    companion object {
+        private const val KEY_TOKEN = "jwt_token"
+        private const val KEY_USER_ID = "user_id"
     }
+    fun saveToken(token: String) { prefs.edit { putString(KEY_TOKEN, token) } }
+    fun getToken(): String? { return prefs.getString(KEY_TOKEN, null) }
 
-    var token: String?
-        get() = prefs?.getString(TOKEN_KEY, null)
+    fun saveUserId(id: String) { prefs.edit { putString(KEY_USER_ID, id) } }
+    fun getUserId(): String? { return prefs.getString(KEY_USER_ID, null) }
 
-        set(value) {
-            prefs?.edit()
-                ?.putString(TOKEN_KEY, value)
-                ?.apply()
-        }
-
-    fun clear() {
-        prefs?.edit()?.clear()?.apply()
-    }
+    fun clearSession() { prefs.edit { clear() } }
 }

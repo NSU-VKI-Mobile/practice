@@ -6,19 +6,24 @@ import retrofit2.http.*
 
 interface AuthApi {
 
-    @POST("auth/login")
+    @POST("/auth/login")
     suspend fun login(
         @Body request: LoginRequest
-    ): Response<LoginResponse>
+    ): AuthResponse
 
-    @POST("auth/register")
+    @POST("/auth/register")
     suspend fun register(
         @Body request: RegisterRequest
-    ): Response<Unit>
+    ): AuthResponse
+
+    @GET("/groups")
+    suspend fun getGroups(): List<GroupDto>
 
     @GET("users")
-    suspend fun getUsers(): Response<List<UserDto>>
+    suspend fun getUsers(): List<UserDto>
 
-    @GET("groups")
-    suspend fun getGroups(): Response<List<GroupDto>>
+    @GET("users/login/{login}")
+    suspend fun getUserByLogin(
+        @Path("login") login: String
+    ): UserDto
 }

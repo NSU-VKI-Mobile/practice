@@ -54,7 +54,7 @@ fun HomeScreen(
                         modifier = Modifier.height(8.dp)
                     )
 
-                    Text("ID: ${user.id}")
+                    Text("ID: ${user.userId}")
                     Text("Логин: ${user.login}")
                     Text("Email: ${user.email}")
                 }
@@ -112,7 +112,7 @@ fun HomeScreen(
                         Text(user.email)
 
                         Text(
-                            text = "ID: ${user.id}"
+                            text = "ID: ${user.userId}"
                         )
                     }
                 }

@@ -3,8 +3,11 @@ package ci.nsu.mobile.main.network
 import ci.nsu.mobile.main.data.local.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
 
-class AuthInterceptor : Interceptor {
+class AuthInterceptor @Inject constructor(
+    private val tokenManager: TokenManager
+) : Interceptor {
 
     override fun intercept(
         chain: Interceptor.Chain
@@ -18,7 +21,7 @@ class AuthInterceptor : Interceptor {
                     "application/json"
                 )
 
-        TokenManager.token?.let {
+        tokenManager.getToken()?.let {
             request.addHeader(
                 "Authorization",
                 "Bearer $it"
