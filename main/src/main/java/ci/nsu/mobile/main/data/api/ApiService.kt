@@ -8,6 +8,7 @@ import ci.nsu.mobile.main.data.models.UserDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiService {
     @POST("auth/login")
@@ -25,4 +26,7 @@ interface ApiService {
 
     @GET("groups")
     suspend fun getGroups(): List<GroupDto>
+
+    @GET("users/login/{login}")
+    suspend fun getUserByLogin(@Path("login") login: String): UserDto
 }

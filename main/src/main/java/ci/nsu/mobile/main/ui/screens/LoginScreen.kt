@@ -63,9 +63,7 @@ fun LoginScreen(
 
         Button(
             onClick = {
-                loginViewModel.login(login, password) {
-                    // onSuccess уже вызывает refreshUserId в LaunchedEffect
-                }
+                loginViewModel.login(login, password) { }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !uiState.isLoading

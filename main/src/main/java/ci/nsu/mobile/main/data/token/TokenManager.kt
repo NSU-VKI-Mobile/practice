@@ -15,47 +15,17 @@ class TokenManager(context: Context) {
     companion object {
         private const val KEY_TOKEN = "jwt_token"
         private const val KEY_USER_ID = "user_id"
+        private const val KEY_USER_LOGIN = "user_login"
     }
 
-    // Сохраняет токен и автоматически вытаскивает из него userId
     fun saveToken(token: String) {
         Log.d("TokenManager", "saveToken called with token: $token")
         prefs.edit().putString(KEY_TOKEN, token).apply()
-        val userId = extractUserIdFromToken(token)
-        Log.d("TokenManager", "saveToken: extracted userId = $userId")
-        saveUserId(userId)
-    }
 
-    private fun extractUserIdFromToken(token: String): Long {
-        return try {
-            val parts = token.split(".")
-            if (parts.size < 2) {
-                Log.e("TokenManager", "Token has less than 2 parts: ${parts.size}")
-                return -1L
-            }
+        val userLogin = extractUserLoginFromToken(token)
+        Log.d("TokenManager", "saveToken: extracted userLogin = $userLogin")
+        saveUserLogin(userLogin)
 
-            val payloadEncoded = parts[1]
-            val decodedBytes = Base64.decode(payloadEncoded, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
-            val payloadString = String(decodedBytes, Charsets.UTF_8)
-
-            Log.d("TokenManager", "JWT payload: $payloadString")
-
-            val jsonElement = Json.parseToJsonElement(payloadString)
-            val jsonObject = jsonElement.jsonObject
-
-            // Пробуем найти ID по разным ключам
-            val userId = jsonObject["id"]?.jsonPrimitive?.longOrNull
-                ?: jsonObject["userId"]?.jsonPrimitive?.longOrNull
-                ?: jsonObject["sub"]?.jsonPrimitive?.longOrNull
-                ?: jsonObject["user_id"]?.jsonPrimitive?.longOrNull
-                ?: -1L
-
-            Log.d("TokenManager", "extracted userId: $userId")
-            userId
-        } catch (e: Exception) {
-            Log.e("TokenManager", "Failed to extract userId from token", e)
-            -1L
-        }
     }
 
     fun getToken(): String? {
@@ -71,6 +41,7 @@ class TokenManager(context: Context) {
     }
 
     fun saveUserId(userId: Long) {
+        Log.d("TokenManager", "saveUserId: saving $userId")
         prefs.edit().putLong(KEY_USER_ID, userId).apply()
     }
 
@@ -80,5 +51,40 @@ class TokenManager(context: Context) {
         return id
     }
 
+    fun saveUserLogin(login: String) {
+        Log.d("TokenManager", "saveUserLogin: saving $login")
+        prefs.edit().putString(KEY_USER_LOGIN, login).apply()
+    }
 
+    fun getUserLogin(): String {
+        val login = prefs.getString(KEY_USER_LOGIN, "") ?: ""
+        Log.d("TokenManager", "getUserLogin() = $login")
+        return login
+    }
+
+    private fun extractUserLoginFromToken(token: String): String {
+        return try {
+            val parts = token.split(".")
+            if (parts.size < 2) {
+                Log.e("TokenManager", "Token has less than 2 parts: ${parts.size}")
+                return ""
+            }
+
+            val payloadEncoded = parts[1]
+            val decodedBytes = Base64.decode(payloadEncoded, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+            val payloadString = String(decodedBytes, Charsets.UTF_8)
+
+            Log.d("TokenManager", "JWT payload: $payloadString")
+
+            val jsonElement = Json.parseToJsonElement(payloadString)
+            val jsonObject = jsonElement.jsonObject
+
+            val login = jsonObject["sub"]?.jsonPrimitive?.content ?: ""
+            Log.d("TokenManager", "extracted userLogin: $login")
+            login
+        } catch (e: Exception) {
+            Log.e("TokenManager", "Failed to extract userLogin from token", e)
+            ""
+        }
+    }
 }
