@@ -4,28 +4,29 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Group
 import ci.nsu.mobile.main.viewmodel.RegisterViewModel
 import ci.nsu.mobile.main.ui.components.LoadingDialog
 import ci.nsu.mobile.main.ui.components.ErrorDialog
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.format
-import java.time.format.DateTimeFormatter
-import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -72,7 +73,7 @@ fun RegisterScreen(
         }
     ) {
         datepicker(
-            initialDate = LocalDate(2000, 1, 1),
+            initialDate = LocalDate.parse("2000-01-01"),
             title = "Выберите дату рождения"
         ) { date ->
             viewModel.updateField("birthDate", date.toString())
@@ -218,7 +219,7 @@ fun RegisterScreen(
                     readOnly = true,
                     trailingIcon = {
                         IconButton(onClick = { dateDialogState.show() }) {
-                            Icon(Icons.Default.Visibility, contentDescription = "Выбрать дату")
+                            Icon(Icons.Default.CalendarToday, contentDescription = "Выбрать дату")
                         }
                     }
                 )
@@ -226,7 +227,11 @@ fun RegisterScreen(
 
             item {
                 OutlinedTextField(
-                    value = if (state.gender == "MALE") "Мужской" else if (state.gender == "FEMALE") "Женский" else "",
+                    value = when (state.gender) {
+                        "MALE" -> "Мужской"
+                        "FEMALE" -> "Женский"
+                        else -> ""
+                    },
                     onValueChange = {},
                     label = { Text("Пол *") },
                     modifier = Modifier.fillMaxWidth(),
@@ -239,7 +244,7 @@ fun RegisterScreen(
                     readOnly = true,
                     trailingIcon = {
                         IconButton(onClick = { genderDialogState.show() }) {
-                            Icon(Icons.Default.Visibility, contentDescription = "Выбрать пол")
+                            Icon(Icons.Default.Person, contentDescription = "Выбрать пол")
                         }
                     }
                 )
@@ -260,7 +265,7 @@ fun RegisterScreen(
                     readOnly = true,
                     trailingIcon = {
                         IconButton(onClick = { groupDialogState.show() }) {
-                            Icon(Icons.Default.Visibility, contentDescription = "Выбрать группу")
+                            Icon(Icons.Default.Group, contentDescription = "Выбрать группу")
                         }
                     }
                 )
@@ -296,7 +301,7 @@ fun RegisterScreen(
                             Text(state.passwordError!!, color = MaterialTheme.colorScheme.error)
                         }
                     },
-                    visualTransformation = if (showPassword) PasswordVisualTransformation() else PasswordVisualTransformation(),
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         IconButton(onClick = { showPassword = !showPassword }) {
                             Icon(
@@ -305,7 +310,7 @@ fun RegisterScreen(
                             )
                         }
                     },
-                    keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions(keyboardType = KeyboardType.Password)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
             }
 
@@ -321,7 +326,7 @@ fun RegisterScreen(
                             Text(state.emailError!!, color = MaterialTheme.colorScheme.error)
                         }
                     },
-                    keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions(keyboardType = KeyboardType.Email)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                 )
             }
 
@@ -331,7 +336,7 @@ fun RegisterScreen(
                     onValueChange = { viewModel.updateField("phoneNumber", it) },
                     label = { Text("Телефон") },
                     modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions(keyboardType = KeyboardType.Phone)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                 )
             }
 
