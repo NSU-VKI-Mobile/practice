@@ -1,5 +1,6 @@
 package ci.nsu.mobile.main.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,8 +12,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import ci.nsu.mobile.main.data.models.DepositCalculation
 import ci.nsu.mobile.main.ui.viewmodel.MainViewModel
 import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 
@@ -132,6 +135,7 @@ fun UsersListTab(uiState: ci.nsu.mobile.main.ui.viewmodel.MainUiState, onRetry: 
 @Composable
 fun HistoryTab(depositViewModel: DepositViewModel) {
     val history by depositViewModel.historyState.collectAsState()
+    var selectedCalculation by remember { mutableStateOf<DepositCalculation?>(null) }
 
     if (history.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -144,22 +148,78 @@ fun HistoryTab(depositViewModel: DepositViewModel) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(history) { calc ->
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = "Вклад: ${calc.initialAmount} руб.", style = MaterialTheme.typography.titleMedium)
-                        Text(text = "Срок: ${calc.periodMonths} мес. под ${calc.interestRate}%", style = MaterialTheme.typography.bodyMedium)
-                        if (calc.monthlyTopUp != null) {
-                            Text(text = "Пополнение: ${calc.monthlyTopUp} руб./мес.", style = MaterialTheme.typography.bodySmall)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { selectedCalculation = calc }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "${calc.initialAmount} ₽ → ${String.format("%.2f", calc.finalAmount)} ₽",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                text = "${formatDate(calc.calculationDate)}",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                text = "Срок: ${calc.periodMonths} мес. под ${calc.interestRate}%",
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
-                        Divider(modifier = Modifier.padding(vertical = 4.dp))
-                        Text(text = "Доход: %.2f руб.".format(calc.interestEarned), color = MaterialTheme.colorScheme.primary)
-                        Text(text = "Итог: %.2f руб.".format(calc.finalAmount), style = MaterialTheme.typography.titleSmall)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        // Используем существующий метод formatDate из HistoryScreen.kt
-                        Text(text = formatDate(calc.calculationDate), style = MaterialTheme.typography.bodySmall)
+
+                        // Кнопка удаления
+                        Text(
+                            text = "☠\uFE0F",
+                            modifier = Modifier
+                                .clickable { depositViewModel.deleteCalculation(calc) }
+                                .padding(8.dp),
+                            color = Color.Red
+                        )
                     }
                 }
             }
         }
+    }
+
+    // Диалог с деталями расчёта
+    if (selectedCalculation != null) {
+        AlertDialog(
+            onDismissRequest = { selectedCalculation = null },
+            title = { Text("Детали расчёта") },
+            text = {
+                Column {
+                    Text("Стартовый взнос: ${selectedCalculation!!.initialAmount} ₽")
+                    Text("Срок: ${selectedCalculation!!.periodMonths} мес.")
+                    Text("Ставка: ${selectedCalculation!!.interestRate}%")
+                    if (selectedCalculation!!.monthlyTopUp != null) {
+                        Text("Пополнение: ${selectedCalculation!!.monthlyTopUp} ₽/мес.")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "Итоговая сумма: ${String.format("%.2f", selectedCalculation!!.finalAmount)} ₽",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        "Начисленные проценты: ${String.format("%.2f", selectedCalculation!!.interestEarned)} ₽",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Дата: ${formatDate(selectedCalculation!!.calculationDate)}", style = MaterialTheme.typography.bodySmall)
+                }
+            },
+            confirmButton = {
+                Button(onClick = { selectedCalculation = null }) {
+                    Text("Закрыть")
+                }
+            }
+        )
     }
 }
