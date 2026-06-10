@@ -1,23 +1,18 @@
 package ci.nsu.mobile.main.data.local
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
+import ci.nsu.mobile.main.data.models.DepositCalculation
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DepositDao {
-    @Insert
-    suspend fun insert(calculation: DepositCalculation)
 
-    @Query("SELECT * FROM deposit_calculations ORDER BY calculationDate DESC")
-    fun getAllCalculations(): Flow<List<DepositCalculation>>
+    @Query("SELECT * FROM deposit_calculations WHERE userId = :userId ORDER BY calculationDate DESC")
+    fun getCalculationsForUser(userId: Long): Flow<List<DepositCalculation>>
 
-    @Query("SELECT * FROM deposit_calculations WHERE id = :id")
-    suspend fun getCalculationById(id: Long): DepositCalculation?
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCalculation(calculation: DepositCalculation)
 
-    // Новый метод для удаления
     @Delete
-    suspend fun delete(calculation: DepositCalculation)
+    suspend fun deleteCalculation(calculation: DepositCalculation)
 }

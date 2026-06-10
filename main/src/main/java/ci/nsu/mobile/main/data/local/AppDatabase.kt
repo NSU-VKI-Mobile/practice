@@ -4,14 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ci.nsu.mobile.main.data.local.DepositCalculation
-import ci.nsu.mobile.main.data.local.DepositDao
+import ci.nsu.mobile.main.data.models.DepositCalculation
 
-@Database(
-    entities = [DepositCalculation::class],
-    version = 1,
-    exportSchema = false
-)
+@Database(entities = [DepositCalculation::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun depositDao(): DepositDao
 
@@ -24,8 +19,10 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "deposits_db"
-                ).build()
+                    "deposit_database"
+                )
+                    .fallbackToDestructiveMigration() // автоматическое пересоздание бд при изменении схемы таблиц
+                    .build()
                 INSTANCE = instance
                 instance
             }
