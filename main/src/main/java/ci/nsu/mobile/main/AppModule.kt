@@ -10,7 +10,7 @@ import ci.nsu.mobile.main.data.token.TokenManager
 class AppModule(private val context: Context) {
 
     // --- Компоненты Авторизации (Лабы 6-7) ---
-    private val tokenManager by lazy {
+    val tokenManager by lazy {
         TokenManager(context.applicationContext)
     }
 
