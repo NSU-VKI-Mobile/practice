@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import ci.nsu.mobile.main.data.local.DepositCalculation
+import ci.nsu.mobile.main.data.models.DepositCalculation
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -41,7 +41,7 @@ fun HistoryScreen(
     navController: NavController,
     viewModel: DepositViewModel
 ) {
-    val history by viewModel.history.collectAsStateWithLifecycle()
+    val history by viewModel.historyState.collectAsStateWithLifecycle()
     var selectedCalculation by remember { mutableStateOf<DepositCalculation?>(null) }
 
     Scaffold(
