@@ -31,19 +31,31 @@ class DepositViewModel(
             initialValue = emptyList()
         )
 
-    // --- ПОЛЯ СОСТОЯНИЯ ДЛЯ СОВМЕСТИМОСТИ С СТАРАЫМ МАСТЕРОМ (Step1, Step2, Result) ---
+    // --- ПОЛЯ СОСТОЯНИЯ ДЛЯ СОВМЕСТИМОСТИ СО СТАРЫМИ ЭКРАНАМИ ---
     var initialAmount by mutableStateOf("")
     var periodMonths by mutableStateOf("")
     var monthlyTopUp by mutableStateOf("")
     var selectedRate by mutableStateOf(0.0)
-    var availableRates by mutableStateOf<List<Double>>(listOf(5.0, 7.5, 10.0)) // Спиоск ставок для Step1/Step2
+    var availableRates by mutableStateOf<List<Double>>(listOf(5.0, 7.5, 10.0))
     var validationError by mutableStateOf<String?>(null)
     var calculationResult by mutableStateOf<Pair<Double, Double>?>(null)
 
-    // --- МЕТОДЫ ДЛЯ Step1Screen.kt ---
+    // --- ПЕРЕГРУЗКА МЕТОДОВ ДЛЯ Step1Screen.kt (Принимаем любые аргументы) ---
     fun updateAvailableRates() {
         val months = periodMonths.toIntOrNull() ?: 0
-        // Генерируем сетку процентов в зависимости от срока, чтобы оживить старый UI
+        calculateRates(months)
+    }
+
+    fun updateAvailableRates(monthsStr: String) {
+        val months = monthsStr.toIntOrNull() ?: 0
+        calculateRates(months)
+    }
+
+    fun updateAvailableRates(months: Int) {
+        calculateRates(months)
+    }
+
+    private fun calculateRates(months: Int) {
         availableRates = when {
             months <= 3 -> listOf(4.5, 5.0, 5.5)
             months <= 6 -> listOf(6.0, 6.5, 7.0)
@@ -56,8 +68,16 @@ class DepositViewModel(
     }
 
     fun validateStep1(): Boolean {
-        val amount = initialAmount.toDoubleOrNull()
-        val months = periodMonths.toIntOrNull()
+        return validateStep1Fields(initialAmount, periodMonths)
+    }
+
+    fun validateStep1(amount: String, months: String): Boolean {
+        return validateStep1Fields(amount, months)
+    }
+
+    private fun validateStep1Fields(amountStr: String, monthsStr: String): Boolean {
+        val amount = amountStr.toDoubleOrNull()
+        val months = monthsStr.toIntOrNull()
         if (amount == null || amount <= 0) {
             validationError = "Введите корректную сумму вклада"
             return false
@@ -70,24 +90,32 @@ class DepositViewModel(
         return true
     }
 
-    // --- МЕТОДЫ ДЛЯ Step2Screen.kt ---
-    fun validateStep2(): Boolean {
-        validationError = null
-        return true
-    }
+    // --- ПЕРЕГРУЗКА МЕТОДОВ ДЛЯ Step2Screen.kt ---
+    fun validateStep2(): Boolean = true
+    fun validateStep2(any: Any?): Boolean = true
 
     fun calculate() {
         val startAmount = initialAmount.toDoubleOrNull() ?: 0.0
         val period = periodMonths.toIntOrNull() ?: 0
         val percent = selectedRate
         val monthly = monthlyTopUp.toDoubleOrNull() ?: 0.0
+        runCalculationFormula(startAmount, period, percent, monthly)
+    }
 
+    fun calculate(amount: String, months: String, rate: Double, topUp: String) {
+        val startAmount = amount.toDoubleOrNull() ?: 0.0
+        val period = months.toIntOrNull() ?: 0
+        val monthly = topUp.toDoubleOrNull() ?: 0.0
+        runCalculationFormula(startAmount, period, rate, monthly)
+    }
+
+    private fun runCalculationFormula(startAmount: Double, period: Int, percent: Double, monthly: Double) {
         val interestEarned = startAmount * (percent / 100) * (period / 12.0)
         val finalAmount = startAmount + interestEarned + (monthly * period)
         calculationResult = Pair(finalAmount, interestEarned)
     }
 
-    // --- ВАРИАНТ №1: Старый метод сохранения (для пошагового ResultScreen) ---
+    // --- ВАРИАНТ №1: Старый метод сохранения (для ResultScreen) ---
     fun saveCalculation(onSuccess: () -> Unit) {
         val amount = initialAmount.toDoubleOrNull() ?: 0.0
         val months = periodMonths.toIntOrNull() ?: 0
@@ -97,7 +125,7 @@ class DepositViewModel(
 
         viewModelScope.launch {
             val calculation = DepositCalculation(
-                userId = currentUserId, // Привязываем к текущему юзеру
+                userId = currentUserId,
                 initialAmount = amount,
                 periodMonths = months,
                 interestRate = rate,
@@ -111,7 +139,7 @@ class DepositViewModel(
         }
     }
 
-    // --- ВАРИАНТ №2: Новый метод сохранения с параметрами (для инлайн-калькулятора в MainScreen) ---
+    // --- ВАРИАНТ №2: Новый метод сохранения с параметрами (для MainScreen) ---
     fun saveCalculation(
         initialAmount: Double,
         periodMonths: Int,
