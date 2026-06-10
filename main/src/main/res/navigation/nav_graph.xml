@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://android.com"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/fragment_history">
+
+    <fragment
+        android:id="@+id/fragment_users"
+        android:name="ci.nsu.ui.users.UsersFragment"
+        android:label="Пользователи" />
+
+    <fragment
+        android:id="@+id/fragment_history"
+        android:name="ci.nsu.ui.deposit.HistoryFragment"
+        android:label="Мои расчёты" />
+
+    <fragment
+        android:id="@+id/fragment_calculator"
+        android:name="ci.nsu.ui.deposit.CalculatorFragment"
+        android:label="Новый расчёт" />
+
+</navigation>

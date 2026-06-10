@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <!-- Список для вывода расчетов -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCalculations"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Сообщение, если история пока пуста -->
+    <TextView
+        android:id="@+id/tvEmptyMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="У вас пока нет сохранённых расчётов"
+        android:textSize="16sp"
+        android:visibility="gone" />
+</FrameLayout>
