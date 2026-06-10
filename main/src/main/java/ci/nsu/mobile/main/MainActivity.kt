@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ci.nsu.mobile.main.ui.screens.NavGraph
+import ci.nsu.mobile.main.ui.screens.ui.theme.PracticeTheme  // ← импорт твоей темы
 import ci.nsu.mobile.main.ui.viewmodel.*
 
 class MainActivity : ComponentActivity() {
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
         appModule = AppModule(this)
 
         setContent {
-            MaterialTheme {
+            PracticeTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
