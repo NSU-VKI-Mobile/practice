@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ci.nsu.mobile.main.data.models.DepositCalculation
 
-@Database(entities = [DepositCalculation::class], version = 2, exportSchema = false)
+@Database(entities = [DepositCalculation::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun depositDao(): DepositDao
 
@@ -21,7 +21,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "deposit_database"
                 )
-                    .fallbackToDestructiveMigration() // автоматическое пересоздание бд при изменении схемы таблиц
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

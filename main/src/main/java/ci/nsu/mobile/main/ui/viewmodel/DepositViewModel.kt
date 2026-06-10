@@ -1,5 +1,6 @@
 package ci.nsu.mobile.main.ui.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -150,6 +151,9 @@ class DepositViewModel(
             reset()
             onSuccess()
         }
+
+        val currentUserId = tokenManager.getUserId()
+        Log.d("DepositVM", "Saving with userId=$currentUserId")
     }
 
     fun saveCalculation(
