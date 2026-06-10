@@ -31,15 +31,63 @@ class DepositViewModel(
             initialValue = emptyList()
         )
 
-    // --- ВОЗВРАЩАЕМ ПОЛЯ СОСТОЯНИЯ ДЛЯ СОВМЕСТИМОСТИ С ResultScreen.kt ---
+    // --- ПОЛЯ СОСТОЯНИЯ ДЛЯ СОВМЕСТИМОСТИ С СТАРАЫМ МАСТЕРОМ (Step1, Step2, Result) ---
     var initialAmount by mutableStateOf("")
     var periodMonths by mutableStateOf("")
     var monthlyTopUp by mutableStateOf("")
     var selectedRate by mutableStateOf(0.0)
+    var availableRates by mutableStateOf<List<Double>>(listOf(5.0, 7.5, 10.0)) // Спиоск ставок для Step1/Step2
     var validationError by mutableStateOf<String?>(null)
     var calculationResult by mutableStateOf<Pair<Double, Double>?>(null)
 
-    // --- ВАРИАНТ №1: Старый метод сохранения (вызывается из ResultScreen с лямбдой onSuccess) ---
+    // --- МЕТОДЫ ДЛЯ Step1Screen.kt ---
+    fun updateAvailableRates() {
+        val months = periodMonths.toIntOrNull() ?: 0
+        // Генерируем сетку процентов в зависимости от срока, чтобы оживить старый UI
+        availableRates = when {
+            months <= 3 -> listOf(4.5, 5.0, 5.5)
+            months <= 6 -> listOf(6.0, 6.5, 7.0)
+            months <= 12 -> listOf(8.0, 8.5, 9.0)
+            else -> listOf(11.0, 12.0, 14.0)
+        }
+        if (availableRates.isNotEmpty()) {
+            selectedRate = availableRates.first()
+        }
+    }
+
+    fun validateStep1(): Boolean {
+        val amount = initialAmount.toDoubleOrNull()
+        val months = periodMonths.toIntOrNull()
+        if (amount == null || amount <= 0) {
+            validationError = "Введите корректную сумму вклада"
+            return false
+        }
+        if (months == null || months <= 0) {
+            validationError = "Введите корректный срок вклада"
+            return false
+        }
+        validationError = null
+        return true
+    }
+
+    // --- МЕТОДЫ ДЛЯ Step2Screen.kt ---
+    fun validateStep2(): Boolean {
+        validationError = null
+        return true
+    }
+
+    fun calculate() {
+        val startAmount = initialAmount.toDoubleOrNull() ?: 0.0
+        val period = periodMonths.toIntOrNull() ?: 0
+        val percent = selectedRate
+        val monthly = monthlyTopUp.toDoubleOrNull() ?: 0.0
+
+        val interestEarned = startAmount * (percent / 100) * (period / 12.0)
+        val finalAmount = startAmount + interestEarned + (monthly * period)
+        calculationResult = Pair(finalAmount, interestEarned)
+    }
+
+    // --- ВАРИАНТ №1: Старый метод сохранения (для пошагового ResultScreen) ---
     fun saveCalculation(onSuccess: () -> Unit) {
         val amount = initialAmount.toDoubleOrNull() ?: 0.0
         val months = periodMonths.toIntOrNull() ?: 0
@@ -63,7 +111,7 @@ class DepositViewModel(
         }
     }
 
-    // --- ВАРИАНТ №2: Новый метод сохранения с параметрами (вызывается из MainScreen) ---
+    // --- ВАРИАНТ №2: Новый метод сохранения с параметрами (для инлайн-калькулятора в MainScreen) ---
     fun saveCalculation(
         initialAmount: Double,
         periodMonths: Int,
@@ -87,6 +135,7 @@ class DepositViewModel(
         }
     }
 
+    // Метод сброса
     fun reset() {
         initialAmount = ""
         periodMonths = ""
