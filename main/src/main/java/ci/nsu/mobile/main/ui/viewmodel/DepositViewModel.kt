@@ -7,12 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.local.DepositCalculation
 import ci.nsu.mobile.main.data.repository.DepositRepository
+import ci.nsu.mobile.main.data.token.TokenManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class DepositViewModel(private val repository: DepositRepository) : ViewModel() {
+class DepositViewModel(private val repository: DepositRepository, tokenManager: TokenManager) : ViewModel() {
 
     // Входные состояния
     var initialAmount by mutableStateOf("")

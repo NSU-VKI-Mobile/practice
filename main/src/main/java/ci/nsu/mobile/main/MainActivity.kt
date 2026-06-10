@@ -60,20 +60,21 @@ class MainActivity : ComponentActivity() {
             }
         )
 
-        // --- ИНИЦИАЛИЗАЦИЯ ДЕПОЗИТНОЙ ВЬЮМОДЕЛИ ---
+        // Инициализируем депозитную вьюмодель, передавая репозиторий и менеджер токенов для ID пользователя
         val depositViewModel: DepositViewModel = viewModel(
             factory = object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return DepositViewModel(appModule.depositRepository) as T
+                    return DepositViewModel(appModule.depositRepository, appModule.tokenManager) as T
                 }
             }
         )
 
+        // Передаем все четыре вьюмодели в граф навигации
         NavGraph(
             loginViewModel = loginViewModel,
             registerViewModel = registerViewModel,
-            mainViewModel = mainViewModel
-            // Сюда мы передадим depositViewModel чуть позже, когда займёмся файлом NavGraph.kt
+            mainViewModel = mainViewModel,
+            depositViewModel = depositViewModel
         )
     }
 }

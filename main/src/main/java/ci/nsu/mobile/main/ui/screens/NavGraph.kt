@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 import ci.nsu.mobile.main.ui.viewmodel.LoginViewModel
 import ci.nsu.mobile.main.ui.viewmodel.RegisterViewModel
 import ci.nsu.mobile.main.ui.viewmodel.MainViewModel
@@ -12,7 +13,8 @@ import ci.nsu.mobile.main.ui.viewmodel.MainViewModel
 fun NavGraph(
     loginViewModel: LoginViewModel,
     registerViewModel: RegisterViewModel,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    depositViewModel: DepositViewModel
 ) {
     val navController = rememberNavController()
 
