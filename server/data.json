@@ -1,0 +1,43 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "login": "admin",
+      "password": "admin",
+      "firstName": "Админ",
+      "lastName": "Админов",
+      "email": "admin@test.ru"
+    },
+    {
+      "id": 2,
+      "login": "123",
+      "password": "1",
+      "firstName": "Тест",
+      "lastName": "Тестов",
+      "email": "test@test.ru"
+    },
+    {
+      "id": 3,
+      "login": "222",
+      "password": "222",
+      "email": "222",
+      "firstName": "2",
+      "lastName": "2"
+    }
+  ],
+  "groups": [
+    {
+      "groupId": 1,
+      "groupName": "ИС-201"
+    },
+    {
+      "groupId": 2,
+      "groupName": "ИС-202"
+    },
+    {
+      "groupId": 3,
+      "groupName": "ПО-101"
+    }
+  ],
+  "nextId": 4
+}
