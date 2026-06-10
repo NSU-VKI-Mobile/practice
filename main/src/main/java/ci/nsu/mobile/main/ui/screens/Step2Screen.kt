@@ -82,7 +82,6 @@ fun Step2Screen(
             OutlinedTextField(
                 value = monthlyTopUp,
                 onValueChange = {
-                    // Только цифры и точка/запятая
                     if (it.isEmpty() || it.matches(Regex("^\\d*[.,]?\\d*$"))) {
                         viewModel.monthlyTopUp = it.replace(',', '.')
                     }
@@ -104,7 +103,7 @@ fun Step2Screen(
             Button(
                 onClick = {
                     if (viewModel.validateStep2()) {
-                        viewModel.calculationResult
+                        viewModel.calculate()
                         navController.navigate("result")
                     }
                 },
