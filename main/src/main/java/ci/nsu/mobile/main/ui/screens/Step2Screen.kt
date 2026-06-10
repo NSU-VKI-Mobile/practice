@@ -104,7 +104,7 @@ fun Step2Screen(
             Button(
                 onClick = {
                     if (viewModel.validateStep2()) {
-                        viewModel.calculateResult()
+                        viewModel.calculationResult
                         navController.navigate("result")
                     }
                 },
