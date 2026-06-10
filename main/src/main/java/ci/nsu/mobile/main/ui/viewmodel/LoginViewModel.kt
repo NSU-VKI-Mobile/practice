@@ -21,13 +21,14 @@ class LoginViewModel(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    fun login(login: String, password: String) {
+    fun login(login: String, password: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             _uiState.value = LoginUiState(isLoading = true)
 
             val result = repository.login(login, password)
 
             _uiState.value = if (result.isSuccess) {
+                onSuccess()
                 LoginUiState(isSuccess = true)
             } else {
                 LoginUiState(

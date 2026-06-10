@@ -28,7 +28,8 @@ fun NavGraph(
         composable("login") {
             LoginScreen(
                 navController = navController,
-                viewModel = loginViewModel
+                loginViewModel = loginViewModel,
+                depositViewModel = depositViewModel
             )
         }
 
@@ -40,7 +41,6 @@ fun NavGraph(
         }
 
         composable("main") {
-            // Передаем depositViewModel внутрь Главного экрана, где будет BottomNavigationView
             MainScreen(
                 navController = navController,
                 mainViewModel = mainViewModel,

@@ -8,8 +8,10 @@ import androidx.lifecycle.viewModelScope
 import ci.nsu.mobile.main.data.models.DepositCalculation
 import ci.nsu.mobile.main.data.repository.DepositRepository
 import ci.nsu.mobile.main.data.token.TokenManager
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -18,20 +20,24 @@ class DepositViewModel(
     private val tokenManager: TokenManager
 ) : ViewModel() {
 
-    // Получаем ID текущего авторизованного пользователя для Лабы 7
-    private val currentUserId: Long
-        get() = tokenManager.getUserId()
+    // наблюдаемый userId (обновляется при логине/выходе)
+    private val userIdFlow = MutableStateFlow(tokenManager.getUserId())
 
-    // Стрим с историей расчетов для новой вкладки в MainScreen
-    val historyState: StateFlow<List<DepositCalculation>> = repository
-        .getCalculationsForUser(currentUserId)
+    // подписываемся на изменения userId и при каждом новом userId запрашиваем его вклады
+    val historyState: StateFlow<List<DepositCalculation>> = userIdFlow
+        .flatMapLatest { userId ->
+            if (userId == -1L) {
+                MutableStateFlow(emptyList())
+            } else {
+                repository.getCalculationsForUser(userId)
+            }
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
 
-    // --- ПОЛЯ СОСТОЯНИЯ ДЛЯ СОВМЕСТИМОСТИ СО СТАРЫМИ ЭКРАНАМИ ---
     var initialAmount by mutableStateOf("")
     var periodMonths by mutableStateOf("")
     var monthlyTopUp by mutableStateOf("")
@@ -40,7 +46,6 @@ class DepositViewModel(
     var validationError by mutableStateOf<String?>(null)
     var calculationResult by mutableStateOf<Pair<Double, Double>?>(null)
 
-    // --- ПЕРЕГРУЗКА МЕТОДОВ ДЛЯ Step1Screen.kt (Принимаем любые аргументы) ---
     fun updateAvailableRates() {
         val months = periodMonths.toIntOrNull() ?: 0
         calculateRates(months)
@@ -90,7 +95,6 @@ class DepositViewModel(
         return true
     }
 
-    // --- ПЕРЕГРУЗКА МЕТОДОВ ДЛЯ Step2Screen.kt ---
     fun validateStep2(): Boolean = true
     fun validateStep2(any: Any?): Boolean = true
 
@@ -115,7 +119,6 @@ class DepositViewModel(
         calculationResult = Pair(finalAmount, interestEarned)
     }
 
-    // --- ВАРИАНТ №1: Старый метод сохранения (для ResultScreen) ---
     fun saveCalculation(onSuccess: () -> Unit) {
         val amount = initialAmount.toDoubleOrNull() ?: 0.0
         val months = periodMonths.toIntOrNull() ?: 0
@@ -125,7 +128,7 @@ class DepositViewModel(
 
         viewModelScope.launch {
             val calculation = DepositCalculation(
-                userId = currentUserId,
+                userId = tokenManager.getUserId(),
                 initialAmount = amount,
                 periodMonths = months,
                 interestRate = rate,
@@ -139,7 +142,6 @@ class DepositViewModel(
         }
     }
 
-    // --- ВАРИАНТ №2: Новый метод сохранения с параметрами (для MainScreen) ---
     fun saveCalculation(
         initialAmount: Double,
         periodMonths: Int,
@@ -150,7 +152,7 @@ class DepositViewModel(
     ) {
         viewModelScope.launch {
             val calculation = DepositCalculation(
-                userId = currentUserId,
+                userId = tokenManager.getUserId(),
                 initialAmount = initialAmount,
                 periodMonths = periodMonths,
                 interestRate = interestRate,
@@ -163,7 +165,6 @@ class DepositViewModel(
         }
     }
 
-    // Метод сброса
     fun reset() {
         initialAmount = ""
         periodMonths = ""
@@ -173,10 +174,14 @@ class DepositViewModel(
         calculationResult = null
     }
 
-    // Удаление расчета из базы
     fun deleteCalculation(calculation: DepositCalculation) {
         viewModelScope.launch {
             repository.deleteCalculation(calculation)
         }
+    }
+
+    // Вызывать после логина или выхода
+    fun refreshUserId() {
+        userIdFlow.value = tokenManager.getUserId()
     }
 }

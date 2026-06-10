@@ -60,7 +60,6 @@ class MainActivity : ComponentActivity() {
             }
         )
 
-        // Инициализируем депозитную вьюмодель, передавая репозиторий и менеджер токенов для ID пользователя
         val depositViewModel: DepositViewModel = viewModel(
             factory = object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -69,7 +68,6 @@ class MainActivity : ComponentActivity() {
             }
         )
 
-        // Передаем все четыре вьюмодели в граф навигации
         NavGraph(
             loginViewModel = loginViewModel,
             registerViewModel = registerViewModel,

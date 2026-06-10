@@ -7,34 +7,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import ci.nsu.mobile.main.ui.viewmodel.DepositViewModel
 import ci.nsu.mobile.main.ui.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel
+    loginViewModel: LoginViewModel,
+    depositViewModel: DepositViewModel
 ) {
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by loginViewModel.uiState.collectAsState()
 
-    // Обработка успешного входа
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
-            viewModel.resetSuccessState()
+            depositViewModel.refreshUserId()
+            loginViewModel.resetSuccessState()
             navController.navigate("main") {
                 popUpTo("login") { inclusive = true }
             }
-        }
-    }
-
-    // Обработка ошибки
-    LaunchedEffect(uiState.errorMessage) {
-        uiState.errorMessage?.let {
-            // Здесь можно показать Snackbar или Toast
         }
     }
 
@@ -68,7 +62,11 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { viewModel.login(login, password) },
+            onClick = {
+                loginViewModel.login(login, password) {
+                    // onSuccess уже вызывает refreshUserId в LaunchedEffect
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
             enabled = !uiState.isLoading
         ) {
