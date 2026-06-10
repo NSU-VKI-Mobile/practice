@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Task_1: Разметка фрагмента. Добавлена кнопка для перехода на Compose Activity -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,9 +13,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="MainFragment"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/go_to_compose_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/go_to_compose_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Compose"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/message" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
