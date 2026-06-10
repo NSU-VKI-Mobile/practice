@@ -1,6 +1,5 @@
 package ci.nsu.mobile.main.ui.screens
 
-import android.os.Process
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,23 +38,15 @@ fun DepositMenuScreen(navController: NavController) {
             Button(
                 onClick = { navController.navigate("step1") }
             ) {
-                Text("Рассчитать")
+                Text("Рассчитать новый вклад")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { navController.navigate("history") }
+                onClick = { navController.navigate("main") }
             ) {
-                Text("История расчётов")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { Process.killProcess(Process.myPid()) }
-            ) {
-                Text("Закрыть приложение")
+                Text("Назад в главное меню")
             }
         }
     }

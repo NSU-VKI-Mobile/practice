@@ -25,6 +25,9 @@ fun NavGraph(
         navController = navController,
         startDestination = "login"
     ) {
+
+        // маршруты из лабы 6
+
         composable("login") {
             LoginScreen(
                 navController = navController,
@@ -45,6 +48,35 @@ fun NavGraph(
                 navController = navController,
                 mainViewModel = mainViewModel,
                 depositViewModel = depositViewModel
+            )
+        }
+
+
+
+        // маршруты из лабы 5
+
+        composable("deposit_menu") {
+            DepositMenuScreen(navController = navController)
+        }
+
+        composable("step1") {
+            Step1Screen(
+                navController = navController,
+                viewModel = depositViewModel
+            )
+        }
+
+        composable("step2") {
+            Step2Screen(
+                navController = navController,
+                viewModel = depositViewModel
+            )
+        }
+
+        composable("result") {
+            ResultScreen(
+                navController = navController,
+                viewModel = depositViewModel
             )
         }
     }
