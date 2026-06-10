@@ -17,6 +17,7 @@ class AuthRepository(
     suspend fun login(login: String, password: String): Result<TokenResponse> {
         return try {
             val response = apiService.login(LoginRequest(login, password))
+            // TokenManager сам распарсит строку токена и сохранит ID внутри себя
             tokenManager.saveToken(response.token)
             Result.success(response)
         } catch (e: IOException) {
