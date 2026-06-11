@@ -95,6 +95,7 @@ class DepositViewModel(
 
                 repository.saveCalculation(calculation)
             } catch (e: Exception) {
+
                 _saveError.value = "Ошибка сохранения: ${e.message}"
             } finally {
                 _isSaving.value = false
