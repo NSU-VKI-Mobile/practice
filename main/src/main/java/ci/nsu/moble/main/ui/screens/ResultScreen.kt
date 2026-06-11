@@ -105,4 +105,5 @@ private fun ResultRow(label: String, value: String, bold: Boolean = false) {
         Text(label, fontSize = 16.sp)
         Text(value, fontSize = 16.sp, fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal)
     }
+
 }

@@ -77,7 +77,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // ---- Navigation ----
 
+    // Замените существующий метод navigateTo на этот:
+
     fun navigateTo(screen: Screen) {
+        // Сбрасываем состояние при переходе на главный экран или на первый этап
+        when (screen) {
+            Screen.Main, Screen.Stage1 -> {
+                resetForNewCalculation()
+            }
+            else -> { /* ничего не делаем */ }
+        }
         _currentScreen.value = screen
     }
 
@@ -168,6 +177,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // ---- Save ----
 
+    // Обновите существующий метод saveResult:
+
     fun saveResult() {
         val res = _result.value
         viewModelScope.launch {
@@ -184,6 +195,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             )
             _result.update { it.copy(saved = true) }
             loadHistory()
+
+            // Сбрасываем состояние после сохранения
+            resetForNewCalculation()
         }
     }
 
@@ -208,5 +222,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             // Обновить список расчетов
             loadHistory()
         }
+    }
+    // Добавьте этот метод в конец класса MainViewModel (перед закрывающей скобкой)
+
+    fun resetForNewCalculation() {
+        _stage1.value = Stage1State()
+        _stage2.value = Stage2State()
+
+
+        _result.value = ResultState()
     }
 }
