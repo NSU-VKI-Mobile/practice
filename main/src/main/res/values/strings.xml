@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">main</string>
+    <string name="app_name">My App</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_group_dto">GroupDto</string>
 </resources>
