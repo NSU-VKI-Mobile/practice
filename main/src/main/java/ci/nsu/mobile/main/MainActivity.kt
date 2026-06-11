@@ -12,7 +12,8 @@ import ci.nsu.mobile.main.data.AppDatabase
 import ci.nsu.mobile.main.data.DepositRepository
 import ci.nsu.mobile.main.ui.*
 import ci.nsu.mobile.main.viewmodel.DepositViewModel
-
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,14 +37,18 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("input") {
+                            // 1. Указываем Compose "следить" за изменениями в реальном времени
+                            val amount by depositViewModel.initialAmount.collectAsState()
+                            val period by depositViewModel.periodMonths.collectAsState()
+
                             DepositInputScreen(
-                                amount = depositViewModel.initialAmount.value,
+                                amount = amount,
                                 onAmountChange = {
-                                    depositViewModel.saveFirstScreenData(it, depositViewModel.periodMonths.value)
+                                    depositViewModel.saveFirstScreenData(it, period)
                                 },
-                                period = depositViewModel.periodMonths.value,
+                                period = period,
                                 onPeriodChange = {
-                                    depositViewModel.saveFirstScreenData(depositViewModel.initialAmount.value, it)
+                                    depositViewModel.saveFirstScreenData(amount, it)
                                 },
                                 onNextClick = { navController.navigate("additional") },
                                 onHomeClick = { navController.popBackStack("home", false) }
@@ -51,8 +56,11 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("additional") {
+                            // Здесь тоже следим за сроком, чтобы он правильно отобразился
+                            val period by depositViewModel.periodMonths.collectAsState()
+
                             AdditionalParamsScreen(
-                                periodMonths = depositViewModel.periodMonths.value,
+                                periodMonths = period,
                                 onBackClick = { navController.popBackStack() },
                                 onCalculateClick = { rate, topUp ->
                                     depositViewModel.saveSecondScreenData(rate, topUp)

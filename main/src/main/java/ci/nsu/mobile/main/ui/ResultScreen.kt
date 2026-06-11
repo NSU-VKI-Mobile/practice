@@ -19,7 +19,6 @@ fun ResultScreen(
     onSaveClick: () -> Unit,
     onHomeClick: () -> Unit
 ) {
-    // Используем collectAsState для наблюдения за StateFlow
     val initialAmount by viewModel.initialAmount.collectAsState()
     val periodMonths by viewModel.periodMonths.collectAsState()
     val interestRate by viewModel.interestRate.collectAsState()

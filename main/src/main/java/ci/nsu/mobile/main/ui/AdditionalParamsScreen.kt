@@ -1,11 +1,13 @@
 package ci.nsu.mobile.main.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -46,7 +48,6 @@ fun AdditionalParamsScreen(
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        // Выбор ставки
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = it }
@@ -80,19 +81,20 @@ fun AdditionalParamsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Поле для пополнения
         OutlinedTextField(
             value = monthlyTopUp,
-            onValueChange = { monthlyTopUp = it },
+            onValueChange = { newValue ->
+                monthlyTopUp = newValue.replace("-", "").replace(",", ".")
+            },
             label = { Text("Ежемесячное пополнение (руб)") },
             placeholder = { Text("необязательно") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Сообщения об ошибках
         if (period == null) {
             Text(
                 text = "Укажите корректный срок на предыдущем экране",
@@ -102,7 +104,6 @@ fun AdditionalParamsScreen(
             )
         }
 
-        // Кнопки
         Button(
             onClick = onBackClick,
             modifier = Modifier.fillMaxWidth()
