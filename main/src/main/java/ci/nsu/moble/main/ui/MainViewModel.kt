@@ -106,9 +106,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         val rates = buildList {
-            if (period < 6) add(15.0)
+            if (period < 6) add(5.0)
             if (period >= 6 && period < 12) add(10.0)
-            if (period >= 12) add(5.0)
+            if (period >= 12) add(15.0)
         }
 
         _stage2.value = Stage2State(
@@ -200,6 +200,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun loadCalculationDetail(id: Long) {
         viewModelScope.launch {
             _selectedCalculation.value = repository.getCalculation(id)
+        }
+    }
+    fun deleteCalculation(id: Long) {
+        viewModelScope.launch {
+            repository.deleteCalculation(id)
+            // Обновить список расчетов
+            loadHistory()
         }
     }
 }

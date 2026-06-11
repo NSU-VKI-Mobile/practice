@@ -18,4 +18,6 @@ class DepositRepository(private val dao: DepositDao) {
     suspend fun saveCalculation(calculation: DepositCalculation): Long {
         return dao.insert(calculation)
     }
+    suspend fun deleteCalculation(id: Long) =
+        dao.deleteCalculation(id)
 }

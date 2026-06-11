@@ -17,4 +17,7 @@ interface DepositDao {
 
     @Query("SELECT * FROM deposit_calculations WHERE id = :id")
     suspend fun getById(id: Long): DepositCalculation?
+
+    @Query("DELETE FROM deposit_calculations WHERE id = :id")
+    suspend fun deleteCalculation(id: Long)
 }
