@@ -11,6 +11,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -20,4 +21,10 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "practice"
-include(":main")
+
+include(":app")
+include(":auth")
+include(":calculations")
+include(":domain")
+
+project(":app").projectDir = File("main")
