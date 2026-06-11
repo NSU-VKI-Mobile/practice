@@ -1,3 +1,5 @@
+package ci.nsu.mobile.main.data.api
+
 import okhttp3.Interceptor
 import okhttp3.Response
 

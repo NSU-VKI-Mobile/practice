@@ -1,8 +1,10 @@
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerialName
+package ci.nsu.mobile.main.data.model
 
-@Serializable
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@InternalSerializationApi @Serializable
 data class LoginResponse(
-    @SerialName("token")
-    val token: String
+    @SerialName("token") val token: String
 )

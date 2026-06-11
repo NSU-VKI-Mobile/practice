@@ -1,19 +1,35 @@
+package ci.nsu.mobile.main.ui.viewmodel
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import ci.nsu.mobile.main.data.model.GroupDto
+import ci.nsu.mobile.main.data.model.PersonDto
+import ci.nsu.mobile.main.data.model.RegisterRequest
+import ci.nsu.mobile.main.data.repository.AuthRepository
+import kotlinx.coroutines.launch
+import kotlinx.serialization.InternalSerializationApi
+
 class RegistrationViewModel : ViewModel() {
     private val repository = AuthRepository()
 
+    @OptIn(InternalSerializationApi::class)
     var groups by mutableStateOf<List<GroupDto>>(emptyList())
     var selectedGroupId by mutableStateOf<Int?>(null)
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
     var registrationSuccess by mutableStateOf(false)
 
-    // поля для PersonDto
+    // Person fields
     var firstName by mutableStateOf("")
     var lastName by mutableStateOf("")
     var middleName by mutableStateOf("")
     var birthDate by mutableStateOf("")
     var gender by mutableStateOf("")
-    // поля для RegisterRequest
+
+    // Account fields
     var login by mutableStateOf("")
     var password by mutableStateOf("")
     var email by mutableStateOf("")
@@ -23,6 +39,7 @@ class RegistrationViewModel : ViewModel() {
         loadGroups()
     }
 
+    @OptIn(InternalSerializationApi::class)
     private fun loadGroups() {
         viewModelScope.launch {
             repository.getGroups()
@@ -31,8 +48,17 @@ class RegistrationViewModel : ViewModel() {
         }
     }
 
-    fun register() {
-        val groupId = selectedGroupId ?: return
+    @OptIn(InternalSerializationApi::class)
+    fun performRegistration() {
+        val groupId = selectedGroupId
+        if (groupId == null) {
+            errorMessage = "Выберите группу"
+            return
+        }
+        if (firstName.isBlank() || lastName.isBlank() || login.isBlank() || password.isBlank()) {
+            errorMessage = "Заполните обязательные поля"
+            return
+        }
         viewModelScope.launch {
             isLoading = true
             errorMessage = null

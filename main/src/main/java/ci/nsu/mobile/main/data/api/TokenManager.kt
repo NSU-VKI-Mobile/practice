@@ -1,3 +1,5 @@
+package ci.nsu.mobile.main.data.api
+
 import android.content.Context
 import android.content.SharedPreferences
 
