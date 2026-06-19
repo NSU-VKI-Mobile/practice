@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -114,7 +113,7 @@ fun RegisterScreen(
     val groupDialogState = rememberMaterialDialogState()
     val selectedGroupName by remember {
         derivedStateOf {
-            groupsState.groups.find { it.id == state.groupId }?.name ?: ""
+            groupsState.groups.find { it.groupId == state.groupId }?.groupName ?: ""
         }
     }
 
@@ -135,14 +134,13 @@ fun RegisterScreen(
                         .padding(vertical = 8.dp)
                 ) {
                     RadioButton(
-                        selected = state.groupId == group.id,
+                        selected = state.groupId == group.groupId,
                         onClick = {
-                            viewModel.selectGroup(group.id)
-                            // Не нужно обновлять selectedGroupName здесь - он будет обновлен через derivedStateOf
-                        }
+                            viewModel.selectGroup(group.groupId)
+                            }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(group.name ?: "Группа ${group.id}")
+                    Text(group.groupName ?: "Группа ${group.groupId}")
                 }
             }
         }

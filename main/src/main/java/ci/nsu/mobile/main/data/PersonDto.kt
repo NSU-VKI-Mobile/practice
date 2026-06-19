@@ -15,6 +15,6 @@ data class PersonDto(
     val birthDate: String,
     @SerialName("gender")
     val gender: String,
-    @SerialName("groupId")
-    val groupId: Int
+    /*@SerialName("groupId")
+    val groupId: Int*/
 )

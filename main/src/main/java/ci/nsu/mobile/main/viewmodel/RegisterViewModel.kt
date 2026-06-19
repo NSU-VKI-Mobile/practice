@@ -93,10 +93,10 @@ class RegisterViewModel(
             hasError = true
         }
 
-        if (state.groupId == null) {
+       /* if (state.groupId == null) {
             _registerState.value = state.copy(groupError = "Выберите группу")
             hasError = true
-        }
+        }*/
 
         if (state.login.isEmpty()) {
             _registerState.value = state.copy(loginError = "Введите логин")
@@ -127,7 +127,7 @@ class RegisterViewModel(
                 middleName = state.middleName.ifEmpty { null },
                 birthDate = state.birthDate,
                 gender = state.gender,
-                groupId = state.groupId!!
+                //groupId = state.groupId!!
             )
 
             val request = RegisterRequest(
