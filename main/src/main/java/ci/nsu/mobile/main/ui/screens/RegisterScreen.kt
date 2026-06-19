@@ -112,7 +112,11 @@ fun RegisterScreen(
 
     // Group selection dialog
     val groupDialogState = rememberMaterialDialogState()
-    var selectedGroupName by remember { mutableStateOf("") }
+    val selectedGroupName by remember {
+        derivedStateOf {
+            groupsState.groups.find { it.id == state.groupId }?.name ?: ""
+        }
+    }
 
     MaterialDialog(
         dialogState = groupDialogState,
@@ -134,16 +138,15 @@ fun RegisterScreen(
                         selected = state.groupId == group.id,
                         onClick = {
                             viewModel.selectGroup(group.id)
-                            selectedGroupName = group.name
+                            // Не нужно обновлять selectedGroupName здесь - он будет обновлен через derivedStateOf
                         }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(group.name)
+                    Text(group.name ?: "Группа ${group.id}")
                 }
             }
         }
     }
-
     Scaffold(
         topBar = {
             TopAppBar(
