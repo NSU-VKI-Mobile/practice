@@ -1,5 +1,3 @@
-
-
 package ci.nsu.moble.main
 
 import android.app.Activity
@@ -8,41 +6,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ci.nsu.moble.main.ui.Screens.HomeScreen
-import ci.nsu.moble.main.ui.Screens.ScreenOneContent
-import ci.nsu.moble.main.ui.Screens.ScreenTwoContent
 import ci.nsu.moble.main.ui.theme.PracticeTheme
-
 
 sealed class Screen(val route: String) {
     object Home : Screen("home")
@@ -51,6 +32,7 @@ sealed class Screen(val route: String) {
 }
 
 class SecondActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -68,11 +50,18 @@ fun SecondActivityScreen() {
     val navController = rememberNavController()
     var selectedItem by remember { mutableStateOf(0) }
     val context = LocalContext.current
-    var receivedText by remember { mutableStateOf("") }
 
-    if (context is Activity) {
-        receivedText = context.intent.getStringExtra("text_data") ?: "No text received"
+    // Получаем текст из Intent
+    val receivedText = remember {
+        if (context is Activity) {
+            context.intent.getStringExtra("text_data") ?: "No text received"
+        } else {
+            "No text received"
+        }
     }
+
+    // Глобальное состояние для текста, который будет передан в Screen One
+    var sharedText by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -81,7 +70,6 @@ fun SecondActivityScreen() {
                 title = { Text(receivedText) },
                 navigationIcon = {
                     IconButton(onClick = {
-                        // Return to MainActivity
                         val intent = Intent(context, MainActivity::class.java)
                         context.startActivity(intent)
                         if (context is Activity) {
@@ -104,16 +92,18 @@ fun SecondActivityScreen() {
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Home") },
+                    icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
                     label = { Text("Home") },
                     selected = selectedItem == 0,
                     onClick = {
-                        navController.navigate(Screen.Home.route)
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Home.route) { inclusive = true }
+                        }
                         selectedItem = 0
                     }
                 )
                 NavigationBarItem(
-                    icon = { Icon(imageVector = Icons.Filled.List, contentDescription = "Screen One") },
+                    icon = { Icon(Icons.Filled.List, contentDescription = "Screen One") },
                     label = { Text("Screen One") },
                     selected = selectedItem == 1,
                     onClick = {
@@ -122,7 +112,7 @@ fun SecondActivityScreen() {
                     }
                 )
                 NavigationBarItem(
-                    icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Screen Two") },
+                    icon = { Icon(Icons.Filled.Settings, contentDescription = "Screen Two") },
                     label = { Text("Screen Two") },
                     selected = selectedItem == 2,
                     onClick = {
@@ -136,18 +126,208 @@ fun SecondActivityScreen() {
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
         ) {
-            composable(Screen.Home.route) { HomeScreen() }
-            composable(Screen.ScreenOne.route) { ScreenOneContent() }
-            composable(Screen.ScreenTwo.route) { ScreenTwoContent() }
+            composable(Screen.Home.route) {
+                HomeScreen(
+                    onNavigateToScreenTwo = {
+                        navController.navigate(Screen.ScreenTwo.route)
+                        selectedItem = 2
+                    }
+                )
+            }
+
+            composable(Screen.ScreenOne.route) {
+                ScreenOneContent(
+                    textFromScreenTwo = sharedText
+                )
+            }
+
+            composable(Screen.ScreenTwo.route) {
+                ScreenTwoContent(
+                    onNavigateToScreenOne = { text ->
+                        sharedText = text
+                        navController.navigate(Screen.ScreenOne.route)
+                        selectedItem = 1
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeScreen(onNavigateToScreenTwo: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Home Screen",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        Text(
+            text = "Welcome to the Home Screen!",
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
+
+        Button(
+            onClick = onNavigateToScreenTwo,
+            modifier = Modifier.fillMaxWidth(0.7f)
+        ) {
+            Text("Go to Screen Two")
+        }
+    }
+}
+
+@Composable
+fun ScreenOneContent(textFromScreenTwo: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Screen One",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        Text(
+            text = "This is Screen One",
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
+
+        // Отображение текста из Screen Two
+        if (textFromScreenTwo.isNotEmpty()) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFE3F2FD)
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Text from Screen Two:",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = textFromScreenTwo,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = Color.Blue
+                    )
+                }
+            }
+        } else {
+            Text(
+                text = "No text received from Screen Two yet",
+                color = Color.Gray,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
+fun ScreenTwoContent(
+    onNavigateToScreenOne: (String) -> Unit
+) {
+    var inputText by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        Text(
+            text = "Screen Two",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(top = 16.dp, bottom = 32.dp)
+        )
+
+        Text(
+            text = "Enter text to send to Screen One:",
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Поле для ввода текста
+        TextField(
+            value = inputText,
+            onValueChange = { inputText = it },
+            label = { Text("Enter text here") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        )
+
+        // Кнопка для отправки текста в Screen One и перехода
+        Button(
+            onClick = {
+                if (inputText.isNotEmpty()) {
+                    onNavigateToScreenOne(inputText)
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            Text("Send to Screen One")
+        }
+
+        // Информация о текущем введенном тексте
+        if (inputText.isNotEmpty()) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 32.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFFFF3E0)
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Current text:",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = inputText,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color(0xFFE65100)
+                    )
+                }
+            }
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+fun SecondActivityPreview() {
     PracticeTheme {
         SecondActivityScreen()
     }
